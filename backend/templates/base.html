@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Título dinámico: cada template hijo puede sobreescribir este bloque -->
+  <title>{% block title %}CPQ Cafeterías{% endblock %}</title>
+
+  <!-- Tailwind CSS CDN (solo para desarrollo; en prod usar build compilado) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- HTMX: interactividad sin JavaScript explícito -->
+  <script src="https://unpkg.com/htmx.org@1.9.10"
+          integrity="sha384-D1Kt99CQMDuVetoL1lrYwg5t+9QdHe7NLX/SoJYkXDFfX37iInKRy5ViYgSibmK"
+          crossorigin="anonymous"></script>
+
+  <!-- Estilos propios (variables CSS y utilidades custom) -->
+  <link rel="stylesheet" href="{{ url_for('static', path='css/style.css') }}" />
+
+  <!-- Bloque para estilos adicionales por página -->
+  {% block extra_head %}{% endblock %}
+</head>
+
+<body class="min-h-screen flex flex-col" style="background-color: var(--color-cream);">
+
+  <!-- =====================================================================
+       Navbar principal
+       ===================================================================== -->
+  <nav style="background-color: var(--color-espresso);" class="px-6 py-3 shadow-md">
+    <div class="container flex items-center justify-between">
+
+      <!-- Logo / nombre de la app -->
+      <a href="/" class="flex items-center gap-2"
+         style="color: var(--color-cream); text-decoration: none;">
+        <span class="text-xl">☕</span>
+        <span class="font-bold text-lg tracking-wide">CPQ Cafeterías</span>
+      </a>
+
+      <!-- Navegación principal -->
+      <ul class="flex items-center gap-6 list-none"
+          style="color: var(--color-latte); font-size: 0.9rem;">
+        <li>
+          <a href="/" style="color: inherit;"
+             class="hover:text-white transition-colors">Inicio</a>
+        </li>
+        <!-- Agregar más rutas aquí a medida que se creen los módulos -->
+      </ul>
+
+    </div>
+  </nav>
+  <!-- / navbar -->
+
+  <!-- =====================================================================
+       Contenido principal — cada página hereda y rellena este bloque
+       ===================================================================== -->
+  <main class="flex-1 container py-8">
+    {% block content %}{% endblock %}
+  </main>
+  <!-- / main -->
+
+  <!-- =====================================================================
+       Footer
+       ===================================================================== -->
+  <footer class="py-4 text-center text-sm"
+          style="color: var(--color-gray); border-top: 1px solid var(--color-beige);">
+    CPQ Cafeterías &copy; {{ now.year if now is defined else '2025' }}
+  </footer>
+  <!-- / footer -->
+
+  <!-- Bloque para scripts adicionales por página -->
+  {% block extra_scripts %}{% endblock %}
+
+</body>
+</html>

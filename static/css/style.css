@@ -1,0 +1,153 @@
+/* ==========================================================================
+   Variables CSS — Tema Cafetería
+   ========================================================================== */
+:root {
+  /* Paleta principal */
+  --color-espresso:   #2c1810; /* marrón muy oscuro, títulos */
+  --color-coffee:     #6f4e37; /* marrón café, primary */
+  --color-latte:      #c4a882; /* marrón claro, acentos */
+  --color-cream:      #f5f0e8; /* crema, fondos suaves */
+  --color-beige:      #e8dcc8; /* beige, bordes y separadores */
+
+  /* Neutros */
+  --color-white:      #ffffff;
+  --color-gray-light: #f9f6f2;
+  --color-gray:       #9e8c7a;
+  --color-gray-dark:  #4a3f35;
+
+  /* Semánticos */
+  --color-success:    #4caf7d;
+  --color-warning:    #e8a838;
+  --color-error:      #d64045;
+
+  /* Tipografía */
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+  /* Espaciado base */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 16px;
+
+  /* Sombras */
+  --shadow-sm: 0 1px 3px rgba(44, 24, 16, 0.08);
+  --shadow-md: 0 4px 12px rgba(44, 24, 16, 0.12);
+}
+
+/* ==========================================================================
+   Reset mínimo
+   ========================================================================== */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-cream);
+  color: var(--color-espresso);
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+img, video, svg {
+  display: block;
+  max-width: 100%;
+}
+
+input, button, textarea, select {
+  font: inherit;
+}
+
+a {
+  color: var(--color-coffee);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* ==========================================================================
+   Utilidades de layout
+   ========================================================================== */
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin-inline: auto;
+  padding-inline: 1.5rem;
+}
+
+.flex        { display: flex; }
+.flex-col    { flex-direction: column; }
+.items-center { align-items: center; }
+.justify-between { justify-content: space-between; }
+.gap-2       { gap: 0.5rem; }
+.gap-4       { gap: 1rem; }
+
+/* ==========================================================================
+   Utilidades de texto
+   ========================================================================== */
+.text-sm     { font-size: 0.875rem; }
+.text-lg     { font-size: 1.125rem; }
+.text-xl     { font-size: 1.25rem; }
+.font-bold   { font-weight: 700; }
+.text-muted  { color: var(--color-gray); }
+
+/* ==========================================================================
+   Utilidades de espaciado
+   ========================================================================== */
+.mt-4  { margin-top: 1rem; }
+.mb-4  { margin-bottom: 1rem; }
+.p-4   { padding: 1rem; }
+.py-2  { padding-block: 0.5rem; }
+.px-4  { padding-inline: 1rem; }
+
+/* ==========================================================================
+   Componentes base
+   ========================================================================== */
+
+/* Tarjeta */
+.card {
+  background: var(--color-white);
+  border: 1px solid var(--color-beige);
+  border-radius: var(--radius-md);
+  padding: 1.5rem;
+  box-shadow: var(--shadow-sm);
+}
+
+/* Botón primario */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 1.25rem;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-weight: 600;
+  transition: opacity 0.15s ease;
+}
+
+.btn:hover       { opacity: 0.88; }
+.btn-primary     { background: var(--color-coffee); color: var(--color-white); }
+.btn-secondary   { background: var(--color-beige);  color: var(--color-espresso); }
+
+/* Badge de estado */
+.badge {
+  display: inline-block;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.badge-success { background: #d4f3e4; color: #1d6f42; }
+.badge-warning { background: #fef3cd; color: #7d5a00; }
+.badge-error   { background: #fde8e8; color: #8b1a1a; }
