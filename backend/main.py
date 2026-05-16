@@ -7,6 +7,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+from backend.models import *
+
 
 import backend.models  # noqa: F401 — registra todos los modelos en Base.metadata
 from backend.database import init_db, test_connection
