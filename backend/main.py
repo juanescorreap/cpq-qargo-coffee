@@ -7,11 +7,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from backend.models import *
-
-
 import backend.models  # noqa: F401 — registra todos los modelos en Base.metadata
 from backend.database import init_db, test_connection
+from backend.routers import ingredients, products, recipes, product_sizes, costs, stores, recipe_units, competitors
+
 
 # ---------------------------------------------------------------------------
 # Rutas base del proyecto (relativas a este archivo)
@@ -71,6 +70,19 @@ app.add_middleware(
 app.mount("/static", StaticFiles(directory=PROJECT_ROOT / "static"), name="static")
 
 templates = Jinja2Templates(directory=BASE_DIR / "templates")
+
+
+# ---------------------------------------------------------------------------
+# Routers
+# ---------------------------------------------------------------------------
+app.include_router(ingredients.router)
+app.include_router(products.router)
+app.include_router(recipes.router)
+app.include_router(product_sizes.router)
+app.include_router(costs.router)
+app.include_router(stores.router)
+app.include_router(recipe_units.router)
+app.include_router(competitors.router)
 
 
 # ---------------------------------------------------------------------------

@@ -36,9 +36,16 @@ _RECIPE_UNITS = [
     {"name": "pinch",      "category": "weight",  "description": "Pizca (~0.3 g)"},
     {"name": "sprinkle",   "category": "weight",  "description": "Espolvoreado decorativo"},
     # Conteo
-    {"name": "unit",       "category": "count",   "description": "Unidad discreta (ej: 1 empaque)"},
-    {"name": "lines",      "category": "count",   "description": "Líneas de decoración (ej: arte latte)"},
-    {"name": "each",       "category": "count",   "description": "Pieza individual (ej: 1 trozo de fruta)"},
+    {"name": "unit",     "category": "count",   "description": "Unidad discreta (ej: 1 empaque)"},
+    {"name": "lines",    "category": "count",   "description": "Líneas de decoración (ej: arte latte)"},
+    {"name": "each",     "category": "count",   "description": "Pieza individual (ej: 1 trozo de fruta)"},
+    {"name": "slice",    "category": "count",   "description": "Rebanada o loncha (ej: 2 slices de tocino)"},
+    {"name": "handful",  "category": "count",   "description": "Puñado de ingrediente (ej: arúgula)"},
+    {"name": "leaf",     "category": "count",   "description": "Hoja individual (ej: albahaca, menta)"},
+    {"name": "bag",      "category": "count",   "description": "Bolsa o sobre (ej: bolsita de té)"},
+    {"name": "drop",     "category": "volume",  "description": "Gota (ej: colorante alimentario)"},
+    {"name": "rosette",  "category": "count",   "description": "Roseta decorativa de crema batida"},
+    {"name": "serving",  "category": "count",   "description": "Porción estándar de un producto"},
 ]
 
 

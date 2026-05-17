@@ -534,20 +534,27 @@ class CostCalculator:
             quantity_in_usage_units *= scale_factor
 
         # 4. Aplicar yield del ingrediente
-        yield_factor = ingredient.yield_percentage / Decimal("100")
-        quantity_with_yield = quantity_in_usage_units / yield_factor
+        # yield_percentage está almacenado como fracción (0.0–1.0) en la BD.
+        yield_factor = ingredient.yield_percentage  # e.g. 0.98
+        if yield_factor and yield_factor > 0:
+            quantity_with_yield = quantity_in_usage_units / yield_factor
+        else:
+            quantity_with_yield = quantity_in_usage_units
 
         # 5. Aplicar process yield loss
-        if recipe_ing.process_yield_loss > 0:
-            process_loss_factor = Decimal("1") - (
-                recipe_ing.process_yield_loss / Decimal("100")
-            )
-            quantity_with_yield = quantity_with_yield / process_loss_factor
+        # process_yield_loss está almacenado como porcentaje de rendimiento
+        # (0–100): 100 = sin merma, 90 = 10 % de merma en proceso.
+        if recipe_ing.process_yield_loss > 0 and recipe_ing.process_yield_loss < 100:
+            process_yield_factor = recipe_ing.process_yield_loss / Decimal("100")
+            quantity_with_yield = quantity_with_yield / process_yield_factor
 
         # 6. Calcular costo
         # price = precio de purchase_unit
         # conversion_factor = cuántas usage_units en 1 purchase_unit
-        unit_cost = price / ingredient.conversion_factor
+        conversion_factor = ingredient.conversion_factor
+        if not conversion_factor:
+            return Decimal("0")
+        unit_cost = price / conversion_factor
         return unit_cost * quantity_with_yield
 
     def _calculate_ingredients_cost(
