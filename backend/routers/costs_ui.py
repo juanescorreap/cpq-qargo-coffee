@@ -1,0 +1,97 @@
+from pathlib import Path
+from typing import Optional
+
+from fastapi import APIRouter, Depends, Request
+from fastapi.responses import HTMLResponse
+from fastapi.templating import Jinja2Templates
+from sqlalchemy.orm import Session
+
+from backend.database import get_db
+from backend.models.product import Product, ProductSize
+from backend.models.store import Store
+from backend.services.cost_calculator import CostCalculator
+
+router = APIRouter(prefix="/costs", tags=["UI - Costos"])
+
+templates = Jinja2Templates(
+    directory=Path(__file__).resolve().parent.parent / "templates"
+)
+
+
+@router.get("/calculator", response_class=HTMLResponse)
+async def cost_calculator(
+    request: Request,
+    db: Session = Depends(get_db),
+) -> HTMLResponse:
+    products = (
+        db.query(Product)
+        .filter(Product.is_active == True)
+        .order_by(Product.name)
+        .all()
+    )
+    stores = (
+        db.query(Store)
+        .filter(Store.is_active == True)
+        .order_by(Store.name)
+        .all()
+    )
+    return templates.TemplateResponse("costs/calculator.html", {
+        "request":  request,
+        "products": products,
+        "stores":   stores,
+    })
+
+
+@router.get("/sizes", response_class=HTMLResponse)
+async def load_sizes(
+    request: Request,
+    product_id: Optional[int] = None,
+    db: Session = Depends(get_db),
+) -> HTMLResponse:
+    sizes = []
+    if product_id:
+        sizes = (
+            db.query(ProductSize)
+            .filter(ProductSize.product_id == product_id)
+            .order_by(ProductSize.scale_factor)
+            .all()
+        )
+    return templates.TemplateResponse("costs/_sizes.html", {
+        "request": request,
+        "sizes":   sizes,
+    })
+
+
+@router.post("/calculate-htmx", response_class=HTMLResponse)
+async def calculate_cost_htmx(
+    request: Request,
+    db: Session = Depends(get_db),
+) -> HTMLResponse:
+    form = await request.form()
+
+    raw_product = form.get("product_id", "")
+    if not raw_product:
+        return templates.TemplateResponse("costs/_result.html", {
+            "request":   request,
+            "error":     "Selecciona un producto.",
+            "breakdown": None,
+        })
+
+    product_id: int          = int(raw_product)
+    size_id:    Optional[int] = int(form["size_id"])  if form.get("size_id")  else None
+    store_id:   Optional[int] = int(form["store_id"]) if form.get("store_id") else None
+
+    try:
+        breakdown = CostCalculator(db).get_cost_breakdown(product_id, size_id, store_id)
+    except (ValueError, RecursionError) as exc:
+        return templates.TemplateResponse("costs/_result.html", {
+            "request":   request,
+            "error":     str(exc),
+            "breakdown": None,
+        })
+
+    return templates.TemplateResponse("costs/_result.html", {
+        "request":   request,
+        "error":     None,
+        "breakdown": breakdown,
+    })

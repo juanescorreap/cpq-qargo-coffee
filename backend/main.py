@@ -2,14 +2,22 @@ from contextlib import asynccontextmanager
 from pathlib import Path
 
 import uvicorn
-from fastapi import FastAPI, Request
+from fastapi import Depends, FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse
+from sqlalchemy import func
+from sqlalchemy.orm import Session
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 import backend.models  # noqa: F401 — registra todos los modelos en Base.metadata
-from backend.database import init_db, test_connection
-from backend.routers import ingredients, products, recipes, product_sizes, costs, stores, recipe_units, competitors
+from backend.database import get_db, init_db, test_connection
+from backend.models.ingredient import Ingredient
+from backend.models.product import Product
+from backend.models.store import Store
+from backend.routers import (
+    competitors, competitors_ui, costs, costs_ui, ingredients, ingredients_ui,
+    product_sizes, products, products_ui, recipe_units, recipes, recipes_ui, stores, stores_ui,
+)
 
 
 # ---------------------------------------------------------------------------
@@ -76,13 +84,19 @@ templates = Jinja2Templates(directory=BASE_DIR / "templates")
 # Routers
 # ---------------------------------------------------------------------------
 app.include_router(ingredients.router)
+app.include_router(ingredients_ui.router)
 app.include_router(products.router)
+app.include_router(products_ui.router)
 app.include_router(recipes.router)
+app.include_router(recipes_ui.router)
 app.include_router(product_sizes.router)
 app.include_router(costs.router)
+app.include_router(costs_ui.router)
 app.include_router(stores.router)
+app.include_router(stores_ui.router)
 app.include_router(recipe_units.router)
 app.include_router(competitors.router)
+app.include_router(competitors_ui.router)
 
 
 # ---------------------------------------------------------------------------
@@ -116,26 +130,17 @@ async def health() -> dict:
 
 
 @app.get("/dashboard", response_class=HTMLResponse, tags=["General"])
-async def dashboard(request: Request) -> HTMLResponse:
-    """Endpoint de prueba que renderiza el template base con contexto mínimo.
-
-    Sirve para verificar que la integración entre FastAPI, Jinja2 y los
-    archivos estáticos funciona correctamente antes de construir vistas reales.
-
-    Args:
-        request: Objeto Request de FastAPI, requerido por Jinja2 para generar
-                 URLs (url_for) dentro del template.
-
-    Returns:
-        HTMLResponse: Página HTML renderizada desde base.html.
-    """
+async def dashboard(request: Request, db: Session = Depends(get_db)) -> HTMLResponse:
+    """Renderiza el dashboard principal con estadísticas del catálogo."""
+    stats = {
+        "total_ingredients": db.query(Ingredient).filter(Ingredient.is_active == True).count(),
+        "total_products":    db.query(Product).filter(Product.is_active == True).count(),
+        "total_stores":      db.query(Store).filter(Store.is_active == True).count(),
+        "total_categories":  db.query(func.count(func.distinct(Ingredient.category))).scalar(),
+    }
     return templates.TemplateResponse(
-        "base.html",
-        {
-            "request": request,
-            "title": "Dashboard - CPQ Cafeterías",
-            "message": "Sistema inicializado correctamente",
-        },
+        "dashboard.html",
+        {"request": request, "stats": stats},
     )
 
 

@@ -1,0 +1,291 @@
+{# Partial HTMX — inyectado en #result-section tras el POST /costs/calculate-htmx #}
+
+{% if error %}
+{# ── Error ─────────────────────────────────────────────────────────────── #}
+<div class="flex items-start gap-3 bg-red-50 border border-red-200 rounded-xl p-4 text-sm text-red-700">
+  <svg class="w-5 h-5 shrink-0 mt-0.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+    <path stroke-linecap="round" stroke-linejoin="round"
+          d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+  </svg>
+  <span>{{ error }}</span>
+</div>
+
+{% elif breakdown %}
+{# ── Resultado — Alpine para el toggle de detalle ───────────────────────── #}
+<div x-data="{ showDetail: false }">
+
+  {% set totals     = breakdown.totals %}
+  {% set detail     = breakdown.breakdown %}
+  {% set total_cost = breakdown.total_cost %}
+
+  {# Metadatos de categoría: (clave, etiqueta, barra, texto, fondo) #}
+  {% set category_meta = [
+    ('ingredients', 'Ingredientes', 'bg-green-500',  'text-green-700',  'bg-green-50'),
+    ('sub_recipes',  'Sub-recetas',  'bg-blue-500',   'text-blue-700',   'bg-blue-50'),
+    ('packaging',    'Packaging',    'bg-amber',      'text-amber',      'bg-amber/10'),
+    ('labor',        'Labor',        'bg-purple-500', 'text-purple-700', 'bg-purple-50'),
+  ] %}
+
+  {# ── Card principal: total + barras ──────────────────────────────────── #}
+  <div class="bg-white rounded-xl shadow-sm p-6 mb-4">
+
+    {# Encabezado #}
+    <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-3 mb-6">
+      <div>
+        <p class="text-xs font-semibold text-stone-400 uppercase tracking-wider mb-1">
+          Costo de producción
+        </p>
+        <h2 class="text-2xl font-bold text-espresso">{{ breakdown.product_name }}</h2>
+        <div class="flex items-center gap-2 mt-1 flex-wrap">
+          {% if breakdown.size_name %}
+          <span class="px-2 py-0.5 rounded-full text-xs font-medium bg-stone-100 text-stone-600">
+            {{ breakdown.size_name }}
+          </span>
+          {% endif %}
+          {% if breakdown.store_name %}
+          <span class="px-2 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-600">
+            {{ breakdown.store_name }}
+          </span>
+          {% else %}
+          <span class="px-2 py-0.5 rounded-full text-xs font-medium bg-stone-100 text-stone-400">
+            Precio base
+          </span>
+          {% endif %}
+        </div>
+      </div>
+
+      {# Total grande #}
+      <div class="text-right shrink-0">
+        <p class="text-xs text-stone-400 mb-1">Total por porción</p>
+        <p class="text-4xl font-bold text-espresso font-mono">
+          ${{ "%.4f"|format(total_cost) }}
+        </p>
+      </div>
+    </div>
+
+    {# ── Barras por categoría ─────────────────────────────────────────── #}
+    {% set has_bars = namespace(found=false) %}
+    {% for key, label, bar_class, text_class, bg_class in category_meta %}
+      {% if totals[key] and totals[key] > 0 %}{% set has_bars.found = true %}{% endif %}
+    {% endfor %}
+
+    {% if has_bars.found %}
+    <div class="space-y-3">
+      {% for key, label, bar_class, text_class, bg_class in category_meta %}
+      {% set amount = totals[key] %}
+      {% if amount and amount > 0 %}
+      {% set pct = ((amount / total_cost) * 100) | round(1) if total_cost else 0 %}
+      <div>
+        <div class="flex items-center justify-between text-sm mb-1">
+          <div class="flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full {{ bar_class }} shrink-0"></span>
+            <span class="font-medium text-stone-700">{{ label }}</span>
+          </div>
+          <div class="flex items-center gap-3 tabular-nums font-mono">
+            <span class="text-xs font-semibold {{ text_class }} {{ bg_class }}
+                         px-1.5 py-0.5 rounded">
+              {{ pct }}%
+            </span>
+            <span class="text-stone-700">${{ "%.4f"|format(amount) }}</span>
+          </div>
+        </div>
+        <div class="w-full bg-stone-100 rounded-full h-3 overflow-hidden">
+          <div class="{{ bar_class }} h-3 rounded-full transition-all duration-500"
+               style="width: {{ pct }}%"></div>
+        </div>
+      </div>
+      {% endif %}
+      {% endfor %}
+    </div>
+
+    {# Leyenda de totales #}
+    <div class="mt-5 pt-4 border-t border-stone-100 flex flex-wrap gap-x-6 gap-y-2">
+      {% for key, label, bar_class, text_class, bg_class in category_meta %}
+      {% set amount = totals[key] %}
+      {% if amount and amount > 0 %}
+      <div class="flex items-center gap-1.5 text-xs">
+        <span class="w-2 h-2 rounded-full {{ bar_class }}"></span>
+        <span class="text-stone-500">{{ label }}</span>
+        <span class="font-mono font-medium text-stone-700">${{ "%.4f"|format(amount) }}</span>
+      </div>
+      {% endif %}
+      {% endfor %}
+    </div>
+
+    {% else %}
+    <div class="text-center py-8 text-stone-400">
+      <p class="text-sm">El costo total es $0.00</p>
+      <p class="text-xs mt-1">Verifica que el producto tiene receta configurada.</p>
+    </div>
+    {% endif %}
+
+  </div>
+  {# /card principal #}
+
+  {# ── Botón toggle detalle ─────────────────────────────────────────────── #}
+  <button
+    @click="showDetail = !showDetail"
+    class="w-full flex items-center justify-between px-5 py-3 bg-white rounded-xl shadow-sm
+           text-sm font-medium text-espresso hover:bg-stone-50 transition-colors mb-4">
+    <span x-text="showDetail ? 'Ocultar detalle' : 'Ver detalle completo'"></span>
+    <svg class="w-4 h-4 transition-transform duration-200 text-stone-400"
+         :class="showDetail ? 'rotate-180' : ''"
+         fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+    </svg>
+  </button>
+
+  {# ── Detalle completo (tabla expandible) ─────────────────────────────── #}
+  <div x-show="showDetail" x-cloak
+       x-transition:enter="transition ease-out duration-200"
+       x-transition:enter-start="opacity-0 -translate-y-1"
+       x-transition:enter-end="opacity-100 translate-y-0"
+       class="bg-white rounded-xl shadow-sm overflow-hidden">
+
+    {% set ing_lines = detail.ingredients %}
+    {% set sub_lines = detail.sub_recipes %}
+    {% set pkg_lines = detail.packaging %}
+    {% set labor     = detail.labor %}
+    {% set has_detail = ing_lines or sub_lines or pkg_lines or (labor and labor.cost and labor.cost > 0) %}
+
+    {% if not has_detail %}
+    <div class="px-6 py-8 text-center">
+      <p class="text-3xl mb-3">🔧</p>
+      <p class="text-sm font-medium text-stone-600">Detalle por línea en desarrollo</p>
+      <p class="text-xs text-stone-400 mt-1">
+        Los totales por categoría ya están disponibles en las barras de arriba.
+        El desglose por ingrediente individual se activará próximamente.
+      </p>
+    </div>
+    {% endif %}
+
+    {# ── Ingredientes ─────────────────────────────────────────────────── #}
+    {% if ing_lines %}
+    <div class="border-b border-stone-100 last:border-0">
+      <div class="px-6 py-3 bg-stone-50 flex items-center gap-2">
+        <span class="w-2.5 h-2.5 rounded-full bg-green-500"></span>
+        <p class="text-xs font-semibold text-stone-500 uppercase tracking-wider">Ingredientes</p>
+      </div>
+      <table class="min-w-full divide-y divide-stone-100 text-sm">
+        <thead>
+          <tr class="text-xs text-stone-400 font-medium">
+            <th class="px-6 py-2 text-left">Ingrediente</th>
+            <th class="px-6 py-2 text-right">Cantidad</th>
+            <th class="px-6 py-2 text-left">Unidad</th>
+            <th class="px-6 py-2 text-right">Costo/u</th>
+            <th class="px-6 py-2 text-right">Subtotal</th>
+            <th class="px-6 py-2 text-center">Fuente</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-stone-50">
+          {% for item in ing_lines %}
+          <tr class="hover:bg-stone-50">
+            <td class="px-6 py-2.5 font-medium text-espresso">{{ item.name }}</td>
+            <td class="px-6 py-2.5 text-right font-mono tabular-nums">{{ item.quantity }}</td>
+            <td class="px-6 py-2.5 text-stone-500">{{ item.unit }}</td>
+            <td class="px-6 py-2.5 text-right font-mono tabular-nums">${{ "%.6f"|format(item.unit_cost) }}</td>
+            <td class="px-6 py-2.5 text-right font-mono tabular-nums font-medium">${{ "%.4f"|format(item.line_cost) }}</td>
+            <td class="px-6 py-2.5 text-center">
+              {% if item.price_source == 'store' %}
+              <span class="px-1.5 py-0.5 rounded text-xs bg-blue-50 text-blue-600">Tienda</span>
+              {% else %}
+              <span class="px-1.5 py-0.5 rounded text-xs bg-stone-100 text-stone-400">Base</span>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% endif %}
+
+    {# ── Sub-recetas ──────────────────────────────────────────────────── #}
+    {% if sub_lines %}
+    <div class="border-b border-stone-100 last:border-0">
+      <div class="px-6 py-3 bg-stone-50 flex items-center gap-2">
+        <span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span>
+        <p class="text-xs font-semibold text-stone-500 uppercase tracking-wider">Sub-recetas</p>
+      </div>
+      <table class="min-w-full divide-y divide-stone-100 text-sm">
+        <thead>
+          <tr class="text-xs text-stone-400 font-medium">
+            <th class="px-6 py-2 text-left">Sub-receta</th>
+            <th class="px-6 py-2 text-right">Cantidad</th>
+            <th class="px-6 py-2 text-right">Costo/u</th>
+            <th class="px-6 py-2 text-right">Subtotal</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-stone-50">
+          {% for item in sub_lines %}
+          <tr class="hover:bg-stone-50">
+            <td class="px-6 py-2.5 font-medium text-espresso">{{ item.name }}</td>
+            <td class="px-6 py-2.5 text-right font-mono tabular-nums">{{ item.quantity }}</td>
+            <td class="px-6 py-2.5 text-right font-mono tabular-nums">${{ "%.6f"|format(item.unit_cost) }}</td>
+            <td class="px-6 py-2.5 text-right font-mono tabular-nums font-medium">${{ "%.4f"|format(item.line_cost) }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% endif %}
+
+    {# ── Packaging ────────────────────────────────────────────────────── #}
+    {% if pkg_lines %}
+    <div class="border-b border-stone-100 last:border-0">
+      <div class="px-6 py-3 bg-stone-50 flex items-center gap-2">
+        <span class="w-2.5 h-2.5 rounded-full bg-amber"></span>
+        <p class="text-xs font-semibold text-stone-500 uppercase tracking-wider">Packaging</p>
+      </div>
+      <table class="min-w-full divide-y divide-stone-100 text-sm">
+        <thead>
+          <tr class="text-xs text-stone-400 font-medium">
+            <th class="px-6 py-2 text-left">Insumo</th>
+            <th class="px-6 py-2 text-right">Cantidad</th>
+            <th class="px-6 py-2 text-right">Costo/u</th>
+            <th class="px-6 py-2 text-right">Subtotal</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-stone-50">
+          {% for item in pkg_lines %}
+          <tr class="hover:bg-stone-50">
+            <td class="px-6 py-2.5 font-medium text-espresso">{{ item.name }}</td>
+            <td class="px-6 py-2.5 text-right font-mono tabular-nums">{{ item.quantity }}</td>
+            <td class="px-6 py-2.5 text-right font-mono tabular-nums">${{ "%.6f"|format(item.unit_cost) }}</td>
+            <td class="px-6 py-2.5 text-right font-mono tabular-nums font-medium">${{ "%.4f"|format(item.line_cost) }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% endif %}
+
+    {# ── Labor ────────────────────────────────────────────────────────── #}
+    {% if labor and labor.cost and labor.cost > 0 %}
+    <div>
+      <div class="px-6 py-3 bg-stone-50 flex items-center gap-2">
+        <span class="w-2.5 h-2.5 rounded-full bg-purple-500"></span>
+        <p class="text-xs font-semibold text-stone-500 uppercase tracking-wider">Mano de obra</p>
+      </div>
+      <div class="px-6 py-4 grid grid-cols-3 gap-4 text-sm">
+        <div class="text-center">
+          <p class="text-xs text-stone-400 mb-1">Tiempo prep.</p>
+          <p class="font-mono font-bold text-espresso">{{ "%.1f"|format(labor.minutes) }} min</p>
+        </div>
+        <div class="text-center border-x border-stone-100">
+          <p class="text-xs text-stone-400 mb-1">Costo por minuto</p>
+          <p class="font-mono font-bold text-espresso">${{ "%.2f"|format(labor.cost_per_minute) }}</p>
+        </div>
+        <div class="text-center">
+          <p class="text-xs text-stone-400 mb-1">Costo labor total</p>
+          <p class="font-mono font-bold text-purple-700">${{ "%.4f"|format(labor.cost) }}</p>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
+  </div>
+  {# /detalle completo #}
+
+</div>
+{# /Alpine wrapper #}
+{% endif %}

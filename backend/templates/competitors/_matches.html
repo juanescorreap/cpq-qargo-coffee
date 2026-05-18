@@ -1,0 +1,310 @@
+{# Partial HTMX — inyectado en #matches-section #}
+{# Contexto: competitor, matches, our_products_json, comp_products_json, product_sizes_map, error #}
+
+{% if error %}
+<div class="flex items-start gap-3 mb-4 bg-red-50 border border-red-200 rounded-xl p-3 text-sm text-red-700">
+  <svg class="w-4 h-4 shrink-0 mt-0.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+    <path stroke-linecap="round" stroke-linejoin="round"
+          d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+  </svg>
+  <span>{{ error }}</span>
+</div>
+{% endif %}
+
+{# ── Matches existentes ───────────────────────────────────────────────────── #}
+{% if matches %}
+<div class="bg-white rounded-xl border border-stone-100 overflow-x-auto mb-6">
+  <table class="min-w-full divide-y divide-stone-100 text-sm">
+    <thead class="bg-stone-50">
+      <tr class="text-xs text-stone-400 font-semibold uppercase tracking-wider">
+        <th class="px-5 py-3 text-left">Nuestro producto</th>
+        <th class="px-5 py-3 text-left">Tamaño</th>
+        <th class="px-5 py-3 text-center text-stone-300">↔</th>
+        <th class="px-5 py-3 text-left">Producto competidor</th>
+        <th class="px-5 py-3 text-right">Precio</th>
+        <th class="px-5 py-3 text-left">Matcheado por</th>
+        <th class="px-5 py-3 text-left">Notas</th>
+        <th class="px-5 py-3"></th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-stone-50">
+      {% for m in matches %}
+      <tr class="hover:bg-stone-50 transition-colors">
+        <td class="px-5 py-3 font-medium text-espresso">{{ m.our_product_name }}</td>
+        <td class="px-5 py-3">
+          <span class="px-2 py-0.5 rounded-full text-xs bg-stone-100 text-stone-600">
+            {{ m.our_size_name }}
+          </span>
+        </td>
+        <td class="px-5 py-3 text-center text-stone-300 text-base">↔</td>
+        <td class="px-5 py-3 text-stone-700">
+          {{ m.comp_product_name }}
+          {% if m.comp_size %}
+          <span class="text-xs text-stone-400 ml-1">({{ m.comp_size }})</span>
+          {% endif %}
+        </td>
+        <td class="px-5 py-3 text-right font-mono tabular-nums font-semibold text-espresso">
+          {% if m.comp_price %}${{ "{:,.0f}".format(m.comp_price) }}{% else %}—{% endif %}
+        </td>
+        <td class="px-5 py-3 text-stone-500 text-xs">{{ m.matched_by }}</td>
+        <td class="px-5 py-3 text-stone-400 text-xs max-w-[200px]">
+          <span class="truncate block" title="{{ m.notes }}">{{ m.notes or '—' }}</span>
+        </td>
+        <td class="px-5 py-3 text-right">
+          <button
+            hx-delete="/competitors/{{ competitor.id }}/matches-htmx/{{ m.id }}"
+            hx-target="#matches-section"
+            hx-swap="innerHTML"
+            hx-indicator="#page-spinner"
+            hx-confirm="¿Eliminar este match?"
+            class="p-1.5 rounded-lg text-stone-300 hover:text-red-500 hover:bg-red-50 transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+            </svg>
+          </button>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% else %}
+<div class="bg-white rounded-xl border border-stone-100 py-12 text-center text-stone-400 mb-6">
+  <p class="text-3xl mb-3">🔗</p>
+  <p class="text-sm font-medium text-stone-500">Sin matches registrados</p>
+  <p class="text-xs mt-1">Vincula nuestros productos con los del competidor para comparar precios.</p>
+</div>
+{% endif %}
+
+{# ── Formulario nuevo match ───────────────────────────────────────────────── #}
+<div class="bg-white rounded-xl border border-stone-200 p-5"
+     x-data="matchForm(
+       {{ our_products_json | tojson }},
+       {{ comp_products_json | tojson }},
+       {{ product_sizes_map | tojson }}
+     )">
+
+  <p class="text-xs font-semibold text-stone-500 uppercase tracking-wider mb-5">
+    Crear nuevo match
+  </p>
+
+  <form
+    hx-post="/competitors/{{ competitor.id }}/matches-htmx"
+    hx-target="#matches-section"
+    hx-swap="innerHTML"
+    hx-indicator="#page-spinner">
+
+    {# Hidden inputs — Alpine los actualiza reactivamente #}
+    <input type="hidden" name="our_product_id"       :value="selectedProduct ? selectedProduct.id : ''">
+    <input type="hidden" name="competitor_product_id" :value="selectedCp ? selectedCp.id : ''">
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-5">
+
+      {# ── Columna izquierda: nuestro producto ─────────────────────────── #}
+      <div class="space-y-4">
+        <div class="flex items-center gap-2 text-xs font-semibold text-stone-400 uppercase tracking-wider pb-2 border-b border-stone-100">
+          <span class="w-5 h-5 rounded-full bg-espresso/10 text-espresso flex items-center justify-center font-bold text-[10px]">N</span>
+          Nuestro producto
+        </div>
+
+        {# Combobox: nuestro producto #}
+        <div>
+          <label class="block text-xs font-medium text-stone-500 mb-1.5">
+            Producto <span class="text-red-400">*</span>
+          </label>
+          <div class="relative" @click.outside="productOpen = false">
+            <div class="relative">
+              <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-stone-400 pointer-events-none"
+                   fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                      d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 104.65 16.65 7.5 7.5 0 0016.65 16.65z"/>
+              </svg>
+              <input type="text"
+                     x-model="productQuery"
+                     @focus="productOpen = true"
+                     @input="productOpen = true; selectedProduct = null"
+                     :placeholder="selectedProduct ? selectedProduct.name : 'Buscar producto…'"
+                     class="w-full pl-9 pr-4 py-2 text-sm border rounded-lg bg-white
+                            focus:outline-none focus:ring-2 focus:ring-amber/40 focus:border-amber
+                            transition-colors"
+                     :class="selectedProduct ? 'border-green-300 bg-green-50/40' : 'border-stone-200'">
+              <span x-show="selectedProduct"
+                    class="absolute right-2 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-green-500"></span>
+            </div>
+
+            {# Dropdown list #}
+            <div x-show="productOpen"
+                 x-cloak
+                 x-transition:enter="transition ease-out duration-100"
+                 x-transition:enter-start="opacity-0 -translate-y-1"
+                 x-transition:enter-end="opacity-100 translate-y-0"
+                 class="absolute z-30 mt-1 w-full bg-white rounded-xl shadow-lg border border-stone-100
+                        max-h-52 overflow-y-auto">
+              <template x-if="filteredProducts.length === 0">
+                <div class="px-4 py-3 text-sm text-stone-400 text-center">Sin resultados</div>
+              </template>
+              <template x-for="p in filteredProducts" :key="p.id">
+                <div
+                  @click="selectProduct(p)"
+                  class="px-4 py-2.5 text-sm cursor-pointer hover:bg-cream transition-colors
+                         flex items-center justify-between"
+                  :class="selectedProduct?.id === p.id ? 'bg-amber/5 text-espresso font-medium' : 'text-stone-700'">
+                  <span x-text="p.name"></span>
+                  <svg x-show="selectedProduct?.id === p.id"
+                       class="w-3.5 h-3.5 text-green-500 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd"
+                          d="M16.707 5.293a1 1 0 010 1.414L8.414 15l-4.121-4.121a1 1 0 011.414-1.414L8.414 12.172l6.879-6.879a1 1 0 011.414 0z"
+                          clip-rule="evenodd"/>
+                  </svg>
+                </div>
+              </template>
+            </div>
+          </div>
+        </div>
+
+        {# Tamaño (reactive select) #}
+        <div>
+          <label class="block text-xs font-medium text-stone-500 mb-1.5">
+            Tamaño <span class="text-red-400">*</span>
+          </label>
+          <select
+            name="our_size_id"
+            x-model="selectedSizeId"
+            :disabled="!selectedProduct || availableSizes.length === 0"
+            class="w-full py-2 px-3 text-sm border border-stone-200 rounded-lg bg-white
+                   focus:outline-none focus:ring-2 focus:ring-amber/40 focus:border-amber
+                   disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
+            <option value="" x-text="selectedProduct ? (availableSizes.length ? 'Seleccionar tamaño…' : 'Sin tamaños') : 'Primero elige un producto'"></option>
+            <template x-for="s in availableSizes" :key="s.id">
+              <option :value="s.id" x-text="s.name"></option>
+            </template>
+          </select>
+        </div>
+      </div>
+
+      {# ── Columna derecha: producto competidor ────────────────────────── #}
+      <div class="space-y-4">
+        <div class="flex items-center gap-2 text-xs font-semibold text-stone-400 uppercase tracking-wider pb-2 border-b border-stone-100">
+          <span class="w-5 h-5 rounded-full bg-amber/10 text-amber flex items-center justify-center font-bold text-[10px]">C</span>
+          Producto del competidor
+        </div>
+
+        {# Combobox: producto competidor #}
+        <div>
+          <label class="block text-xs font-medium text-stone-500 mb-1.5">
+            Producto competidor <span class="text-red-400">*</span>
+          </label>
+
+          {% if not comp_products_json %}
+          <div class="py-3 px-4 text-xs text-stone-400 bg-stone-50 rounded-lg border border-stone-100">
+            No hay productos scrapeados — agrega productos en la pestaña "Productos Scrapeados".
+          </div>
+          {% else %}
+          <div class="relative" @click.outside="cpOpen = false">
+            <div class="relative">
+              <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-stone-400 pointer-events-none"
+                   fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                      d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 104.65 16.65 7.5 7.5 0 0016.65 16.65z"/>
+              </svg>
+              <input type="text"
+                     x-model="cpQuery"
+                     @focus="cpOpen = true"
+                     @input="cpOpen = true; selectedCp = null"
+                     :placeholder="selectedCp ? selectedCp.label : 'Buscar producto del competidor…'"
+                     class="w-full pl-9 pr-4 py-2 text-sm border rounded-lg bg-white
+                            focus:outline-none focus:ring-2 focus:ring-amber/40 focus:border-amber
+                            transition-colors"
+                     :class="selectedCp ? 'border-green-300 bg-green-50/40' : 'border-stone-200'">
+              <span x-show="selectedCp"
+                    class="absolute right-2 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-green-500"></span>
+            </div>
+
+            <div x-show="cpOpen"
+                 x-cloak
+                 x-transition:enter="transition ease-out duration-100"
+                 x-transition:enter-start="opacity-0 -translate-y-1"
+                 x-transition:enter-end="opacity-100 translate-y-0"
+                 class="absolute z-30 mt-1 w-full bg-white rounded-xl shadow-lg border border-stone-100
+                        max-h-52 overflow-y-auto">
+              <template x-if="filteredCp.length === 0">
+                <div class="px-4 py-3 text-sm text-stone-400 text-center">Sin resultados</div>
+              </template>
+              <template x-for="cp in filteredCp" :key="cp.id">
+                <div
+                  @click="selectCp(cp)"
+                  class="px-4 py-2.5 text-sm cursor-pointer hover:bg-cream transition-colors
+                         flex items-center justify-between gap-2"
+                  :class="selectedCp?.id === cp.id ? 'bg-amber/5 text-espresso font-medium' : 'text-stone-700'">
+                  <span x-text="cp.label" class="flex-1 min-w-0 truncate"></span>
+                  <svg x-show="selectedCp?.id === cp.id"
+                       class="w-3.5 h-3.5 text-green-500 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd"
+                          d="M16.707 5.293a1 1 0 010 1.414L8.414 15l-4.121-4.121a1 1 0 011.414-1.414L8.414 12.172l6.879-6.879a1 1 0 011.414 0z"
+                          clip-rule="evenodd"/>
+                  </svg>
+                </div>
+              </template>
+            </div>
+          </div>
+          {% endif %}
+        </div>
+
+        {# Matcheado por #}
+        <div>
+          <label class="block text-xs font-medium text-stone-500 mb-1.5">
+            Matcheado por <span class="text-red-400">*</span>
+          </label>
+          <input type="text" name="matched_by" required placeholder="Tu nombre"
+                 class="w-full py-2 px-3 text-sm border border-stone-200 rounded-lg bg-white
+                        focus:outline-none focus:ring-2 focus:ring-amber/40 focus:border-amber">
+        </div>
+      </div>
+
+    </div>
+
+    {# Notas (full width) #}
+    <div class="mb-5">
+      <label class="block text-xs font-medium text-stone-500 mb-1.5">
+        Notas
+        <span class="text-stone-300 font-normal ml-1">— justificación del match</span>
+      </label>
+      <textarea name="notes" rows="2" placeholder="Mismo tamaño y preparación estándar…"
+                class="w-full py-2 px-3 text-sm border border-stone-200 rounded-lg bg-white
+                       focus:outline-none focus:ring-2 focus:ring-amber/40 focus:border-amber
+                       resize-none"></textarea>
+    </div>
+
+    {# Resumen de selección + botón #}
+    <div class="flex items-center justify-between gap-4 pt-4 border-t border-stone-100">
+
+      {# Preview del match #}
+      <div class="text-xs text-stone-400 flex items-center gap-2 flex-wrap">
+        <span x-show="selectedProduct" class="font-medium text-espresso" x-text="selectedProduct?.name"></span>
+        <span x-show="selectedProduct && selectedSizeId" class="text-stone-300">·</span>
+        <span x-show="selectedSizeId" class="font-medium text-stone-500"
+              x-text="availableSizes.find(s => s.id == selectedSizeId)?.name"></span>
+        <span x-show="selectedProduct && selectedCp" class="text-stone-300 mx-1">↔</span>
+        <span x-show="selectedCp" class="font-medium text-amber" x-text="selectedCp?.label"></span>
+        <span x-show="!selectedProduct && !selectedCp" class="italic">
+          Selecciona nuestro producto y el del competidor…
+        </span>
+      </div>
+
+      <button
+        type="submit"
+        :disabled="!selectedProduct || !selectedSizeId || !selectedCp"
+        class="shrink-0 px-5 py-2 text-sm font-semibold text-beige bg-espresso rounded-lg
+               hover:bg-espresso-light transition-colors
+               disabled:opacity-40 disabled:cursor-not-allowed
+               htmx-request:opacity-60 htmx-request:cursor-not-allowed">
+        Crear Match
+      </button>
+
+    </div>
+
+  </form>
+</div>
+{# /matchForm x-data #}

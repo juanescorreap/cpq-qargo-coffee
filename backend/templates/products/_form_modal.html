@@ -1,0 +1,186 @@
+{# Modal creación/edición de producto — inyectado en #modal-container por HTMX #}
+<div
+  x-data="{ show: true }"
+  x-show="show"
+  x-transition:enter="transition ease-out duration-200"
+  x-transition:enter-start="opacity-0"
+  x-transition:enter-end="opacity-100"
+  x-transition:leave="transition ease-in duration-150"
+  x-transition:leave-start="opacity-100"
+  x-transition:leave-end="opacity-0"
+  @keydown.escape.window="show = false; setTimeout(() => { document.getElementById('modal-container').innerHTML = '' }, 200)"
+  class="fixed inset-0 z-50 flex items-center justify-center p-4">
+
+  {# Backdrop #}
+  <div class="absolute inset-0 bg-black/50 backdrop-blur-sm"
+       @click="show = false; setTimeout(() => { document.getElementById('modal-container').innerHTML = '' }, 200)">
+  </div>
+
+  {# Panel #}
+  <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto"
+       x-show="show"
+       x-transition:enter="transition ease-out duration-200"
+       x-transition:enter-start="opacity-0 translate-y-2 scale-95"
+       x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+       x-transition:leave="transition ease-in duration-150"
+       x-transition:leave-start="opacity-100 translate-y-0 scale-100"
+       x-transition:leave-end="opacity-0 translate-y-2 scale-95"
+       @click.stop>
+
+    {# Header sticky #}
+    <div class="flex items-center justify-between px-6 py-4 border-b border-stone-200
+                sticky top-0 bg-white rounded-t-2xl z-10">
+      <div>
+        <h2 class="text-xl font-bold text-espresso">
+          {% if product %}Editar producto{% else %}Nuevo producto{% endif %}
+        </h2>
+        {% if product %}
+        <p class="text-xs text-stone-400 mt-0.5">ID #{{ product.id }}</p>
+        {% endif %}
+      </div>
+      <button
+        @click="show = false; setTimeout(() => { document.getElementById('modal-container').innerHTML = '' }, 200)"
+        class="p-2 rounded-lg text-stone-400 hover:text-stone-700 hover:bg-stone-100 transition-colors"
+        aria-label="Cerrar">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+
+    {# Form #}
+    <form
+      {% if product %}
+        hx-put="/products/{{ product.id }}"
+      {% else %}
+        hx-post="/products"
+      {% endif %}
+      hx-target="#products-table"
+      hx-indicator="#page-spinner"
+      class="px-6 py-5">
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-5 gap-y-4">
+
+        {# Nombre — fila completa #}
+        <div class="sm:col-span-2">
+          <label class="block text-sm font-medium text-espresso mb-1.5">
+            Nombre <span class="text-red-500">*</span>
+          </label>
+          <input type="text" name="name" required autofocus
+                 value="{{ product.name if product else '' }}"
+                 placeholder="ej: Cappuccino, Syrup de vainilla casero"
+                 class="w-full px-3 py-2 text-sm border border-stone-200 rounded-lg
+                        focus:outline-none focus:ring-2 focus:ring-amber/40 focus:border-amber">
+        </div>
+
+        {# Categoría #}
+        <div>
+          <label class="block text-sm font-medium text-espresso mb-1.5">Categoría</label>
+          <input type="text" name="category"
+                 value="{{ product.category if product else '' }}"
+                 placeholder="ej: bebidas_calientes"
+                 list="category-datalist"
+                 class="w-full px-3 py-2 text-sm border border-stone-200 rounded-lg
+                        focus:outline-none focus:ring-2 focus:ring-amber/40 focus:border-amber">
+          <datalist id="category-datalist">
+            {% for cat in categories %}
+            <option value="{{ cat }}">
+            {% endfor %}
+          </datalist>
+        </div>
+
+        {# Tipo: Sub-receta #}
+        <div class="flex items-end pb-2">
+          <label class="flex items-center gap-3 cursor-pointer select-none">
+            <input type="checkbox" name="is_sub_recipe" value="true"
+                   {% if product and product.is_sub_recipe %}checked{% endif %}
+                   class="w-4 h-4 rounded border-stone-300 text-espresso
+                          focus:ring-2 focus:ring-amber/40 accent-espresso">
+            <span class="text-sm font-medium text-espresso">Es sub-receta</span>
+          </label>
+          <p class="ml-7 text-xs text-stone-400 leading-tight">
+            Componente batch reutilizable en otras recetas
+          </p>
+        </div>
+
+        {# ── Sección: dimensiones ──────────────────────────────────────── #}
+        <div class="sm:col-span-2">
+          <p class="text-xs font-semibold text-stone-400 uppercase tracking-wider mb-3 mt-1
+                    border-b border-stone-100 pb-2">
+            Dimensiones y producción
+          </p>
+        </div>
+
+        {# Tamaño base #}
+        <div>
+          <label class="block text-sm font-medium text-espresso mb-1.5">Tamaño base (oz)</label>
+          <div class="relative">
+            <input type="number" name="base_size_oz" step="0.5" min="0.5"
+                   value="{{ product.base_size_oz if product and product.base_size_oz else '' }}"
+                   placeholder="ej: 12"
+                   class="w-full pr-10 px-3 py-2 text-sm border border-stone-200 rounded-lg
+                          focus:outline-none focus:ring-2 focus:ring-amber/40 focus:border-amber">
+            <span class="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 text-sm pointer-events-none">oz</span>
+          </div>
+          <p class="mt-1 text-xs text-stone-400">Tamaño de referencia para escalar recetas</p>
+        </div>
+
+        {# Tiempo de preparación #}
+        <div>
+          <label class="block text-sm font-medium text-espresso mb-1.5">Tiempo de preparación</label>
+          <div class="relative">
+            <input type="number" name="prep_time_minutes" step="0.5" min="0"
+                   value="{{ product.prep_time_minutes if product and product.prep_time_minutes else '' }}"
+                   placeholder="ej: 3.5"
+                   class="w-full pr-12 px-3 py-2 text-sm border border-stone-200 rounded-lg
+                          focus:outline-none focus:ring-2 focus:ring-amber/40 focus:border-amber">
+            <span class="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 text-sm pointer-events-none">min</span>
+          </div>
+        </div>
+
+        {# ── Sección: costos ───────────────────────────────────────────── #}
+        <div class="sm:col-span-2">
+          <p class="text-xs font-semibold text-stone-400 uppercase tracking-wider mb-3 mt-1
+                    border-b border-stone-100 pb-2">
+            Costos de labor
+          </p>
+        </div>
+
+        {# Costo de labor por minuto #}
+        <div class="sm:col-span-2 sm:max-w-xs">
+          <label class="block text-sm font-medium text-espresso mb-1.5">
+            Costo de labor por minuto
+          </label>
+          <div class="relative">
+            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-stone-400 text-sm pointer-events-none">$</span>
+            <input type="number" name="labor_cost_per_minute" step="0.01" min="0"
+                   value="{{ product.labor_cost_per_minute if product and product.labor_cost_per_minute else '0' }}"
+                   placeholder="0.00"
+                   class="w-full pl-7 pr-3 py-2 text-sm border border-stone-200 rounded-lg
+                          focus:outline-none focus:ring-2 focus:ring-amber/40 focus:border-amber">
+          </div>
+          <p class="mt-1 text-xs text-stone-400">
+            Costo total de labor = tiempo × costo/min
+          </p>
+        </div>
+
+      </div>
+
+      {# Footer sticky con botones #}
+      <div class="flex justify-end gap-3 mt-6 pt-4 border-t border-stone-100">
+        <button type="button"
+                @click="show = false; setTimeout(() => { document.getElementById('modal-container').innerHTML = '' }, 200)"
+                class="px-4 py-2 text-sm font-medium text-stone-600 bg-stone-100
+                       rounded-lg hover:bg-stone-200 transition-colors">
+          Cancelar
+        </button>
+        <button type="submit"
+                class="px-5 py-2 text-sm font-semibold text-beige bg-espresso
+                       rounded-lg hover:bg-espresso-light transition-colors">
+          {% if product %}Guardar cambios{% else %}Crear producto{% endif %}
+        </button>
+      </div>
+
+    </form>
+  </div>
+</div>

@@ -1,6 +1,10 @@
-from typing import List, Optional
+from math import ceil
+from pathlib import Path
+from typing import Any, List, Optional
 
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
+from fastapi.responses import HTMLResponse
+from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 
 from backend.database import get_db
@@ -9,26 +13,46 @@ from backend.schemas.ingredient import IngredientCreate, IngredientResponse, Ing
 
 router = APIRouter(prefix="/api/ingredients", tags=["ingredients"])
 
+_templates = Jinja2Templates(
+    directory=Path(__file__).resolve().parent.parent / "templates"
+)
 
-@router.get("", response_model=List[IngredientResponse])
+
+@router.get("", response_model=None)
 def list_ingredients(
+    request: Request,
     category: Optional[str] = Query(None, description="Filter by category"),
     search: Optional[str] = Query(None, description="Search in name (case-insensitive)"),
     is_active: bool = Query(True, description="Filter by active status"),
     skip: int = Query(0, ge=0, description="Number of records to skip"),
     limit: int = Query(100, ge=1, le=1000, description="Maximum number of records to return"),
     db: Session = Depends(get_db),
-) -> List[IngredientResponse]:
-    """Return a paginated list of ingredients with optional filters."""
+) -> Any:
+    """Return ingredients as JSON, or as HTML table partial when called from HTMX."""
     q = db.query(Ingredient).filter(Ingredient.is_active == is_active)
 
     if category:
         q = q.filter(Ingredient.category == category)
-
     if search:
         q = q.filter(Ingredient.name.ilike(f"%{search}%"))
 
-    return q.order_by(Ingredient.name).offset(skip).limit(limit).all()
+    q = q.order_by(Ingredient.name)
+
+    if request.headers.get("HX-Request"):
+        total = q.count()
+        items = q.offset(skip).limit(limit).all()
+        return _templates.TemplateResponse("ingredients/_table.html", {
+            "request": request,
+            "ingredients": items,
+            "search": search or "",
+            "category": category or "",
+            "is_active": "true" if is_active else "false",
+            "page": skip // limit + 1 if limit else 1,
+            "total": total,
+            "total_pages": max(1, ceil(total / limit)),
+        })
+
+    return q.offset(skip).limit(limit).all()
 
 
 @router.get("/{ingredient_id}", response_model=IngredientResponse)

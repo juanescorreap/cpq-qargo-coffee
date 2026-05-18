@@ -1,0 +1,16 @@
+{# Partial HTMX — reemplaza #size-wrapper cuando cambia el producto #}
+<div id="size-wrapper">
+  <select name="size_id"
+          class="w-full py-2 px-3 text-sm border border-stone-200 rounded-lg bg-white
+                 focus:outline-none focus:ring-2 focus:ring-amber/40 focus:border-amber">
+    <option value="">Tamaño base (scale 1×)</option>
+    {% for size in sizes %}
+    <option value="{{ size.id }}">
+      {{ size.size_name or 'Sin nombre' }}
+      {% if size.volume_oz %} — {{ "%.0f"|format(size.volume_oz|float) }} oz{% endif %}
+      {% if size.is_default %} (base){% endif %}
+      · ×{{ "%.2f"|format(size.scale_factor|float) }}
+    </option>
+    {% endfor %}
+  </select>
+</div>

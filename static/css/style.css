@@ -1,153 +1,354 @@
 /* ==========================================================================
-   Variables CSS — Tema Cafetería
+   NOTA: Este proyecto usa Tailwind CDN, que NO soporta @apply en archivos
+   externos. Los componentes se definen aquí con CSS plano equivalente.
+   Para usar @apply se necesita Tailwind CLI + PostCSS (build step).
+   ========================================================================== */
+
+/* Alpine.js — ocultar elementos antes de inicializar para evitar flash */
+[x-cloak] { display: none !important; }
+
+/* ==========================================================================
+   HTMX — Barra de progreso indeterminada (#page-spinner)
+   ========================================================================== */
+#page-spinner {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  width: 100%;
+  background-color: #FF6F00;
+  transform: scaleX(0);
+  transform-origin: left;
+  opacity: 0;
+}
+
+#page-spinner.htmx-request {
+  opacity: 1;
+  animation: progress-indeterminate 1.4s ease-in-out infinite;
+}
+
+@keyframes progress-indeterminate {
+  0%   { transform: scaleX(0); transform-origin: left;  }
+  49%  { transform: scaleX(1); transform-origin: left;  }
+  50%  { transform: scaleX(1); transform-origin: right; }
+  100% { transform: scaleX(0); transform-origin: right; }
+}
+
+/* ==========================================================================
+   Variables CSS — sincronizadas con tailwind.config en base.html
    ========================================================================== */
 :root {
-  /* Paleta principal */
-  --color-espresso:   #2c1810; /* marrón muy oscuro, títulos */
-  --color-coffee:     #6f4e37; /* marrón café, primary */
-  --color-latte:      #c4a882; /* marrón claro, acentos */
-  --color-cream:      #f5f0e8; /* crema, fondos suaves */
-  --color-beige:      #e8dcc8; /* beige, bordes y separadores */
+  /* Paleta principal (debe coincidir con tailwind.config.theme.extend.colors) */
+  --espresso:       #3E2723;
+  --espresso-light: #5D4037;
+  --beige:          #D7CCC8;
+  --beige-dark:     #BCAAA4;
+  --amber:          #FF6F00;
+  --amber-light:    #FFA000;
+  --cream:          #FFF8F0;
 
-  /* Neutros */
-  --color-white:      #ffffff;
-  --color-gray-light: #f9f6f2;
-  --color-gray:       #9e8c7a;
-  --color-gray-dark:  #4a3f35;
+  /* Neutros de apoyo */
+  --white:          #ffffff;
+  --stone-50:       #fafaf9;
+  --stone-100:      #f5f5f4;
+  --stone-200:      #e7e5e4;
+  --stone-400:      #a8a29e;
+  --stone-500:      #78716c;
+  --stone-600:      #57534e;
+  --stone-700:      #44403c;
 
   /* Semánticos */
-  --color-success:    #4caf7d;
-  --color-warning:    #e8a838;
-  --color-error:      #d64045;
+  --success:        #16a34a;
+  --success-bg:     #dcfce7;
+  --warning:        #d97706;
+  --warning-bg:     #fef3c7;
+  --error:          #dc2626;
+  --error-bg:       #fee2e2;
 
   /* Tipografía */
   --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
-  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+  --font-mono: ui-monospace, 'Cascadia Code', 'Source Code Pro', monospace;
 
-  /* Espaciado base */
-  --radius-sm: 4px;
-  --radius-md: 8px;
-  --radius-lg: 16px;
+  /* Forma */
+  --radius-sm: 0.375rem;   /* rounded */
+  --radius-md: 0.5rem;     /* rounded-lg */
+  --radius-lg: 0.75rem;    /* rounded-xl */
+  --radius-xl: 1rem;       /* rounded-2xl */
 
   /* Sombras */
-  --shadow-sm: 0 1px 3px rgba(44, 24, 16, 0.08);
-  --shadow-md: 0 4px 12px rgba(44, 24, 16, 0.12);
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.10), 0 2px 4px -2px rgb(0 0 0 / 0.10);
 }
 
 /* ==========================================================================
    Reset mínimo
    ========================================================================== */
-*, *::before, *::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
+*, *::before, *::after { box-sizing: border-box; }
 
-html {
-  font-size: 16px;
-  -webkit-text-size-adjust: 100%;
-}
+html { -webkit-text-size-adjust: 100%; }
 
 body {
   font-family: var(--font-sans);
-  background-color: var(--color-cream);
-  color: var(--color-espresso);
+  background-color: var(--cream);
+  color: var(--espresso);
   line-height: 1.6;
   min-height: 100vh;
 }
 
-img, video, svg {
-  display: block;
-  max-width: 100%;
-}
+img, video, svg { display: block; max-width: 100%; }
 
-input, button, textarea, select {
-  font: inherit;
-}
-
-a {
-  color: var(--color-coffee);
-  text-decoration: none;
-}
-
-a:hover {
-  text-decoration: underline;
-}
+input, button, textarea, select { font: inherit; }
 
 /* ==========================================================================
-   Utilidades de layout
+   Componente: .btn
+   Equivalente a: inline-flex items-center gap-2 px-4 py-2 rounded-lg
+                  font-medium text-sm transition-colors cursor-pointer border-0
    ========================================================================== */
-.container {
-  width: 100%;
-  max-width: 1200px;
-  margin-inline: auto;
-  padding-inline: 1.5rem;
-}
-
-.flex        { display: flex; }
-.flex-col    { flex-direction: column; }
-.items-center { align-items: center; }
-.justify-between { justify-content: space-between; }
-.gap-2       { gap: 0.5rem; }
-.gap-4       { gap: 1rem; }
-
-/* ==========================================================================
-   Utilidades de texto
-   ========================================================================== */
-.text-sm     { font-size: 0.875rem; }
-.text-lg     { font-size: 1.125rem; }
-.text-xl     { font-size: 1.25rem; }
-.font-bold   { font-weight: 700; }
-.text-muted  { color: var(--color-gray); }
-
-/* ==========================================================================
-   Utilidades de espaciado
-   ========================================================================== */
-.mt-4  { margin-top: 1rem; }
-.mb-4  { margin-bottom: 1rem; }
-.p-4   { padding: 1rem; }
-.py-2  { padding-block: 0.5rem; }
-.px-4  { padding-inline: 1rem; }
-
-/* ==========================================================================
-   Componentes base
-   ========================================================================== */
-
-/* Tarjeta */
-.card {
-  background: var(--color-white);
-  border: 1px solid var(--color-beige);
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border: none;
   border-radius: var(--radius-md);
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.25rem;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background-color 150ms ease, color 150ms ease, opacity 150ms ease;
+  white-space: nowrap;
+  user-select: none;
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--amber);
+  outline-offset: 2px;
+}
+
+/* Primario: espresso oscuro (equivale a bg-espresso text-beige hover:bg-espresso-light) */
+.btn-primary {
+  background-color: var(--espresso);
+  color: var(--beige);
+}
+.btn-primary:hover  { background-color: var(--espresso-light); }
+
+/* Secundario: fondo neutro claro (equivale a bg-stone-100 text-stone-700 hover:bg-stone-200) */
+.btn-secondary {
+  background-color: var(--stone-100);
+  color: var(--stone-700);
+}
+.btn-secondary:hover { background-color: var(--stone-200); }
+
+/* Peligro: rojo semántico */
+.btn-danger {
+  background-color: var(--error-bg);
+  color: var(--error);
+}
+.btn-danger:hover { filter: brightness(0.95); }
+
+/* Variante ghost / outline */
+.btn-ghost {
+  background-color: transparent;
+  color: var(--stone-600);
+  border: 1px solid var(--stone-200);
+}
+.btn-ghost:hover {
+  background-color: var(--stone-50);
+  border-color: var(--stone-400);
+}
+
+/* Tamaños */
+.btn-sm { padding: 0.25rem 0.625rem; font-size: 0.75rem; }
+.btn-lg { padding: 0.625rem 1.5rem;  font-size: 1rem; }
+
+/* ==========================================================================
+   Componente: .input
+   Equivalente a: w-full px-3 py-2 text-sm border border-stone-200 rounded-lg
+                  focus:outline-none focus:ring-2 focus:ring-amber/40 focus:border-amber
+   ========================================================================== */
+.input {
+  display: block;
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: var(--espresso);
+  background-color: var(--white);
+  border: 1px solid var(--stone-200);
+  border-radius: var(--radius-md);
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+  appearance: none;
+}
+
+.input::placeholder { color: var(--stone-400); }
+
+.input:focus {
+  outline: none;
+  border-color: var(--amber);
+  box-shadow: 0 0 0 3px rgb(255 111 0 / 0.15);
+}
+
+.input:disabled {
+  background-color: var(--stone-50);
+  color: var(--stone-400);
+  cursor: not-allowed;
+}
+
+/* Select hereda .input */
+select.input { padding-right: 2.5rem; cursor: pointer; }
+
+/* Tamaños */
+.input-sm { padding: 0.25rem 0.5rem; font-size: 0.75rem; }
+.input-lg { padding: 0.625rem 1rem;  font-size: 1rem; }
+
+/* ==========================================================================
+   Componente: .card
+   Equivalente a: bg-white rounded-xl shadow-sm border border-stone-100 p-6
+   ========================================================================== */
+.card {
+  background: var(--white);
+  border: 1px solid var(--stone-200);
+  border-radius: var(--radius-lg);
   padding: 1.5rem;
   box-shadow: var(--shadow-sm);
 }
 
-/* Botón primario */
-.btn {
-  display: inline-flex;
+.card-header {
+  display: flex;
   align-items: center;
-  gap: 0.4rem;
-  padding: 0.5rem 1.25rem;
-  border: none;
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-  font-weight: 600;
-  transition: opacity 0.15s ease;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--stone-100);
 }
 
-.btn:hover       { opacity: 0.88; }
-.btn-primary     { background: var(--color-coffee); color: var(--color-white); }
-.btn-secondary   { background: var(--color-beige);  color: var(--color-espresso); }
+.card-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--espresso);
+}
 
-/* Badge de estado */
-.badge {
-  display: inline-block;
-  padding: 0.2rem 0.6rem;
-  border-radius: 999px;
+/* ==========================================================================
+   Componente: tabla responsive
+   Equivalente a: overflow-x-auto + table min-w-full divide-y divide-stone-200
+   ========================================================================== */
+.table-responsive {
+  overflow-x: auto;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.table {
+  min-width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.table thead { background-color: var(--stone-50); }
+
+.table th {
+  padding: 0.75rem 1rem;
+  text-align: left;
   font-size: 0.75rem;
   font-weight: 600;
+  color: var(--stone-500);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
 }
 
-.badge-success { background: #d4f3e4; color: #1d6f42; }
-.badge-warning { background: #fef3cd; color: #7d5a00; }
-.badge-error   { background: #fde8e8; color: #8b1a1a; }
+.table th.right,
+.table td.right { text-align: right; }
+
+.table td {
+  padding: 0.75rem 1rem;
+  color: var(--stone-700);
+  border-top: 1px solid var(--stone-100);
+  vertical-align: middle;
+}
+
+.table tbody tr:hover { background-color: var(--stone-50); }
+
+/* ==========================================================================
+   Componente: .badge
+   ========================================================================== */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.125rem 0.625rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.badge-success { background: var(--success-bg); color: var(--success); }
+.badge-warning { background: var(--warning-bg); color: var(--warning); }
+.badge-error   { background: var(--error-bg);   color: var(--error);   }
+.badge-neutral { background: var(--stone-100);  color: var(--stone-600); }
+.badge-primary { background: var(--espresso);   color: var(--beige);  }
+
+/* ==========================================================================
+   Componente: .form-group / .label
+   ========================================================================== */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--espresso);
+}
+
+.label-hint {
+  font-size: 0.75rem;
+  color: var(--stone-400);
+  margin-top: 0.25rem;
+}
+
+.label-required::after {
+  content: ' *';
+  color: var(--error);
+}
+
+/* ==========================================================================
+   Componente: .empty-state
+   ========================================================================== */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 5rem 1.5rem;
+  text-align: center;
+  color: var(--stone-400);
+}
+
+.empty-state-icon  { font-size: 3rem; margin-bottom: 1rem; line-height: 1; }
+.empty-state-title { font-size: 1.125rem; font-weight: 600; color: var(--espresso); }
+.empty-state-desc  { font-size: 0.875rem; margin-top: 0.25rem; }
+
+/* ==========================================================================
+   Utilidades de apoyo (solo las que Tailwind CDN no cubre out-of-the-box)
+   ========================================================================== */
+
+/* Números monoespaciados alineados */
+.tabular { font-variant-numeric: tabular-nums; }
+
+/* Truncado con ellipsis */
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Divisor horizontal */
+.divider {
+  border: none;
+  border-top: 1px solid var(--stone-200);
+  margin-block: 1rem;
+}

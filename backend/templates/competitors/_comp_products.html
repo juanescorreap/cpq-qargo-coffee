@@ -1,0 +1,182 @@
+{# Partial HTMX — inyectado en #comp-products-section #}
+
+<div x-data="{ showForm: false }">
+
+  {% if error %}
+  <div class="flex items-start gap-3 mb-4 bg-red-50 border border-red-200 rounded-xl p-3 text-sm text-red-700">
+    <svg class="w-4 h-4 shrink-0 mt-0.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round"
+            d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+    </svg>
+    <span>{{ error }}</span>
+  </div>
+  {% endif %}
+
+  {# ── Botón agregar ────────────────────────────────────────────────────── #}
+  <div class="flex justify-end mb-4">
+    <button
+      @click="showForm = !showForm"
+      class="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold
+             bg-espresso text-beige hover:bg-espresso-light transition-colors">
+      <svg class="w-4 h-4 transition-transform duration-150" :class="showForm ? 'rotate-45' : ''"
+           fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
+      </svg>
+      <span x-text="showForm ? 'Cancelar' : 'Scraper Manual'"></span>
+    </button>
+  </div>
+
+  {# ── Formulario manual ────────────────────────────────────────────────── #}
+  <div x-show="showForm" x-cloak
+       x-transition:enter="transition ease-out duration-150"
+       x-transition:enter-start="opacity-0 -translate-y-1"
+       x-transition:enter-end="opacity-100 translate-y-0"
+       class="bg-stone-50 border border-stone-200 rounded-xl p-5 mb-5">
+
+    <p class="text-xs font-semibold text-stone-500 uppercase tracking-wider mb-4">
+      Agregar producto manualmente
+    </p>
+
+    <form
+      hx-post="/competitors/{{ competitor.id }}/products-htmx"
+      hx-target="#comp-products-section"
+      hx-swap="innerHTML"
+      hx-indicator="#page-spinner"
+      class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"
+      @htmx:after-request="if(!event.detail.failed) showForm = false">
+
+      {# Nombre del producto #}
+      <div>
+        <label class="block text-xs font-medium text-stone-500 mb-1">
+          Nombre <span class="text-red-400">*</span>
+        </label>
+        <input type="text" name="product_name" required placeholder="Cappuccino"
+               class="w-full py-2 px-3 text-sm border border-stone-200 rounded-lg bg-white
+                      focus:outline-none focus:ring-2 focus:ring-amber/40 focus:border-amber">
+      </div>
+
+      {# Categoría #}
+      <div>
+        <label class="block text-xs font-medium text-stone-500 mb-1">Categoría</label>
+        <input type="text" name="category" placeholder="bebidas_calientes"
+               class="w-full py-2 px-3 text-sm border border-stone-200 rounded-lg bg-white
+                      focus:outline-none focus:ring-2 focus:ring-amber/40 focus:border-amber">
+      </div>
+
+      {# Tamaño #}
+      <div>
+        <label class="block text-xs font-medium text-stone-500 mb-1">
+          Tamaño <span class="text-red-400">*</span>
+        </label>
+        <input type="text" name="size_description" required placeholder="12oz / Grande / S"
+               class="w-full py-2 px-3 text-sm border border-stone-200 rounded-lg bg-white
+                      focus:outline-none focus:ring-2 focus:ring-amber/40 focus:border-amber">
+      </div>
+
+      {# Precio #}
+      <div>
+        <label class="block text-xs font-medium text-stone-500 mb-1">
+          Precio <span class="text-red-400">*</span>
+        </label>
+        <input type="number" name="price" required min="0" step="0.01" placeholder="12900"
+               class="w-full py-2 px-3 text-sm border border-stone-200 rounded-lg bg-white
+                      focus:outline-none focus:ring-2 focus:ring-amber/40 focus:border-amber">
+      </div>
+
+      {# URL fuente #}
+      <div class="sm:col-span-2">
+        <label class="block text-xs font-medium text-stone-500 mb-1">URL fuente</label>
+        <input type="url" name="source_url" placeholder="https://…"
+               class="w-full py-2 px-3 text-sm border border-stone-200 rounded-lg bg-white
+                      focus:outline-none focus:ring-2 focus:ring-amber/40 focus:border-amber">
+      </div>
+
+      {# Botón #}
+      <div class="sm:col-span-2 lg:col-span-3 flex justify-end pt-1">
+        <button type="submit"
+                class="px-5 py-2 text-sm font-semibold text-beige bg-espresso rounded-lg
+                       hover:bg-espresso-light transition-colors
+                       htmx-request:opacity-60 htmx-request:cursor-not-allowed">
+          Agregar producto
+        </button>
+      </div>
+
+    </form>
+  </div>
+
+  {# ── Tabla de productos ───────────────────────────────────────────────── #}
+  {% if comp_products %}
+  <div class="bg-white rounded-xl border border-stone-100 overflow-hidden">
+    <table class="min-w-full divide-y divide-stone-100 text-sm">
+      <thead class="bg-stone-50">
+        <tr class="text-xs text-stone-400 font-semibold uppercase tracking-wider">
+          <th class="px-5 py-3 text-left">Producto</th>
+          <th class="px-5 py-3 text-left">Categoría</th>
+          <th class="px-5 py-3 text-left">Tamaño</th>
+          <th class="px-5 py-3 text-right">Precio</th>
+          <th class="px-5 py-3 text-center">Scrapeado</th>
+          <th class="px-5 py-3 text-left">Fuente</th>
+          <th class="px-5 py-3"></th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-stone-50">
+        {% for cp in comp_products %}
+        <tr class="hover:bg-stone-50 transition-colors">
+          <td class="px-5 py-3 font-medium text-espresso">{{ cp.product_name }}</td>
+          <td class="px-5 py-3">
+            {% if cp.category %}
+            <span class="px-2 py-0.5 rounded-full text-xs bg-stone-100 text-stone-600">{{ cp.category }}</span>
+            {% else %}
+            <span class="text-stone-300">—</span>
+            {% endif %}
+          </td>
+          <td class="px-5 py-3 text-stone-600">{{ cp.size_description or '—' }}</td>
+          <td class="px-5 py-3 text-right font-mono tabular-nums font-semibold text-espresso">
+            {% if cp.price %}${{ "{:,.0f}".format(cp.price) }}{% else %}—{% endif %}
+          </td>
+          <td class="px-5 py-3 text-center text-xs text-stone-400">
+            {% if cp.scraped_at %}{{ cp.scraped_at.strftime('%d/%m/%Y') }}{% else %}—{% endif %}
+          </td>
+          <td class="px-5 py-3 max-w-xs">
+            {% if cp.source_url %}
+            <a href="{{ cp.source_url }}" target="_blank" rel="noopener"
+               class="text-xs text-amber hover:underline truncate block max-w-[160px]"
+               title="{{ cp.source_url }}">
+              {{ cp.source_url | truncate(40, True) }}
+            </a>
+            {% else %}
+            <span class="text-stone-300 text-xs">—</span>
+            {% endif %}
+          </td>
+          <td class="px-5 py-3 text-right">
+            <button
+              hx-delete="/competitors/{{ competitor.id }}/products-htmx/{{ cp.id }}"
+              hx-target="#comp-products-section"
+              hx-swap="innerHTML"
+              hx-indicator="#page-spinner"
+              hx-confirm="¿Eliminar '{{ cp.product_name }}'?"
+              class="p-1.5 rounded-lg text-stone-300 hover:text-red-500 hover:bg-red-50 transition-colors">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+              </svg>
+            </button>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  {% else %}
+  <div class="bg-white rounded-xl border border-stone-100 py-16 text-center text-stone-400">
+    <p class="text-3xl mb-3">🔍</p>
+    <p class="text-sm font-medium text-stone-500">Sin productos scrapeados</p>
+    <p class="text-xs mt-1">
+      Usa "Scraper Manual" para agregar productos de este competidor.
+    </p>
+  </div>
+  {% endif %}
+
+</div>
+{# /x-data #}

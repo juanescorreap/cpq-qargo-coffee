@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block title %}Tiendas — CPQ Cafeterías{% endblock %}
+
+{% block content %}
+
+{# ── Encabezado ─────────────────────────────────────────────────────────── #}
+<div class="flex items-center justify-between mb-8">
+  <div>
+    <h1 class="text-3xl font-bold text-espresso">Tiendas</h1>
+    <p class="mt-1 text-sm text-stone-500">
+      {{ stores | length }} tienda{{ 's' if stores | length != 1 else '' }}
+    </p>
+  </div>
+</div>
+
+{% if not stores %}
+{# ── Estado vacío ─────────────────────────────────────────────────────── #}
+<div class="bg-white rounded-xl shadow-sm py-24 text-center text-stone-400">
+  <p class="text-5xl mb-4">🏪</p>
+  <p class="text-base font-semibold text-stone-500">Sin tiendas registradas</p>
+  <p class="text-sm mt-1">Configura la primera tienda para empezar a gestionar precios locales.</p>
+</div>
+
+{% else %}
+{# ── Tabla de tiendas ─────────────────────────────────────────────────── #}
+<div class="bg-white rounded-xl shadow-sm overflow-hidden">
+  <table class="min-w-full divide-y divide-stone-100 text-sm">
+    <thead class="bg-stone-50">
+      <tr class="text-xs text-stone-400 font-semibold uppercase tracking-wider">
+        <th class="px-6 py-3 text-left">Código</th>
+        <th class="px-6 py-3 text-left">Nombre</th>
+        <th class="px-6 py-3 text-left">Ciudad</th>
+        <th class="px-6 py-3 text-center">Estado</th>
+        <th class="px-6 py-3"></th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-stone-50">
+      {% for store in stores %}
+      <tr class="hover:bg-cream transition-colors cursor-pointer group"
+          hx-get="/stores/{{ store.id }}"
+          hx-target="#main-content"
+          hx-push-url="true"
+          hx-indicator="#page-spinner">
+        <td class="px-6 py-4">
+          <span class="font-mono text-xs px-2 py-1 rounded bg-stone-100 text-stone-600">
+            {{ store.code }}
+          </span>
+        </td>
+        <td class="px-6 py-4 font-semibold text-espresso">{{ store.name }}</td>
+        <td class="px-6 py-4 text-stone-600">{{ store.city or '—' }}</td>
+        <td class="px-6 py-4 text-center">
+          {% if store.is_active %}
+          <span class="px-2 py-0.5 rounded-full text-xs font-medium bg-green-50 text-green-700">
+            Activa
+          </span>
+          {% else %}
+          <span class="px-2 py-0.5 rounded-full text-xs font-medium bg-stone-100 text-stone-400">
+            Inactiva
+          </span>
+          {% endif %}
+        </td>
+        <td class="px-6 py-4 text-right">
+          <span class="text-stone-300 group-hover:text-amber transition-colors">
+            <svg class="w-4 h-4 inline" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+            </svg>
+          </span>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endif %}
+
+{% endblock %}

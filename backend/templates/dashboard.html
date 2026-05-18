@@ -1,0 +1,180 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard — CPQ Cafeterías{% endblock %}
+
+{% block content %}
+
+{# ── Encabezado de página ─────────────────────────────────────────────────── #}
+<div class="mb-8">
+  <h1 class="text-3xl font-bold text-espresso">Dashboard</h1>
+  <p class="mt-1 text-sm text-stone-500">Resumen general del catálogo y configuración</p>
+</div>
+
+{# ── Tarjetas de estadísticas ─────────────────────────────────────────────── #}
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+
+  {% set cards = [
+    {
+      "label":  "Ingredientes activos",
+      "value":  stats.total_ingredients,
+      "icon":   "🌿",
+      "href":   "/ingredients",
+      "color":  "border-l-green-500",
+    },
+    {
+      "label":  "Productos en menú",
+      "value":  stats.total_products,
+      "icon":   "☕",
+      "href":   "/products",
+      "color":  "border-l-amber",
+    },
+    {
+      "label":  "Tiendas activas",
+      "value":  stats.total_stores,
+      "icon":   "🏪",
+      "href":   "/stores",
+      "color":  "border-l-blue-500",
+    },
+    {
+      "label":  "Categorías",
+      "value":  stats.total_categories,
+      "icon":   "🏷️",
+      "href":   "/products",
+      "color":  "border-l-purple-500",
+    },
+  ] %}
+
+  {% for card in cards %}
+  <a href="{{ card.href }}"
+     hx-get="{{ card.href }}"
+     hx-target="#main-content"
+     hx-push-url="true"
+     hx-indicator="#page-spinner"
+     class="group bg-white rounded-xl shadow-sm border-l-4 {{ card.color }}
+            p-6 hover:shadow-md transition-shadow duration-200 cursor-pointer">
+    <div class="flex items-start justify-between">
+      <div>
+        <p class="text-sm font-medium text-stone-500 group-hover:text-stone-700 transition-colors">
+          {{ card.label }}
+        </p>
+        <p class="mt-2 text-4xl font-bold text-espresso">{{ card.value }}</p>
+      </div>
+      <span class="text-3xl leading-none">{{ card.icon }}</span>
+    </div>
+  </a>
+  {% endfor %}
+
+</div>
+
+{# ── Acciones rápidas ─────────────────────────────────────────────────────── #}
+<div class="bg-white rounded-xl shadow-sm p-6 mb-10">
+  <h2 class="text-xl font-semibold text-espresso mb-5">Acciones rápidas</h2>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+
+    {% set actions = [
+      {
+        "href":    "/ingredients",
+        "icon":    "🌿",
+        "label":   "Gestionar ingredientes",
+        "desc":    "Precios, conversiones y mermas",
+        "primary": true,
+      },
+      {
+        "href":    "/products",
+        "icon":    "☕",
+        "label":   "Gestionar productos",
+        "desc":    "Recetas, tamaños y packaging",
+        "primary": false,
+      },
+      {
+        "href":    "/costs",
+        "icon":    "💰",
+        "label":   "Calcular costos",
+        "desc":    "Breakdown por producto y tienda",
+        "primary": false,
+      },
+      {
+        "href":    "/stores",
+        "icon":    "🏪",
+        "label":   "Gestionar tiendas",
+        "desc":    "Precios locales por tienda",
+        "primary": false,
+      },
+      {
+        "href":    "/competitors",
+        "icon":    "🔍",
+        "label":   "Análisis competitivo",
+        "desc":    "Matches con precios de competencia",
+        "primary": false,
+      },
+      {
+        "href":    "/reports",
+        "icon":    "📊",
+        "label":   "Ver reportes",
+        "desc":    "Márgenes, tendencias y alertas",
+        "primary": false,
+      },
+    ] %}
+
+    {% for action in actions %}
+    <a href="{{ action.href }}"
+       hx-get="{{ action.href }}"
+       hx-target="#main-content"
+       hx-push-url="true"
+       hx-indicator="#page-spinner"
+       class="flex items-start gap-4 p-4 rounded-lg border transition-all duration-150
+              {% if action.primary %}
+                bg-espresso text-beige border-espresso
+                hover:bg-espresso-light
+              {% else %}
+                bg-stone-50 text-espresso border-stone-200
+                hover:border-amber hover:bg-amber/5
+              {% endif %}">
+      <span class="text-2xl leading-none shrink-0 mt-0.5">{{ action.icon }}</span>
+      <div>
+        <p class="font-semibold text-sm leading-tight">{{ action.label }}</p>
+        <p class="text-xs mt-0.5
+                  {% if action.primary %}text-beige/70{% else %}text-stone-500{% endif %}">
+          {{ action.desc }}
+        </p>
+      </div>
+    </a>
+    {% endfor %}
+
+  </div>
+</div>
+
+{# ── Estado del sistema ───────────────────────────────────────────────────── #}
+<div class="bg-white rounded-xl shadow-sm p-6">
+  <h2 class="text-xl font-semibold text-espresso mb-4">Estado del sistema</h2>
+  <div class="flex flex-col sm:flex-row gap-4">
+
+    <div class="flex items-center gap-3 px-4 py-3 bg-green-50 rounded-lg border border-green-100 flex-1">
+      <span class="w-2.5 h-2.5 rounded-full bg-green-500 shrink-0 animate-pulse"></span>
+      <div>
+        <p class="text-sm font-medium text-green-800">Base de datos</p>
+        <p class="text-xs text-green-600">Supabase — conectado</p>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-3 px-4 py-3 bg-green-50 rounded-lg border border-green-100 flex-1">
+      <span class="w-2.5 h-2.5 rounded-full bg-green-500 shrink-0 animate-pulse"></span>
+      <div>
+        <p class="text-sm font-medium text-green-800">API REST</p>
+        <p class="text-xs text-green-600">FastAPI — en línea</p>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-3 px-4 py-3 bg-amber/10 rounded-lg border border-amber/20 flex-1">
+      <span class="w-2.5 h-2.5 rounded-full bg-amber shrink-0"></span>
+      <div>
+        <p class="text-sm font-medium text-amber">Scraper de precios</p>
+        <p class="text-xs text-stone-500">Sin configurar</p>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+{% endblock %}

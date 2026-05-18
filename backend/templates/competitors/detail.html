@@ -1,0 +1,186 @@
+{% extends "base.html" %}
+
+{% block title %}{{ competitor.name }} — CPQ Cafeterías{% endblock %}
+
+{% block content %}
+
+{# ── Breadcrumb ──────────────────────────────────────────────────────────── #}
+<nav class="flex items-center gap-2 text-sm text-stone-400 mb-6">
+  <a href="/competitors"
+     hx-get="/competitors"
+     hx-target="#main-content"
+     hx-push-url="true"
+     hx-indicator="#page-spinner"
+     class="hover:text-espresso transition-colors">
+    Competidores
+  </a>
+  <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+  </svg>
+  <span class="text-espresso font-medium">{{ competitor.name }}</span>
+</nav>
+
+{# ── Info card ───────────────────────────────────────────────────────────── #}
+<div class="bg-white rounded-xl shadow-sm p-6 mb-6">
+  <div class="flex items-start gap-4">
+    <div class="w-12 h-12 rounded-xl bg-stone-100 flex items-center justify-center shrink-0 text-2xl">
+      🏢
+    </div>
+    <div class="flex-1 min-w-0">
+      <div class="flex items-center gap-2 flex-wrap">
+        <h1 class="text-2xl font-bold text-espresso">{{ competitor.name }}</h1>
+        {% if competitor.is_active %}
+        <span class="px-2 py-0.5 rounded-full text-xs font-medium bg-green-50 text-green-700">Activo</span>
+        {% else %}
+        <span class="px-2 py-0.5 rounded-full text-xs font-medium bg-stone-100 text-stone-400">Inactivo</span>
+        {% endif %}
+      </div>
+      {% if competitor.website_url %}
+      <a href="{{ competitor.website_url }}" target="_blank" rel="noopener"
+         class="mt-1 inline-flex items-center gap-1 text-sm text-amber hover:underline"
+         onclick="event.stopPropagation()">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round"
+                d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+        </svg>
+        {{ competitor.website_url }}
+      </a>
+      {% endif %}
+    </div>
+    <div class="shrink-0 text-right">
+      <p class="text-2xl font-bold text-espresso tabular-nums">{{ comp_products | length }}</p>
+      <p class="text-xs text-stone-400">productos</p>
+    </div>
+    <div class="shrink-0 text-right">
+      <p class="text-2xl font-bold text-espresso tabular-nums">{{ matches | length }}</p>
+      <p class="text-xs text-stone-400">matches</p>
+    </div>
+  </div>
+</div>
+
+{# ── Tabs ────────────────────────────────────────────────────────────────── #}
+<div x-data="{ tab: 'products' }">
+
+  <div class="flex gap-1 bg-white rounded-xl shadow-sm p-1.5 mb-6 w-fit">
+
+    <button @click="tab = 'products'"
+            :class="tab === 'products'
+              ? 'bg-espresso text-beige shadow-sm'
+              : 'text-stone-500 hover:text-espresso hover:bg-stone-50'"
+            class="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round"
+              d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+      </svg>
+      Productos Scrapeados
+      <span :class="tab === 'products' ? 'bg-white/20 text-beige' : 'bg-stone-100 text-stone-500'"
+            class="px-1.5 py-0.5 rounded text-xs font-semibold tabular-nums">
+        {{ comp_products | length }}
+      </span>
+    </button>
+
+    <button @click="tab = 'matches'"
+            :class="tab === 'matches'
+              ? 'bg-espresso text-beige shadow-sm'
+              : 'text-stone-500 hover:text-espresso hover:bg-stone-50'"
+            class="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round"
+              d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
+      </svg>
+      Matches
+      <span :class="tab === 'matches' ? 'bg-white/20 text-beige' : 'bg-stone-100 text-stone-500'"
+            class="px-1.5 py-0.5 rounded text-xs font-semibold tabular-nums">
+        {{ matches | length }}
+      </span>
+    </button>
+
+  </div>
+
+  {# ── Tab: Productos Scrapeados ────────────────────────────────────────── #}
+  <div x-show="tab === 'products'">
+    <div id="comp-products-section">
+      {% include "competitors/_comp_products.html" %}
+    </div>
+  </div>
+
+  {# ── Tab: Matches ─────────────────────────────────────────────────────── #}
+  <div x-show="tab === 'matches'" x-cloak>
+    <div id="matches-section">
+      {% include "competitors/_matches.html" %}
+    </div>
+  </div>
+
+</div>
+{# /tabs x-data #}
+
+{% endblock %}
+
+
+{% block extra_scripts %}
+<script>
+  function matchForm(ourProducts, compProducts, productSizesMap) {
+    return {
+      // Data
+      ourProducts,
+      compProducts,
+      productSizesMap,
+
+      // Product combobox state
+      productQuery:    '',
+      productOpen:     false,
+      selectedProduct: null,
+
+      // Size select state
+      selectedSizeId: '',
+
+      // Competitor product combobox state
+      cpQuery:    '',
+      cpOpen:     false,
+      selectedCp: null,
+
+      // ── Computed ──────────────────────────────────────────────────────────
+
+      get filteredProducts() {
+        const q = this.productQuery.trim().toLowerCase();
+        if (!q) return this.ourProducts;
+        return this.ourProducts.filter(p => p.name.toLowerCase().includes(q));
+      },
+
+      get availableSizes() {
+        if (!this.selectedProduct) return [];
+        return this.productSizesMap[this.selectedProduct.id] || [];
+      },
+
+      get filteredCp() {
+        const q = this.cpQuery.trim().toLowerCase();
+        if (!q) return this.compProducts;
+        return this.compProducts.filter(cp => cp.label.toLowerCase().includes(q));
+      },
+
+      // ── Actions ───────────────────────────────────────────────────────────
+
+      selectProduct(p) {
+        this.selectedProduct = p;
+        this.productQuery    = p.name;
+        this.productOpen     = false;
+        this.selectedSizeId  = '';           // reset size when product changes
+      },
+
+      selectCp(cp) {
+        this.selectedCp = cp;
+        this.cpQuery    = cp.label;
+        this.cpOpen     = false;
+      },
+    };
+  }
+
+  // Re-initialize Alpine when HTMX swaps the two sections
+  document.addEventListener('htmx:afterSwap', (e) => {
+    const targetId = e.detail?.target?.id;
+    if ((targetId === 'comp-products-section' || targetId === 'matches-section') && window.Alpine) {
+      Alpine.initTree(e.detail.target);
+    }
+  });
+</script>
+{% endblock %}

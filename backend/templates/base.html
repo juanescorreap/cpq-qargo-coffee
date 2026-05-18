@@ -4,72 +4,170 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Sistema de costeo y pricing para cadena de cafeterías" />
 
-  <!-- Título dinámico: cada template hijo puede sobreescribir este bloque -->
   <title>{% block title %}CPQ Cafeterías{% endblock %}</title>
 
-  <!-- Tailwind CSS CDN (solo para desarrollo; en prod usar build compilado) -->
-  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Evita flash de elementos con x-cloak antes de que Alpine inicialice -->
+  <style>[x-cloak] { display: none !important; }</style>
 
-  <!-- HTMX: interactividad sin JavaScript explícito -->
-  <script src="https://unpkg.com/htmx.org@1.9.10"
-          integrity="sha384-D1Kt99CQMDuVetoL1lrYwg5t+9QdHe7NLX/SoJYkXDFfX37iInKRy5ViYgSibmK"
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            espresso:         "#3E2723",
+            "espresso-light": "#5D4037",
+            beige:            "#D7CCC8",
+            "beige-dark":     "#BCAAA4",
+            amber:            "#FF6F00",
+            "amber-light":    "#FFA000",
+            cream:            "#FFF8F0",
+          },
+          fontFamily: {
+            sans: ["Inter", "system-ui", "sans-serif"],
+          },
+        },
+      },
+    };
+  </script>
+
+  <!-- HTMX 2.0.4 -->
+  <script src="https://unpkg.com/htmx.org@2.0.4"
+          integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+"
           crossorigin="anonymous"></script>
 
-  <!-- Estilos propios (variables CSS y utilidades custom) -->
+  <!-- Alpine.js 3.14.9 — defer obligatorio, después de su script -->
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.9/dist/cdn.min.js"></script>
+
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+        rel="stylesheet" />
+
+  <!-- Estilos propios -->
   <link rel="stylesheet" href="{{ url_for('static', path='css/style.css') }}" />
 
-  <!-- Bloque para estilos adicionales por página -->
   {% block extra_head %}{% endblock %}
 </head>
 
-<body class="min-h-screen flex flex-col" style="background-color: var(--color-cream);">
+<body class="min-h-screen flex flex-col bg-cream font-sans antialiased">
 
   <!-- =====================================================================
-       Navbar principal
+       Navbar — sticky, sombra sutil, responsive con Alpine.js
        ===================================================================== -->
-  <nav style="background-color: var(--color-espresso);" class="px-6 py-3 shadow-md">
-    <div class="container flex items-center justify-between">
+  <header x-data="{ open: false }" class="sticky top-0 z-50 bg-espresso shadow-md">
+    <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
 
-      <!-- Logo / nombre de la app -->
-      <a href="/" class="flex items-center gap-2"
-         style="color: var(--color-cream); text-decoration: none;">
-        <span class="text-xl">☕</span>
-        <span class="font-bold text-lg tracking-wide">CPQ Cafeterías</span>
-      </a>
+        <!-- Logo -->
+        <a href="/"
+           class="flex items-center gap-2 text-beige hover:text-amber transition-colors shrink-0">
+          <span class="text-2xl leading-none">☕</span>
+          <span class="font-bold text-lg tracking-wide">CPQ Cafeterías</span>
+        </a>
 
-      <!-- Navegación principal -->
-      <ul class="flex items-center gap-6 list-none"
-          style="color: var(--color-latte); font-size: 0.9rem;">
-        <li>
-          <a href="/" style="color: inherit;"
-             class="hover:text-white transition-colors">Inicio</a>
-        </li>
-        <!-- Agregar más rutas aquí a medida que se creen los módulos -->
-      </ul>
+        <!-- Links desktop -->
+        <div class="hidden md:flex items-center gap-1">
+          {% set nav_links = [
+            ("/ingredients",  "Ingredientes"),
+            ("/products",     "Productos"),
+            ("/recipes/builder", "Recetas"),
+            ("/stores",       "Tiendas"),
+            ("/costs/calculator", "Costos"),
+            ("/competitors",  "Competidores"),
+            ("/reports",      "Reportes"),
+          ] %}
+          {% for href, label in nav_links %}
+          <a href="{{ href }}"
+             hx-get="{{ href }}"
+             hx-target="#main-content"
+             hx-push-url="true"
+             hx-indicator="#page-spinner"
+             class="px-3 py-2 rounded-md text-sm font-medium text-beige
+                    hover:bg-espresso-light hover:text-amber
+                    transition-colors duration-150">
+            {{ label }}
+          </a>
+          {% endfor %}
+        </div>
 
-    </div>
-  </nav>
-  <!-- / navbar -->
+        <!-- Botón hamburguesa mobile -->
+        <button @click="open = !open"
+                class="md:hidden p-2 rounded-md text-beige hover:text-amber
+                       hover:bg-espresso-light focus:outline-none
+                       transition-colors duration-150"
+                aria-label="Abrir menú"
+                :aria-expanded="open.toString()">
+          <svg x-show="!open" class="w-6 h-6" fill="none" stroke="currentColor"
+               stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+          <svg x-show="open" x-cloak class="w-6 h-6" fill="none" stroke="currentColor"
+               stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+
+      </div>
+
+      <!-- Menú mobile desplegable -->
+      <div x-show="open"
+           x-cloak
+           x-transition:enter="transition ease-out duration-150"
+           x-transition:enter-start="opacity-0 -translate-y-2"
+           x-transition:enter-end="opacity-100 translate-y-0"
+           x-transition:leave="transition ease-in duration-100"
+           x-transition:leave-start="opacity-100 translate-y-0"
+           x-transition:leave-end="opacity-0 -translate-y-2"
+           class="md:hidden pb-3 border-t border-espresso-light mt-1">
+        {% for href, label in nav_links %}
+        <a href="{{ href }}"
+           hx-get="{{ href }}"
+           hx-target="#main-content"
+           hx-push-url="true"
+           hx-indicator="#page-spinner"
+           @click="open = false"
+           class="block px-4 py-2 text-sm font-medium text-beige
+                  hover:bg-espresso-light hover:text-amber
+                  rounded-md transition-colors duration-150">
+          {{ label }}
+        </a>
+        {% endfor %}
+      </div>
+    </nav>
+
+    <!-- Barra de progreso HTMX — animada via CSS en style.css -->
+    <div id="page-spinner" class="htmx-indicator"></div>
+  </header>
+  <!-- /header -->
 
   <!-- =====================================================================
-       Contenido principal — cada página hereda y rellena este bloque
+       Contenido principal
        ===================================================================== -->
-  <main class="flex-1 container py-8">
+  <main id="main-content"
+        class="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
     {% block content %}{% endblock %}
   </main>
-  <!-- / main -->
+  <!-- /main -->
 
   <!-- =====================================================================
        Footer
        ===================================================================== -->
-  <footer class="py-4 text-center text-sm"
-          style="color: var(--color-gray); border-top: 1px solid var(--color-beige);">
-    CPQ Cafeterías &copy; {{ now.year if now is defined else '2025' }}
+  <footer class="bg-espresso text-beige-dark text-sm mt-auto">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4
+                flex flex-col sm:flex-row items-center justify-between gap-2">
+      <span>CPQ Cafeterías &copy; {{ now.year if now is defined else 2026 }}</span>
+      <span class="opacity-60">Sistema de costeo y pricing</span>
+    </div>
   </footer>
-  <!-- / footer -->
+  <!-- /footer -->
 
-  <!-- Bloque para scripts adicionales por página -->
   {% block extra_scripts %}{% endblock %}
 
 </body>
