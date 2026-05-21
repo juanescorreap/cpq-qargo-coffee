@@ -34,7 +34,8 @@ nixLibs = [
   "pango",
   "cairo",
   "alsa-lib",
-  "gtk3"
+  "gtk3",
+  "stdenv.cc.cc.lib"
 ]
 
 [phases.install]
