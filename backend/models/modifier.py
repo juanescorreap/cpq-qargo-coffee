@@ -13,27 +13,27 @@ from backend.database import Base
 
 
 class Modifier(Base):
-    """Modificación aplicable a un producto que afecta costo e ingredientes.
+    """Modification applicable to a product that affects cost and ingredients.
 
-    Cada fila representa un cambio atómico sobre un ingrediente específico.
-    Una sustitución compleja (ej: cambiar leche normal por leche de almendras)
-    requiere DOS registros: uno que resta la leche normal y otro que suma la
-    leche de almendras.
+    Each row represents an atomic change to a specific ingredient.
+    A complex substitution (e.g.: replacing regular milk with almond milk)
+    requires TWO records: one that subtracts the regular milk and another that
+    adds the almond milk.
 
-    Tipos soportados:
-        - 'substitution': reemplaza un ingrediente por otro (par de registros).
-        - 'addition':     agrega un ingrediente extra a la receta base.
-        - 'extra_shot':   atajo semántico para shots adicionales de espresso.
+    Supported types:
+        - 'substitution': replaces one ingredient with another (pair of records).
+        - 'addition':     adds an extra ingredient to the base recipe.
+        - 'extra_shot':   semantic shortcut for additional espresso shots.
 
-    quantity_change usa la misma unidad que usage_unit del ingrediente.
-    Valores negativos restan, positivos suman.
+    quantity_change uses the same unit as the ingredient's usage_unit.
+    Negative values subtract, positive values add.
 
-    Ejemplos:
-        "Leche de almendras en vez de normal" → dos registros:
-            affects_ingredient_id=leche_normal,    quantity_change=-240
-            affects_ingredient_id=leche_almendras, quantity_change=+240
+    Examples:
+        "Almond milk instead of regular" → two records:
+            affects_ingredient_id=regular_milk,  quantity_change=-240
+            affects_ingredient_id=almond_milk,   quantity_change=+240
 
-        "Shot extra de espresso" →
+        "Extra espresso shot" →
             affects_ingredient_id=espresso, quantity_change=+1,
             type='extra_shot'
     """
@@ -51,15 +51,14 @@ class Modifier(Base):
 
 
 class ProductModifierCost(Base):
-    """Impacto en costo de aplicar un modifier a un producto específico.
+    """Cost impact of applying a modifier to a specific product.
 
-    El motor de costeo pre-calcula el delta de costo de cada modifier por
-    producto y lo almacena aquí. Esto evita recalcular en tiempo de consulta
-    y permite auditar cómo cambia el impacto cuando varían los precios de
-    ingredientes.
+    The costing engine pre-calculates the cost delta for each modifier per
+    product and stores it here. This avoids recalculating at query time and
+    allows auditing how the impact changes when ingredient prices vary.
 
-    calculated_at registra cuándo se hizo el último cálculo, facilitando
-    detectar registros desactualizados tras una actualización de precios.
+    calculated_at records when the last calculation was made, making it easy
+    to detect stale records after a price update.
     """
 
     __tablename__ = "product_modifier_costs"

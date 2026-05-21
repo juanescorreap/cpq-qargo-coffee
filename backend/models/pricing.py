@@ -16,13 +16,13 @@ from backend.database import Base
 
 
 class CategoryMargin(Base):
-    """Markup por defecto para cada categoría de producto.
+    """Default markup for each product category.
 
-    El motor de precios consulta esta tabla cuando un producto no tiene
-    markup_override en ProductPricing. La categoría debe coincidir
-    exactamente con el campo category de Product.
+    The pricing engine queries this table when a product has no
+    markup_override in ProductPricing. The category must match exactly
+    the category field of Product.
 
-    Ejemplo:
+    Example:
         category="bebidas_calientes", markup_percentage=65.00
         category="bebidas_frias",     markup_percentage=70.00
         category="alimentos",         markup_percentage=55.00
@@ -37,22 +37,22 @@ class CategoryMargin(Base):
 
 
 class ProductPricing(Base):
-    """Precio actual de un producto para un tamaño y tienda dados.
+    """Current price of a product for a given size and store.
 
-    store_id nullable permite definir un precio global (NULL) que aplica
-    a todas las tiendas, o un precio específico por tienda que lo sobreescribe.
+    A nullable store_id allows defining a global price (NULL) that applies to
+    all stores, or a store-specific price that overrides it.
 
-    El motor calcula calculated_cost a partir de la receta y lo almacena aquí
-    para auditoría. El precio final se determina así:
-        - Si is_manual_price=True: se usa final_price tal como fue ingresado.
-        - Si markup_override IS NOT NULL: final_price = calculated_cost * (1 + markup_override/100).
-        - Si markup_override IS NULL: se usa el markup de CategoryMargin para la categoría.
+    The engine calculates calculated_cost from the recipe and stores it here
+    for auditing. The final price is determined as follows:
+        - If is_manual_price=True: final_price is used as entered.
+        - If markup_override IS NOT NULL: final_price = calculated_cost * (1 + markup_override/100).
+        - If markup_override IS NULL: the markup from CategoryMargin for the category is used.
 
-    effective_date permite programar cambios de precio a futuro: el motor
-    siempre toma el registro con la effective_date más reciente <= hoy.
+    effective_date allows scheduling future price changes: the engine always
+    takes the record with the most recent effective_date <= today.
 
-    Ejemplo:
-        product_id=5 (Cappuccino), size_id=2 (mediano), store_id=NULL,
+    Example:
+        product_id=5 (Cappuccino), size_id=2 (medium), store_id=NULL,
         calculated_cost=12.50, markup_override=NULL, final_price=28.00
     """
 
@@ -86,19 +86,19 @@ class ProductPricing(Base):
 
 
 class ProductPriceHistory(Base):
-    """Historial de cambios de precio para análisis y auditoría.
+    """Price change history for analysis and auditing.
 
-    Cada vez que ProductPricing se actualiza, el motor inserta una fila aquí
-    con el snapshot completo. Permite reconstruir la evolución de costos y
-    márgenes en el tiempo para reportes de rentabilidad.
+    Each time ProductPricing is updated, the engine inserts a row here with
+    the complete snapshot. Allows reconstructing the evolution of costs and
+    margins over time for profitability reports.
 
-    markup_used registra el markup efectivamente aplicado (ya sea el override
-    o el de CategoryMargin) para que el historial sea autocontenido sin
-    necesidad de recalcular.
+    markup_used records the markup that was actually applied (either the
+    override or the CategoryMargin value) so that the history is self-contained
+    without needing to recalculate.
 
-    Ejemplo de uso:
-        Analizar cómo subió el costo del Cappuccino durante un trimestre
-        por alza en el precio del café, y cuándo se ajustó el precio final.
+    Usage example:
+        Analyze how the cost of a Cappuccino rose during a quarter due to a
+        coffee price increase, and when the final price was adjusted.
     """
 
     __tablename__ = "product_price_history"

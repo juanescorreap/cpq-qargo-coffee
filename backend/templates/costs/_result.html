@@ -1,4 +1,4 @@
-{# Partial HTMX — inyectado en #result-section tras el POST /costs/calculate-htmx #}
+{# Partial HTMX — injected into #result-section after POST /costs/calculate-htmx #}
 
 {% if error %}
 {# ── Error ─────────────────────────────────────────────────────────────── #}
@@ -11,29 +11,29 @@
 </div>
 
 {% elif breakdown %}
-{# ── Resultado — Alpine para el toggle de detalle ───────────────────────── #}
+{# ── Result — Alpine for the detail toggle ───────────────────────────────── #}
 <div x-data="{ showDetail: false }">
 
   {% set totals     = breakdown.totals %}
   {% set detail     = breakdown.breakdown %}
   {% set total_cost = breakdown.total_cost %}
 
-  {# Metadatos de categoría: (clave, etiqueta, barra, texto, fondo) #}
+  {# Category metadata: (key, label, bar, text, background) #}
   {% set category_meta = [
-    ('ingredients', 'Ingredientes', 'bg-green-500',  'text-green-700',  'bg-green-50'),
-    ('sub_recipes',  'Sub-recetas',  'bg-blue-500',   'text-blue-700',   'bg-blue-50'),
+    ('ingredients', 'Ingredients', 'bg-green-500',  'text-green-700',  'bg-green-50'),
+    ('sub_recipes',  'Sub-recipes',  'bg-blue-500',   'text-blue-700',   'bg-blue-50'),
     ('packaging',    'Packaging',    'bg-amber',      'text-amber',      'bg-amber/10'),
     ('labor',        'Labor',        'bg-purple-500', 'text-purple-700', 'bg-purple-50'),
   ] %}
 
-  {# ── Card principal: total + barras ──────────────────────────────────── #}
+  {# ── Main card: total + bars ──────────────────────────────────────────── #}
   <div class="bg-white rounded-xl shadow-sm p-6 mb-4">
 
-    {# Encabezado #}
+    {# Heading #}
     <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-3 mb-6">
       <div>
         <p class="text-xs font-semibold text-stone-400 uppercase tracking-wider mb-1">
-          Costo de producción
+          Production cost
         </p>
         <h2 class="text-2xl font-bold text-espresso">{{ breakdown.product_name }}</h2>
         <div class="flex items-center gap-2 mt-1 flex-wrap">
@@ -48,22 +48,22 @@
           </span>
           {% else %}
           <span class="px-2 py-0.5 rounded-full text-xs font-medium bg-stone-100 text-stone-400">
-            Precio base
+            Base price
           </span>
           {% endif %}
         </div>
       </div>
 
-      {# Total grande #}
+      {# Large total #}
       <div class="text-right shrink-0">
-        <p class="text-xs text-stone-400 mb-1">Total por porción</p>
+        <p class="text-xs text-stone-400 mb-1">Total per serving</p>
         <p class="text-4xl font-bold text-espresso font-mono">
           ${{ "%.4f"|format(total_cost) }}
         </p>
       </div>
     </div>
 
-    {# ── Barras por categoría ─────────────────────────────────────────── #}
+    {# ── Bars by category ─────────────────────────────────────────── #}
     {% set has_bars = namespace(found=false) %}
     {% for key, label, bar_class, text_class, bg_class in category_meta %}
       {% if totals[key] and totals[key] > 0 %}{% set has_bars.found = true %}{% endif %}
@@ -98,7 +98,7 @@
       {% endfor %}
     </div>
 
-    {# Leyenda de totales #}
+    {# Totals legend #}
     <div class="mt-5 pt-4 border-t border-stone-100 flex flex-wrap gap-x-6 gap-y-2">
       {% for key, label, bar_class, text_class, bg_class in category_meta %}
       {% set amount = totals[key] %}
@@ -114,20 +114,20 @@
 
     {% else %}
     <div class="text-center py-8 text-stone-400">
-      <p class="text-sm">El costo total es $0.00</p>
-      <p class="text-xs mt-1">Verifica que el producto tiene receta configurada.</p>
+      <p class="text-sm">The total cost is $0.00</p>
+      <p class="text-xs mt-1">Make sure the product has a configured recipe.</p>
     </div>
     {% endif %}
 
   </div>
-  {# /card principal #}
+  {# /main card #}
 
-  {# ── Botón toggle detalle ─────────────────────────────────────────────── #}
+  {# ── Detail toggle button ─────────────────────────────────────────────── #}
   <button
     @click="showDetail = !showDetail"
     class="w-full flex items-center justify-between px-5 py-3 bg-white rounded-xl shadow-sm
            text-sm font-medium text-espresso hover:bg-stone-50 transition-colors mb-4">
-    <span x-text="showDetail ? 'Ocultar detalle' : 'Ver detalle completo'"></span>
+    <span x-text="showDetail ? 'Hide detail' : 'View full detail'"></span>
     <svg class="w-4 h-4 transition-transform duration-200 text-stone-400"
          :class="showDetail ? 'rotate-180' : ''"
          fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -135,7 +135,7 @@
     </svg>
   </button>
 
-  {# ── Detalle completo (tabla expandible) ─────────────────────────────── #}
+  {# ── Full detail (expandable table) ─────────────────────────────────── #}
   <div x-show="showDetail" x-cloak
        x-transition:enter="transition ease-out duration-200"
        x-transition:enter-start="opacity-0 -translate-y-1"
@@ -151,30 +151,30 @@
     {% if not has_detail %}
     <div class="px-6 py-8 text-center">
       <p class="text-3xl mb-3">🔧</p>
-      <p class="text-sm font-medium text-stone-600">Detalle por línea en desarrollo</p>
+      <p class="text-sm font-medium text-stone-600">Line-by-line detail under development</p>
       <p class="text-xs text-stone-400 mt-1">
-        Los totales por categoría ya están disponibles en las barras de arriba.
-        El desglose por ingrediente individual se activará próximamente.
+        Category totals are already available in the bars above.
+        The per-ingredient breakdown will be enabled soon.
       </p>
     </div>
     {% endif %}
 
-    {# ── Ingredientes ─────────────────────────────────────────────────── #}
+    {# ── Ingredients ─────────────────────────────────────────────────── #}
     {% if ing_lines %}
     <div class="border-b border-stone-100 last:border-0">
       <div class="px-6 py-3 bg-stone-50 flex items-center gap-2">
         <span class="w-2.5 h-2.5 rounded-full bg-green-500"></span>
-        <p class="text-xs font-semibold text-stone-500 uppercase tracking-wider">Ingredientes</p>
+        <p class="text-xs font-semibold text-stone-500 uppercase tracking-wider">Ingredients</p>
       </div>
       <table class="min-w-full divide-y divide-stone-100 text-sm">
         <thead>
           <tr class="text-xs text-stone-400 font-medium">
-            <th class="px-6 py-2 text-left">Ingrediente</th>
-            <th class="px-6 py-2 text-right">Cantidad</th>
-            <th class="px-6 py-2 text-left">Unidad</th>
-            <th class="px-6 py-2 text-right">Costo/u</th>
+            <th class="px-6 py-2 text-left">Ingredient</th>
+            <th class="px-6 py-2 text-right">Quantity</th>
+            <th class="px-6 py-2 text-left">Unit</th>
+            <th class="px-6 py-2 text-right">Cost/u</th>
             <th class="px-6 py-2 text-right">Subtotal</th>
-            <th class="px-6 py-2 text-center">Fuente</th>
+            <th class="px-6 py-2 text-center">Source</th>
           </tr>
         </thead>
         <tbody class="divide-y divide-stone-50">
@@ -187,7 +187,7 @@
             <td class="px-6 py-2.5 text-right font-mono tabular-nums font-medium">${{ "%.4f"|format(item.line_cost) }}</td>
             <td class="px-6 py-2.5 text-center">
               {% if item.price_source == 'store' %}
-              <span class="px-1.5 py-0.5 rounded text-xs bg-blue-50 text-blue-600">Tienda</span>
+              <span class="px-1.5 py-0.5 rounded text-xs bg-blue-50 text-blue-600">Store</span>
               {% else %}
               <span class="px-1.5 py-0.5 rounded text-xs bg-stone-100 text-stone-400">Base</span>
               {% endif %}
@@ -199,19 +199,19 @@
     </div>
     {% endif %}
 
-    {# ── Sub-recetas ──────────────────────────────────────────────────── #}
+    {# ── Sub-recipes ──────────────────────────────────────────────────── #}
     {% if sub_lines %}
     <div class="border-b border-stone-100 last:border-0">
       <div class="px-6 py-3 bg-stone-50 flex items-center gap-2">
         <span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span>
-        <p class="text-xs font-semibold text-stone-500 uppercase tracking-wider">Sub-recetas</p>
+        <p class="text-xs font-semibold text-stone-500 uppercase tracking-wider">Sub-recipes</p>
       </div>
       <table class="min-w-full divide-y divide-stone-100 text-sm">
         <thead>
           <tr class="text-xs text-stone-400 font-medium">
-            <th class="px-6 py-2 text-left">Sub-receta</th>
-            <th class="px-6 py-2 text-right">Cantidad</th>
-            <th class="px-6 py-2 text-right">Costo/u</th>
+            <th class="px-6 py-2 text-left">Sub-recipe</th>
+            <th class="px-6 py-2 text-right">Quantity</th>
+            <th class="px-6 py-2 text-right">Cost/u</th>
             <th class="px-6 py-2 text-right">Subtotal</th>
           </tr>
         </thead>
@@ -239,9 +239,9 @@
       <table class="min-w-full divide-y divide-stone-100 text-sm">
         <thead>
           <tr class="text-xs text-stone-400 font-medium">
-            <th class="px-6 py-2 text-left">Insumo</th>
-            <th class="px-6 py-2 text-right">Cantidad</th>
-            <th class="px-6 py-2 text-right">Costo/u</th>
+            <th class="px-6 py-2 text-left">Supply</th>
+            <th class="px-6 py-2 text-right">Quantity</th>
+            <th class="px-6 py-2 text-right">Cost/u</th>
             <th class="px-6 py-2 text-right">Subtotal</th>
           </tr>
         </thead>
@@ -264,19 +264,19 @@
     <div>
       <div class="px-6 py-3 bg-stone-50 flex items-center gap-2">
         <span class="w-2.5 h-2.5 rounded-full bg-purple-500"></span>
-        <p class="text-xs font-semibold text-stone-500 uppercase tracking-wider">Mano de obra</p>
+        <p class="text-xs font-semibold text-stone-500 uppercase tracking-wider">Labor</p>
       </div>
       <div class="px-6 py-4 grid grid-cols-3 gap-4 text-sm">
         <div class="text-center">
-          <p class="text-xs text-stone-400 mb-1">Tiempo prep.</p>
+          <p class="text-xs text-stone-400 mb-1">Prep time</p>
           <p class="font-mono font-bold text-espresso">{{ "%.1f"|format(labor.minutes) }} min</p>
         </div>
         <div class="text-center border-x border-stone-100">
-          <p class="text-xs text-stone-400 mb-1">Costo por minuto</p>
+          <p class="text-xs text-stone-400 mb-1">Cost per minute</p>
           <p class="font-mono font-bold text-espresso">${{ "%.2f"|format(labor.cost_per_minute) }}</p>
         </div>
         <div class="text-center">
-          <p class="text-xs text-stone-400 mb-1">Costo labor total</p>
+          <p class="text-xs text-stone-400 mb-1">Total labor cost</p>
           <p class="font-mono font-bold text-purple-700">${{ "%.4f"|format(labor.cost) }}</p>
         </div>
       </div>
@@ -284,7 +284,7 @@
     {% endif %}
 
   </div>
-  {# /detalle completo #}
+  {# /full detail #}
 
 </div>
 {# /Alpine wrapper #}

@@ -1,2 +1,2 @@
-// app.js — JavaScript global de CPQ Cafeterías
-// Este archivo se reserva para lógica JS que no sea manejada por HTMX.
+// app.js — Global JavaScript for CPQ Cafeterías
+// This file is reserved for JS logic not handled by HTMX.

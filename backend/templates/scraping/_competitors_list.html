@@ -1,4 +1,4 @@
-{# Partial: competidores activos con acción de scrape
+{# Partial: active competitors with scrape action
    Context variables:
      competitors — List of (Competitor, product_count) tuples
 #}
@@ -6,11 +6,11 @@
 {% if not competitors %}
 <div class="bg-white rounded-xl shadow-sm p-10 text-center">
   <div class="text-4xl mb-3">🏪</div>
-  <p class="text-stone-500 font-medium">No hay competidores registrados.</p>
+  <p class="text-stone-500 font-medium">No competitors registered.</p>
   <p class="text-stone-400 text-sm mt-1">
-    Agrega competidores en
-    <a href="/competitors" class="text-amber hover:underline">Competidores</a>
-    para activar el scraping de menús.
+    Add competitors in
+    <a href="/competitors" class="text-amber hover:underline">Competitors</a>
+    to enable menu scraping.
   </p>
 </div>
 {% else %}
@@ -30,18 +30,18 @@
           {{ competitor.website_url | replace('https://', '') | replace('http://', '') | truncate(30) }}
         </a>
         {% else %}
-        <p class="text-xs text-stone-300 mt-0.5 italic">Sin URL configurada</p>
+        <p class="text-xs text-stone-300 mt-0.5 italic">No URL configured</p>
         {% endif %}
       </div>
       {% if competitor.is_active %}
       <span class="flex items-center gap-1 text-xs text-emerald-600 font-medium shrink-0">
         <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block"></span>
-        Activo
+        Active
       </span>
       {% else %}
       <span class="flex items-center gap-1 text-xs text-stone-400 font-medium shrink-0">
         <span class="w-1.5 h-1.5 rounded-full bg-stone-300 inline-block"></span>
-        Inactivo
+        Inactive
       </span>
       {% endif %}
     </div>
@@ -49,7 +49,7 @@
     {# Stats #}
     <div class="flex items-center gap-4 text-sm">
       <div>
-        <p class="text-stone-400 text-xs">Productos scrapeados</p>
+        <p class="text-stone-400 text-xs">Scraped products</p>
         <p class="font-bold text-espresso">{{ product_count }}</p>
       </div>
     </div>
@@ -63,7 +63,7 @@
       hx-target="#comp-result-{{ competitor.id }}"
       hx-swap="innerHTML"
       hx-indicator="#comp-spinner-{{ competitor.id }}"
-      {% if not competitor.website_url %}disabled title="Configura website_url primero"{% endif %}
+      {% if not competitor.website_url %}disabled title="Configure website_url first"{% endif %}
       class="w-full inline-flex items-center justify-center gap-2 px-3 py-2
              rounded-lg border border-stone-200 text-sm font-medium text-stone-600
              hover:border-amber hover:text-amber transition-colors
@@ -76,7 +76,7 @@
                  m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031
                  9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"/>
       </svg>
-      Scrape Menú
+      Scrape Menu
     </button>
   </div>
   {% endfor %}

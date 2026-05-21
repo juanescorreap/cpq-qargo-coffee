@@ -1,14 +1,14 @@
 {% extends "base.html" %}
 
-{% block title %}Ingredientes — CPQ Cafeterías{% endblock %}
+{% block title %}Ingredients — CPQ Coffee Shops{% endblock %}
 
 {% block content %}
 
-{# ── Encabezado ─────────────────────────────────────────────────────────── #}
+{# ── Heading ─────────────────────────────────────────────────────────────── #}
 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
   <div>
-    <h1 class="text-3xl font-bold text-espresso">Ingredientes</h1>
-    <p class="mt-1 text-sm text-stone-500">{{ total }} ingrediente{{ 's' if total != 1 else '' }} encontrado{{ 's' if total != 1 else '' }}</p>
+    <h1 class="text-3xl font-bold text-espresso">Ingredients</h1>
+    <p class="mt-1 text-sm text-stone-500">{{ total }} ingredient{{ 's' if total != 1 else '' }} found</p>
   </div>
   <button
     hx-get="/ingredients/nuevo"
@@ -20,11 +20,11 @@
     <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
       <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
     </svg>
-    Nuevo ingrediente
+    New ingredient
   </button>
 </div>
 
-{# ── Filtros ─────────────────────────────────────────────────────────────── #}
+{# ── Filters ──────────────────────────────────────────────────────────────── #}
 <div class="bg-white rounded-xl shadow-sm p-4 mb-6">
   <form
     hx-get="/ingredients/tabla"
@@ -41,7 +41,7 @@
       </svg>
       <input
         type="text" name="search" value="{{ search }}"
-        placeholder="Buscar por nombre..."
+        placeholder="Search by name..."
         class="w-full pl-9 pr-4 py-2 text-sm border border-stone-200 rounded-lg
                focus:outline-none focus:ring-2 focus:ring-amber/40 focus:border-amber">
     </div>
@@ -49,7 +49,7 @@
     <select name="category"
             class="py-2 px-3 text-sm border border-stone-200 rounded-lg bg-white text-espresso
                    focus:outline-none focus:ring-2 focus:ring-amber/40 focus:border-amber">
-      <option value="">Todas las categorías</option>
+      <option value="">All categories</option>
       {% for cat in categories %}
       <option value="{{ cat }}" {% if cat == category %}selected{% endif %}>{{ cat }}</option>
       {% endfor %}
@@ -58,38 +58,38 @@
     <select name="is_active"
             class="py-2 px-3 text-sm border border-stone-200 rounded-lg bg-white text-espresso
                    focus:outline-none focus:ring-2 focus:ring-amber/40 focus:border-amber">
-      <option value="true"  {% if is_active != 'false' %}selected{% endif %}>Activos</option>
-      <option value="false" {% if is_active == 'false' %}selected{% endif %}>Inactivos</option>
+      <option value="true"  {% if is_active != 'false' %}selected{% endif %}>Active</option>
+      <option value="false" {% if is_active == 'false' %}selected{% endif %}>Inactive</option>
     </select>
 
     <button type="submit"
             class="px-4 py-2 rounded-lg bg-stone-100 text-espresso text-sm font-medium
                    hover:bg-stone-200 transition-colors shrink-0">
-      Filtrar
+      Filter
     </button>
   </form>
 </div>
 
-{# ── Tabla ── reemplazada por HTMX al filtrar ─────────────────────────── #}
+{# ── Table — replaced by HTMX when filtering ─────────────────────────── #}
 <div id="ingredients-table">
   {% include 'ingredients/_table.html' %}
 </div>
 
-{# ── Modal container — HTMX inyecta _form.html aquí ──────────────────── #}
+{# ── Modal container — HTMX injects _form.html here ──────────────────── #}
 <div id="modal-container"></div>
 
 {% endblock %}
 
 {% block extra_scripts %}
 <script>
-  /* Re-inicializa Alpine en el contenido inyectado por HTMX */
+  /* Re-initialize Alpine on content injected by HTMX */
   document.addEventListener('htmx:afterSwap', (e) => {
     if (e.target.id === 'modal-container' && window.Alpine) {
       Alpine.initTree(e.target);
     }
   });
 
-  /* Cierra el modal cuando el servidor responde con HX-Trigger: closeModal */
+  /* Close the modal when the server responds with HX-Trigger: closeModal */
   document.addEventListener('closeModal', () => {
     const mc = document.getElementById('modal-container');
     if (mc) mc.innerHTML = '';

@@ -1,10 +1,10 @@
-"""Seed inicial de datos de referencia para el sistema CPQ.
+"""Initial seed data for the CPQ system.
 
-Ejecutar con:
+Run with:
     python -m backend.migrations.seed_data
 """
 
-import backend.models  # noqa: F401 — registra todos los modelos en Base.metadata
+import backend.models  # noqa: F401 — registers all models in Base.metadata
 from backend.database import SessionLocal
 from backend.models.competitor import Competitor
 from backend.models.pricing import CategoryMargin
@@ -16,36 +16,36 @@ from backend.models.store import Store
 # ---------------------------------------------------------------------------
 
 _RECIPE_UNITS = [
-    # Volumen precisas
-    {"name": "ml",         "category": "volume",  "description": "Mililitro"},
-    {"name": "oz",         "category": "volume",  "description": "Onza líquida (29.57 ml)"},
-    {"name": "pump",       "category": "volume",  "description": "Dosis de bomba de jarabe (~10 ml, varía por jarabe)"},
-    {"name": "shot",       "category": "volume",  "description": "Extracción de espresso (~30 ml)"},
-    {"name": "scoop",      "category": "volume",  "description": "Medidor estándar de polvo o hielo"},
-    # Volumen cocina
-    {"name": "teaspoon",   "category": "volume",  "description": "Cucharadita (≈5 ml)"},
-    {"name": "tablespoon", "category": "volume",  "description": "Cucharada (≈15 ml)"},
-    {"name": "cup",        "category": "volume",  "description": "Taza de cocina (≈240 ml)"},
-    # Volumen informales
-    {"name": "splash",     "category": "volume",  "description": "Chorrito pequeño (~15 ml)"},
-    {"name": "dash",       "category": "volume",  "description": "Toque muy pequeño (~1 ml)"},
-    {"name": "drizzle",    "category": "volume",  "description": "Hilo decorativo sobre bebida"},
-    # Peso
-    {"name": "g",          "category": "weight",  "description": "Gramo"},
-    {"name": "oz_weight",  "category": "weight",  "description": "Onza de peso (28.35 g)"},
-    {"name": "pinch",      "category": "weight",  "description": "Pizca (~0.3 g)"},
-    {"name": "sprinkle",   "category": "weight",  "description": "Espolvoreado decorativo"},
-    # Conteo
-    {"name": "unit",     "category": "count",   "description": "Unidad discreta (ej: 1 empaque)"},
-    {"name": "lines",    "category": "count",   "description": "Líneas de decoración (ej: arte latte)"},
-    {"name": "each",     "category": "count",   "description": "Pieza individual (ej: 1 trozo de fruta)"},
-    {"name": "slice",    "category": "count",   "description": "Rebanada o loncha (ej: 2 slices de tocino)"},
-    {"name": "handful",  "category": "count",   "description": "Puñado de ingrediente (ej: arúgula)"},
-    {"name": "leaf",     "category": "count",   "description": "Hoja individual (ej: albahaca, menta)"},
-    {"name": "bag",      "category": "count",   "description": "Bolsa o sobre (ej: bolsita de té)"},
-    {"name": "drop",     "category": "volume",  "description": "Gota (ej: colorante alimentario)"},
-    {"name": "rosette",  "category": "count",   "description": "Roseta decorativa de crema batida"},
-    {"name": "serving",  "category": "count",   "description": "Porción estándar de un producto"},
+    # Precise volume
+    {"name": "ml",         "category": "volume",  "description": "Millilitre"},
+    {"name": "oz",         "category": "volume",  "description": "Fluid ounce (29.57 ml)"},
+    {"name": "pump",       "category": "volume",  "description": "Syrup pump dose (~10 ml, varies by syrup)"},
+    {"name": "shot",       "category": "volume",  "description": "Espresso extraction (~30 ml)"},
+    {"name": "scoop",      "category": "volume",  "description": "Standard powder or ice measure"},
+    # Kitchen volume
+    {"name": "teaspoon",   "category": "volume",  "description": "Teaspoon (≈5 ml)"},
+    {"name": "tablespoon", "category": "volume",  "description": "Tablespoon (≈15 ml)"},
+    {"name": "cup",        "category": "volume",  "description": "Kitchen cup (≈240 ml)"},
+    # Informal volume
+    {"name": "splash",     "category": "volume",  "description": "Small splash (~15 ml)"},
+    {"name": "dash",       "category": "volume",  "description": "Very small touch (~1 ml)"},
+    {"name": "drizzle",    "category": "volume",  "description": "Decorative drizzle over drink"},
+    # Weight
+    {"name": "g",          "category": "weight",  "description": "Gram"},
+    {"name": "oz_weight",  "category": "weight",  "description": "Weight ounce (28.35 g)"},
+    {"name": "pinch",      "category": "weight",  "description": "Pinch (~0.3 g)"},
+    {"name": "sprinkle",   "category": "weight",  "description": "Decorative sprinkle"},
+    # Count
+    {"name": "unit",     "category": "count",   "description": "Discrete unit (e.g.: 1 package)"},
+    {"name": "lines",    "category": "count",   "description": "Decoration lines (e.g.: latte art)"},
+    {"name": "each",     "category": "count",   "description": "Individual piece (e.g.: 1 piece of fruit)"},
+    {"name": "slice",    "category": "count",   "description": "Slice (e.g.: 2 slices of bacon)"},
+    {"name": "handful",  "category": "count",   "description": "Handful of ingredient (e.g.: arugula)"},
+    {"name": "leaf",     "category": "count",   "description": "Individual leaf (e.g.: basil, mint)"},
+    {"name": "bag",      "category": "count",   "description": "Bag or sachet (e.g.: tea bag)"},
+    {"name": "drop",     "category": "volume",  "description": "Drop (e.g.: food colouring)"},
+    {"name": "rosette",  "category": "count",   "description": "Decorative whipped cream rosette"},
+    {"name": "serving",  "category": "count",   "description": "Standard portion of a product"},
 ]
 
 
@@ -57,7 +57,7 @@ def seed_recipe_units(db) -> None:
             db.add(RecipeUnit(**data))
             created += 1
     db.commit()
-    print(f"✅ Recipe units created ({created} nuevas, {len(_RECIPE_UNITS) - created} ya existían)")
+    print(f"✅ Recipe units created ({created} new, {len(_RECIPE_UNITS) - created} already existed)")
 
 
 # ---------------------------------------------------------------------------
@@ -84,7 +84,7 @@ def seed_category_margins(db) -> None:
             db.add(CategoryMargin(**data))
             created += 1
     db.commit()
-    print(f"✅ Category margins created ({created} nuevas, {len(_CATEGORY_MARGINS) - created} ya existían)")
+    print(f"✅ Category margins created ({created} new, {len(_CATEGORY_MARGINS) - created} already existed)")
 
 
 # ---------------------------------------------------------------------------
@@ -120,7 +120,7 @@ def seed_stores(db) -> None:
             db.add(Store(**data))
             created += 1
     db.commit()
-    print(f"✅ {created} stores created ({len(_STORES) - created} ya existían)")
+    print(f"✅ {created} stores created ({len(_STORES) - created} already existed)")
 
 
 # ---------------------------------------------------------------------------

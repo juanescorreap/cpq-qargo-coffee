@@ -1,4 +1,4 @@
-{# Partial HTMX — inyectado en #prices-section tras POST/DELETE de precios #}
+{# HTMX Partial — injected into #prices-section after POST/DELETE on prices #}
 
 <div x-data="{ showForm: false }">
 
@@ -13,7 +13,7 @@
   </div>
   {% endif %}
 
-  {# ── Botón agregar ────────────────────────────────────────────────────── #}
+  {# ── Add button ────────────────────────────────────────────────────────── #}
   <div class="flex justify-end mb-4">
     <button
       @click="showForm = !showForm"
@@ -23,18 +23,18 @@
            fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
       </svg>
-      <span x-text="showForm ? 'Cancelar' : 'Agregar Override'"></span>
+      <span x-text="showForm ? 'Cancel' : 'Add Override'"></span>
     </button>
   </div>
 
-  {# ── Formulario inline ────────────────────────────────────────────────── #}
+  {# ── Inline form ────────────────────────────────────────────────────────── #}
   <div x-show="showForm" x-cloak
        x-transition:enter="transition ease-out duration-150"
        x-transition:enter-start="opacity-0 -translate-y-1"
        x-transition:enter-end="opacity-100 translate-y-0"
        class="bg-amber/5 border border-amber/20 rounded-xl p-5 mb-5">
     <p class="text-xs font-semibold text-stone-500 uppercase tracking-wider mb-4">
-      Nuevo precio local
+      New local price
     </p>
     <form
       hx-post="/stores/{{ store.id }}/prices-htmx"
@@ -44,25 +44,25 @@
       class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3"
       @htmx:after-request="if(!event.detail.failed) showForm = false">
 
-      {# Ingrediente #}
+      {# Ingredient #}
       <div class="lg:col-span-2">
         <label class="block text-xs font-medium text-stone-500 mb-1">
-          Ingrediente <span class="text-red-400">*</span>
+          Ingredient <span class="text-red-400">*</span>
         </label>
         <select name="ingredient_id" required
                 class="w-full py-2 px-3 text-sm border border-stone-200 rounded-lg bg-white
                        focus:outline-none focus:ring-2 focus:ring-amber/40 focus:border-amber">
-          <option value="">Seleccionar…</option>
+          <option value="">Select…</option>
           {% for ing in ingredients_available %}
           <option value="{{ ing.id }}">{{ ing.name }}{% if ing.usage_unit %} ({{ ing.usage_unit }}){% endif %}</option>
           {% endfor %}
         </select>
       </div>
 
-      {# Precio local #}
+      {# Local price #}
       <div>
         <label class="block text-xs font-medium text-stone-500 mb-1">
-          Precio local <span class="text-red-400">*</span>
+          Local price <span class="text-red-400">*</span>
         </label>
         <input type="number" name="local_price" required min="0" step="0.01"
                placeholder="0.00"
@@ -70,37 +70,37 @@
                       focus:outline-none focus:ring-2 focus:ring-amber/40 focus:border-amber">
       </div>
 
-      {# Proveedor local #}
+      {# Local supplier #}
       <div>
-        <label class="block text-xs font-medium text-stone-500 mb-1">Proveedor local</label>
-        <input type="text" name="local_supplier" placeholder="Opcional"
+        <label class="block text-xs font-medium text-stone-500 mb-1">Local supplier</label>
+        <input type="text" name="local_supplier" placeholder="Optional"
                class="w-full py-2 px-3 text-sm border border-stone-200 rounded-lg
                       focus:outline-none focus:ring-2 focus:ring-amber/40 focus:border-amber">
       </div>
 
-      {# Botón #}
+      {# Button #}
       <div class="sm:col-span-2 lg:col-span-4 flex justify-end pt-1">
         <button type="submit"
                 class="px-5 py-2 text-sm font-semibold text-beige bg-espresso rounded-lg
                        hover:bg-espresso-light transition-colors
                        htmx-request:opacity-60 htmx-request:cursor-not-allowed">
-          Guardar override
+          Save override
         </button>
       </div>
     </form>
   </div>
 
-  {# ── Tabla de overrides ───────────────────────────────────────────────── #}
+  {# ── Overrides table ───────────────────────────────────────────────── #}
   {% if prices %}
   <div class="bg-white rounded-xl border border-stone-100 overflow-hidden">
     <table class="min-w-full divide-y divide-stone-100 text-sm">
       <thead class="bg-stone-50">
         <tr class="text-xs text-stone-400 font-semibold uppercase tracking-wider">
-          <th class="px-5 py-3 text-left">Ingrediente</th>
-          <th class="px-5 py-3 text-left">Unidad</th>
-          <th class="px-5 py-3 text-right">Precio local</th>
-          <th class="px-5 py-3 text-left">Proveedor local</th>
-          <th class="px-5 py-3 text-center">Actualizado</th>
+          <th class="px-5 py-3 text-left">Ingredient</th>
+          <th class="px-5 py-3 text-left">Unit</th>
+          <th class="px-5 py-3 text-right">Local price</th>
+          <th class="px-5 py-3 text-left">Local supplier</th>
+          <th class="px-5 py-3 text-center">Updated</th>
           <th class="px-5 py-3"></th>
         </tr>
       </thead>
@@ -126,7 +126,7 @@
               hx-target="#prices-section"
               hx-swap="innerHTML"
               hx-indicator="#page-spinner"
-              hx-confirm="¿Eliminar el override de '{{ p.ingredient_name }}'? El motor usará el precio base."
+              hx-confirm="Remove the override for '{{ p.ingredient_name }}'? The engine will use the base price."
               class="p-1.5 rounded-lg text-stone-300 hover:text-red-500 hover:bg-red-50 transition-colors">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round"
@@ -143,10 +143,10 @@
   {% else %}
   <div class="bg-white rounded-xl border border-stone-100 py-16 text-center text-stone-400">
     <p class="text-3xl mb-3">💱</p>
-    <p class="text-sm font-medium text-stone-500">Sin overrides configurados</p>
+    <p class="text-sm font-medium text-stone-500">No overrides configured</p>
     <p class="text-xs mt-1">
-      Esta tienda usa los precios base de todos los ingredientes.
-      Agrega un override cuando el proveedor local tenga un precio diferente.
+      This store uses the base prices for all ingredients.
+      Add an override when the local supplier has a different price.
     </p>
   </div>
   {% endif %}

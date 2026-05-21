@@ -5,35 +5,35 @@ from sqlalchemy import engine_from_config, pool
 from alembic import context
 
 # ---------------------------------------------------------------------------
-# Configuración de la aplicación
+# Application configuration
 # ---------------------------------------------------------------------------
 from backend.config import settings
 from backend.database import Base
 
-# Importar todos los modelos para que Alembic los detecte en autogenerate
+# Import all models so that Alembic detects them in autogenerate
 import backend.models.ingredient   # noqa: F401
 import backend.models.recipe_unit  # noqa: F401
 import backend.models.store        # noqa: F401
 import backend.models.product      # noqa: F401
 
 # ---------------------------------------------------------------------------
-# Objeto de configuración de Alembic
+# Alembic configuration object
 # ---------------------------------------------------------------------------
 config = context.config
 
-# Inyectar la URL desde Pydantic Settings (ignora el valor vacío de alembic.ini)
+# Inject the URL from Pydantic Settings (ignores the empty value in alembic.ini)
 config.set_main_option("sqlalchemy.url", settings.DATABASE_URL_POOLING)
 
-# Configurar logging desde alembic.ini
+# Configure logging from alembic.ini
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-# Metadata de todos los modelos registrados en Base
+# Metadata for all models registered in Base
 target_metadata = Base.metadata
 
 
 # ---------------------------------------------------------------------------
-# Migraciones en modo offline (genera SQL sin conectarse)
+# Offline migrations (generates SQL without connecting)
 # ---------------------------------------------------------------------------
 def run_migrations_offline() -> None:
     url = config.get_main_option("sqlalchemy.url")
@@ -49,13 +49,13 @@ def run_migrations_offline() -> None:
 
 
 # ---------------------------------------------------------------------------
-# Migraciones en modo online (conecta y ejecuta contra Supabase)
+# Online migrations (connects and runs against Supabase)
 # ---------------------------------------------------------------------------
 def run_migrations_online() -> None:
     connectable = engine_from_config(
         config.get_section(config.config_ini_section, {}),
         prefix="sqlalchemy.",
-        poolclass=pool.NullPool,  # consistente con database.py
+        poolclass=pool.NullPool,  # consistent with database.py
     )
 
     with connectable.connect() as connection:

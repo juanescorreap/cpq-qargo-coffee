@@ -14,28 +14,27 @@ from backend.database import Base
 
 
 class Store(Base):
-    """Representa una tienda o punto de venta de la cadena de cafeterías."""
+    """Represents a store or point of sale of the cafeteria chain."""
 
     __tablename__ = "stores"
 
     id: int = Column(Integer, primary_key=True, index=True)
-    code: str = Column(String(20), unique=True, nullable=False)  # ej: "BOG-ZONA-T"
+    code: str = Column(String(20), unique=True, nullable=False)  # e.g.: "BOG-ZONA-T"
     name: str = Column(String(200), nullable=False)
     city: str | None = Column(String(100))
     is_active: bool = Column(Boolean, default=True)
 
 
 class StoreIngredientPrice(Base):
-    """Precio local de un ingrediente para una tienda específica.
+    """Local price of an ingredient for a specific store.
 
-    Permite tres cosas:
-    - Precios diferentes por tienda: cada local puede tener un precio
-      distinto para el mismo ingrediente según su proveedor regional.
-    - Tracking de proveedores locales: registra quién suministra el
-      ingrediente en esa tienda, independiente del proveedor base.
-    - Override del precio base: cuando existe un registro aquí, el motor
-      de costeo usa local_price en lugar del purchase_price global del
-      ingrediente.
+    Enables three things:
+    - Different prices per store: each location can have a different price
+      for the same ingredient depending on its regional supplier.
+    - Local supplier tracking: records who supplies the ingredient at that
+      store, independently of the base supplier.
+    - Base price override: when a record exists here, the costing engine uses
+      local_price instead of the ingredient's global purchase_price.
     """
 
     __tablename__ = "store_ingredient_prices"

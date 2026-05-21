@@ -1,11 +1,11 @@
 # nixpacks.toml
-# Python, Playwright y Chromium para Railway.
+# Python, Playwright and Chromium for Railway.
 #
-# Creamos el virtualenv explícitamente en phases.install para evitar
-# depender de $NIXPACKS_PATH (variable interna de nixpacks que genera
-# una advertencia "undefined" en algunos buildpacks y deja pip fuera del
-# PATH durante las etapas de build).  Todos los binarios se referencian
-# con ruta absoluta /opt/venv/bin/* para que no importe el PATH.
+# We create the virtualenv explicitly in phases.install to avoid
+# depending on $NIXPACKS_PATH (an internal nixpacks variable that generates
+# an "undefined" warning in some buildpacks and leaves pip outside the
+# PATH during build stages). All binaries are referenced with the
+# absolute path /opt/venv/bin/* so that PATH does not matter.
 
 [phases.setup]
 nixPkgs = [

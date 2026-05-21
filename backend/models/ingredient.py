@@ -14,14 +14,14 @@ from backend.database import Base
 
 
 class Ingredient(Base):
-    """Representa un ingrediente o insumo del catálogo de compras.
+    """Represents an ingredient or supply from the purchasing catalog.
 
-    Almacena tanto la información de compra (unidad y precio por la que se
-    adquiere el proveedor) como la de uso en recetas (unidad y factor de
-    conversión), permitiendo calcular el costo real por porción.
+    Stores both purchase information (unit and price at which it is acquired
+    from the supplier) and recipe usage information (unit and conversion
+    factor), allowing the real cost per portion to be calculated.
 
-    El campo yield_percentage captura la merma: un ingrediente con 80 % de
-    aprovechamiento incrementa su costo efectivo en un 25 %.
+    The yield_percentage field captures waste: an ingredient with 80% yield
+    increases its effective cost by 25%.
     """
 
     __tablename__ = "ingredients"
@@ -30,15 +30,15 @@ class Ingredient(Base):
     name: str = Column(String(200), nullable=False)
     category: str | None = Column(String(100), index=True)
 
-    # --- Unidad de compra (cómo llega del proveedor) ---
-    purchase_unit: str | None = Column(String(50))          # ej: "caja 1L"
-    purchase_price: float | None = Column(Numeric(10, 2))   # precio por purchase_unit
+    # --- Purchase unit (how it arrives from the supplier) ---
+    purchase_unit: str | None = Column(String(50))          # e.g.: "1L box"
+    purchase_price: float | None = Column(Numeric(10, 2))   # price per purchase_unit
 
-    # --- Unidad de uso en recetas ---
-    usage_unit: str | None = Column(String(50))             # ej: "ml"
-    conversion_factor: float | None = Column(Numeric(10, 4))  # usage_units por purchase_unit
+    # --- Recipe usage unit ---
+    usage_unit: str | None = Column(String(50))             # e.g.: "ml"
+    conversion_factor: float | None = Column(Numeric(10, 4))  # usage_units per purchase_unit
 
-    # --- Merma y aprovechamiento ---
+    # --- Waste and yield ---
     yield_percentage: float = Column(Numeric(5, 2), default=100.00)
 
     # --- Scraping ---
@@ -53,12 +53,11 @@ class Ingredient(Base):
 
 
 class IngredientPriceHistory(Base):
-    """Historial de cambios de precio de un ingrediente.
+    """Price change history for an ingredient.
 
-    Cada fila registra un precio puntual junto con su origen: puede
-    provenir de un scraping automático, de una edición manual o de
-    una carga masiva. Permite auditar la evolución de costos a lo largo
-    del tiempo y detectar variaciones de proveedores.
+    Each row records a point-in-time price together with its source: it can
+    come from an automatic scraping, a manual edit, or a bulk upload. Allows
+    auditing cost evolution over time and detecting supplier price variations.
     """
 
     __tablename__ = "ingredient_price_history"

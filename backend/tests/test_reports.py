@@ -1,15 +1,15 @@
-"""Tests para ReportGenerator.
+"""Tests for ReportGenerator.
 
-Cubre los cuatro métodos públicos:
+Covers the four public methods:
     - product_costs_report
     - margin_analysis_report
     - competitor_benchmark_report
     - price_impact_simulation
 
-Estrategia de datos:
-    Cada test construye solo los registros que necesita dentro de la sesión
-    aislada de `test_db` (rollback automático). Los fixtures de conftest.py
-    se reutilizan para el escenario base de producto+receta+tamaño.
+Data strategy:
+    Each test builds only the records it needs within the isolated session
+    from `test_db` (automatic rollback).  Fixtures from conftest.py are
+    reused for the base product+recipe+size scenario.
 """
 
 from datetime import date
@@ -43,7 +43,7 @@ def _make_pricing(
     price: Decimal,
     store_id=None,
 ) -> ProductPricing:
-    """Inserta un ProductPricing con los valores dados y lo retorna."""
+    """Insert a ProductPricing with the given values and return it."""
     p = ProductPricing(
         product_id=product.id,
         size_id=size.id,
@@ -66,7 +66,7 @@ def _make_pricing(
 class TestProductCostsReport:
 
     def test_returns_list(self, test_db: Session):
-        """Retorna siempre una lista, incluso sin productos."""
+        """Always returns a list, even with no products."""
         gen = ReportGenerator(test_db)
         result = gen.product_costs_report()
         assert isinstance(result, list)
@@ -78,7 +78,7 @@ class TestProductCostsReport:
         sample_size: ProductSize,
         sample_recipe: RecipeIngredient,
     ):
-        """Cada entrada tiene las claves requeridas con tipos correctos."""
+        """Each entry has the required keys with correct types."""
         gen = ReportGenerator(test_db)
         result = gen.product_costs_report()
 
@@ -97,7 +97,7 @@ class TestProductCostsReport:
         sample_size: ProductSize,
         sample_recipe: RecipeIngredient,
     ):
-        """Cada tamaño tiene 'cost' positivo y 'cost_breakdown' con las cuatro claves."""
+        """Each size has a positive 'cost' and 'cost_breakdown' with the four keys."""
         gen = ReportGenerator(test_db)
         result = gen.product_costs_report()
 
@@ -118,7 +118,7 @@ class TestProductCostsReport:
     def test_product_without_recipe_is_included_but_has_no_sizes(
         self, test_db: Session
     ):
-        """Un producto activo sin receta aparece en el reporte con sizes=[]."""
+        """An active product without a recipe appears in the report with sizes=[]."""
         product = Product(name="Test No Recipe", is_sub_recipe=False)
         test_db.add(product)
         test_db.commit()
@@ -137,15 +137,15 @@ class TestProductCostsReport:
         sample_size: ProductSize,
         sample_recipe: RecipeIngredient,
     ):
-        """store_id=None y store_id válido no lanzan excepción."""
+        """store_id=None and a valid store_id do not raise an exception."""
         gen = ReportGenerator(test_db)
         result_global = gen.product_costs_report(store_id=None)
-        result_store  = gen.product_costs_report(store_id=9999)  # tienda inexistente → fallback
+        result_store  = gen.product_costs_report(store_id=9999)  # non-existent store → fallback
         assert isinstance(result_global, list)
         assert isinstance(result_store, list)
 
     def test_inactive_products_excluded(self, test_db: Session):
-        """Productos con is_active=False no aparecen en el reporte."""
+        """Products with is_active=False do not appear in the report."""
         inactive = Product(name="Test Inactive", is_sub_recipe=False, is_active=False)
         test_db.add(inactive)
         test_db.commit()
@@ -156,7 +156,7 @@ class TestProductCostsReport:
         assert inactive.id not in ids
 
     def test_ordered_by_name(self, test_db: Session):
-        """El reporte devuelve productos ordenados alfabéticamente por nombre."""
+        """The report returns products sorted alphabetically by name."""
         for name in ["Zebra Latte", "Americano", "Mocha"]:
             test_db.add(Product(name=name, is_sub_recipe=False))
         test_db.commit()
@@ -174,15 +174,15 @@ class TestProductCostsReport:
 class TestMarginAnalysisReport:
 
     def test_returns_four_keys(self, test_db: Session):
-        """El reporte siempre devuelve las cuatro categorías, incluso sin datos."""
+        """The report always returns the four categories, even with no data."""
         gen = ReportGenerator(test_db)
         result = gen.margin_analysis_report()
         assert set(result.keys()) == {"negative_margin", "low_margin", "healthy_margin", "high_margin"}
 
     def test_negative_margin_classification(self, test_db: Session):
-        """Un producto vendido por debajo del costo cae en negative_margin.
+        """A product sold below cost falls into negative_margin.
 
-        Margen = (10 000 − 15 000) / 10 000 × 100 = −50 %
+        Margin = (10 000 − 15 000) / 10 000 × 100 = −50 %
         """
         product = Product(name="Test Neg Margin", is_sub_recipe=False)
         test_db.add(product)
@@ -198,9 +198,9 @@ class TestMarginAnalysisReport:
         assert "Test Neg Margin" in names
 
     def test_low_margin_classification(self, test_db: Session):
-        """Margen entre 0 % y 30 % cae en low_margin.
+        """Margin between 0 % and 30 % falls into low_margin.
 
-        Margen = (12 000 − 10 000) / 12 000 × 100 ≈ 16.67 %
+        Margin = (12 000 − 10 000) / 12 000 × 100 ≈ 16.67 %
         """
         product = Product(name="Test Low Margin", is_sub_recipe=False)
         test_db.add(product)
@@ -216,9 +216,9 @@ class TestMarginAnalysisReport:
         assert "Test Low Margin" in names
 
     def test_healthy_margin_classification(self, test_db: Session):
-        """Margen entre 30 % y 80 % cae en healthy_margin.
+        """Margin between 30 % and 80 % falls into healthy_margin.
 
-        Margen = (20 000 − 10 000) / 20 000 × 100 = 50 %
+        Margin = (20 000 − 10 000) / 20 000 × 100 = 50 %
         """
         product = Product(name="Test Healthy Margin", is_sub_recipe=False)
         test_db.add(product)
@@ -234,9 +234,9 @@ class TestMarginAnalysisReport:
         assert "Test Healthy Margin" in names
 
     def test_high_margin_classification(self, test_db: Session):
-        """Margen superior al 80 % cae en high_margin.
+        """Margin above 80 % falls into high_margin.
 
-        Margen = (50 000 − 5 000) / 50 000 × 100 = 90 %
+        Margin = (50 000 − 5 000) / 50 000 × 100 = 90 %
         """
         product = Product(name="Test High Margin", is_sub_recipe=False)
         test_db.add(product)
@@ -252,7 +252,7 @@ class TestMarginAnalysisReport:
         assert "Test High Margin" in names
 
     def test_item_structure(self, test_db: Session):
-        """Cada ítem del reporte tiene las claves y tipos esperados."""
+        """Each report item has the expected keys and types."""
         product = Product(name="Test Struct Margin", is_sub_recipe=False)
         test_db.add(product)
         test_db.commit()
@@ -276,7 +276,7 @@ class TestMarginAnalysisReport:
         assert isinstance(target["margin_pct"],   float)
 
     def test_null_price_skipped(self, test_db: Session):
-        """Pricings con final_price=0 o calculated_cost=0 no generan división por cero."""
+        """Pricings with final_price=0 or calculated_cost=0 do not cause division by zero."""
         product = Product(name="Test Zero Price", is_sub_recipe=False)
         test_db.add(product)
         test_db.commit()
@@ -306,7 +306,7 @@ class TestMarginAnalysisReport:
         assert "Test Zero Price" not in names
 
     def test_negative_margin_sorted_ascending(self, test_db: Session):
-        """negative_margin aparece ordenado de menor a mayor margen."""
+        """negative_margin is sorted ascending by margin."""
         for cost, price in [(20000, 10000), (18000, 10000)]:
             product = Product(name=f"Test NegSort {cost}", is_sub_recipe=False)
             test_db.add(product)
@@ -329,12 +329,12 @@ class TestMarginAnalysisReport:
 class TestCompetitorBenchmarkReport:
 
     def test_returns_list(self, test_db: Session):
-        """Retorna siempre una lista, incluso sin matches."""
+        """Always returns a list, even with no matches."""
         gen = ReportGenerator(test_db)
         assert isinstance(gen.competitor_benchmark_report(), list)
 
     def test_empty_without_matches(self, test_db: Session):
-        """Sin registros en ProductCompetitorMatch el reporte es vacío."""
+        """With no records in ProductCompetitorMatch, the report is empty."""
         gen = ReportGenerator(test_db)
         assert gen.competitor_benchmark_report() == []
 
@@ -344,7 +344,7 @@ class TestCompetitorBenchmarkReport:
         our_price: Decimal,
         comp_price: Decimal,
     ):
-        """Helper que crea toda la cadena de entidades para un benchmark."""
+        """Helper that creates the full chain of entities for a benchmark."""
         competitor = Competitor(name="Test Competitor SA")
         db.add(competitor)
         db.commit()
@@ -382,7 +382,7 @@ class TestCompetitorBenchmarkReport:
         return our_product, our_size, competitor, comp_product
 
     def test_price_difference_when_more_expensive(self, test_db: Session):
-        """Cuando somos más caros, price_difference y price_difference_pct son positivos."""
+        """When we are more expensive, price_difference and price_difference_pct are positive."""
         self._build_match(test_db, our_price=Decimal("15000"), comp_price=Decimal("12000"))
 
         gen = ReportGenerator(test_db)
@@ -394,7 +394,7 @@ class TestCompetitorBenchmarkReport:
         assert row["price_difference_pct"] > 0
 
     def test_price_difference_when_cheaper(self, test_db: Session):
-        """Cuando somos más baratos, price_difference y price_difference_pct son negativos."""
+        """When we are cheaper, price_difference and price_difference_pct are negative."""
         self._build_match(test_db, our_price=Decimal("10000"), comp_price=Decimal("12000"))
 
         gen = ReportGenerator(test_db)
@@ -406,7 +406,7 @@ class TestCompetitorBenchmarkReport:
         assert row["price_difference_pct"] < 0
 
     def test_price_difference_values(self, test_db: Session):
-        """Los valores numéricos de diferencia son correctos.
+        """The numerical difference values are correct.
 
         our_price = 15 000, comp_price = 12 000
         diff     = 3 000
@@ -422,7 +422,7 @@ class TestCompetitorBenchmarkReport:
         assert abs(row["price_difference_pct"] - 25.0) < 0.1
 
     def test_item_structure(self, test_db: Session):
-        """Cada ítem tiene las ocho claves requeridas."""
+        """Each item has the eight required keys."""
         self._build_match(test_db, our_price=Decimal("14000"), comp_price=Decimal("13000"))
 
         gen = ReportGenerator(test_db)
@@ -437,7 +437,7 @@ class TestCompetitorBenchmarkReport:
             assert key in row, f"Missing key: {key}"
 
     def test_skips_match_without_pricing(self, test_db: Session):
-        """Un match sin ProductPricing asociado no aparece en el reporte."""
+        """A match without an associated ProductPricing does not appear in the report."""
         competitor = Competitor(name="No Pricing Comp")
         test_db.add(competitor)
         test_db.commit()
@@ -475,7 +475,7 @@ class TestCompetitorBenchmarkReport:
         assert "Our No Pricing Product" not in names
 
     def test_sorted_by_price_difference_pct_desc(self, test_db: Session):
-        """Los resultados se ordenan por price_difference_pct descendente."""
+        """Results are sorted by price_difference_pct descending."""
         for our, comp in [(20000, 10000), (11000, 10000)]:
             self._build_match(test_db, Decimal(str(our)), Decimal(str(comp)))
 
@@ -493,14 +493,14 @@ class TestCompetitorBenchmarkReport:
 class TestPriceImpactSimulation:
 
     def test_invalid_ingredient_returns_error(self, test_db: Session):
-        """Un ingredient_id inexistente retorna {'error': ...}."""
+        """A non-existent ingredient_id returns {'error': ...}."""
         gen = ReportGenerator(test_db)
         result = gen.price_impact_simulation(ingredient_id=999999, percent_change=Decimal("10"))
         assert "error" in result
         assert "999999" in result["error"]
 
     def test_ingredient_without_price_returns_error(self, test_db: Session):
-        """Un ingrediente con purchase_price=None retorna {'error': ...}."""
+        """An ingredient with purchase_price=None returns {'error': ...}."""
         ing = Ingredient(
             name="Test No Price Ing",
             usage_unit="ml",
@@ -521,7 +521,7 @@ class TestPriceImpactSimulation:
         sample_size: ProductSize,
         sample_recipe: RecipeIngredient,
     ):
-        """El resultado tiene las claves de nivel superior requeridas."""
+        """The result has the required top-level keys."""
         gen = ReportGenerator(test_db)
         result = gen.price_impact_simulation(
             ingredient_id=sample_ingredient.id,
@@ -562,7 +562,7 @@ class TestPriceImpactSimulation:
         sample_size: ProductSize,
         sample_recipe: RecipeIngredient,
     ):
-        """El producto que usa el ingrediente aparece en affected_products."""
+        """The product that uses the ingredient appears in affected_products."""
         gen = ReportGenerator(test_db)
         result = gen.price_impact_simulation(sample_ingredient.id, Decimal("10"))
 
@@ -577,7 +577,7 @@ class TestPriceImpactSimulation:
         sample_size: ProductSize,
         sample_recipe: RecipeIngredient,
     ):
-        """Un incremento del precio del ingrediente eleva el costo del producto."""
+        """An increase in the ingredient price raises the product cost."""
         gen = ReportGenerator(test_db)
         result = gen.price_impact_simulation(sample_ingredient.id, Decimal("15"))
 
@@ -597,7 +597,7 @@ class TestPriceImpactSimulation:
         sample_size: ProductSize,
         sample_recipe: RecipeIngredient,
     ):
-        """Una reducción del precio del ingrediente baja el costo del producto."""
+        """A reduction in the ingredient price lowers the product cost."""
         gen = ReportGenerator(test_db)
         result = gen.price_impact_simulation(sample_ingredient.id, Decimal("-20"))
 
@@ -617,7 +617,7 @@ class TestPriceImpactSimulation:
         sample_size: ProductSize,
         sample_recipe: RecipeIngredient,
     ):
-        """La simulación no modifica el purchase_price real del ingrediente en BD."""
+        """The simulation does not modify the ingredient's real purchase_price in the DB."""
         original_price = Decimal(str(sample_ingredient.purchase_price))
         gen = ReportGenerator(test_db)
         gen.price_impact_simulation(sample_ingredient.id, Decimal("50"))
@@ -630,7 +630,7 @@ class TestPriceImpactSimulation:
         test_db: Session,
         sample_ingredient: Ingredient,
     ):
-        """affected_products está ordenado por cost_increase_pct descendente."""
+        """affected_products is sorted by cost_increase_pct descending."""
         products = []
         for qty in (Decimal("100"), Decimal("300"), Decimal("200")):
             p = Product(name=f"Test Sort {qty}", is_sub_recipe=False)
@@ -655,7 +655,7 @@ class TestPriceImpactSimulation:
         assert pcts == sorted(pcts, reverse=True)
 
     def test_ingredient_not_in_recipe_returns_empty_affected(self, test_db: Session):
-        """Un ingrediente sin líneas de receta retorna affected_products=[]."""
+        """An ingredient with no recipe lines returns affected_products=[]."""
         lonely_ing = Ingredient(
             name="Test Lonely Ingredient",
             purchase_price=Decimal("5000"),

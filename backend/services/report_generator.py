@@ -1,11 +1,11 @@
-"""Generador de reportes de análisis para el CPQ de Qargo Coffee.
+"""Analysis report generator for the Qargo Coffee CPQ.
 
-Responsabilidades:
-- Costos por producto con desglose por componente (ingredientes, sub-recetas,
-  packaging, mano de obra) para cada tamaño activo.
-- Análisis de márgenes: clasifica pricings en negativo, bajo, sano y alto.
-- Benchmark de precios propios versus competidores con match establecido.
-- Simulación del impacto en costos de un cambio porcentual en un ingrediente.
+Responsibilities:
+- Product costs with a breakdown by component (ingredients, sub-recipes,
+  packaging, labor) for each active size.
+- Margin analysis: classifies pricings as negative, low, healthy, and high.
+- Price benchmark of own prices versus competitors with established matches.
+- Simulation of the cost impact of a percentage change in an ingredient.
 """
 
 import logging
@@ -31,64 +31,64 @@ logger = logging.getLogger("report_generator")
 
 
 class ReportGenerator:
-    """Generador de reportes de análisis de costos, márgenes y competencia.
+    """Generator for cost, margin, and competitor analysis reports.
 
-    Encapsula la lógica de cuatro tipos de reporte:
+    Encapsulates the logic for four report types:
 
-    1. **Costos por producto**: costo total + desglose por componente para
-       cada tamaño activo, con soporte de precios locales por tienda.
-    2. **Análisis de márgenes**: clasifica todos los pricings vigentes en
-       cuatro rangos (negativo, bajo < 30 %, sano 30–80 %, alto > 80 %).
-    3. **Benchmark competidores**: diferencia de precio para cada match
-       establecido en ``ProductCompetitorMatch``.
-    4. **Simulación de impacto**: proyecta cómo un cambio porcentual en el
-       precio de un ingrediente afecta el costo de los productos que lo usan,
-       sin escribir datos en la BD.
+    1. **Product costs**: total cost + breakdown by component for each active
+       size, with support for local prices per store.
+    2. **Margin analysis**: classifies all current pricings into four ranges
+       (negative, low < 30 %, healthy 30–80 %, high > 80 %).
+    3. **Competitor benchmark**: price difference for each match established
+       in ``ProductCompetitorMatch``.
+    4. **Impact simulation**: projects how a percentage change in the price of
+       an ingredient affects the cost of products that use it, without writing
+       data to the DB.
 
-    Todos los métodos capturan errores por ítem individual para que un dato
-    incompleto no interrumpa el resto del informe.
+    All methods capture per-item errors so that incomplete data does not
+    interrupt the rest of the report.
 
     Attributes:
-        db: Sesión SQLAlchemy activa. El llamador es responsable de su
-            ciclo de vida (commit / rollback / close).
-        cost_calculator: Instancia de :class:`~backend.services.cost_calculator.CostCalculator`
-            construida con la misma sesión.
-        pricing_engine: Instancia de :class:`~backend.services.pricing_engine.PricingEngine`
-            construida con la misma sesión.
+        db: Active SQLAlchemy session.  The caller is responsible for its
+            lifecycle (commit / rollback / close).
+        cost_calculator: Instance of :class:`~backend.services.cost_calculator.CostCalculator`
+            built with the same session.
+        pricing_engine: Instance of :class:`~backend.services.pricing_engine.PricingEngine`
+            built with the same session.
     """
 
     def __init__(self, db: Session) -> None:
-        """Inicializa el generador con una sesión de base de datos.
+        """Initialise the generator with a database session.
 
         Args:
-            db: Sesión SQLAlchemy activa (e.g. ``next(get_db())`` en FastAPI).
+            db: Active SQLAlchemy session (e.g. ``next(get_db())`` in FastAPI).
         """
         self.db = db
         self.cost_calculator = CostCalculator(db)
         self.pricing_engine = PricingEngine(db)
 
     # ------------------------------------------------------------------
-    # API pública
+    # Public API
     # ------------------------------------------------------------------
 
     def product_costs_report(
         self,
         store_id: Optional[int] = None,
     ) -> List[Dict]:
-        """Reporte de costos por producto con desglose por componente.
+        """Report of product costs with a breakdown by component.
 
-        Itera sobre todos los productos activos y calcula el costo de
-        producción para cada uno de sus tamaños. Los productos o tamaños
-        que generen error (ingrediente sin precio, receta vacía, etc.) son
-        omitidos y registrados en el log como WARNING sin interrumpir el lote.
+        Iterates over all active products and calculates the production cost
+        for each of their sizes.  Products or sizes that generate an error
+        (ingredient without price, empty recipe, etc.) are skipped and logged
+        as WARNING without interrupting the batch.
 
         Args:
-            store_id: PK de la tienda para usar precios locales de
-                ingredientes (``StoreIngredientPrice``). ``None`` usa los
-                precios base globales de cada ingrediente.
+            store_id: PK of the store to use local ingredient prices
+                (``StoreIngredientPrice``).  ``None`` uses the global base
+                price of each ingredient.
 
         Returns:
-            Lista ordenada por nombre de producto::
+            List sorted by product name::
 
                 [
                     {
@@ -159,22 +159,22 @@ class ReportGenerator:
         return report
 
     def margin_analysis_report(self) -> Dict:
-        """Reporte de análisis de márgenes sobre todos los pricings vigentes.
+        """Report of margin analysis over all current pricings.
 
-        Clasifica cada registro de ``ProductPricing`` según el margen bruto
-        calculado como ``(precio − costo) / precio × 100``:
+        Classifies each ``ProductPricing`` record by the gross margin
+        calculated as ``(price − cost) / price × 100``:
 
-        - **negative_margin**: margen < 0 % (precio por debajo del costo).
-        - **low_margin**: 0 % ≤ margen < 30 %.
-        - **healthy_margin**: 30 % ≤ margen ≤ 80 %.
-        - **high_margin**: margen > 80 %.
+        - **negative_margin**: margin < 0 % (price below cost).
+        - **low_margin**: 0 % ≤ margin < 30 %.
+        - **healthy_margin**: 30 % ≤ margin ≤ 80 %.
+        - **high_margin**: margin > 80 %.
 
-        Los registros con ``final_price`` o ``calculated_cost`` nulos, cero
-        o negativos son omitidos. Los errores al resolver producto/tamaño
-        en la BD son capturados y registrados como WARNING.
+        Records with null, zero, or negative ``final_price`` or
+        ``calculated_cost`` are skipped.  Errors when resolving product/size
+        in the DB are captured and logged as WARNING.
 
         Returns:
-            Diccionario con cuatro listas. Cada ítem tiene la estructura::
+            Dictionary with four lists.  Each item has the structure::
 
                 {
                     'product_name': str,
@@ -184,8 +184,8 @@ class ReportGenerator:
                     'margin_pct':   float,
                 }
 
-            ``negative_margin`` y ``low_margin`` están ordenadas de menor a
-            mayor margen; ``high_margin`` de mayor a menor.
+            ``negative_margin`` and ``low_margin`` are sorted ascending by
+            margin; ``high_margin`` descending.
         """
         all_pricing = self.db.query(ProductPricing).all()
 
@@ -246,19 +246,19 @@ class ReportGenerator:
         }
 
     def competitor_benchmark_report(self) -> List[Dict]:
-        """Reporte de comparación de precios propios contra competencia.
+        """Report comparing our prices against competitors.
 
-        Solo incluye los productos para los que existe un match explícito en
-        ``ProductCompetitorMatch`` *y* un precio vigente en ``ProductPricing``
-        con ``store_id IS NULL`` (precio global). Si el match no tiene
-        pricing asociado se omite silenciosamente.
+        Only includes products for which an explicit match exists in
+        ``ProductCompetitorMatch`` *and* a current price exists in
+        ``ProductPricing`` with ``store_id IS NULL`` (global price).  If a
+        match has no associated pricing it is silently skipped.
 
-        Los errores al resolver entidades relacionadas (producto, tamaño,
-        competidor) son capturados y registrados como WARNING.
+        Errors when resolving related entities (product, size, competitor)
+        are captured and logged as WARNING.
 
         Returns:
-            Lista ordenada por diferencia porcentual de precio descendente
-            (los más caros respecto a la competencia aparecen primero)::
+            List sorted by price difference percentage descending
+            (those most expensive relative to competition appear first)::
 
                 [
                     {
@@ -268,8 +268,8 @@ class ReportGenerator:
                         'competitor':           str,
                         'competitor_product':   str,
                         'competitor_price':     float,
-                        'price_difference':     float,   # nuestro − competidor (COP)
-                        'price_difference_pct': float,   # diferencia / competidor × 100
+                        'price_difference':     float,   # ours − competitor (COP)
+                        'price_difference_pct': float,   # difference / competitor × 100
                     },
                     ...
                 ]
@@ -344,22 +344,22 @@ class ReportGenerator:
         ingredient_id: int,
         percent_change: Decimal,
     ) -> Dict:
-        """Simula el impacto en costos de un cambio porcentual en el precio de un ingrediente.
+        """Simulate the cost impact of a percentage change in an ingredient price.
 
-        Calcula el costo actual y proyectado de cada combinación
-        producto × tamaño que usa el ingrediente, **sin escribir ningún dato
-        en la BD**. La modificación temporal del precio del ingrediente se
-        realiza dentro de un bloque ``no_autoflush`` para garantizar que
-        SQLAlchemy no propague el valor temporal al servidor de BD.
+        Calculates the current and projected cost of each product × size
+        combination that uses the ingredient, **without writing any data to
+        the DB**.  The temporary price modification of the ingredient is
+        performed inside a ``no_autoflush`` block to ensure SQLAlchemy does
+        not propagate the temporary value to the DB server.
 
         Args:
-            ingredient_id: PK del ingrediente cuyo precio se simula.
-            percent_change: Porcentaje de variación. Positivo = incremento,
-                negativo = reducción. Ejemplo: ``Decimal("10")`` → +10 %,
+            ingredient_id: PK of the ingredient whose price is simulated.
+            percent_change: Percentage variation.  Positive = increase,
+                negative = reduction.  Example: ``Decimal("10")`` → +10 %,
                 ``Decimal("-5")`` → −5 %.
 
         Returns:
-            En caso de éxito, diccionario con los resultados::
+            On success, a dictionary with the results::
 
                 {
                     'ingredient':      str,
@@ -372,22 +372,22 @@ class ReportGenerator:
                             'size':              str,
                             'current_cost':      Decimal,
                             'new_cost':          Decimal,
-                            'cost_increase':     Decimal,   # puede ser negativo
+                            'cost_increase':     Decimal,   # may be negative
                             'cost_increase_pct': Decimal,
                         },
                         ...
                     ]
                 }
 
-            La lista ``affected_products`` está ordenada de mayor a menor
-            impacto (``cost_increase_pct`` descendente). Los productos o
-            tamaños que generen error se omiten y se registran como WARNING.
+            The ``affected_products`` list is sorted from highest to lowest
+            impact (``cost_increase_pct`` descending).  Products or sizes that
+            generate an error are skipped and logged as WARNING.
 
-            En caso de error, retorna ``{'error': str}``.
+            On error, returns ``{'error': str}``.
 
         Raises:
-            No lanza excepciones hacia el llamador; los errores se convierten
-            en la clave ``'error'`` del dict o en entradas omitidas con WARNING.
+            Does not raise exceptions to the caller; errors are converted into
+            the ``'error'`` key of the dict or into skipped entries with WARNING.
         """
         ingredient = self.db.get(Ingredient, ingredient_id)
         if not ingredient:

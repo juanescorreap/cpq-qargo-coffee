@@ -1,100 +1,100 @@
 {% extends "base.html" %}
 
-{% block title %}Gestión de Precios — CPQ Cafeterías{% endblock %}
+{% block title %}Pricing Manager — CPQ Cafeterías{% endblock %}
 
 {% block extra_head %}
-{# Chart.js — cargado antes de Alpine para que esté disponible cuando el componente inicia #}
+{# Chart.js — loaded before Alpine so it is available when the component initializes #}
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
 
-{# Datos de productos+tamaños inyectados como JSON para que Alpine los consuma sin HTMX extra #}
+{# Product+size data injected as JSON so Alpine can consume it without extra HTMX #}
 <script id="products-data" type="application/json">{{ products_json }}</script>
 {% endblock %}
 
 
 {% block content %}
 
-{# ── Encabezado ──────────────────────────────────────────────────────────── #}
+{# ── Header ──────────────────────────────────────────────────────────── #}
 <div class="mb-8 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
   <div>
-    <h1 class="text-3xl font-bold text-espresso">Gestión de Precios</h1>
+    <h1 class="text-3xl font-bold text-espresso">Pricing Manager</h1>
     <p class="mt-1 text-sm text-stone-500">
-      Calcula, ajusta y guarda precios basados en costo&nbsp;+&nbsp;margen.
+      Calculate, adjust, and save prices based on cost&nbsp;+&nbsp;margin.
     </p>
   </div>
   <a href="/costs/calculator"
      class="self-start sm:self-center text-xs font-medium text-stone-400
             hover:text-espresso transition-colors px-3 py-1.5 border border-stone-200
             rounded-lg hover:border-stone-300">
-    ← Calculadora de costos
+    ← Cost Calculator
   </a>
 </div>
 
 
-{# ── Wrapper Alpine principal ────────────────────────────────────────────── #}
+{# ── Main Alpine wrapper ────────────────────────────────────────────── #}
 <div x-data="pricingManager()" x-init="init()">
 
 
   {# ═══════════════════════════════════════════════════════════════════════
-     FILA 1: Panel de edición (2/5) + Gráfica de historial (3/5)
+     ROW 1: Edit panel (2/5) + Price history chart (3/5)
      ═══════════════════════════════════════════════════════════════════════ #}
   <div class="grid grid-cols-1 lg:grid-cols-5 gap-6 mb-6">
 
 
-    {# ── COLUMNA A: Selector + Panel de cálculo ──────────────────────────── #}
+    {# ── COLUMN A: Selector + Calculation panel ──────────────────────────── #}
     <aside class="lg:col-span-2 flex flex-col gap-4">
 
 
-      {# Card — Selector de parámetros #}
+      {# Card — Parameter selector #}
       <div class="bg-white rounded-xl shadow-sm p-6">
 
-        <h2 class="text-sm font-semibold text-espresso mb-5">Seleccionar producto</h2>
+        <h2 class="text-sm font-semibold text-espresso mb-5">Select product</h2>
 
-        {# Producto #}
+        {# Product #}
         <div class="mb-3">
           <label class="block text-xs font-medium text-stone-500 mb-1.5">
-            Producto <span class="text-red-400">*</span>
+            Product <span class="text-red-400">*</span>
           </label>
           <select x-model="productId" @change="onProductChange()"
                   class="w-full py-2 px-3 text-sm border border-stone-200 rounded-lg bg-white
                          focus:outline-none focus:ring-2 focus:ring-amber/40 focus:border-amber">
-            <option value="">Seleccionar producto…</option>
+            <option value="">Select product…</option>
             <template x-for="p in allProducts" :key="p.id">
               <option :value="p.id" x-text="p.name"></option>
             </template>
           </select>
           {% if not products %}
           <p class="mt-1 text-xs text-stone-400">
-            Sin productos activos.
-            <a href="/products" class="text-amber underline">Crear uno</a>.
+            No active products.
+            <a href="/products" class="text-amber underline">Create one</a>.
           </p>
           {% endif %}
         </div>
 
-        {# Tamaño — filtrado en cliente según producto seleccionado #}
+        {# Size — filtered on the client based on selected product #}
         <div class="mb-3">
-          <label class="block text-xs font-medium text-stone-500 mb-1.5">Tamaño</label>
+          <label class="block text-xs font-medium text-stone-500 mb-1.5">Size</label>
           <select x-model="sizeId" @change="resetCalc()"
                   :disabled="!productId"
                   class="w-full py-2 px-3 text-sm border border-stone-200 rounded-lg bg-white
                          focus:outline-none focus:ring-2 focus:ring-amber/40 focus:border-amber
                          disabled:bg-stone-50 disabled:text-stone-400">
-            <option value="">Tamaño base (scale 1×)</option>
+            <option value="">Base size (scale 1×)</option>
             <template x-for="s in currentSizes" :key="s.id">
               <option :value="s.id" x-text="s.name + (s.volume ? ' · ' + s.volume + ' oz' : '')"></option>
             </template>
           </select>
         </div>
 
-        {# Tienda #}
+        {# Store #}
         <div class="mb-5">
           <label class="block text-xs font-medium text-stone-500 mb-1.5">
-            Tienda
-            <span class="text-stone-300 font-normal ml-1">— opcional</span>
+            Store
+            <span class="text-stone-300 font-normal ml-1">— optional</span>
           </label>
           <select x-model="storeId" @change="resetCalc()"
                   class="w-full py-2 px-3 text-sm border border-stone-200 rounded-lg bg-white
                          focus:outline-none focus:ring-2 focus:ring-amber/40 focus:border-amber">
-            <option value="">Precio base (sin tienda)</option>
+            <option value="">Base price (no store)</option>
             {% for s in stores %}
             <option value="{{ s.id }}">
               {{ s.name }}{% if s.city %} · {{ s.city }}{% endif %}
@@ -102,7 +102,7 @@
             {% endfor %}
           </select>
           {% if not stores %}
-          <p class="mt-1 text-xs text-stone-400">Sin tiendas — se usará precio base.</p>
+          <p class="mt-1 text-xs text-stone-400">No stores — base price will be used.</p>
           {% endif %}
         </div>
 
@@ -111,18 +111,18 @@
                 class="w-full py-2.5 text-sm font-semibold text-beige bg-espresso rounded-lg
                        hover:bg-espresso-light transition-colors
                        disabled:opacity-40 disabled:cursor-not-allowed">
-          <span x-show="!calculating">Calcular precio</span>
+          <span x-show="!calculating">Calculate price</span>
           <span x-show="calculating" x-cloak class="flex items-center justify-center gap-2">
             <svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
               <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
               <path class="opacity-75" fill="currentColor"
                     d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
             </svg>
-            Calculando…
+            Calculating…
           </span>
         </button>
 
-        {# Error de cálculo #}
+        {# Calculation error #}
         <div x-show="calcError" x-cloak
              class="mt-3 flex items-start gap-2 text-xs text-red-600 bg-red-50
                     border border-red-200 rounded-lg px-3 py-2">
@@ -138,29 +138,29 @@
       {# /card selector #}
 
 
-      {# Card — Panel de cálculo (aparece tras calcular) #}
+      {# Card — Calculation panel (appears after calculating) #}
       <div class="bg-white rounded-xl shadow-sm p-6"
            x-show="cost !== null" x-cloak
            x-transition:enter="transition ease-out duration-200"
            x-transition:enter-start="opacity-0 translate-y-2"
            x-transition:enter-end="opacity-100 translate-y-0">
 
-        <h2 class="text-sm font-semibold text-espresso mb-5">Panel de precios</h2>
+        <h2 class="text-sm font-semibold text-espresso mb-5">Pricing panel</h2>
 
-        {# Costo actual (readonly) #}
+        {# Current cost (readonly) #}
         <div class="mb-4">
           <label class="block text-xs font-medium text-stone-500 mb-1.5">
-            Costo de producción
-            <span class="text-stone-300 font-normal ml-1">— calculado</span>
+            Production cost
+            <span class="text-stone-300 font-normal ml-1">— calculated</span>
           </label>
           <div class="flex items-center justify-between py-2.5 px-3
                       bg-stone-50 border border-stone-200 rounded-lg">
             <span class="text-sm font-mono font-bold text-espresso" x-text="formatCOP(cost)"></span>
-            <span class="text-xs text-stone-400">COP / porción</span>
+            <span class="text-xs text-stone-400">COP / serving</span>
           </div>
         </div>
 
-        {# Markup con slider #}
+        {# Markup with slider #}
         <div class="mb-4">
           <div class="flex items-center justify-between mb-2">
             <label class="text-xs font-medium text-stone-500">Markup&nbsp;%</label>
@@ -187,10 +187,10 @@
           </div>
         </div>
 
-        {# Precio sugerido (redondeado, readonly) #}
+        {# Suggested price (rounded, readonly) #}
         <div class="mb-4">
           <label class="block text-xs font-medium text-stone-500 mb-1.5">
-            Precio sugerido
+            Suggested price
           </label>
           <div class="flex items-center justify-between py-2.5 px-3
                       bg-blue-50 border border-blue-200 rounded-lg">
@@ -200,10 +200,10 @@
           </div>
         </div>
 
-        {# Precio final (editable) #}
+        {# Final price (editable) #}
         <div class="mb-2">
           <label class="block text-xs font-medium text-stone-500 mb-1.5">
-            Precio final
+            Final price
             <span class="text-stone-300 font-normal ml-1">— editable</span>
           </label>
           <div class="relative">
@@ -217,7 +217,7 @@
           </div>
         </div>
 
-        {# Indicador de margen efectivo #}
+        {# Effective margin indicator #}
         <div class="mb-5 h-5">
           <template x-if="finalPrice > 0 && cost > 0">
             <p class="text-xs font-medium flex items-center gap-1"
@@ -225,111 +225,111 @@
                       : effectiveMargin >= 20 ? 'text-amber'
                       : 'text-red-500'">
               <span x-text="effectiveMargin >= 40 ? '✓' : effectiveMargin >= 20 ? '⚠' : '↓'"></span>
-              Margen efectivo:
+              Effective margin:
               <span class="font-bold" x-text="effectiveMargin.toFixed(1) + '%'"></span>
             </p>
           </template>
         </div>
 
-        {# Botón guardar #}
+        {# Save button #}
         <button @click="savePrice()"
                 :disabled="!finalPrice || saving"
                 class="w-full py-2.5 text-sm font-semibold rounded-lg transition-colors
                        bg-green-600 hover:bg-green-700 text-white
                        disabled:opacity-40 disabled:cursor-not-allowed">
-          <span x-show="!saving">💾 Guardar Precio</span>
+          <span x-show="!saving">💾 Save Price</span>
           <span x-show="saving" x-cloak class="flex items-center justify-center gap-2">
             <svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
               <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
               <path class="opacity-75" fill="currentColor"
                     d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
             </svg>
-            Guardando…
+            Saving…
           </span>
         </button>
 
-        {# Feedback guardar #}
+        {# Save feedback #}
         <div x-show="saveMessage" x-cloak
              class="mt-3 text-xs text-center font-medium py-1.5 rounded-lg"
              :class="saveError ? 'text-red-600 bg-red-50' : 'text-green-600 bg-green-50'"
              x-text="saveMessage"></div>
 
       </div>
-      {# /card panel cálculo #}
+      {# /card calculation panel #}
 
 
-      {# Estado vacío del panel — visible antes del primer cálculo #}
+      {# Panel empty state — visible before first calculation #}
       <div x-show="cost === null" x-cloak
            class="bg-white rounded-xl shadow-sm py-10 text-center text-stone-400 flex-1">
         <p class="text-4xl mb-3">💰</p>
-        <p class="text-sm font-medium text-stone-500">Panel de precios</p>
-        <p class="text-xs mt-1">Selecciona un producto y pulsa "Calcular precio".</p>
+        <p class="text-sm font-medium text-stone-500">Pricing panel</p>
+        <p class="text-xs mt-1">Select a product and click "Calculate price".</p>
       </div>
 
     </aside>
-    {# /columna A #}
+    {# /column A #}
 
 
-    {# ── COLUMNA B: Gráfica de historial ─────────────────────────────────── #}
+    {# ── COLUMN B: Price history chart ─────────────────────────────────── #}
     <div class="lg:col-span-3">
       <div class="bg-white rounded-xl shadow-sm p-6 flex flex-col h-full min-h-80">
 
-        {# Encabezado gráfica #}
+        {# Chart header #}
         <div class="flex items-start justify-between mb-4 shrink-0">
           <div>
-            <h2 class="text-sm font-semibold text-espresso">Historial de precios</h2>
+            <h2 class="text-sm font-semibold text-espresso">Price history</h2>
             <p class="text-xs text-stone-400 mt-0.5"
                x-text="selectedProductName
                         ? selectedProductName + (selectedSizeName ? ' · ' + selectedSizeName : '')
-                        : 'Selecciona un producto para ver el historial'">
+                        : 'Select a product to view history'">
             </p>
           </div>
           <span x-show="historyLoading" x-cloak
-                class="text-xs text-stone-400 animate-pulse">Cargando…</span>
+                class="text-xs text-stone-400 animate-pulse">Loading…</span>
         </div>
 
-        {# Estado: sin producto seleccionado #}
+        {# State: no product selected #}
         <div x-show="cost === null && !historyLoading"
              class="flex-1 flex items-center justify-center">
           <div class="text-center text-stone-300">
             <p class="text-5xl mb-3">📈</p>
-            <p class="text-sm">El historial aparecerá aquí</p>
+            <p class="text-sm">History will appear here</p>
           </div>
         </div>
 
-        {# Estado: producto calculado pero sin historial #}
+        {# State: product calculated but no history #}
         <div x-show="cost !== null && historyData.length === 0 && !historyLoading" x-cloak
              class="flex-1 flex items-center justify-center">
           <div class="text-center text-stone-400">
             <p class="text-4xl mb-3">🆕</p>
-            <p class="text-sm font-medium text-stone-500">Sin historial aún</p>
-            <p class="text-xs mt-1">Guarda un precio para empezar a registrar el historial.</p>
+            <p class="text-sm font-medium text-stone-500">No history yet</p>
+            <p class="text-xs mt-1">Save a price to start recording history.</p>
           </div>
         </div>
 
-        {# Canvas Chart.js #}
+        {# Chart.js canvas #}
         <div x-show="historyData.length > 0" x-cloak class="flex-1 relative min-h-64">
           <canvas id="historyChart"></canvas>
         </div>
 
       </div>
     </div>
-    {# /columna B #}
+    {# /column B #}
 
   </div>
-  {# /fila 1 #}
+  {# /row 1 #}
 
 
   {# ═══════════════════════════════════════════════════════════════════════
-     FILA 2: Tabla de todos los productos con pricing
+     ROW 2: Table of all products with pricing
      ═══════════════════════════════════════════════════════════════════════ #}
   <div class="bg-white rounded-xl shadow-sm mb-6">
 
     <div class="px-6 py-4 border-b border-stone-100 flex items-center justify-between">
       <div>
-        <h2 class="text-sm font-semibold text-espresso">Todos los productos</h2>
+        <h2 class="text-sm font-semibold text-espresso">All products</h2>
         <p class="text-xs text-stone-400 mt-0.5">
-          Haz click en una fila para cargarla en el panel de edición.
+          Click a row to load it into the edit panel.
         </p>
       </div>
       <button @click="loadTable()"
@@ -341,37 +341,37 @@
           <path stroke-linecap="round" stroke-linejoin="round"
                 d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
         </svg>
-        Actualizar
+        Refresh
       </button>
     </div>
 
-    {# Skeleton cargando #}
+    {# Loading skeleton #}
     <div x-show="tableLoading" class="p-6 space-y-3">
       <template x-for="i in [1,2,3,4]" :key="i">
         <div class="h-9 bg-stone-100 rounded animate-pulse"></div>
       </template>
     </div>
 
-    {# Sin datos #}
+    {# No data #}
     <div x-show="!tableLoading && tableRows.length === 0" x-cloak
          class="py-12 text-center text-stone-400">
       <p class="text-4xl mb-3">🏷️</p>
-      <p class="text-sm font-medium text-stone-500">Sin pricing configurado</p>
-      <p class="text-xs mt-1">Calcula y guarda un precio para que aparezca aquí.</p>
+      <p class="text-sm font-medium text-stone-500">No pricing configured</p>
+      <p class="text-xs mt-1">Calculate and save a price for it to appear here.</p>
     </div>
 
-    {# Tabla #}
+    {# Table #}
     <div x-show="!tableLoading && tableRows.length > 0" x-cloak class="overflow-x-auto">
       <table class="min-w-full divide-y divide-stone-100 text-sm">
         <thead>
           <tr class="text-xs font-medium text-stone-400 bg-stone-50 uppercase tracking-wide">
-            <th class="px-6 py-3 text-left">Producto</th>
-            <th class="px-6 py-3 text-left">Tamaño</th>
-            <th class="px-6 py-3 text-right">Costo</th>
-            <th class="px-6 py-3 text-right">Precio</th>
-            <th class="px-6 py-3 text-right">Margen&nbsp;%</th>
-            <th class="px-6 py-3 text-left">Última actualización</th>
-            <th class="px-6 py-3 text-center">Tipo</th>
+            <th class="px-6 py-3 text-left">Product</th>
+            <th class="px-6 py-3 text-left">Size</th>
+            <th class="px-6 py-3 text-right">Cost</th>
+            <th class="px-6 py-3 text-right">Price</th>
+            <th class="px-6 py-3 text-right">Margin&nbsp;%</th>
+            <th class="px-6 py-3 text-left">Last updated</th>
+            <th class="px-6 py-3 text-center">Type</th>
           </tr>
         </thead>
         <tbody class="divide-y divide-stone-50">
@@ -421,16 +421,16 @@
         </tbody>
       </table>
       <div class="px-6 py-3 border-t border-stone-50 text-xs text-stone-400">
-        <span x-text="tableRows.length + ' registros'"></span>
+        <span x-text="tableRows.length + ' records'"></span>
       </div>
     </div>
 
   </div>
-  {# /tabla #}
+  {# /table #}
 
 
   {# ═══════════════════════════════════════════════════════════════════════
-     FILA 3: Pricing masivo
+     ROW 3: Bulk pricing
      ═══════════════════════════════════════════════════════════════════════ #}
   <div class="bg-white rounded-xl shadow-sm p-6">
 
@@ -439,31 +439,31 @@
         <span class="text-base">⚡</span>
       </div>
       <div>
-        <h2 class="text-sm font-semibold text-espresso">Pricing masivo</h2>
+        <h2 class="text-sm font-semibold text-espresso">Bulk pricing</h2>
         <p class="text-xs text-stone-400 mt-0.5">
-          Recalcula los precios de todos los productos activos en un solo paso.
+          Recalculate prices for all active products in a single step.
         </p>
       </div>
     </div>
 
     <div class="flex flex-col sm:flex-row gap-4 items-start sm:items-end">
 
-      {# Tienda para batch #}
+      {# Store for batch #}
       <div class="flex-1 max-w-xs">
         <label class="block text-xs font-medium text-stone-500 mb-1.5">
-          Tienda <span class="text-stone-300 font-normal">— opcional</span>
+          Store <span class="text-stone-300 font-normal">— optional</span>
         </label>
         <select x-model="batchStoreId"
                 class="w-full py-2 px-3 text-sm border border-stone-200 rounded-lg bg-white
                        focus:outline-none focus:ring-2 focus:ring-amber/40 focus:border-amber">
-          <option value="">Precios base globales</option>
+          <option value="">Global base prices</option>
           {% for s in stores %}
           <option value="{{ s.id }}">{{ s.name }}{% if s.city %} · {{ s.city }}{% endif %}</option>
           {% endfor %}
         </select>
       </div>
 
-      {# Checkbox guardar en DB #}
+      {# Save to DB checkbox #}
       <label class="flex items-center gap-2.5 cursor-pointer py-2 group">
         <div class="relative">
           <input type="checkbox" x-model="batchSaveToDB"
@@ -475,33 +475,33 @@
         </div>
         <span class="text-sm font-medium text-stone-700 group-hover:text-espresso
                      transition-colors select-none">
-          Guardar en DB
+          Save to DB
         </span>
       </label>
 
-      {# Botón calcular todos #}
+      {# Calculate all button #}
       <button @click="runBatch()"
               :disabled="batchRunning"
               class="px-6 py-2.5 text-sm font-semibold rounded-lg transition-colors
                      bg-espresso hover:bg-espresso-light text-beige shrink-0
                      disabled:opacity-40 disabled:cursor-not-allowed">
-        <span x-show="!batchRunning">⚡ Calcular Todos</span>
+        <span x-show="!batchRunning">⚡ Calculate All</span>
         <span x-show="batchRunning" x-cloak class="flex items-center gap-2">
           <svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
             <path class="opacity-75" fill="currentColor"
                   d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
           </svg>
-          Calculando…
+          Calculating…
         </span>
       </button>
 
     </div>
 
-    {# Progress bar — solo visible durante el batch #}
+    {# Progress bar — only visible during batch #}
     <div x-show="batchRunning" x-cloak class="mt-5">
       <div class="flex items-center justify-between text-xs text-stone-400 mb-1.5">
-        <span>Procesando productos activos…</span>
+        <span>Processing active products…</span>
         <span class="font-mono" x-text="batchProgress + '%'"></span>
       </div>
       <div class="w-full bg-stone-100 rounded-full h-2 overflow-hidden">
@@ -510,14 +510,14 @@
       </div>
     </div>
 
-    {# Resultado del batch #}
+    {# Batch result #}
     <div x-show="batchResult && !batchRunning" x-cloak
          class="mt-5 pt-5 border-t border-stone-100"
          x-transition:enter="transition ease-out duration-200"
          x-transition:enter-start="opacity-0"
          x-transition:enter-end="opacity-100">
 
-      {# Error genérico del servidor #}
+      {# Generic server error #}
       <template x-if="batchResult?.error">
         <div class="flex items-start gap-2 text-sm text-red-600 bg-red-50
                     border border-red-200 rounded-lg px-4 py-3 mb-4">
@@ -526,29 +526,29 @@
         </div>
       </template>
 
-      {# KPIs del resultado #}
+      {# Result KPIs #}
       <template x-if="!batchResult?.error">
         <div>
           <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
             <div class="text-center bg-stone-50 rounded-xl py-4">
-              <p class="text-xs text-stone-400 mb-1">Productos</p>
+              <p class="text-xs text-stone-400 mb-1">Products</p>
               <p class="text-2xl font-bold text-espresso"
                  x-text="batchResult?.total_products ?? '—'"></p>
             </div>
             <div class="text-center bg-stone-50 rounded-xl py-4">
-              <p class="text-xs text-stone-400 mb-1">Variantes</p>
+              <p class="text-xs text-stone-400 mb-1">Variants</p>
               <p class="text-2xl font-bold text-stone-700"
                  x-text="batchResult?.total_sizes ?? '—'"></p>
             </div>
             <div class="text-center bg-green-50 rounded-xl py-4">
-              <p class="text-xs text-stone-400 mb-1">Calculados ✓</p>
+              <p class="text-xs text-stone-400 mb-1">Calculated ✓</p>
               <p class="text-2xl font-bold text-green-600"
                  x-text="batchResult?.prices_calculated ?? '—'"></p>
             </div>
             <div class="text-center rounded-xl py-4"
                  :class="(batchResult?.errors?.length ?? 0) > 0
                          ? 'bg-red-50' : 'bg-green-50'">
-              <p class="text-xs text-stone-400 mb-1">Errores</p>
+              <p class="text-xs text-stone-400 mb-1">Errors</p>
               <p class="text-2xl font-bold"
                  :class="(batchResult?.errors?.length ?? 0) > 0
                          ? 'text-red-600' : 'text-green-600'"
@@ -556,11 +556,11 @@
             </div>
           </div>
 
-          {# Lista de errores #}
+          {# Error list #}
           <template x-if="batchResult?.errors?.length > 0">
             <div class="mb-4">
               <p class="text-xs font-semibold text-red-600 mb-2">
-                Errores de cálculo:
+                Calculation errors:
               </p>
               <div class="max-h-36 overflow-y-auto rounded-lg bg-red-50
                           border border-red-100 p-3 space-y-1">
@@ -571,22 +571,22 @@
             </div>
           </template>
 
-          {# Botón refrescar tabla tras guardar #}
+          {# Refresh table button after saving #}
           <template x-if="batchSaveToDB && (batchResult?.prices_calculated ?? 0) > 0">
             <button @click="loadTable()"
                     class="px-4 py-2 text-xs font-semibold rounded-lg border border-amber/40
                            text-amber hover:bg-amber/5 transition-colors">
-              Actualizar tabla de productos
+              Refresh product table
             </button>
           </template>
         </div>
       </template>
 
     </div>
-    {# /resultado batch #}
+    {# /batch result #}
 
   </div>
-  {# /pricing masivo #}
+  {# /bulk pricing #}
 
 
 </div>
@@ -599,15 +599,15 @@
 <script>
 function pricingManager() {
   return {
-    // ── Datos base (inyectados desde el servidor) ──────────────────────────
+    // ── Base data (injected from the server) ──────────────────────────
     allProducts: [],   // [{id, name, sizes:[{id, name, volume}]}]
 
-    // ── Estado del selector ────────────────────────────────────────────────
+    // ── Selector state ────────────────────────────────────────────────
     productId:  '',
     sizeId:     '',
     storeId:    '',
 
-    // ── Estado del panel de cálculo ────────────────────────────────────────
+    // ── Calculation panel state ────────────────────────────────────────
     cost:           null,
     markup:         50,
     suggestedPrice: null,
@@ -618,23 +618,23 @@ function pricingManager() {
     saveMessage:    '',
     saveError:      false,
 
-    // ── Estado del historial / gráfica ─────────────────────────────────────
+    // ── History / chart state ─────────────────────────────────────────
     historyData:    [],
     historyLoading: false,
     chart:          null,
 
-    // ── Estado de la tabla de productos ────────────────────────────────────
+    // ── Product table state ────────────────────────────────────────────
     tableRows:    [],
     tableLoading: false,
 
-    // ── Estado del pricing masivo ──────────────────────────────────────────
+    // ── Bulk pricing state ──────────────────────────────────────────────
     batchStoreId:  '',
     batchSaveToDB: false,
     batchRunning:  false,
     batchProgress: 0,
     batchResult:   null,
 
-    // ── Derivados ──────────────────────────────────────────────────────────
+    // ── Derived ──────────────────────────────────────────────────────
     get currentSizes() {
       if (!this.productId) return [];
       const p = this.allProducts.find(x => x.id == this.productId);
@@ -659,9 +659,9 @@ function pricingManager() {
       return (this.finalPrice / this.cost - 1) * 100;
     },
 
-    // ── Ciclo de vida ──────────────────────────────────────────────────────
+    // ── Lifecycle ──────────────────────────────────────────────────────
     init() {
-      // Cargar productos+tamaños desde el script tag inyectado por Jinja2
+      // Load products+sizes from the script tag injected by Jinja2
       const raw = document.getElementById('products-data');
       if (raw) {
         try { this.allProducts = JSON.parse(raw.textContent); } catch {}
@@ -669,7 +669,7 @@ function pricingManager() {
       this.loadTable();
     },
 
-    // ── Handlers de cambio de selector ────────────────────────────────────
+    // ── Selector change handlers ────────────────────────────────────────
     onProductChange() {
       this.sizeId = '';
       this.resetCalc();
@@ -685,7 +685,7 @@ function pricingManager() {
       this._destroyChart();
     },
 
-    // ── Cálculo de precio ─────────────────────────────────────────────────
+    // ── Price calculation ─────────────────────────────────────────────
     async calculatePrice() {
       if (!this.productId) return;
       this.calculating = true;
@@ -732,7 +732,7 @@ function pricingManager() {
       this.finalPrice     = rounded;
     },
 
-    // ── Guardar precio ────────────────────────────────────────────────────
+    // ── Save price ────────────────────────────────────────────────────
     async savePrice() {
       if (!this.finalPrice || !this.productId) return;
       this.saving      = true;
@@ -758,7 +758,7 @@ function pricingManager() {
           throw new Error(err.detail || `Error ${res.status}`);
         }
 
-        this.saveMessage = '✓ Precio guardado correctamente';
+        this.saveMessage = '✓ Price saved successfully';
         await this.loadHistory();
         await this.loadTable();
 
@@ -771,7 +771,7 @@ function pricingManager() {
       }
     },
 
-    // ── Cargar desde fila de tabla ─────────────────────────────────────────
+    // ── Load from table row ─────────────────────────────────────────────
     loadFromRow(row) {
       this.productId = String(row.product_id);
       this.sizeId    = row.size_id   ? String(row.size_id)   : '';
@@ -793,7 +793,7 @@ function pricingManager() {
              String(row.size_id)    === String(this.sizeId);
     },
 
-    // ── Historial + Chart.js ───────────────────────────────────────────────
+    // ── History + Chart.js ───────────────────────────────────────────────
     async loadHistory() {
       if (!this.productId || !this.sizeId) return;
       this.historyLoading = true;
@@ -818,7 +818,7 @@ function pricingManager() {
       if (!canvas || this.historyData.length === 0) return;
       this._destroyChart();
 
-      // Los datos vienen en orden desc — invertir para mostrar cronológico
+      // Data comes in descending order — reverse for chronological display
       const reversed = [...this.historyData].reverse();
 
       const labels = reversed.map(h => {
@@ -834,7 +834,7 @@ function pricingManager() {
           labels,
           datasets: [
             {
-              label:           'Precio',
+              label:           'Price',
               data:            prices,
               borderColor:     '#FF6F00',
               backgroundColor: 'rgba(255,111,0,0.07)',
@@ -846,7 +846,7 @@ function pricingManager() {
               fill:            true,
             },
             {
-              label:           'Costo',
+              label:           'Cost',
               data:            costs,
               borderColor:     '#78909C',
               backgroundColor: 'rgba(120,144,156,0.04)',
@@ -908,7 +908,7 @@ function pricingManager() {
       if (this.chart) { this.chart.destroy(); this.chart = null; }
     },
 
-    // ── Tabla de productos ─────────────────────────────────────────────────
+    // ── Product table ─────────────────────────────────────────────────────
     async loadTable() {
       this.tableLoading = true;
       try {
@@ -922,13 +922,13 @@ function pricingManager() {
       }
     },
 
-    // ── Pricing masivo ─────────────────────────────────────────────────────
+    // ── Bulk pricing ─────────────────────────────────────────────────────
     async runBatch() {
       this.batchRunning  = true;
       this.batchProgress = 0;
       this.batchResult   = null;
 
-      // Animación de progreso mientras la request está en vuelo
+      // Progress animation while the request is in flight
       const ticker = setInterval(() => {
         if (this.batchProgress < 82) this.batchProgress += 4;
       }, 250);
@@ -942,7 +942,7 @@ function pricingManager() {
           method: 'POST',
         });
 
-        if (!res.ok) throw new Error(`Error del servidor (${res.status})`);
+        if (!res.ok) throw new Error(`Server error (${res.status})`);
         this.batchResult   = await res.json();
         this.batchProgress = 100;
 
@@ -954,7 +954,7 @@ function pricingManager() {
       }
     },
 
-    // ── Utilidades ─────────────────────────────────────────────────────────
+    // ── Utilities ─────────────────────────────────────────────────────────
     formatCOP(value) {
       if (value === null || value === undefined || value === '') return '—';
       const n = parseFloat(value);

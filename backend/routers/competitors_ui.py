@@ -10,7 +10,7 @@ from backend.database import get_db
 from backend.models.competitor import Competitor, CompetitorProduct, ProductCompetitorMatch
 from backend.models.product import Product, ProductSize
 
-router = APIRouter(prefix="/competitors", tags=["UI - Competidores"])
+router = APIRouter(prefix="/competitors", tags=["UI - Competitors"])
 
 templates = Jinja2Templates(
     directory=Path(__file__).resolve().parent.parent / "templates"
@@ -158,7 +158,7 @@ async def competitor_detail(
 ) -> HTMLResponse:
     competitor = db.get(Competitor, competitor_id)
     if not competitor:
-        return HTMLResponse("Competidor no encontrado", status_code=404)
+        return HTMLResponse("Competitor not found", status_code=404)
 
     cp_list = _comp_products(competitor_id, db)
     return templates.TemplateResponse("competitors/detail.html", {
@@ -170,7 +170,7 @@ async def competitor_detail(
     })
 
 
-# ── Productos del competidor (HTMX) ─────────────────────────────────────────
+# ── Competitor products (HTMX) ──────────────────────────────────────────────
 
 @router.post("/{competitor_id}/products-htmx", response_class=HTMLResponse)
 async def add_comp_product(
@@ -193,14 +193,14 @@ async def add_comp_product(
     raw_price        = form.get("price",            "").strip()
 
     if not product_name or not size_description or not raw_price:
-        return _render("Nombre, tamaño y precio son obligatorios.")
+        return _render("Name, size and price are required.")
 
     try:
         price = float(raw_price)
         if price < 0:
-            return _render("El precio no puede ser negativo.")
+            return _render("Price cannot be negative.")
     except ValueError:
-        return _render("Precio inválido.")
+        return _render("Invalid price.")
 
     db.add(CompetitorProduct(
         competitor_id    = competitor_id,
@@ -233,7 +233,7 @@ async def delete_comp_product(
     })
 
 
-# ── Matches (HTMX) ──────────────────────────────────────────────────────────
+# ── Matches (HTMX) ─────────────────────────────────────────────────────────
 
 @router.post("/{competitor_id}/matches-htmx", response_class=HTMLResponse)
 async def create_match(
@@ -257,20 +257,20 @@ async def create_match(
     matched_by  = form.get("matched_by",           "").strip()
 
     if not raw_product or not raw_size or not raw_cp:
-        return _render("Selecciona nuestro producto, tamaño y producto del competidor.")
+        return _render("Select our product, size and competitor product.")
     if not matched_by:
-        return _render("El campo 'Matcheado por' es obligatorio.")
+        return _render("The 'Matched by' field is required.")
 
     our_product_id       = int(raw_product)
     our_size_id          = int(raw_size)
     competitor_product_id = int(raw_cp)
 
     if db.get(Product,            our_product_id)        is None:
-        return _render("Producto propio no encontrado.")
+        return _render("Our product not found.")
     if db.get(ProductSize,        our_size_id)           is None:
-        return _render("Tamaño no encontrado.")
+        return _render("Size not found.")
     if db.get(CompetitorProduct,  competitor_product_id) is None:
-        return _render("Producto del competidor no encontrado.")
+        return _render("Competitor product not found.")
 
     existing = (
         db.query(ProductCompetitorMatch)
@@ -282,7 +282,7 @@ async def create_match(
         .first()
     )
     if existing:
-        return _render("Este match ya existe.")
+        return _render("This match already exists.")
 
     db.add(ProductCompetitorMatch(
         our_product_id        = our_product_id,

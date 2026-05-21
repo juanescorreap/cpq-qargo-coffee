@@ -34,7 +34,7 @@ def calculate_price(
     request: PriceCalculationRequest,
     db: Session = Depends(get_db),
 ):
-    """Calcula precio sugerido basado en costo + markup."""
+    """Calculates suggested price based on cost + markup."""
     engine = PricingEngine(db)
     return engine.calculate_price(
         request.product_id,
@@ -49,7 +49,7 @@ def set_price(
     request: SetPriceRequest,
     db: Session = Depends(get_db),
 ):
-    """Establece precio final para un producto."""
+    """Sets the final price for a product."""
     engine = PricingEngine(db)
     pricing = engine.save_pricing(
         request.product_id,
@@ -68,11 +68,11 @@ def calculate_all_prices(
     save_to_db: bool = False,
     db: Session = Depends(get_db),
 ):
-    """Calcula precios para todos los productos.
+    """Calculates prices for all products.
 
     Query params:
-    - store_id: Calcular solo para esta tienda
-    - save_to_db: Si guardar los precios calculados
+    - store_id: Calculate only for this store
+    - save_to_db: Whether to save the calculated prices
     """
     engine = PricingEngine(db)
     return engine.calculate_all_prices(store_id, save_to_db)
@@ -85,7 +85,7 @@ def get_price_history(
     store_id: Optional[int] = None,
     db: Session = Depends(get_db),
 ):
-    """Obtiene historial de precios de un producto/tamaño."""
+    """Returns the price history for a product/size."""
     query = db.query(ProductPriceHistory).filter(
         ProductPriceHistory.product_id == product_id,
         ProductPriceHistory.size_id == size_id,
@@ -112,7 +112,7 @@ def get_pricing_table(
     store_id: Optional[int] = None,
     db: Session = Depends(get_db),
 ):
-    """Devuelve todos los precios vigentes para la tabla del manager."""
+    """Returns all current prices for the manager table."""
     query = (
         db.query(ProductPricing, Product, ProductSize)
         .join(Product, ProductPricing.product_id == Product.id)
@@ -161,7 +161,7 @@ def get_current_pricing(
     store_id: Optional[int] = None,
     db: Session = Depends(get_db),
 ):
-    """Obtiene el pricing vigente más reciente para un producto/tamaño."""
+    """Returns the most recent current pricing for a product/size."""
     pricing = (
         db.query(ProductPricing)
         .filter(

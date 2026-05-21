@@ -4,33 +4,33 @@ from pathlib import Path
 from logging.handlers import RotatingFileHandler
 
 # ============================================
-# CONFIGURACIÓN DE LOGGING
+# LOGGING CONFIGURATION
 # ============================================
 
 def setup_scraping_logger():
     """
-    Configura logger para el sistema de scraping.
-    
+    Configure the logger for the scraping system.
+
     Features:
-    - Log file con rotación automática
-    - Console output para debugging
-    - Formato detallado con timestamps
-    - Niveles separados por severidad
+    - Log file with automatic rotation
+    - Console output for debugging
+    - Detailed format with timestamps
+    - Levels separated by severity
     """
-    
-    # Crear directorio de logs si no existe
+
+    # Create logs directory if it does not exist
     log_dir = Path('logs')
     log_dir.mkdir(exist_ok=True)
-    
-    # Logger principal
+
+    # Main logger
     logger = logging.getLogger('scraper')
     logger.setLevel(logging.DEBUG)
-    
-    # Evitar duplicados
+
+    # Avoid duplicate handlers
     if logger.handlers:
         return logger
-    
-    # ========== FILE HANDLER (todas las operaciones) ==========
+
+    # ========== FILE HANDLER (all operations) ==========
     file_handler = RotatingFileHandler(
         'logs/scraping.log',
         maxBytes=10 * 1024 * 1024,  # 10 MB
@@ -38,14 +38,14 @@ def setup_scraping_logger():
         encoding='utf-8'
     )
     file_handler.setLevel(logging.DEBUG)
-    
+
     file_formatter = logging.Formatter(
         '%(asctime)s | %(name)s | %(levelname)-8s | %(message)s',
         datefmt='%Y-%m-%d %H:%M:%S'
     )
     file_handler.setFormatter(file_formatter)
-    
-    # ========== ERROR FILE HANDLER (solo errores) ==========
+
+    # ========== ERROR FILE HANDLER (errors only) ==========
     error_handler = RotatingFileHandler(
         'logs/scraping_errors.log',
         maxBytes=5 * 1024 * 1024,  # 5 MB
@@ -54,29 +54,29 @@ def setup_scraping_logger():
     )
     error_handler.setLevel(logging.ERROR)
     error_handler.setFormatter(file_formatter)
-    
+
     # ========== CONSOLE HANDLER (development) ==========
     console_handler = logging.StreamHandler(sys.stdout)
     console_handler.setLevel(logging.INFO)
-    
+
     console_formatter = logging.Formatter(
         '%(levelname)-8s | %(name)s | %(message)s'
     )
     console_handler.setFormatter(console_formatter)
-    
-    # Agregar handlers
+
+    # Add handlers
     logger.addHandler(file_handler)
     logger.addHandler(error_handler)
     logger.addHandler(console_handler)
-    
-    # Log de inicio
+
+    # Startup log
     logger.info("=" * 60)
     logger.info("Scraping system logger initialized")
     logger.info("=" * 60)
-    
+
     return logger
 
-# Inicializar logger al importar módulo
+# Initialise logger on module import
 setup_scraping_logger()
 
 # ============================================

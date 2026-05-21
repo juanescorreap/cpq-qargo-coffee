@@ -1,37 +1,37 @@
-"""Modelos SQLAlchemy del sistema CPQ para cafeterías.
+"""SQLAlchemy models for the CPQ cafeteria system.
 
-Estructura de módulos:
+Module structure:
 
     ingredient  — Ingredient, IngredientPriceHistory
-                  Insumos con historial de precios de compra.
+                  Ingredients with purchase price history.
 
     recipe_unit — RecipeUnit, IngredientRecipeUnitConversion
-                  Unidades de receta (pump, shot) y sus factores de conversión
-                  a la unidad de consumo del ingrediente.
+                  Recipe units (pump, shot) and their conversion factors
+                  to the ingredient's consumption unit.
 
     store       — Store, StoreIngredientPrice
-                  Tiendas y precios de ingredientes por tienda.
+                  Stores and ingredient prices per store.
 
     product     — Product, ProductSize, RecipeIngredient, RecipeSubRecipe,
                   SizePackaging, StoreProduct
-                  Catálogo de productos, variantes de tamaño, recetas,
-                  componentes batch, packaging y disponibilidad por tienda.
+                  Product catalog, size variants, recipes,
+                  batch components, packaging and availability per store.
 
     pricing     — CategoryMargin, ProductPricing, ProductPriceHistory
-                  Márgenes por categoría, precios actuales con soporte de
-                  override por tienda, e historial de cambios de precio.
+                  Per-category margins, current prices with per-store override
+                  support, and price change history.
 
     competitor  — Competitor, CompetitorProduct, ProductCompetitorMatch
-                  Competidores monitoreados, productos scrapeados de sus menús
-                  y matches manuales contra productos propios.
+                  Monitored competitors, products scraped from their menus,
+                  and manual matches against own products.
 
     modifier    — Modifier, ProductModifierCost
-                  Modificaciones de receta (sustituciones, adiciones) y su
-                  impacto pre-calculado en el costo por producto.
+                  Recipe modifications (substitutions, additions) and their
+                  pre-calculated cost impact per product.
 
-Todos los modelos heredan de `backend.database.Base`. Importar este paquete
-es suficiente para que `Base.metadata` contenga todas las tablas antes de
-llamar a `create_all()`.
+All models inherit from `backend.database.Base`. Importing this package
+is sufficient for `Base.metadata` to contain all tables before calling
+`create_all()`.
 """
 
 from backend.models.competitor import (

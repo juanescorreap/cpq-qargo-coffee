@@ -1,7 +1,7 @@
 """
 Pydantic v2 schemas for scraping API endpoints.
 
-Organización:
+Organization:
   Enums       — ScraperBusinessType, ScraperType
   Requests    — ScrapeIngredientRequest, ScrapeIngredientsBatchRequest,
                 ScrapeCompetitorMenuRequest, TestScraperRequest
@@ -24,13 +24,13 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator
 # ============================================
 
 class ScraperBusinessType(str, Enum):
-    """Tipo de negocio del scraper."""
+    """Business type of the scraper."""
     COMPETITOR = "competitor"
     SUPPLIER = "supplier"
 
 
 class ScraperType(str, Enum):
-    """Categoría técnica del sitio scrapeado."""
+    """Technical category of the scraped site."""
     RESTAURANT = "restaurant"
     RETAIL = "retail"
     MARKETPLACE = "marketplace"
@@ -43,21 +43,21 @@ class ScraperType(str, Enum):
 
 class ScrapeIngredientRequest(BaseModel):
     """
-    Solicita el scraping del precio actual de un ingrediente.
+    Requests the scraping of the current price of an ingredient.
 
-    Si ``update_db`` es True y el precio cambió, el sistema actualiza
-    ``ingredient.purchase_price`` y agrega una fila en
+    If ``update_db`` is True and the price changed, the system updates
+    ``ingredient.purchase_price`` and adds a row to
     ``ingredient_price_history``.
     """
 
     ingredient_id: int = Field(
         ...,
         gt=0,
-        description="ID del ingrediente en la base de datos.",
+        description="ID of the ingredient in the database.",
     )
     update_db: bool = Field(
         True,
-        description="Si True, persiste el nuevo precio en DB cuando cambia.",
+        description="If True, persists the new price in DB when it changes.",
     )
 
     model_config = ConfigDict(
@@ -72,25 +72,25 @@ class ScrapeIngredientRequest(BaseModel):
 
 class ScrapeIngredientsBatchRequest(BaseModel):
     """
-    Solicita el scraping simultáneo de múltiples ingredientes.
+    Requests the simultaneous scraping of multiple ingredients.
 
-    Máximo 100 IDs por request para evitar timeouts en el endpoint.
-    El sistema procesa los ingredientes secuencialmente (no en paralelo).
+    Maximum 100 IDs per request to avoid endpoint timeouts.
+    The system processes ingredients sequentially (not in parallel).
     """
 
     ingredient_ids: List[int] = Field(
         ...,
-        description="IDs de los ingredientes a scrape. Entre 1 y 100.",
+        description="IDs of the ingredients to scrape. Between 1 and 100.",
     )
     update_db: bool = Field(
         True,
-        description="Si True, persiste los precios actualizados en DB.",
+        description="If True, persists the updated prices in DB.",
     )
     supplier_only: bool = Field(
         False,
         description=(
-            "Si True, omite ingredientes cuyo scraper es de tipo 'competitor'. "
-            "Útil para actualizar solo costos de insumos sin tocar análisis competitivo."
+            "If True, skips ingredients whose scraper is of type 'competitor'. "
+            "Useful for updating only supply costs without touching competitive analysis."
         ),
     )
 
@@ -98,11 +98,11 @@ class ScrapeIngredientsBatchRequest(BaseModel):
     @classmethod
     def validate_ids(cls, v: List[int]) -> List[int]:
         if not v:
-            raise ValueError("ingredient_ids no puede estar vacío")
+            raise ValueError("ingredient_ids cannot be empty")
         if len(v) > 100:
-            raise ValueError("Máximo 100 ingredientes por batch")
+            raise ValueError("Maximum 100 ingredients per batch")
         if any(i <= 0 for i in v):
-            raise ValueError("Todos los IDs deben ser > 0")
+            raise ValueError("All IDs must be > 0")
         return v
 
     model_config = ConfigDict(
@@ -118,30 +118,30 @@ class ScrapeIngredientsBatchRequest(BaseModel):
 
 class ScrapeCompetitorMenuRequest(BaseModel):
     """
-    Solicita el scraping del menú de un competidor.
+    Requests the scraping of a competitor's menu.
 
-    El sistema busca los productos usando cada término en ``search_queries``
-    y persiste los resultados en ``competitor_products``.  Si ``search_queries``
-    es None, se usan los términos por defecto del sistema (café, latte, etc.).
+    The system searches for products using each term in ``search_queries``
+    and persists the results in ``competitor_products``.  If ``search_queries``
+    is None, the system's default terms are used (coffee, latte, etc.).
     """
 
     competitor_id: int = Field(
         ...,
         gt=0,
-        description="ID del competidor en la base de datos.",
+        description="ID of the competitor in the database.",
     )
     search_queries: Optional[List[str]] = Field(
         None,
         description=(
-            "Términos de búsqueda. Si None, usa las búsquedas por defecto "
-            "del sistema (cappuccino, latte, americano, …)."
+            "Search terms. If None, uses the system's default searches "
+            "(cappuccino, latte, americano, …)."
         ),
     )
     limit_per_query: int = Field(
         10,
         ge=1,
         le=50,
-        description="Máximo de productos a extraer por término de búsqueda.",
+        description="Maximum number of products to extract per search term.",
     )
 
     @field_validator("search_queries")
@@ -149,11 +149,11 @@ class ScrapeCompetitorMenuRequest(BaseModel):
     def validate_queries(cls, v: Optional[List[str]]) -> Optional[List[str]]:
         if v is not None:
             if not v:
-                raise ValueError("search_queries no puede ser una lista vacía; usa None para defaults")
+                raise ValueError("search_queries cannot be an empty list; use None for defaults")
             if any(not q.strip() for q in v):
-                raise ValueError("Ningún término de búsqueda puede estar vacío")
+                raise ValueError("No search term can be empty")
             if len(v) > 20:
-                raise ValueError("Máximo 20 términos de búsqueda por request")
+                raise ValueError("Maximum 20 search terms per request")
         return v
 
     model_config = ConfigDict(
@@ -169,28 +169,28 @@ class ScrapeCompetitorMenuRequest(BaseModel):
 
 class TestScraperRequest(BaseModel):
     """
-    Ejecuta un scraper en modo prueba sin escribir en la base de datos.
+    Runs a scraper in test mode without writing to the database.
 
-    Útil para validar que los selectores CSS/XPath de un scraper recién
-    configurado funcionan correctamente antes de activarlo en producción.
-    Devuelve una muestra de productos sin persistirlos.
+    Useful for validating that the CSS/XPath selectors of a newly configured
+    scraper work correctly before activating it in production.
+    Returns a sample of products without persisting them.
     """
 
     scraper_id: str = Field(
         ...,
         min_length=1,
-        description="ID del scraper a probar (ej: 'competitor_001').",
+        description="ID of the scraper to test (e.g.: 'competitor_001').",
     )
     search_query: str = Field(
         "coffee",
         min_length=1,
-        description="Término de búsqueda de prueba.",
+        description="Test search term.",
     )
     limit: int = Field(
         3,
         ge=1,
         le=10,
-        description="Máximo de productos a devolver en el test.",
+        description="Maximum number of products to return in the test.",
     )
 
     model_config = ConfigDict(
@@ -209,49 +209,49 @@ class TestScraperRequest(BaseModel):
 # ============================================
 
 class ScraperInfoResponse(BaseModel):
-    """Metadatos de un scraper configurado en el sistema."""
+    """Metadata for a scraper configured in the system."""
 
-    id: str = Field(description="Identificador único del scraper (filename YAML sin extensión).")
-    name: str = Field(description="Nombre legible del negocio scrapeado.")
-    type: ScraperBusinessType = Field(description="'competitor' o 'supplier'.")
-    scraper_type: ScraperType = Field(description="Categoría técnica del sitio.")
-    base_url: str = Field(description="URL raíz del sitio scrapeado.")
-    enabled: bool = Field(description="Si el scraper está activo.")
-    priority: Optional[int] = Field(None, description="Orden de ejecución en batch (menor = primero).")
-    schedule: Optional[str] = Field(None, description="Frecuencia sugerida: 'daily', 'weekly', 'monthly'.")
-    notes: Optional[str] = Field(None, description="Notas del operador sobre este scraper.")
+    id: str = Field(description="Unique scraper identifier (YAML filename without extension).")
+    name: str = Field(description="Human-readable name of the scraped business.")
+    type: ScraperBusinessType = Field(description="'competitor' or 'supplier'.")
+    scraper_type: ScraperType = Field(description="Technical category of the site.")
+    base_url: str = Field(description="Root URL of the scraped site.")
+    enabled: bool = Field(description="Whether the scraper is active.")
+    priority: Optional[int] = Field(None, description="Execution order in batch (lower = first).")
+    schedule: Optional[str] = Field(None, description="Suggested frequency: 'daily', 'weekly', 'monthly'.")
+    notes: Optional[str] = Field(None, description="Operator notes about this scraper.")
 
     model_config = ConfigDict(
         json_schema_extra={
             "example": {
                 "id": "competitor_001",
-                "name": "Competidor Cafetería A",
+                "name": "Competitor Cafeteria A",
                 "type": "competitor",
                 "scraper_type": "restaurant",
-                "base_url": "https://ejemplo-competidor.com",
+                "base_url": "https://example-competitor.com",
                 "enabled": True,
                 "priority": 1,
                 "schedule": "weekly",
-                "notes": "Actualizar selectores si el sitio cambia layout",
+                "notes": "Update selectors if the site changes layout",
             }
         }
     )
 
 
 class ScrapedProductResponse(BaseModel):
-    """Un producto individual extraído durante un scraping."""
+    """An individual product extracted during a scraping run."""
 
-    product_name: str = Field(description="Nombre del producto tal como aparece en el sitio.")
-    price: Decimal = Field(description="Precio en la moneda indicada.")
-    currency: str = Field(default="COP", description="Código ISO 4217 de la moneda.")
-    unit: Optional[str] = Field(None, description="Unidad / tamaño (ej: '500g', '12oz').")
-    category: Optional[str] = Field(None, description="Categoría reportada por el sitio.")
-    url: Optional[str] = Field(None, description="URL de la página del producto.")
-    image_url: Optional[str] = Field(None, description="URL de la imagen del producto.")
-    availability: bool = Field(default=True, description="False si el sitio indica sin stock.")
+    product_name: str = Field(description="Product name as it appears on the site.")
+    price: Decimal = Field(description="Price in the indicated currency.")
+    currency: str = Field(default="COP", description="ISO 4217 currency code.")
+    unit: Optional[str] = Field(None, description="Unit / size (e.g.: '500g', '12oz').")
+    category: Optional[str] = Field(None, description="Category reported by the site.")
+    url: Optional[str] = Field(None, description="URL of the product page.")
+    image_url: Optional[str] = Field(None, description="URL of the product image.")
+    availability: bool = Field(default=True, description="False if the site indicates out of stock.")
     metadata: Dict[str, Any] = Field(
         default_factory=dict,
-        description="Campos extra específicos del scraper (rating, reviews, etc.).",
+        description="Scraper-specific extra fields (rating, reviews, etc.).",
     )
 
     model_config = ConfigDict(
@@ -261,9 +261,9 @@ class ScrapedProductResponse(BaseModel):
                 "price": "8500.00",
                 "currency": "COP",
                 "unit": "16oz",
-                "category": "Bebidas Calientes",
-                "url": "https://ejemplo-competidor.com/menu/cappuccino",
-                "image_url": "https://cdn.ejemplo.com/img/cappuccino.jpg",
+                "category": "Hot Drinks",
+                "url": "https://example-competitor.com/menu/cappuccino",
+                "image_url": "https://cdn.example.com/img/cappuccino.jpg",
                 "availability": True,
                 "metadata": {"rating": "4.5", "reviews_count": "128"},
             }
@@ -273,39 +273,39 @@ class ScrapedProductResponse(BaseModel):
 
 class ScrapeIngredientResponse(BaseModel):
     """
-    Resultado del scraping de un ingrediente individual.
+    Result of scraping an individual ingredient.
 
-    ``success=False`` no levanta un HTTP error; el error está en el campo
-    ``error`` para que un batch pueda reportar resultados mixtos.
+    ``success=False`` does not raise an HTTP error; the error is in the
+    ``error`` field so that a batch can report mixed results.
     """
 
     success: bool
     ingredient_id: Optional[int] = None
     ingredient_name: Optional[str] = None
-    old_price: Optional[Decimal] = Field(None, description="Precio antes del scraping.")
-    new_price: Optional[Decimal] = Field(None, description="Precio encontrado en el sitio.")
+    old_price: Optional[Decimal] = Field(None, description="Price before scraping.")
+    new_price: Optional[Decimal] = Field(None, description="Price found on the site.")
     price_change: Optional[Decimal] = Field(None, description="new_price − old_price.")
     price_change_pct: Optional[float] = Field(
-        None, description="Cambio porcentual respecto al precio anterior."
+        None, description="Percentage change relative to the previous price."
     )
     scraper_id: Optional[str] = None
     business_name: Optional[str] = None
     scraped_at: Optional[datetime] = None
-    updated_db: bool = Field(default=False, description="True si el precio fue persistido en DB.")
-    error: Optional[str] = Field(None, description="Mensaje de error si success=False.")
+    updated_db: bool = Field(default=False, description="True if the price was persisted in DB.")
+    error: Optional[str] = Field(None, description="Error message if success=False.")
 
     model_config = ConfigDict(
         json_schema_extra={
             "example": {
                 "success": True,
                 "ingredient_id": 1,
-                "ingredient_name": "Leche entera Alpina 1L",
+                "ingredient_name": "Whole milk Alpina 1L",
                 "old_price": "4500.00",
                 "new_price": "4800.00",
                 "price_change": "300.00",
                 "price_change_pct": 6.67,
                 "scraper_id": "supplier_001",
-                "business_name": "Proveedor Retail A",
+                "business_name": "Retail Supplier A",
                 "scraped_at": "2025-05-20T10:30:00",
                 "updated_db": True,
                 "error": None,
@@ -315,16 +315,16 @@ class ScrapeIngredientResponse(BaseModel):
 
 
 class ScrapeIngredientsBatchResponse(BaseModel):
-    """Resultado agregado de un batch de scraping de ingredientes."""
+    """Aggregated result of an ingredient scraping batch."""
 
-    total: int = Field(description="Total de ingredientes procesados.")
-    success: int = Field(description="Scrapers exitosos.")
-    failed: int = Field(description="Scrapers fallidos.")
-    skipped: int = Field(description="Ingredientes omitidos (ej: filtro supplier_only).")
+    total: int = Field(description="Total ingredients processed.")
+    success: int = Field(description="Successful scrapers.")
+    failed: int = Field(description="Failed scrapers.")
+    skipped: int = Field(description="Skipped ingredients (e.g.: supplier_only filter).")
     results: List[ScrapeIngredientResponse] = Field(
-        description="Resultado individual por ingrediente."
+        description="Individual result per ingredient."
     )
-    execution_time_ms: float = Field(description="Tiempo total de ejecución en milisegundos.")
+    execution_time_ms: float = Field(description="Total execution time in milliseconds.")
 
     model_config = ConfigDict(
         json_schema_extra={
@@ -341,7 +341,7 @@ class ScrapeIngredientsBatchResponse(BaseModel):
 
 
 class ScrapeCompetitorMenuResponse(BaseModel):
-    """Resultado del scraping del menú de un competidor."""
+    """Result of scraping a competitor's menu."""
 
     success: bool
     competitor_id: Optional[int] = None
@@ -350,31 +350,31 @@ class ScrapeCompetitorMenuResponse(BaseModel):
     business_name: Optional[str] = None
     total_products_found: int = Field(
         default=0,
-        description="Productos extraídos del sitio en esta ejecución.",
+        description="Products extracted from the site in this run.",
     )
     new_products: int = Field(
         default=0,
-        description="Productos insertados por primera vez en competitor_products.",
+        description="Products inserted for the first time into competitor_products.",
     )
     updated_products: int = Field(
         default=0,
-        description="Productos cuyo precio fue actualizado.",
+        description="Products whose price was updated.",
     )
     errors: List[str] = Field(
         default_factory=list,
-        description="Errores de queries o de DB (no fatales).",
+        description="Query or DB errors (non-fatal).",
     )
     execution_time_ms: float = Field(default=0.0)
-    error: Optional[str] = Field(None, description="Error fatal si success=False.")
+    error: Optional[str] = Field(None, description="Fatal error if success=False.")
 
     model_config = ConfigDict(
         json_schema_extra={
             "example": {
                 "success": True,
                 "competitor_id": 1,
-                "competitor_name": "Competidor Cafetería A",
+                "competitor_name": "Competitor Cafeteria A",
                 "scraper_id": "competitor_001",
-                "business_name": "Competidor Cafetería A",
+                "business_name": "Competitor Cafeteria A",
                 "total_products_found": 25,
                 "new_products": 3,
                 "updated_products": 22,
@@ -388,10 +388,10 @@ class ScrapeCompetitorMenuResponse(BaseModel):
 
 class TestScraperResponse(BaseModel):
     """
-    Resultado de un test de scraper sin escritura en DB.
+    Result of a scraper test without writing to DB.
 
-    Incluye la lista completa de productos extraídos (hasta ``limit``)
-    para que el operador verifique que los datos son correctos.
+    Includes the full list of extracted products (up to ``limit``)
+    so that the operator can verify the data is correct.
     """
 
     success: bool
@@ -407,7 +407,7 @@ class TestScraperResponse(BaseModel):
             "example": {
                 "success": True,
                 "scraper_id": "competitor_001",
-                "business_name": "Competidor Cafetería A",
+                "business_name": "Competitor Cafeteria A",
                 "products_found": 3,
                 "products": [
                     {
@@ -415,7 +415,7 @@ class TestScraperResponse(BaseModel):
                         "price": "8500.00",
                         "currency": "COP",
                         "unit": "16oz",
-                        "category": "Bebidas Calientes",
+                        "category": "Hot Drinks",
                         "url": None,
                         "image_url": None,
                         "availability": True,
@@ -431,29 +431,29 @@ class TestScraperResponse(BaseModel):
 
 class ScraperStatusResponse(BaseModel):
     """
-    Estado de ejecución histórico de un scraper.
+    Historical execution status of a scraper.
 
-    Este schema es para un endpoint de monitoreo futuro; los datos
-    provienen de logs / tablas de auditoría, no del scraper en vivo.
+    This schema is for a future monitoring endpoint; data comes from
+    logs / audit tables, not from the live scraper.
     """
 
     scraper_id: str
     enabled: bool
     last_execution: Optional[datetime] = Field(
-        None, description="Timestamp de la última ejecución completada."
+        None, description="Timestamp of the last completed execution."
     )
-    total_executions: int = Field(default=0, description="Total de ejecuciones registradas.")
+    total_executions: int = Field(default=0, description="Total executions recorded.")
     success_rate: float = Field(
         default=0.0,
         ge=0.0,
         le=100.0,
-        description="Porcentaje de ejecuciones exitosas (0–100).",
+        description="Percentage of successful executions (0–100).",
     )
     average_execution_time_ms: Optional[float] = Field(
-        None, description="Promedio de duración de ejecuciones exitosas."
+        None, description="Average duration of successful executions."
     )
     last_error: Optional[str] = Field(
-        None, description="Mensaje del último error registrado, o None si no hay."
+        None, description="Message of the last recorded error, or None if there is none."
     )
 
     model_config = ConfigDict(

@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Reportes — CPQ Cafeterías{% endblock %}
+{% block title %}Reports — CPQ Cafeterías{% endblock %}
 
 {% block extra_head %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
@@ -12,32 +12,32 @@
 
 {% block content %}
 
-{# ── Encabezado ──────────────────────────────────────────────────────────── #}
+{# ── Header ──────────────────────────────────────────────────────────── #}
 <div class="mb-8 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
   <div>
-    <h1 class="text-3xl font-bold text-espresso">Reportes</h1>
+    <h1 class="text-3xl font-bold text-espresso">Reports</h1>
     <p class="mt-1 text-sm text-stone-500">
-      Análisis de costos, márgenes, competencia y simulaciones de impacto.
+      Cost analysis, margins, competitive benchmarking, and impact simulations.
     </p>
   </div>
 </div>
 
 
-{# ── Wrapper Alpine ──────────────────────────────────────────────────────── #}
+{# ── Alpine wrapper ──────────────────────────────────────────────────────── #}
 <div x-data="reportsDashboard()" x-init="init()" x-cloak>
 
 
   {# ═══════════════════════════════════════════════════════════════════════
-     TABS — barra de navegación
+     TABS — navigation bar
      ═══════════════════════════════════════════════════════════════════════ #}
   <div class="mb-6 border-b border-stone-200">
     <nav class="-mb-px flex gap-0 overflow-x-auto">
 
       {% set report_tabs = [
-        ('costs',      'Costos por Producto', 'M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 11h.01M12 11h.01M15 11h.01M12 7h.01M9 3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V5a2 2 0 00-2-2h-4'),
-        ('margins',    'Análisis de Márgenes','M13 7h8m0 0v8m0-8l-8 8-4-4-6 6'),
-        ('benchmark',  'Benchmark Competencia','M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z'),
-        ('simulator',  'Simulador de Impacto','M13 10V3L4 14h7v7l9-11h-7'),
+        ('costs',      'Costs by Product',    'M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 11h.01M12 11h.01M15 11h.01M12 7h.01M9 3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V5a2 2 0 00-2-2h-4'),
+        ('margins',    'Margin Analysis',     'M13 7h8m0 0v8m0-8l-8 8-4-4-6 6'),
+        ('benchmark',  'Competitor Benchmark','M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z'),
+        ('simulator',  'Impact Simulator',   'M13 10V3L4 14h7v7l9-11h-7'),
       ] %}
 
       {% for id, label, icon_path in report_tabs %}
@@ -61,7 +61,7 @@
 
 
   {# ═══════════════════════════════════════════════════════════════════════
-     TAB 1: COSTOS POR PRODUCTO
+     TAB 1: COSTS BY PRODUCT
      ═══════════════════════════════════════════════════════════════════════ #}
   <div x-show="activeTab === 'costs'"
        x-transition:enter="transition ease-out duration-150"
@@ -72,13 +72,13 @@
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
 
       <div class="flex items-center gap-3">
-        <label class="text-sm font-medium text-stone-600 shrink-0">Tienda</label>
+        <label class="text-sm font-medium text-stone-600 shrink-0">Store</label>
         <select x-model="costsStoreId"
                 @change="costsLoaded = false; loadCosts()"
                 class="rounded-lg border border-stone-200 bg-white px-3 py-2
                        text-sm text-espresso focus:outline-none focus:ring-2
                        focus:ring-amber/40 focus:border-amber transition-colors">
-          <option value="">Todas las tiendas</option>
+          <option value="">All stores</option>
           <template x-for="s in stores" :key="s.id">
             <option :value="s.id" x-text="s.name"></option>
           </template>
@@ -95,7 +95,7 @@
                      0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25
                      0 0113.803-3.7l3.181 3.182m0-4.991v4.99"/>
           </svg>
-          Recargar
+          Reload
         </button>
       </div>
 
@@ -108,7 +108,7 @@
                 d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586
                    a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
         </svg>
-        Exportar CSV
+        Export CSV
       </a>
     </div>
 
@@ -121,28 +121,28 @@
     <template x-if="!costsLoading && costsData !== null">
       <div>
 
-        {# Gráfica Top-10 #}
+        {# Top-10 chart #}
         <div class="bg-white rounded-xl shadow-sm p-6 mb-5">
           <h2 class="text-sm font-semibold text-espresso mb-4">
-            Top 10 — combinaciones más costosas
+            Top 10 — most expensive combinations
           </h2>
           <div class="relative h-72">
             <canvas id="costs-chart"></canvas>
           </div>
         </div>
 
-        {# Tabla #}
+        {# Table #}
         <div class="bg-white rounded-xl shadow-sm overflow-hidden">
           <div class="overflow-x-auto">
             <table class="w-full text-sm">
               <thead>
                 <tr class="border-b border-stone-100 bg-stone-50">
-                  <th class="px-5 py-3 text-left font-semibold text-stone-500 uppercase tracking-wide text-xs">Producto</th>
-                  <th class="px-5 py-3 text-left font-semibold text-stone-500 uppercase tracking-wide text-xs">Categoría</th>
-                  <th class="px-5 py-3 text-left font-semibold text-stone-500 uppercase tracking-wide text-xs">Tamaño</th>
-                  <th class="px-5 py-3 text-right font-semibold text-stone-500 uppercase tracking-wide text-xs">Costo Total</th>
-                  <th class="px-5 py-3 text-right font-semibold text-stone-500 uppercase tracking-wide text-xs hidden lg:table-cell">Ingredientes</th>
-                  <th class="px-5 py-3 text-right font-semibold text-stone-500 uppercase tracking-wide text-xs hidden lg:table-cell">Sub-recetas</th>
+                  <th class="px-5 py-3 text-left font-semibold text-stone-500 uppercase tracking-wide text-xs">Product</th>
+                  <th class="px-5 py-3 text-left font-semibold text-stone-500 uppercase tracking-wide text-xs">Category</th>
+                  <th class="px-5 py-3 text-left font-semibold text-stone-500 uppercase tracking-wide text-xs">Size</th>
+                  <th class="px-5 py-3 text-right font-semibold text-stone-500 uppercase tracking-wide text-xs">Total Cost</th>
+                  <th class="px-5 py-3 text-right font-semibold text-stone-500 uppercase tracking-wide text-xs hidden lg:table-cell">Ingredients</th>
+                  <th class="px-5 py-3 text-right font-semibold text-stone-500 uppercase tracking-wide text-xs hidden lg:table-cell">Sub-recipes</th>
                   <th class="px-5 py-3 text-right font-semibold text-stone-500 uppercase tracking-wide text-xs hidden lg:table-cell">Packaging</th>
                   <th class="px-5 py-3 text-right font-semibold text-stone-500 uppercase tracking-wide text-xs hidden lg:table-cell">Labor</th>
                 </tr>
@@ -182,8 +182,8 @@
           <div x-show="costsData.length === 0"
                class="text-center py-16 text-stone-400">
             <p class="text-4xl mb-3">📊</p>
-            <p class="text-sm font-medium">Sin datos de costos disponibles.</p>
-            <p class="text-xs mt-1">Verifica que los productos tengan recetas configuradas.</p>
+            <p class="text-sm font-medium">No cost data available.</p>
+            <p class="text-xs mt-1">Make sure products have recipes configured.</p>
           </div>
         </div>
 
@@ -193,7 +193,7 @@
 
 
   {# ═══════════════════════════════════════════════════════════════════════
-     TAB 2: ANÁLISIS DE MÁRGENES
+     TAB 2: MARGIN ANALYSIS
      ═══════════════════════════════════════════════════════════════════════ #}
   <div x-show="activeTab === 'margins'"
        x-transition:enter="transition ease-out duration-150"
@@ -211,7 +211,7 @@
                 d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586
                    a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
         </svg>
-        Exportar CSV
+        Export CSV
       </a>
     </div>
 
@@ -225,13 +225,12 @@
     <template x-if="!marginsLoading && marginsData !== null">
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
 
-        {# Macro para cada sección de margen #}
-        {# Negativo #}
+        {# Negative margin #}
         <div class="bg-white rounded-xl shadow-sm overflow-hidden">
           <div class="flex items-center justify-between px-5 py-3.5 bg-red-50 border-b border-red-100">
             <div class="flex items-center gap-2">
               <span class="w-2 h-2 rounded-full bg-red-500"></span>
-              <h3 class="text-sm font-semibold text-red-700">Margen Negativo</h3>
+              <h3 class="text-sm font-semibold text-red-700">Negative Margin</h3>
             </div>
             <span class="text-xs font-bold text-red-700 bg-red-100 px-2 py-0.5 rounded-full"
                   x-text="(marginsData.negative_margin || []).length"></span>
@@ -240,11 +239,11 @@
             <table class="w-full text-sm">
               <thead>
                 <tr class="border-b border-stone-100">
-                  <th class="px-4 py-2 text-left text-xs font-semibold text-stone-400 uppercase">Producto</th>
-                  <th class="px-4 py-2 text-left text-xs font-semibold text-stone-400 uppercase">Tamaño</th>
-                  <th class="px-4 py-2 text-right text-xs font-semibold text-stone-400 uppercase">Costo</th>
-                  <th class="px-4 py-2 text-right text-xs font-semibold text-stone-400 uppercase">Precio</th>
-                  <th class="px-4 py-2 text-right text-xs font-semibold text-stone-400 uppercase">Margen</th>
+                  <th class="px-4 py-2 text-left text-xs font-semibold text-stone-400 uppercase">Product</th>
+                  <th class="px-4 py-2 text-left text-xs font-semibold text-stone-400 uppercase">Size</th>
+                  <th class="px-4 py-2 text-right text-xs font-semibold text-stone-400 uppercase">Cost</th>
+                  <th class="px-4 py-2 text-right text-xs font-semibold text-stone-400 uppercase">Price</th>
+                  <th class="px-4 py-2 text-right text-xs font-semibold text-stone-400 uppercase">Margin</th>
                 </tr>
               </thead>
               <tbody class="divide-y divide-stone-50">
@@ -263,15 +262,15 @@
             </table>
           </div>
           <div x-show="!(marginsData.negative_margin || []).length"
-               class="py-8 text-center text-stone-400 text-xs">Sin productos en esta categoría.</div>
+               class="py-8 text-center text-stone-400 text-xs">No products in this category.</div>
         </div>
 
-        {# Bajo < 30% #}
+        {# Low < 30% #}
         <div class="bg-white rounded-xl shadow-sm overflow-hidden">
           <div class="flex items-center justify-between px-5 py-3.5 bg-amber/5 border-b border-amber/20">
             <div class="flex items-center gap-2">
               <span class="w-2 h-2 rounded-full bg-amber"></span>
-              <h3 class="text-sm font-semibold text-amber">Margen Bajo (&lt; 30%)</h3>
+              <h3 class="text-sm font-semibold text-amber">Low Margin (&lt; 30%)</h3>
             </div>
             <span class="text-xs font-bold text-amber bg-amber/10 px-2 py-0.5 rounded-full"
                   x-text="(marginsData.low_margin || []).length"></span>
@@ -280,11 +279,11 @@
             <table class="w-full text-sm">
               <thead>
                 <tr class="border-b border-stone-100">
-                  <th class="px-4 py-2 text-left text-xs font-semibold text-stone-400 uppercase">Producto</th>
-                  <th class="px-4 py-2 text-left text-xs font-semibold text-stone-400 uppercase">Tamaño</th>
-                  <th class="px-4 py-2 text-right text-xs font-semibold text-stone-400 uppercase">Costo</th>
-                  <th class="px-4 py-2 text-right text-xs font-semibold text-stone-400 uppercase">Precio</th>
-                  <th class="px-4 py-2 text-right text-xs font-semibold text-stone-400 uppercase">Margen</th>
+                  <th class="px-4 py-2 text-left text-xs font-semibold text-stone-400 uppercase">Product</th>
+                  <th class="px-4 py-2 text-left text-xs font-semibold text-stone-400 uppercase">Size</th>
+                  <th class="px-4 py-2 text-right text-xs font-semibold text-stone-400 uppercase">Cost</th>
+                  <th class="px-4 py-2 text-right text-xs font-semibold text-stone-400 uppercase">Price</th>
+                  <th class="px-4 py-2 text-right text-xs font-semibold text-stone-400 uppercase">Margin</th>
                 </tr>
               </thead>
               <tbody class="divide-y divide-stone-50">
@@ -303,15 +302,15 @@
             </table>
           </div>
           <div x-show="!(marginsData.low_margin || []).length"
-               class="py-8 text-center text-stone-400 text-xs">Sin productos en esta categoría.</div>
+               class="py-8 text-center text-stone-400 text-xs">No products in this category.</div>
         </div>
 
-        {# Saludable 30-80% #}
+        {# Healthy 30-80% #}
         <div class="bg-white rounded-xl shadow-sm overflow-hidden">
           <div class="flex items-center justify-between px-5 py-3.5 bg-green-50 border-b border-green-100">
             <div class="flex items-center gap-2">
               <span class="w-2 h-2 rounded-full bg-green-500"></span>
-              <h3 class="text-sm font-semibold text-green-700">Margen Saludable (30–80%)</h3>
+              <h3 class="text-sm font-semibold text-green-700">Healthy Margin (30–80%)</h3>
             </div>
             <span class="text-xs font-bold text-green-700 bg-green-100 px-2 py-0.5 rounded-full"
                   x-text="(marginsData.healthy_margin || []).length"></span>
@@ -320,11 +319,11 @@
             <table class="w-full text-sm">
               <thead class="sticky top-0 bg-white">
                 <tr class="border-b border-stone-100">
-                  <th class="px-4 py-2 text-left text-xs font-semibold text-stone-400 uppercase">Producto</th>
-                  <th class="px-4 py-2 text-left text-xs font-semibold text-stone-400 uppercase">Tamaño</th>
-                  <th class="px-4 py-2 text-right text-xs font-semibold text-stone-400 uppercase">Costo</th>
-                  <th class="px-4 py-2 text-right text-xs font-semibold text-stone-400 uppercase">Precio</th>
-                  <th class="px-4 py-2 text-right text-xs font-semibold text-stone-400 uppercase">Margen</th>
+                  <th class="px-4 py-2 text-left text-xs font-semibold text-stone-400 uppercase">Product</th>
+                  <th class="px-4 py-2 text-left text-xs font-semibold text-stone-400 uppercase">Size</th>
+                  <th class="px-4 py-2 text-right text-xs font-semibold text-stone-400 uppercase">Cost</th>
+                  <th class="px-4 py-2 text-right text-xs font-semibold text-stone-400 uppercase">Price</th>
+                  <th class="px-4 py-2 text-right text-xs font-semibold text-stone-400 uppercase">Margin</th>
                 </tr>
               </thead>
               <tbody class="divide-y divide-stone-50">
@@ -343,15 +342,15 @@
             </table>
           </div>
           <div x-show="!(marginsData.healthy_margin || []).length"
-               class="py-8 text-center text-stone-400 text-xs">Sin productos en esta categoría.</div>
+               class="py-8 text-center text-stone-400 text-xs">No products in this category.</div>
         </div>
 
-        {# Alto > 80% #}
+        {# High > 80% #}
         <div class="bg-white rounded-xl shadow-sm overflow-hidden">
           <div class="flex items-center justify-between px-5 py-3.5 bg-blue-50 border-b border-blue-100">
             <div class="flex items-center gap-2">
               <span class="w-2 h-2 rounded-full bg-blue-500"></span>
-              <h3 class="text-sm font-semibold text-blue-700">Margen Alto (&gt; 80%)</h3>
+              <h3 class="text-sm font-semibold text-blue-700">High Margin (&gt; 80%)</h3>
             </div>
             <span class="text-xs font-bold text-blue-700 bg-blue-100 px-2 py-0.5 rounded-full"
                   x-text="(marginsData.high_margin || []).length"></span>
@@ -360,11 +359,11 @@
             <table class="w-full text-sm">
               <thead>
                 <tr class="border-b border-stone-100">
-                  <th class="px-4 py-2 text-left text-xs font-semibold text-stone-400 uppercase">Producto</th>
-                  <th class="px-4 py-2 text-left text-xs font-semibold text-stone-400 uppercase">Tamaño</th>
-                  <th class="px-4 py-2 text-right text-xs font-semibold text-stone-400 uppercase">Costo</th>
-                  <th class="px-4 py-2 text-right text-xs font-semibold text-stone-400 uppercase">Precio</th>
-                  <th class="px-4 py-2 text-right text-xs font-semibold text-stone-400 uppercase">Margen</th>
+                  <th class="px-4 py-2 text-left text-xs font-semibold text-stone-400 uppercase">Product</th>
+                  <th class="px-4 py-2 text-left text-xs font-semibold text-stone-400 uppercase">Size</th>
+                  <th class="px-4 py-2 text-right text-xs font-semibold text-stone-400 uppercase">Cost</th>
+                  <th class="px-4 py-2 text-right text-xs font-semibold text-stone-400 uppercase">Price</th>
+                  <th class="px-4 py-2 text-right text-xs font-semibold text-stone-400 uppercase">Margin</th>
                 </tr>
               </thead>
               <tbody class="divide-y divide-stone-50">
@@ -383,7 +382,7 @@
             </table>
           </div>
           <div x-show="!(marginsData.high_margin || []).length"
-               class="py-8 text-center text-stone-400 text-xs">Sin productos en esta categoría.</div>
+               class="py-8 text-center text-stone-400 text-xs">No products in this category.</div>
         </div>
 
       </div>
@@ -392,7 +391,7 @@
 
 
   {# ═══════════════════════════════════════════════════════════════════════
-     TAB 3: BENCHMARK COMPETENCIA
+     TAB 3: COMPETITOR BENCHMARK
      ═══════════════════════════════════════════════════════════════════════ #}
   <div x-show="activeTab === 'benchmark'"
        x-transition:enter="transition ease-out duration-150"
@@ -409,7 +408,7 @@
                 d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586
                    a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
         </svg>
-        Exportar CSV
+        Export CSV
       </a>
     </div>
 
@@ -423,11 +422,11 @@
         <div class="flex items-center gap-5 px-5 py-3 bg-stone-50 border-b border-stone-100">
           <div class="flex items-center gap-1.5 text-xs text-stone-500">
             <span class="w-3 h-3 rounded-full bg-red-400 inline-block"></span>
-            Más caro que la competencia
+            More expensive than competitors
           </div>
           <div class="flex items-center gap-1.5 text-xs text-stone-500">
             <span class="w-3 h-3 rounded-full bg-green-400 inline-block"></span>
-            Más barato que la competencia
+            Cheaper than competitors
           </div>
         </div>
 
@@ -435,14 +434,14 @@
           <table class="w-full text-sm">
             <thead>
               <tr class="border-b border-stone-100 bg-stone-50/60">
-                <th class="px-5 py-3 text-left text-xs font-semibold text-stone-400 uppercase tracking-wide">Nuestro Producto</th>
-                <th class="px-5 py-3 text-left text-xs font-semibold text-stone-400 uppercase tracking-wide hidden sm:table-cell">Tamaño</th>
-                <th class="px-5 py-3 text-right text-xs font-semibold text-stone-400 uppercase tracking-wide">Nuestro Precio</th>
-                <th class="px-5 py-3 text-left text-xs font-semibold text-stone-400 uppercase tracking-wide">Competidor</th>
-                <th class="px-5 py-3 text-left text-xs font-semibold text-stone-400 uppercase tracking-wide hidden md:table-cell">Producto Competidor</th>
-                <th class="px-5 py-3 text-right text-xs font-semibold text-stone-400 uppercase tracking-wide">Precio Comp.</th>
-                <th class="px-5 py-3 text-right text-xs font-semibold text-stone-400 uppercase tracking-wide">Diferencia</th>
-                <th class="px-5 py-3 text-right text-xs font-semibold text-stone-400 uppercase tracking-wide">Dif. %</th>
+                <th class="px-5 py-3 text-left text-xs font-semibold text-stone-400 uppercase tracking-wide">Our Product</th>
+                <th class="px-5 py-3 text-left text-xs font-semibold text-stone-400 uppercase tracking-wide hidden sm:table-cell">Size</th>
+                <th class="px-5 py-3 text-right text-xs font-semibold text-stone-400 uppercase tracking-wide">Our Price</th>
+                <th class="px-5 py-3 text-left text-xs font-semibold text-stone-400 uppercase tracking-wide">Competitor</th>
+                <th class="px-5 py-3 text-left text-xs font-semibold text-stone-400 uppercase tracking-wide hidden md:table-cell">Competitor Product</th>
+                <th class="px-5 py-3 text-right text-xs font-semibold text-stone-400 uppercase tracking-wide">Comp. Price</th>
+                <th class="px-5 py-3 text-right text-xs font-semibold text-stone-400 uppercase tracking-wide">Difference</th>
+                <th class="px-5 py-3 text-right text-xs font-semibold text-stone-400 uppercase tracking-wide">Diff. %</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-stone-50">
@@ -482,8 +481,8 @@
         <div x-show="benchmarkData.length === 0"
              class="text-center py-16 text-stone-400">
           <p class="text-4xl mb-3">🏢</p>
-          <p class="text-sm font-medium">Sin datos de benchmark disponibles.</p>
-          <p class="text-xs mt-1">Configura matches de productos con competidores para ver comparaciones.</p>
+          <p class="text-sm font-medium">No benchmark data available.</p>
+          <p class="text-xs mt-1">Configure product matches with competitors to see comparisons.</p>
         </div>
       </div>
     </template>
@@ -491,7 +490,7 @@
 
 
   {# ═══════════════════════════════════════════════════════════════════════
-     TAB 4: SIMULADOR DE IMPACTO
+     TAB 4: IMPACT SIMULATOR
      ═══════════════════════════════════════════════════════════════════════ #}
   <div x-show="activeTab === 'simulator'"
        x-transition:enter="transition ease-out duration-150"
@@ -500,33 +499,33 @@
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-      {# ── Panel de configuración ─────────────────────────────────────── #}
+      {# ── Configuration panel ─────────────────────────────────────── #}
       <aside class="lg:col-span-1">
         <div class="bg-white rounded-xl shadow-sm p-6">
-          <h2 class="text-sm font-semibold text-espresso mb-5">Configurar simulación</h2>
+          <h2 class="text-sm font-semibold text-espresso mb-5">Configure simulation</h2>
 
           <div class="space-y-5">
 
-            {# Selector de ingrediente #}
+            {# Ingredient selector #}
             <div>
               <label class="block text-xs font-semibold text-stone-500 uppercase tracking-wide mb-2">
-                Ingrediente
+                Ingredient
               </label>
               <select x-model="simIngredientId"
                       class="w-full rounded-lg border border-stone-200 bg-white px-3 py-2.5
                              text-sm text-espresso focus:outline-none focus:ring-2
                              focus:ring-amber/40 focus:border-amber transition-colors">
-                <option value="">Seleccionar ingrediente…</option>
+                <option value="">Select ingredient…</option>
                 <template x-for="ing in ingredients" :key="ing.id">
                   <option :value="ing.id" x-text="ing.name"></option>
                 </template>
               </select>
             </div>
 
-            {# % de cambio #}
+            {# % change #}
             <div>
               <label class="block text-xs font-semibold text-stone-500 uppercase tracking-wide mb-2">
-                Cambio de precio
+                Price change
               </label>
               <div class="flex items-center gap-2">
                 <input type="number"
@@ -535,29 +534,29 @@
                        class="w-full rounded-lg border border-stone-200 bg-white px-3 py-2.5
                               text-sm text-espresso focus:outline-none focus:ring-2
                               focus:ring-amber/40 focus:border-amber transition-colors"
-                       placeholder="ej: 10 o -5">
+                       placeholder="e.g.: 10 or -5">
                 <span class="text-stone-400 text-sm shrink-0">%</span>
               </div>
               <p class="mt-1.5 text-xs text-stone-400">
-                Positivo = aumento · Negativo = reducción
+                Positive = increase · Negative = reduction
               </p>
             </div>
 
-            {# Preview del cambio #}
+            {# Change preview #}
             <div x-show="simIngredientId"
                  class="rounded-lg bg-stone-50 border border-stone-100 px-4 py-3">
-              <p class="text-xs text-stone-400 mb-1">Ingrediente seleccionado</p>
+              <p class="text-xs text-stone-400 mb-1">Selected ingredient</p>
               <p class="text-sm font-semibold text-espresso"
                  x-text="ingredients.find(i => i.id == simIngredientId)?.name || '—'"></p>
               <div class="mt-2 flex items-center gap-2 text-xs">
                 <span :class="simPercentChange > 0 ? 'text-red-500' : simPercentChange < 0 ? 'text-green-600' : 'text-stone-400'"
                       class="font-semibold"
                       x-text="(simPercentChange > 0 ? '+' : '') + simPercentChange + '%'"></span>
-                <span class="text-stone-400">de variación</span>
+                <span class="text-stone-400">variation</span>
               </div>
             </div>
 
-            {# Botón simular #}
+            {# Simulate button #}
             <button @click="runSimulation()"
                     :disabled="!simIngredientId || simLoading"
                     class="w-full flex items-center justify-center gap-2 px-4 py-3
@@ -575,13 +574,13 @@
                          0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25
                          0 0113.803-3.7l3.181 3.182m0-4.991v4.99"/>
               </svg>
-              <span x-text="simLoading ? 'Calculando…' : 'Simular impacto'"></span>
+              <span x-text="simLoading ? 'Calculating…' : 'Simulate impact'"></span>
             </button>
           </div>
         </div>
       </aside>
 
-      {# ── Panel de resultados ────────────────────────────────────────── #}
+      {# ── Results panel ────────────────────────────────────────────── #}
       <div class="lg:col-span-2 space-y-4">
 
         {# Error #}
@@ -599,7 +598,7 @@
           <span x-text="simError"></span>
         </div>
 
-        {# Estado vacío inicial #}
+        {# Initial empty state #}
         <div x-show="!simResult && !simLoading && !simError"
              class="bg-white rounded-xl shadow-sm flex flex-col items-center
                     justify-center py-20 text-stone-400">
@@ -608,55 +607,55 @@
             <path stroke-linecap="round" stroke-linejoin="round"
                   d="M13 10V3L4 14h7v7l9-11h-7"/>
           </svg>
-          <p class="text-sm font-medium">Configura un ingrediente y ejecuta la simulación.</p>
+          <p class="text-sm font-medium">Select an ingredient and run the simulation.</p>
         </div>
 
-        {# Resultados #}
+        {# Results #}
         <template x-if="simResult && !simLoading">
           <div class="space-y-4">
 
-            {# Tarjetas de resumen #}
+            {# Summary cards #}
             <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
 
-              {# Precio actual #}
+              {# Current price #}
               <div class="bg-white rounded-xl shadow-sm p-4">
-                <p class="text-xs text-stone-400 mb-1">Precio actual</p>
+                <p class="text-xs text-stone-400 mb-1">Current price</p>
                 <p class="text-lg font-bold text-espresso"
                    x-text="formatCOP(simResult.current_price)"></p>
               </div>
 
-              {# Precio nuevo #}
+              {# New price #}
               <div class="bg-white rounded-xl shadow-sm p-4">
-                <p class="text-xs text-stone-400 mb-1">Precio nuevo</p>
+                <p class="text-xs text-stone-400 mb-1">New price</p>
                 <p class="text-lg font-bold"
                    :class="simResult.percent_change > 0 ? 'text-red-600' : 'text-green-600'"
                    x-text="formatCOP(simResult.new_price)"></p>
               </div>
 
-              {# Productos afectados #}
+              {# Affected products #}
               <div class="bg-white rounded-xl shadow-sm p-4">
-                <p class="text-xs text-stone-400 mb-1">Productos afectados</p>
+                <p class="text-xs text-stone-400 mb-1">Affected products</p>
                 <p class="text-lg font-bold text-espresso"
                    x-text="simResult.affected_products.length"></p>
               </div>
 
-              {# Impacto promedio #}
+              {# Average impact #}
               <div class="bg-white rounded-xl shadow-sm p-4">
-                <p class="text-xs text-stone-400 mb-1">Impacto promedio</p>
+                <p class="text-xs text-stone-400 mb-1">Average impact</p>
                 <p class="text-lg font-bold"
                    :class="simAvgImpact > 0 ? 'text-red-500' : 'text-green-600'"
                    x-text="(simAvgImpact > 0 ? '+' : '') + simAvgImpact + '%'"></p>
               </div>
             </div>
 
-            {# Tabla de productos afectados #}
+            {# Affected products table #}
             <div x-show="simResult.affected_products.length > 0"
                  class="bg-white rounded-xl shadow-sm overflow-hidden">
               <div class="px-5 py-3.5 border-b border-stone-100 bg-stone-50">
                 <h3 class="text-sm font-semibold text-espresso">
-                  Productos afectados
+                  Affected products
                   <span class="ml-2 text-xs font-normal text-stone-400">
-                    ordenados por mayor impacto
+                    sorted by highest impact
                   </span>
                 </h3>
               </div>
@@ -664,11 +663,11 @@
                 <table class="w-full text-sm">
                   <thead>
                     <tr class="border-b border-stone-100">
-                      <th class="px-5 py-3 text-left text-xs font-semibold text-stone-400 uppercase">Producto</th>
-                      <th class="px-5 py-3 text-left text-xs font-semibold text-stone-400 uppercase">Tamaño</th>
-                      <th class="px-5 py-3 text-right text-xs font-semibold text-stone-400 uppercase">Costo actual</th>
-                      <th class="px-5 py-3 text-right text-xs font-semibold text-stone-400 uppercase">Costo nuevo</th>
-                      <th class="px-5 py-3 text-right text-xs font-semibold text-stone-400 uppercase">Δ Costo</th>
+                      <th class="px-5 py-3 text-left text-xs font-semibold text-stone-400 uppercase">Product</th>
+                      <th class="px-5 py-3 text-left text-xs font-semibold text-stone-400 uppercase">Size</th>
+                      <th class="px-5 py-3 text-right text-xs font-semibold text-stone-400 uppercase">Current cost</th>
+                      <th class="px-5 py-3 text-right text-xs font-semibold text-stone-400 uppercase">New cost</th>
+                      <th class="px-5 py-3 text-right text-xs font-semibold text-stone-400 uppercase">Δ Cost</th>
                       <th class="px-5 py-3 text-right text-xs font-semibold text-stone-400 uppercase">Δ %</th>
                     </tr>
                   </thead>
@@ -708,7 +707,7 @@
 
             <div x-show="simResult.affected_products.length === 0"
                  class="bg-white rounded-xl shadow-sm py-12 text-center text-stone-400">
-              <p class="text-sm">Este ingrediente no figura en ninguna receta activa.</p>
+              <p class="text-sm">This ingredient does not appear in any active recipe.</p>
             </div>
 
           </div>
@@ -730,38 +729,38 @@
 function reportsDashboard() {
   return {
 
-    // ── Estado de navegación ───────────────────────────────────────────────
+    // ── Navigation state ───────────────────────────────────────────────
     activeTab: 'costs',
 
-    // ── Datos base inyectados por el servidor ──────────────────────────────
+    // ── Base data injected by the server ──────────────────────────────
     stores:      [],
     ingredients: [],
 
-    // ── Tab 1: Costos ──────────────────────────────────────────────────────
+    // ── Tab 1: Costs ──────────────────────────────────────────────────
     costsStoreId: '',
     costsData:    null,
     costsLoading: false,
     costsLoaded:  false,
     costsChart:   null,
 
-    // ── Tab 2: Márgenes ────────────────────────────────────────────────────
+    // ── Tab 2: Margins ────────────────────────────────────────────────
     marginsData:    null,
     marginsLoading: false,
     marginsLoaded:  false,
 
-    // ── Tab 3: Benchmark ───────────────────────────────────────────────────
+    // ── Tab 3: Benchmark ───────────────────────────────────────────────
     benchmarkData:    null,
     benchmarkLoading: false,
     benchmarkLoaded:  false,
 
-    // ── Tab 4: Simulador ───────────────────────────────────────────────────
+    // ── Tab 4: Simulator ───────────────────────────────────────────────
     simIngredientId:  '',
     simPercentChange: 10,
     simLoading:       false,
     simResult:        null,
     simError:         '',
 
-    // ── Derivados ──────────────────────────────────────────────────────────
+    // ── Derived ──────────────────────────────────────────────────────
     get simAvgImpact() {
       const rows = this.simResult?.affected_products ?? [];
       if (!rows.length) return '0.00';
@@ -769,7 +768,7 @@ function reportsDashboard() {
       return (sum / rows.length).toFixed(2);
     },
 
-    // ── Ciclo de vida ──────────────────────────────────────────────────────
+    // ── Lifecycle ──────────────────────────────────────────────────────
     init() {
       const storesEl = document.getElementById('stores-data');
       if (storesEl) {
@@ -782,7 +781,7 @@ function reportsDashboard() {
       this.loadCosts();
     },
 
-    // ── Navegación ─────────────────────────────────────────────────────────
+    // ── Navigation ─────────────────────────────────────────────────────
     setTab(tab) {
       this.activeTab = tab;
       if (tab === 'costs'     && !this.costsLoaded)     this.loadCosts();
@@ -790,7 +789,7 @@ function reportsDashboard() {
       if (tab === 'benchmark' && !this.benchmarkLoaded) this.loadBenchmark();
     },
 
-    // ── Loaders ────────────────────────────────────────────────────────────
+    // ── Loaders ────────────────────────────────────────────────────────
     async loadCosts() {
       this.costsLoading = true;
       this.costsLoaded  = false;
@@ -856,14 +855,14 @@ function reportsDashboard() {
           this.simResult = data;
         }
       } catch (e) {
-        this.simError = 'Error al conectar con el servidor. Intenta de nuevo.';
+        this.simError = 'Error connecting to server. Please try again.';
         console.error('runSimulation:', e);
       } finally {
         this.simLoading = false;
       }
     },
 
-    // ── Chart.js ───────────────────────────────────────────────────────────
+    // ── Chart.js ───────────────────────────────────────────────────────
     _renderCostsChart() {
       if (this.costsChart) {
         this.costsChart.destroy();
@@ -891,7 +890,7 @@ function reportsDashboard() {
         data: {
           labels: top10.map(x => x.label),
           datasets: [{
-            label: 'Costo de producción',
+            label: 'Production cost',
             data:  top10.map(x => x.cost),
             backgroundColor: 'rgba(255,111,0,0.75)',
             borderColor:     '#FF6F00',
@@ -928,7 +927,7 @@ function reportsDashboard() {
       });
     },
 
-    // ── Utilidades ─────────────────────────────────────────────────────────
+    // ── Utilities ─────────────────────────────────────────────────────
     formatCOP(val) {
       const n = parseFloat(val) || 0;
       return '$' + n.toLocaleString('es-CO', { minimumFractionDigits: 0, maximumFractionDigits: 0 });

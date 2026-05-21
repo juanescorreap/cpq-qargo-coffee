@@ -1,13 +1,13 @@
-"""Tests unitarios para CostCalculator.
+"""Unit tests for CostCalculator.
 
-Cada test crea sus propios datos dentro de la sesión aislada provista por
-`test_db` (rollback automático al finalizar). Los fixtures de conftest.py
-se usan como punto de partida cuando aplica; para escenarios específicos
-se crean datos adicionales inline.
+Each test creates its own data within the isolated session provided by
+`test_db` (automatic rollback on completion).  Fixtures from conftest.py
+are used as a starting point where applicable; for specific scenarios,
+additional data is created inline.
 
-Convenciones de nomenclatura de variables de costo esperado:
-    Los valores esperados se calculan a mano en los docstrings para que
-    sirvan de especificación ejecutable, no solo de verificación.
+Expected cost variable naming conventions:
+    Expected values are calculated by hand in the docstrings so that they
+    serve as executable specifications, not merely as verifications.
 """
 
 from decimal import Decimal
@@ -29,7 +29,7 @@ from backend.services.cost_calculator import CostCalculator
 
 
 # ---------------------------------------------------------------------------
-# 1. Costo con un ingrediente en usage_unit directo (sin recipe_unit)
+# 1. Cost with a direct usage_unit ingredient (no recipe_unit)
 # ---------------------------------------------------------------------------
 
 def test_calculate_simple_ingredient_cost(
@@ -39,14 +39,14 @@ def test_calculate_simple_ingredient_cost(
     sample_recipe: RecipeIngredient,
     sample_size: ProductSize,
 ):
-    """El costo de un ingrediente expresado en usage_unit se calcula correctamente.
+    """The cost of an ingredient expressed in usage_unit is calculated correctly.
 
-    Escenario:
-        - Leche: 4 500 COP / 1 000 ml, yield 95 %
-        - Receta: 240 ml, scales_with_size=True, process_yield_loss=0
-        - Tamaño: scale_factor=1.0 (mediano base)
+    Scenario:
+        - Milk: 4 500 COP / 1 000 ml, yield 95 %
+        - Recipe: 240 ml, scales_with_size=True, process_yield_loss=0
+        - Size: scale_factor=1.0 (base medium)
 
-    Cálculo esperado:
+    Expected calculation:
         unit_cost  = 4 500 / 1 000        = 4.5 COP/ml
         qty_yield  = 240 / 0.95           ≈ 252.6316 ml
         line_cost  = 4.5 × 252.6316       ≈ 1 136.84 COP
@@ -61,32 +61,32 @@ def test_calculate_simple_ingredient_cost(
     )
 
     assert cost > Decimal("0")
-    # Rango tolerante a redondeo de BD (Numeric vs Decimal puro)
+    # Tolerant range for DB rounding (Numeric vs pure Decimal)
     assert Decimal("1700") < cost < Decimal("1800")
 
 
 # ---------------------------------------------------------------------------
-# 2. Costo con recipe_unit (conversión pump → ml)
+# 2. Cost with recipe_unit (pump → ml conversion)
 # ---------------------------------------------------------------------------
 
 def test_calculate_with_recipe_unit(test_db: Session):
-    """Las cantidades expresadas en recipe_unit se convierten a usage_unit antes de costear.
+    """Quantities expressed in recipe_unit are converted to usage_unit before costing.
 
-    Escenario:
-        - Jarabe de vainilla: 28 000 COP / botella 750 ml, yield 98 %
+    Scenario:
+        - Vanilla syrup: 28 000 COP / 750 ml bottle, yield 98 %
         - RecipeUnit: "pump"
-        - Conversión: 1 pump = 30 ml
-        - Receta: 2 pumps, scales_with_size=False, process_yield_loss=0
+        - Conversion: 1 pump = 30 ml
+        - Recipe: 2 pumps, scales_with_size=False, process_yield_loss=0
 
-    Cálculo esperado:
+    Expected calculation:
         unit_cost       = 28 000 / 750          ≈ 37.3333 COP/ml
         qty_usage_units = 2 pumps × 30 ml/pump  = 60 ml
         qty_yield       = 60 / 0.98             ≈ 61.2245 ml
         line_cost       = 37.3333 × 61.2245     ≈ 2 285.71 COP
-        labor_cost      = 0 (sin prep_time)
+        labor_cost      = 0 (no prep_time)
         total           ≈ 2 285.71 COP
     """
-    # Datos del test
+    # Test data
     syrup = Ingredient(
         name="Test Vanilla Syrup",
         category="syrups",
@@ -128,22 +128,22 @@ def test_calculate_with_recipe_unit(test_db: Session):
 
 
 # ---------------------------------------------------------------------------
-# 3. Scaling por tamaño
+# 3. Size scaling
 # ---------------------------------------------------------------------------
 
 def test_scaling_with_size(test_db: Session):
-    """El scale_factor del tamaño afecta solo ingredientes con scales_with_size=True.
+    """The size's scale_factor only affects ingredients with scales_with_size=True.
 
-    Escenario:
-        - Leche (scales=True):  4 500 COP / 1 000 ml, yield 100 %
+    Scenario:
+        - Milk (scales=True):  4 500 COP / 1 000 ml, yield 100 %
         - Espresso (scales=False): 25 000 COP / 500 g, yield 100 %
-        - Tamaños: pequeño (0.67×), mediano (1.0×), grande (1.33×)
-        - Receta: 240 ml leche (escalable) + 60 g espresso (fijo)
+        - Sizes: small (0.67×), medium (1.0×), large (1.33×)
+        - Recipe: 240 ml milk (scalable) + 60 g espresso (fixed)
 
-    Invariantes verificados:
-        1. costo_pequeño < costo_mediano < costo_grande
-        2. La diferencia entre tamaños solo proviene de la leche.
-        3. El componente de espresso es igual en los 3 tamaños.
+    Invariants verified:
+        1. cost_small < cost_medium < cost_large
+        2. The difference between sizes comes only from the milk.
+        3. The espresso component is the same across all 3 sizes.
     """
     milk = Ingredient(
         name="Test Milk Scaling",
@@ -196,14 +196,14 @@ def test_scaling_with_size(test_db: Session):
     cost_medium = calc.calculate_product_cost(product.id, size_id=medium.id)
     cost_large  = calc.calculate_product_cost(product.id, size_id=large.id)
 
-    # 1. Los costos escalan con el tamaño
+    # 1. Costs scale with size
     assert cost_small < cost_medium < cost_large
 
-    # 2. El componente fijo de espresso es el mismo en los 3 tamaños
+    # 2. The fixed espresso component is the same across all 3 sizes
     #    espresso_cost = 25 000 / 500 × 60 = 3 000 COP
     espresso_cost = Decimal("25000") / Decimal("500") * Decimal("60")
 
-    # 3. La diferencia entre tamaños coincide con el factor de escala de la leche
+    # 3. The difference between sizes matches the milk scale factor
     #    milk_unit_cost = 4 500 / 1 000 = 4.5 COP/ml
     milk_unit = Decimal("4500") / Decimal("1000")
     milk_medium = milk_unit * Decimal("240")
@@ -216,25 +216,25 @@ def test_scaling_with_size(test_db: Session):
 
 
 # ---------------------------------------------------------------------------
-# 4. Ajuste por yield del ingrediente
+# 4. Ingredient yield adjustment
 # ---------------------------------------------------------------------------
 
 def test_yield_loss(test_db: Session):
-    """El yield_percentage incrementa la cantidad efectiva y por tanto el costo.
+    """yield_percentage increases the effective quantity and therefore the cost.
 
-    Escenario:
-        - Fruta: 10 000 COP / kg (1 000 g), yield 80 %
-        - Receta: 100 g, sin scaling, sin process_yield_loss
+    Scenario:
+        - Fruit: 10 000 COP / kg (1 000 g), yield 80 %
+        - Recipe: 100 g, no scaling, no process_yield_loss
 
-    Cálculo esperado:
+    Expected calculation:
         unit_cost  = 10 000 / 1 000  = 10 COP/g
         qty_yield  = 100 / 0.80      = 125 g
         line_cost  = 10 × 125        = 1 250 COP
 
-    Comparación con yield 100 %:
+    Comparison with 100 % yield:
         qty_yield_100 = 100 g
         line_cost_100 = 10 × 100 = 1 000 COP
-        ratio ≈ 1 250 / 1 000 = 1.25  (25 % más caro)
+        ratio ≈ 1 250 / 1 000 = 1.25  (25 % more expensive)
     """
     fruit = Ingredient(
         name="Test Fruit 80pct Yield",
@@ -279,21 +279,21 @@ def test_yield_loss(test_db: Session):
 
 
 # ---------------------------------------------------------------------------
-# 5. Override de precio por tienda
+# 5. Store price override
 # ---------------------------------------------------------------------------
 
 def test_store_price_override(test_db: Session):
-    """Cuando existe StoreIngredientPrice para la tienda, se usa local_price.
+    """When a StoreIngredientPrice exists for the store, local_price is used.
 
-    Escenario:
-        - Ingrediente: precio base 1 000 COP / unidad
-        - Tienda A:    precio local 1 200 COP / unidad  (override)
-        - Receta:      1 unidad, sin conversión ni yield extra
+    Scenario:
+        - Ingredient: base price 1 000 COP / unit
+        - Store A:    local price 1 200 COP / unit  (override)
+        - Recipe:     1 unit, no conversion or extra yield
 
-    Verificaciones:
-        1. Sin store_id    → costo usa precio base  (1 000 COP)
-        2. Con store_id    → costo usa precio local (1 200 COP)
-        3. local > base    → costo_store > costo_base
+    Verifications:
+        1. Without store_id → cost uses base price  (1 000 COP)
+        2. With store_id    → cost uses local price (1 200 COP)
+        3. local > base     → cost_store > cost_base
     """
     ingredient = Ingredient(
         name="Test Override Ingredient",

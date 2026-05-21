@@ -13,7 +13,7 @@ from backend.models.ingredient import Ingredient
 from backend.models.product import Product, StoreProduct
 from backend.models.store import Store, StoreIngredientPrice
 
-router = APIRouter(prefix="/stores", tags=["UI - Tiendas"])
+router = APIRouter(prefix="/stores", tags=["UI - Stores"])
 
 templates = Jinja2Templates(
     directory=Path(__file__).resolve().parent.parent / "templates"
@@ -103,7 +103,7 @@ async def store_detail(
 ) -> HTMLResponse:
     store = db.get(Store, store_id)
     if not store:
-        return HTMLResponse("Tienda no encontrada", status_code=404)
+        return HTMLResponse("Store not found", status_code=404)
 
     return templates.TemplateResponse("stores/detail.html", {
         "request":               request,
@@ -115,7 +115,7 @@ async def store_detail(
     })
 
 
-# ── Precios locales (partiales HTMX) ────────────────────────────────────────
+# ── Local prices (HTMX partials) ────────────────────────────────────────────
 
 @router.post("/{store_id}/prices-htmx", response_class=HTMLResponse)
 async def upsert_price(
@@ -137,14 +137,14 @@ async def upsert_price(
         })
 
     if not raw_ing or not raw_price:
-        return _prices_response("Ingrediente y precio son obligatorios.")
+        return _prices_response("Ingredient and price are required.")
 
     try:
         local_price = float(raw_price)
         if local_price < 0:
-            return _prices_response("El precio no puede ser negativo.")
+            return _prices_response("Price cannot be negative.")
     except ValueError:
-        return _prices_response("Precio inválido.")
+        return _prices_response("Invalid price.")
 
     ingredient_id    = int(raw_ing)
     local_supplier   = form.get("local_supplier", "").strip() or None
@@ -195,7 +195,7 @@ async def delete_price(
     })
 
 
-# ── Disponibilidad de productos (partiales HTMX) ────────────────────────────
+# ── Product availability (HTMX partials) ────────────────────────────────────
 
 @router.post("/{store_id}/products-htmx/{product_id}", response_class=HTMLResponse)
 async def upsert_store_product(

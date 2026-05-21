@@ -1,38 +1,38 @@
 # ============================================
-# CONFIGURACIÓN DE SCRAPER - PROVEEDOR 001
+# SCRAPER CONFIGURATION - SUPPLIER 001
 # ============================================
-# Template para proveedor tipo retail / mayorista.
+# Template for a retail / wholesale-type supplier.
 #
-# Diferencias clave respecto a competidores:
-#   - required_fields incluye 'product_unit' (crítico para calcular costo/porción)
-#   - rate_limiting más conservador (proveedores bloquean agresivamente bots)
-#   - Selectores adicionales: minimum_order_quantity, bulk_discount
-#   - search.query_param típicamente 'keyword' o 'search' (no 'q')
+# Key differences compared to competitors:
+#   - required_fields includes 'product_unit' (critical for calculating cost/portion)
+#   - More conservative rate_limiting (suppliers aggressively block bots)
+#   - Additional selectors: minimum_order_quantity, bulk_discount
+#   - search.query_param typically 'keyword' or 'search' (not 'q')
 #
-# Para actualizar selectores:
-#   1. Abrir el sitio del proveedor en Chrome
-#   2. Buscar un insumo (ej: "café verde 500g")
-#   3. Inspeccionar nombre, precio, unidad de empaque
-#   4. Click derecho nodo → Copy → Copy selector
-#   5. Pegar abajo y probar:
+# To update selectors:
+#   1. Open the supplier's site in Chrome
+#   2. Search for a supply item (e.g.: "green coffee 500g")
+#   3. Inspect name, price, packaging unit
+#   4. Right-click node → Copy → Copy selector
+#   5. Paste below and test:
 #        python -m backend.services.scraping.tests.test_scraper supplier_001
 
 # ============================================
-# IDENTIFICACIÓN
+# IDENTIFICATION
 # ============================================
 scraper_id: "supplier_001"
-business_name: "Proveedor Retail A"
+business_name: "Retail Supplier A"
 business_type: "supplier"    # 'competitor' | 'supplier'
 scraper_type: "retail"       # 'restaurant' | 'retail' | 'marketplace' | 'custom'
 enabled: true
 
 # ============================================
-# URL BASE
+# BASE URL
 # ============================================
 base_url: "https://ejemplo-proveedor.com"
 
 # ============================================
-# NAVEGADOR
+# BROWSER
 # ============================================
 browser:
   headless: true
@@ -46,11 +46,11 @@ browser:
   extra_headers: {}
 
 # ============================================
-# SELECTORES CSS/XPATH
+# CSS/XPATH SELECTORS
 # ============================================
 selectors:
 
-  # ------ Página de producto individual ------
+  # ------ Individual product page ------
 
   product_name:
     selector: ".item-name"
@@ -63,7 +63,7 @@ selectors:
   product_unit:
     selector: ".package-size"
     type: "css"
-    # Ejemplos de valores esperados: "Bolsa 500g", "Caja x12 unidades", "1 Kg"
+    # Example expected values: "Bag 500g", "Box x12 units", "1 Kg"
 
   product_category:
     selector: ".product-breadcrumb .category"
@@ -81,21 +81,21 @@ selectors:
     attribute: "src"
     optional: true
 
-  # ------ Campos específicos de proveedores ------
+  # ------ Supplier-specific fields ------
 
   minimum_order_quantity:
     selector: ".min-order"
     type: "css"
     optional: true
-    # Ej: "Pedido mínimo: 6 unidades"
+    # E.g.: "Minimum order: 6 units"
 
   bulk_discount:
     selector: ".bulk-discount-badge"
     type: "css"
     optional: true
-    # Ej: "10% dto. comprando +10 unidades"
+    # E.g.: "10% off buying +10 units"
 
-  # ------ Página de búsqueda / listado ------
+  # ------ Search / listing page ------
 
   search_results:
     selector: ".item-card"
@@ -121,7 +121,7 @@ selectors:
     attribute: "src"
     optional: true
 
-  # ------ Metadata de proveedor (todos opcionales) ------
+  # ------ Supplier metadata (all optional) ------
 
   metadata:
     minimum_order_quantity:
@@ -145,7 +145,7 @@ selectors:
       optional: true
 
 # ============================================
-# NAVEGACIÓN
+# NAVIGATION
 # ============================================
 navigation:
 
@@ -153,15 +153,15 @@ navigation:
     path: "/products/search"
     method: "GET"
     query_param: "keyword"
-    # URL resultante: https://ejemplo-proveedor.com/products/search?keyword=cafe
+    # Resulting URL: https://ejemplo-proveedor.com/products/search?keyword=cafe
     #
-    # Alternativa path_template (descomentar si aplica):
-    # path_template: "/productos/{query}"
+    # Alternative path_template (uncomment if applicable):
+    # path_template: "/products/{query}"
 
   category:
     path: "/categories"
     path_template: "/categories/{category}"
-    # URL resultante: https://ejemplo-proveedor.com/categories/cafe-verde
+    # Resulting URL: https://ejemplo-proveedor.com/categories/green-coffee
 
   product:
     path: "/product"
@@ -171,8 +171,8 @@ navigation:
     type: "query_param"   # 'query_param' | 'path' | 'offset'
     param: "page"
     start: 1
-    max_pages: 3          # Más conservador: proveedores tienen catálogos grandes
-    # Alternativa offset (descomentar si el sitio usa ?offset=0&limit=20):
+    max_pages: 3          # More conservative: suppliers have large catalogs
+    # Alternative offset (uncomment if site uses ?offset=0&limit=20):
     # type: "offset"
     # param: "offset"
     # offset_step: 20
@@ -180,35 +180,35 @@ navigation:
 
   timeouts:
     navigation_ms: 30000
-    retry_backoff_ms: 3000   # Más tiempo entre reintentos para proveedores
+    retry_backoff_ms: 3000   # More time between retries for suppliers
 
 # ============================================
 # RATE LIMITING
 # ============================================
-# Proveedores suelen tener WAF/Cloudflare agresivos.
-# Ser más conservador que con competidores.
+# Suppliers often have aggressive WAF/Cloudflare protection.
+# Be more conservative than with competitors.
 rate_limiting:
   enabled: true
-  delay_ms: 2000                  # 2s entre requests (vs 1.5s en competidores)
-  max_requests_per_minute: 15     # Más bajo que el default
+  delay_ms: 2000                  # 2s between requests (vs 1.5s for competitors)
+  max_requests_per_minute: 15     # Lower than the default
   max_requests_per_hour: 200
   backoff_strategy: "exponential"
-  max_backoff_ms: 120000          # 2 min máximo (el doble que competidores)
-  bucket_capacity: 3              # Burst pequeño
-  bucket_refill_rate: 0.25        # ~15 rpm sostenidos
+  max_backoff_ms: 120000          # 2 min maximum (double that of competitors)
+  bucket_capacity: 3              # Small burst
+  bucket_refill_rate: 0.25        # ~15 rpm sustained
 
 # ============================================
-# VALIDACIÓN
+# VALIDATION
 # ============================================
-# product_unit es REQUERIDO en proveedores:
-# sin la unidad de empaque no se puede calcular costo por porción.
+# product_unit is REQUIRED for suppliers:
+# without the packaging unit, cost per portion cannot be calculated.
 required_fields:
   - "product_name"
   - "product_price"
   - "product_unit"
 
 # ============================================
-# CAMPOS IGNORADOS POR EL MOTOR (documentación)
+# FIELDS IGNORED BY THE ENGINE (documentation)
 # ============================================
 error_handling:
   retry_attempts: 3
@@ -217,11 +217,11 @@ error_handling:
 
 transformations:
   price:
-    decimal_separator: ","   # Formato colombiano: 12.500,00
+    decimal_separator: ","   # Colombian format: 12.500,00
     remove_symbols: ["$", "COP"]
 
   unit:
-    # Normalización de unidades de empaque de proveedores
+    # Packaging unit normalization for suppliers
     mappings:
       "kg": "Kg"
       "kilo": "Kg"
@@ -233,11 +233,11 @@ transformations:
       "litro": "L"
       "ml": "ml"
       "mililitro": "ml"
-      "und": "unidad"
-      "unidad": "unidad"
-      "caja": "caja"
-      "bolsa": "bolsa"
-      "saco": "saco"
+      "und": "unit"
+      "unidad": "unit"
+      "caja": "box"
+      "bolsa": "bag"
+      "saco": "sack"
 
 # ============================================
 # METADATA
@@ -246,23 +246,23 @@ metadata:
   created_at: "2025-05-20"
   last_updated: "2025-05-20"
   version: "1.0"
-  author: "Sistema CPQ"
+  author: "CPQ System"
   currency: "COP"
   notes: |
-    Template de proveedor tipo retail/mayorista.
+    Retail/wholesale supplier template.
 
-    PENDIENTE: Actualizar selectores inspeccionando el sitio real.
+    PENDING: Update selectors by inspecting the real site.
 
-    Proveedores comunes a implementar:
+    Common suppliers to implement:
       - Makro Colombia
       - Alkosto / Ktronix
-      - Éxito / Carulla (sección hogar/cocina)
+      - Éxito / Carulla (home/kitchen section)
       - Pricesmart
-      - Distribuidores locales con tienda online
+      - Local distributors with an online store
 
-    Pasos:
-      1. Buscar el insumo en el sitio del proveedor
-      2. Inspeccionar: nombre, precio, unidad de empaque
-      3. Actualizar selectores en la sección 'selectors'
-      4. Probar: python -m backend.services.scraping.tests.test_scraper supplier_001
+    Steps:
+      1. Search for the supply item on the supplier's site
+      2. Inspect: name, price, packaging unit
+      3. Update selectors in the 'selectors' section
+      4. Test: python -m backend.services.scraping.tests.test_scraper supplier_001
   contact: "equipo-data@empresa.com"

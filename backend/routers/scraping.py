@@ -62,16 +62,16 @@ def _manager(db: Session) -> ScraperManager:
 @router.get(
     "/scraping/scrapers",
     response_model=List[ScraperInfoResponse],
-    summary="Listar scrapers disponibles",
+    summary="List available scrapers",
     description="""
-Retorna todos los scrapers configurados en el sistema, ordenados por prioridad.
+Returns all scrapers configured in the system, ordered by priority.
 
-Cada entrada incluye:
-- **id** / **name**: identificador y nombre legible del negocio scrapeado.
-- **type**: `competitor` o `supplier`.
+Each entry includes:
+- **id** / **name**: identifier and human-readable name of the scraped business.
+- **type**: `competitor` or `supplier`.
 - **scraper_type**: `restaurant`, `retail`, `marketplace`, `custom`.
-- **enabled**: si el scraper está activo.
-- **priority** / **schedule**: orden y frecuencia de ejecución en batch.
+- **enabled**: whether the scraper is active.
+- **priority** / **schedule**: execution order and frequency in batch runs.
     """,
 )
 def list_scrapers(db: Session = Depends(get_db)) -> List[ScraperInfoResponse]:
@@ -88,13 +88,13 @@ def list_scrapers(db: Session = Depends(get_db)) -> List[ScraperInfoResponse]:
 @router.get(
     "/scraping/scrapers/{scraper_id}/status",
     response_model=ScraperStatusResponse,
-    summary="Status de un scraper",
+    summary="Scraper status",
     description="""
-Devuelve información de estado de un scraper.
+Returns status information for a scraper.
 
-> **Nota:** Las estadísticas de ejecución (`total_executions`, `success_rate`,
-> etc.) son un placeholder hasta que se implemente una tabla de auditoría de
-> ejecuciones. Por ahora se devuelven en cero.
+> **Note:** Execution statistics (`total_executions`, `success_rate`,
+> etc.) are a placeholder until an execution audit table is implemented.
+> They are currently returned as zero.
     """,
 )
 def get_scraper_status(
@@ -135,19 +135,19 @@ def get_scraper_status(
     "/scraping/ingredient",
     response_model=ScrapeIngredientResponse,
     status_code=status.HTTP_200_OK,
-    summary="Scrape precio de un ingrediente",
+    summary="Scrape ingredient price",
     description="""
-Navega al `source_url` del ingrediente, extrae el precio y, opcionalmente,
-lo persiste en la base de datos.
+Navigates to the ingredient's `source_url`, extracts the price and, optionally,
+persists it in the database.
 
-**Requisitos:**
-- El ingrediente debe existir en DB.
-- Debe tener `source_url` definido.
-- Debe existir un scraper configurado para ese dominio.
+**Requirements:**
+- The ingredient must exist in DB.
+- It must have `source_url` defined.
+- A scraper configured for that domain must exist.
 
-**Comportamiento ante fallos:**
-- Devuelve `200` con `success=false` y `error` descriptivo (no lanza 4xx/5xx).
-- Sólo lanza `500` para errores completamente inesperados.
+**Failure behaviour:**
+- Returns `200` with `success=false` and a descriptive `error` (does not raise 4xx/5xx).
+- Only raises `500` for completely unexpected errors.
     """,
 )
 def scrape_ingredient(
@@ -172,16 +172,16 @@ def scrape_ingredient(
     "/scraping/ingredients/batch",
     response_model=ScrapeIngredientsBatchResponse,
     status_code=status.HTTP_202_ACCEPTED,
-    summary="Scrape múltiples ingredientes (batch)",
+    summary="Scrape multiple ingredients (batch)",
     description="""
-Lanza el scraping de múltiples ingredientes en una tarea de background.
+Launches the scraping of multiple ingredients as a background task.
 
-- La respuesta `202 Accepted` se devuelve **inmediatamente** con contadores en cero.
-- El scraping real ocurre después de que la respuesta fue enviada.
-- Máximo **100** ingredientes por request.
+- The `202 Accepted` response is returned **immediately** with zero counters.
+- The actual scraping occurs after the response has been sent.
+- Maximum **100** ingredients per request.
 
-> Para monitorear el progreso, consulta los logs o implementa un endpoint
-> de polling con una tabla de auditoría (roadmap).
+> To monitor progress, check the logs or implement a polling endpoint
+> with an audit table (roadmap).
     """,
 )
 def scrape_ingredients_batch(
@@ -232,18 +232,18 @@ def scrape_ingredients_batch(
     "/scraping/competitor/menu",
     response_model=ScrapeCompetitorMenuResponse,
     status_code=status.HTTP_200_OK,
-    summary="Scrape menú de competidor",
+    summary="Scrape competitor menu",
     description="""
-Scrape el catálogo de productos de un competidor y lo persiste en
+Scrapes a competitor's product catalogue and persists it in
 `competitor_products`.
 
-**Proceso:**
-1. Detecta el scraper asociado al competidor (por URL o nombre).
-2. Ejecuta cada término en `search_queries` (o los términos por defecto).
-3. Guarda los resultados en DB (upsert por `product_name`).
+**Process:**
+1. Detects the scraper associated with the competitor (by URL or name).
+2. Executes each term in `search_queries` (or the default terms).
+3. Saves the results to DB (upsert by `product_name`).
 
-**Tiempos esperados:** 30 s – 5 min según el número de queries y el rate
-limiting configurado para el scraper.
+**Expected times:** 30 s – 5 min depending on the number of queries and the
+rate limiting configured for the scraper.
     """,
 )
 def scrape_competitor_menu(
@@ -269,18 +269,18 @@ def scrape_competitor_menu(
     "/scraping/test",
     response_model=TestScraperResponse,
     status_code=status.HTTP_200_OK,
-    summary="Test de scraper (sin escritura en DB)",
+    summary="Test scraper (no DB writes)",
     description="""
-Ejecuta una búsqueda de prueba con el scraper indicado y devuelve los
-resultados **sin persistirlos en DB**.
+Runs a test search with the specified scraper and returns the results
+**without persisting them in DB**.
 
-Útil para:
-- Validar que los selectores CSS/XPath del YAML son correctos.
-- Confirmar que el rate limiting y la navegación funcionan.
-- Estimar cuántos productos se pueden extraer antes de activar el scraper.
+Useful for:
+- Validating that the CSS/XPath selectors in the YAML are correct.
+- Confirming that rate limiting and navigation work.
+- Estimating how many products can be extracted before activating the scraper.
 
-El campo `error` del response contiene el mensaje de error cuando
-`success=false`; no se lanza HTTP 4xx/5xx.
+The `error` field in the response contains the error message when
+`success=false`; no HTTP 4xx/5xx is raised.
     """,
 )
 def test_scraper(
@@ -355,14 +355,14 @@ def test_scraper(
     "/scraping/all-ingredients",
     response_model=ScrapeIngredientsBatchResponse,
     status_code=status.HTTP_200_OK,
-    summary="Scrape todos los ingredientes con source_url",
+    summary="Scrape all ingredients with source_url",
     description="""
-Itera todos los ingredientes activos que tienen `source_url` y actualiza
-sus precios.
+Iterates all active ingredients that have `source_url` and updates
+their prices.
 
-- `supplier_only=true` omite ingredientes cuyos scrapers son de tipo
-  `competitor` (útil para actualizaciones diarias de costos de insumos).
-- Procesamiento secuencial; puede tardar varios minutos.
+- `supplier_only=true` skips ingredients whose scrapers are of type
+  `competitor` (useful for daily supply cost updates).
+- Sequential processing; may take several minutes.
     """,
 )
 def scrape_all_ingredients(

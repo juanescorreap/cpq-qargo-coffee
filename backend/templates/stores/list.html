@@ -1,37 +1,37 @@
 {% extends "base.html" %}
 
-{% block title %}Tiendas — CPQ Cafeterías{% endblock %}
+{% block title %}Stores — CPQ Cafeterías{% endblock %}
 
 {% block content %}
 
-{# ── Encabezado ─────────────────────────────────────────────────────────── #}
+{# ── Header ──────────────────────────────────────────────────────────────── #}
 <div class="flex items-center justify-between mb-8">
   <div>
-    <h1 class="text-3xl font-bold text-espresso">Tiendas</h1>
+    <h1 class="text-3xl font-bold text-espresso">Stores</h1>
     <p class="mt-1 text-sm text-stone-500">
-      {{ stores | length }} tienda{{ 's' if stores | length != 1 else '' }}
+      {{ stores | length }} store{{ 's' if stores | length != 1 else '' }}
     </p>
   </div>
 </div>
 
 {% if not stores %}
-{# ── Estado vacío ─────────────────────────────────────────────────────── #}
+{# ── Empty state ──────────────────────────────────────────────────────────── #}
 <div class="bg-white rounded-xl shadow-sm py-24 text-center text-stone-400">
   <p class="text-5xl mb-4">🏪</p>
-  <p class="text-base font-semibold text-stone-500">Sin tiendas registradas</p>
-  <p class="text-sm mt-1">Configura la primera tienda para empezar a gestionar precios locales.</p>
+  <p class="text-base font-semibold text-stone-500">No stores registered</p>
+  <p class="text-sm mt-1">Set up the first store to start managing local prices.</p>
 </div>
 
 {% else %}
-{# ── Tabla de tiendas ─────────────────────────────────────────────────── #}
+{# ── Stores table ─────────────────────────────────────────────────────────── #}
 <div class="bg-white rounded-xl shadow-sm overflow-hidden">
   <table class="min-w-full divide-y divide-stone-100 text-sm">
     <thead class="bg-stone-50">
       <tr class="text-xs text-stone-400 font-semibold uppercase tracking-wider">
-        <th class="px-6 py-3 text-left">Código</th>
-        <th class="px-6 py-3 text-left">Nombre</th>
-        <th class="px-6 py-3 text-left">Ciudad</th>
-        <th class="px-6 py-3 text-center">Estado</th>
+        <th class="px-6 py-3 text-left">Code</th>
+        <th class="px-6 py-3 text-left">Name</th>
+        <th class="px-6 py-3 text-left">City</th>
+        <th class="px-6 py-3 text-center">Status</th>
         <th class="px-6 py-3"></th>
       </tr>
     </thead>
@@ -52,11 +52,11 @@
         <td class="px-6 py-4 text-center">
           {% if store.is_active %}
           <span class="px-2 py-0.5 rounded-full text-xs font-medium bg-green-50 text-green-700">
-            Activa
+            Active
           </span>
           {% else %}
           <span class="px-2 py-0.5 rounded-full text-xs font-medium bg-stone-100 text-stone-400">
-            Inactiva
+            Inactive
           </span>
           {% endif %}
         </td>

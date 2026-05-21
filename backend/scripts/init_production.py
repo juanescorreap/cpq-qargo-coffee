@@ -5,27 +5,27 @@ sys.path.append(str(Path(__file__).parent.parent.parent))
 
 from sqlalchemy import inspect
 
-import backend.models  # noqa: F401 — registra todos los modelos en Base.metadata
+import backend.models  # noqa: F401 — registers all models in Base.metadata
 from backend.database import Base, engine
 
 
 def init_database():
-    """Inicializa base de datos en producción.
+    """Initializes the database in production.
 
-    Crea todas las tablas si no existen (idempotente).
+    Creates all tables if they do not exist (idempotent).
     """
-    print("🗄️  Inicializando base de datos...")
+    print("🗄️  Initializing database...")
 
     try:
         Base.metadata.create_all(bind=engine)
-        print("✅ Tablas creadas/verificadas en Supabase")
+        print("✅ Tables created/verified in Supabase")
 
         inspector = inspect(engine)
         tables = inspector.get_table_names()
-        print(f"📋 Tablas en DB: {', '.join(sorted(tables))}")
+        print(f"📋 Tables in DB: {', '.join(sorted(tables))}")
 
     except Exception as e:
-        print(f"❌ Error inicializando base de datos: {e}")
+        print(f"❌ Error initializing database: {e}")
         raise
 
 

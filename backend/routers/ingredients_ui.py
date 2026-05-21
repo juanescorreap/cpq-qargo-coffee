@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session
 from backend.database import get_db
 from backend.models.ingredient import Ingredient
 
-router = APIRouter(prefix="/ingredients", tags=["UI - Ingredientes"])
+router = APIRouter(prefix="/ingredients", tags=["UI - Ingredients"])
 
 templates = Jinja2Templates(
     directory=Path(__file__).resolve().parent.parent / "templates"
@@ -19,7 +19,7 @@ _PAGE_SIZE = 25
 
 
 # ---------------------------------------------------------------------------
-# Helpers privados
+# Private helpers
 # ---------------------------------------------------------------------------
 
 def _categories(db: Session) -> list[str]:
@@ -43,7 +43,7 @@ def _build_query(db: Session, search: str, category: str, is_active: str):
 
 
 def _paginate(query, page: int, per_page: int) -> tuple[list, int, int]:
-    """Devuelve (items, total, total_pages)."""
+    """Returns (items, total, total_pages)."""
     total = query.count()
     items = query.offset((page - 1) * per_page).limit(per_page).all()
     return items, total, max(1, ceil(total / per_page))
@@ -66,7 +66,7 @@ def _table_ctx(request: Request, db: Session, search: str, category: str,
 
 
 # ---------------------------------------------------------------------------
-# GET — páginas y partiales
+# GET — pages and partials
 # ---------------------------------------------------------------------------
 
 @router.get("", response_class=HTMLResponse)
@@ -122,11 +122,11 @@ async def edit_form(
 
 
 # ---------------------------------------------------------------------------
-# POST / PUT / DELETE — mutaciones que retornan HTML
+# POST / PUT / DELETE — mutations that return HTML
 # ---------------------------------------------------------------------------
 
 def _parse_form(form) -> dict:
-    """Extrae y coerciona los campos del formulario de ingrediente."""
+    """Extracts and coerces the ingredient form fields."""
     raw_yield = form.get("yield_percentage")
     return {
         "name":              form["name"],
@@ -141,7 +141,7 @@ def _parse_form(form) -> dict:
 
 
 def _table_response(request: Request, db: Session) -> HTMLResponse:
-    """Retorna _table.html (pág. 1, todos activos) + HX-Trigger para cerrar modal."""
+    """Returns _table.html (page 1, all active) + HX-Trigger to close modal."""
     ctx = _table_ctx(request, db, "", "", "true", 1)
     response = templates.TemplateResponse("ingredients/_table.html", ctx)
     response.headers["HX-Trigger"] = "closeModal"
@@ -183,4 +183,4 @@ async def deactivate(
         raise HTTPException(status_code=404, detail="Ingredient not found")
     ingredient.is_active = False
     db.commit()
-    return HTMLResponse("")  # HTMX reemplaza outerHTML del <tr> → lo elimina
+    return HTMLResponse("")  # HTMX replaces outerHTML of <tr> → removes it

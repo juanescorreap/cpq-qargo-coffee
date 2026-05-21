@@ -26,7 +26,7 @@ def eur():
 
 
 # ============================================
-# FORMATO COLOMBIANO / LATINOAMERICANO
+# COLOMBIAN / LATIN AMERICAN FORMAT
 # ============================================
 
 class TestColombianFormat:
@@ -60,7 +60,7 @@ class TestColombianFormat:
 
 
 # ============================================
-# FORMATO USA / INGLÉS
+# US / ENGLISH FORMAT
 # ============================================
 
 class TestUSFormat:
@@ -85,7 +85,7 @@ class TestUSFormat:
 
 
 # ============================================
-# FORMATO EUROPEO
+# EUROPEAN FORMAT
 # ============================================
 
 class TestEuropeanFormat:
@@ -111,7 +111,7 @@ class TestEuropeanFormat:
 
 
 # ============================================
-# NÚMEROS SIMPLES / SIN FORMATO
+# PLAIN NUMBERS / NO FORMAT
 # ============================================
 
 class TestPlainNumbers:
@@ -135,7 +135,7 @@ class TestPlainNumbers:
 
 
 # ============================================
-# SEPARADOR EXPLÍCITO (override)
+# EXPLICIT SEPARATOR (override)
 # ============================================
 
 class TestExplicitSeparator:
@@ -151,7 +151,7 @@ class TestExplicitSeparator:
 
 
 # ============================================
-# TEXTO ADICIONAL (prefijos/sufijos no numéricos)
+# ADDITIONAL TEXT (non-numeric prefixes/suffixes)
 # ============================================
 
 class TestTextAffixes:
@@ -166,7 +166,7 @@ class TestTextAffixes:
 
 
 # ============================================
-# RANGOS DE PRECIOS
+# PRICE RANGES
 # ============================================
 
 class TestPriceRanges:
@@ -205,7 +205,7 @@ class TestPriceRanges:
 
 
 # ============================================
-# EXTRACCIÓN DE MONEDA
+# CURRENCY EXTRACTION
 # ============================================
 
 class TestExtractCurrency:
@@ -269,7 +269,7 @@ class TestReturnCurrency:
 
 
 # ============================================
-# MANEJO DE ERRORES
+# ERROR HANDLING
 # ============================================
 
 class TestErrors:
@@ -302,7 +302,7 @@ class TestErrors:
 
 
 # ============================================
-# _normalize_separators (unidad)
+# _normalize_separators (unit)
 # ============================================
 
 class TestNormalizeSeparators:
@@ -327,7 +327,7 @@ class TestNormalizeSeparators:
 
 
 # ============================================
-# Convención por moneda (_currency_convention)
+# Convention by currency (_currency_convention)
 # ============================================
 
 class TestCurrencyConvention:

@@ -5,7 +5,7 @@ from sqlalchemy.orm import declarative_base, sessionmaker
 from sqlalchemy.pool import NullPool
 
 # ============================================
-# CONFIGURACIÓN DE SUPABASE
+# SUPABASE CONFIGURATION
 # ============================================
 
 SUPABASE_DB_URL = os.getenv("SUPABASE_DB_URL")
@@ -15,8 +15,8 @@ DATABASE_URL = SUPABASE_POOLER_URL or SUPABASE_DB_URL
 
 if not DATABASE_URL:
     raise ValueError(
-        "SUPABASE_DB_URL o SUPABASE_POOLER_URL debe estar configurado. "
-        "Obtén estas URLs desde tu proyecto de Supabase."
+        "SUPABASE_DB_URL or SUPABASE_POOLER_URL must be configured. "
+        "Get these URLs from your Supabase project."
     )
 
 if DATABASE_URL.startswith("postgres://"):
@@ -25,7 +25,7 @@ if DATABASE_URL.startswith("postgres://"):
 IS_PRODUCTION = os.getenv("RAILWAY_ENVIRONMENT") is not None
 
 # ============================================
-# CONFIGURACIÓN DEL ENGINE
+# ENGINE CONFIGURATION
 # ============================================
 
 if IS_PRODUCTION and SUPABASE_POOLER_URL:
@@ -34,7 +34,7 @@ if IS_PRODUCTION and SUPABASE_POOLER_URL:
         poolclass=NullPool,
         echo=False,
     )
-    print("✅ Usando Supabase Pooler (NullPool)")
+    print("✅ Using Supabase Pooler (NullPool)")
 else:
     engine = create_engine(
         DATABASE_URL,
@@ -44,7 +44,7 @@ else:
         max_overflow=10,
         echo=False,
     )
-    print("✅ Usando pool de conexiones estándar")
+    print("✅ Using standard connection pool")
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
@@ -52,7 +52,7 @@ Base = declarative_base()
 
 
 def get_db():
-    """Dependency para obtener sesión de DB."""
+    """Dependency to obtain a DB session."""
     db = SessionLocal()
     try:
         yield db
@@ -61,23 +61,23 @@ def get_db():
 
 
 def init_db():
-    """Crea todas las tablas definidas en los modelos que hereden de Base."""
+    """Creates all tables defined in models that inherit from Base."""
     Base.metadata.create_all(bind=engine)
 
 
 # ============================================
-# TEST DE CONEXIÓN
+# CONNECTION TEST
 # ============================================
 
 def test_connection() -> bool:
-    """Test de conexión a Supabase."""
+    """Connection test to Supabase."""
     try:
         with engine.connect() as conn:
             conn.execute(text("SELECT 1"))
-        print("✅ Conexión a Supabase exitosa")
+        print("✅ Supabase connection successful")
         return True
     except Exception as e:
-        print(f"❌ Error conectando a Supabase: {e}")
+        print(f"❌ Error connecting to Supabase: {e}")
         return False
 
 

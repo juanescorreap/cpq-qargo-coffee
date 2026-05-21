@@ -10,39 +10,39 @@ _PRODUCTION_ORIGINS = [
 
 
 class Settings(BaseSettings):
-    """Configuración central de la aplicación cargada desde variables de entorno.
+    """Central application configuration loaded from environment variables.
 
-    Los campos requeridos (sin default) deben estar presentes en el archivo .env
-    o en el entorno del proceso antes de arrancar; pydantic-settings reportará el
-    campo faltante explícitamente en el arranque.
+    Required fields (without a default) must be present in the .env file
+    or in the process environment before startup; pydantic-settings will report
+    the missing field explicitly at startup.
 
-    Campos sensibles (DATABASE_URL, SECRET_KEY) nunca deben commitearse al
-    repositorio; deben vivir exclusivamente en .env (desarrollo) o en las
-    variables de entorno de la plataforma de despliegue (producción).
+    Sensitive fields (DATABASE_URL, SECRET_KEY) must never be committed to the
+    repository; they should live exclusively in .env (development) or in the
+    environment variables of the deployment platform (production).
 
-    Uso de ALLOWED_ORIGINS:
-        - Si ENVIRONMENT == "production" y ALLOWED_ORIGINS no fue sobreescrito
-          en el entorno, se aplica automáticamente la lista de dominios
-          permitidos definida en _PRODUCTION_ORIGINS.
-        - Para añadir dominios en producción sin tocar el código, establece
-          la variable de entorno:
-            ALLOWED_ORIGINS=["https://tu-dominio.com","https://otro.com"]
+    ALLOWED_ORIGINS usage:
+        - If ENVIRONMENT == "production" and ALLOWED_ORIGINS was not overridden
+          in the environment, the explicit list of allowed domains defined in
+          _PRODUCTION_ORIGINS is applied automatically.
+        - To add domains in production without touching the code, set the
+          environment variable:
+            ALLOWED_ORIGINS=["https://your-domain.com","https://other.com"]
     """
 
-    # ── Base de datos ──────────────────────────────────────────────────────
+    # ── Database ───────────────────────────────────────────────────────────
     SUPABASE_DB_URL: str
     SUPABASE_POOLER_URL: Optional[str] = None
 
-    # ── Aplicación ─────────────────────────────────────────────────────────
+    # ── Application ────────────────────────────────────────────────────────
     DEBUG: bool = False
     SECRET_KEY: str
     ENVIRONMENT: str = "production"  # "development" | "production"
 
     # ── CORS ───────────────────────────────────────────────────────────────
-    # En producción se sobreescribe automáticamente con _PRODUCTION_ORIGINS
-    # si no se define explícitamente en el entorno.
-    # En .env / variables de entorno usar formato JSON:
-    #   ALLOWED_ORIGINS=["https://dominio.com","https://otro.com"]
+    # In production this is automatically overridden with _PRODUCTION_ORIGINS
+    # if not explicitly defined in the environment.
+    # In .env / environment variables use JSON format:
+    #   ALLOWED_ORIGINS=["https://domain.com","https://other.com"]
     ALLOWED_ORIGINS: List[str] = ["*"]
 
     # ── Scraping ───────────────────────────────────────────────────────────
@@ -58,17 +58,16 @@ class Settings(BaseSettings):
 
     @model_validator(mode="after")
     def _apply_production_cors(self) -> "Settings":
-        """Restringe CORS automáticamente en entorno de producción.
+        """Automatically restricts CORS in production environment.
 
-        Si ENVIRONMENT es "production" y ALLOWED_ORIGINS no fue sobreescrito
-        en el entorno (sigue siendo el wildcard por defecto), reemplaza con
-        la lista explícita de dominios permitidos definida en
-        _PRODUCTION_ORIGINS. Esto evita exponer la API con CORS abierto en
-        producción por olvido de configuración.
+        If ENVIRONMENT is "production" and ALLOWED_ORIGINS was not overridden
+        in the environment (still the default wildcard), replaces it with the
+        explicit list of allowed domains defined in _PRODUCTION_ORIGINS. This
+        prevents accidentally exposing the API with open CORS in production due
+        to a missing configuration.
 
-        Si se necesitan dominios adicionales, defínelos en la variable de
-        entorno ALLOWED_ORIGINS (formato JSON) en lugar de modificar este
-        archivo.
+        If additional domains are needed, define them in the ALLOWED_ORIGINS
+        environment variable (JSON format) instead of modifying this file.
         """
         if self.ENVIRONMENT == "production" and self.ALLOWED_ORIGINS == ["*"]:
             self.ALLOWED_ORIGINS = _PRODUCTION_ORIGINS

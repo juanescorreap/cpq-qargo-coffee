@@ -1,42 +1,42 @@
 {% extends "base.html" %}
 
-{% block title %}Dashboard — CPQ Cafeterías{% endblock %}
+{% block title %}Dashboard — CPQ Coffee Shops{% endblock %}
 
 {% block content %}
 
-{# ── Encabezado de página ─────────────────────────────────────────────────── #}
+{# ── Page heading ─────────────────────────────────────────────────────────── #}
 <div class="mb-8">
   <h1 class="text-3xl font-bold text-espresso">Dashboard</h1>
-  <p class="mt-1 text-sm text-stone-500">Resumen general del catálogo y configuración</p>
+  <p class="mt-1 text-sm text-stone-500">General overview of the catalog and configuration</p>
 </div>
 
-{# ── Tarjetas de estadísticas ─────────────────────────────────────────────── #}
+{# ── Statistics cards ─────────────────────────────────────────────────────── #}
 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
 
   {% set cards = [
     {
-      "label":  "Ingredientes activos",
+      "label":  "Active ingredients",
       "value":  stats.total_ingredients,
       "icon":   "🌿",
       "href":   "/ingredients",
       "color":  "border-l-green-500",
     },
     {
-      "label":  "Productos en menú",
+      "label":  "Menu products",
       "value":  stats.total_products,
       "icon":   "☕",
       "href":   "/products",
       "color":  "border-l-amber",
     },
     {
-      "label":  "Tiendas activas",
+      "label":  "Active stores",
       "value":  stats.total_stores,
       "icon":   "🏪",
       "href":   "/stores",
       "color":  "border-l-blue-500",
     },
     {
-      "label":  "Categorías",
+      "label":  "Categories",
       "value":  stats.total_categories,
       "icon":   "🏷️",
       "href":   "/products",
@@ -66,9 +66,9 @@
 
 </div>
 
-{# ── Acciones rápidas ─────────────────────────────────────────────────────── #}
+{# ── Quick actions ─────────────────────────────────────────────────────────── #}
 <div class="bg-white rounded-xl shadow-sm p-6 mb-10">
-  <h2 class="text-xl font-semibold text-espresso mb-5">Acciones rápidas</h2>
+  <h2 class="text-xl font-semibold text-espresso mb-5">Quick actions</h2>
 
   <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
 
@@ -76,43 +76,43 @@
       {
         "href":    "/ingredients",
         "icon":    "🌿",
-        "label":   "Gestionar ingredientes",
-        "desc":    "Precios, conversiones y mermas",
+        "label":   "Manage ingredients",
+        "desc":    "Prices, conversions and waste",
         "primary": true,
       },
       {
         "href":    "/products",
         "icon":    "☕",
-        "label":   "Gestionar productos",
-        "desc":    "Recetas, tamaños y packaging",
+        "label":   "Manage products",
+        "desc":    "Recipes, sizes and packaging",
         "primary": false,
       },
       {
         "href":    "/costs",
         "icon":    "💰",
-        "label":   "Calcular costos",
-        "desc":    "Breakdown por producto y tienda",
+        "label":   "Calculate costs",
+        "desc":    "Breakdown by product and store",
         "primary": false,
       },
       {
         "href":    "/stores",
         "icon":    "🏪",
-        "label":   "Gestionar tiendas",
-        "desc":    "Precios locales por tienda",
+        "label":   "Manage stores",
+        "desc":    "Local prices per store",
         "primary": false,
       },
       {
         "href":    "/competitors",
         "icon":    "🔍",
-        "label":   "Análisis competitivo",
-        "desc":    "Matches con precios de competencia",
+        "label":   "Competitive analysis",
+        "desc":    "Matches with competitor prices",
         "primary": false,
       },
       {
         "href":    "/reports",
         "icon":    "📊",
-        "label":   "Ver reportes",
-        "desc":    "Márgenes, tendencias y alertas",
+        "label":   "View reports",
+        "desc":    "Margins, trends and alerts",
         "primary": false,
       },
     ] %}
@@ -145,32 +145,32 @@
   </div>
 </div>
 
-{# ── Estado del sistema ───────────────────────────────────────────────────── #}
+{# ── System status ─────────────────────────────────────────────────────────── #}
 <div class="bg-white rounded-xl shadow-sm p-6">
-  <h2 class="text-xl font-semibold text-espresso mb-4">Estado del sistema</h2>
+  <h2 class="text-xl font-semibold text-espresso mb-4">System status</h2>
   <div class="flex flex-col sm:flex-row gap-4">
 
     <div class="flex items-center gap-3 px-4 py-3 bg-green-50 rounded-lg border border-green-100 flex-1">
       <span class="w-2.5 h-2.5 rounded-full bg-green-500 shrink-0 animate-pulse"></span>
       <div>
-        <p class="text-sm font-medium text-green-800">Base de datos</p>
-        <p class="text-xs text-green-600">Supabase — conectado</p>
+        <p class="text-sm font-medium text-green-800">Database</p>
+        <p class="text-xs text-green-600">Supabase — connected</p>
       </div>
     </div>
 
     <div class="flex items-center gap-3 px-4 py-3 bg-green-50 rounded-lg border border-green-100 flex-1">
       <span class="w-2.5 h-2.5 rounded-full bg-green-500 shrink-0 animate-pulse"></span>
       <div>
-        <p class="text-sm font-medium text-green-800">API REST</p>
-        <p class="text-xs text-green-600">FastAPI — en línea</p>
+        <p class="text-sm font-medium text-green-800">REST API</p>
+        <p class="text-xs text-green-600">FastAPI — online</p>
       </div>
     </div>
 
     <div class="flex items-center gap-3 px-4 py-3 bg-amber/10 rounded-lg border border-amber/20 flex-1">
       <span class="w-2.5 h-2.5 rounded-full bg-amber shrink-0"></span>
       <div>
-        <p class="text-sm font-medium text-amber">Scraper de precios</p>
-        <p class="text-xs text-stone-500">Sin configurar</p>
+        <p class="text-sm font-medium text-amber">Price scraper</p>
+        <p class="text-xs text-stone-500">Not configured</p>
       </div>
     </div>
 

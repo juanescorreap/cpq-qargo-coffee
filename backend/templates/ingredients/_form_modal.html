@@ -1,6 +1,6 @@
-{# Modal de creación/edición — inyectado en #modal-container por HTMX.
-   Cierre automático vía HX-Trigger: closeModal desde el servidor.
-   Alpine.js maneja animaciones y Escape/click-fuera. #}
+{# Creation/edit modal — injected into #modal-container by HTMX.
+   Auto-close via HX-Trigger: closeModal from the server.
+   Alpine.js handles animations and Escape/outside-click. #}
 <div
   x-data="{ show: true }"
   x-show="show"
@@ -13,7 +13,7 @@
   @keydown.escape.window="show = false; setTimeout(() => { document.getElementById('modal-container').innerHTML = '' }, 200)"
   class="fixed inset-0 z-50 flex items-center justify-center p-4">
 
-  {# Backdrop — click fuera cierra #}
+  {# Backdrop — click outside closes #}
   <div class="absolute inset-0 bg-black/50 backdrop-blur-sm"
        @click="show = false; setTimeout(() => { document.getElementById('modal-container').innerHTML = '' }, 200)">
   </div>
@@ -29,12 +29,12 @@
        x-transition:leave-end="opacity-0 translate-y-2 scale-95"
        @click.stop>
 
-    {# Header sticky #}
+    {# Sticky header #}
     <div class="flex items-center justify-between px-6 py-4 border-b border-stone-200
                 sticky top-0 bg-white rounded-t-2xl z-10">
       <div>
         <h2 class="text-xl font-bold text-espresso">
-          {% if ingredient %}Editar ingrediente{% else %}Nuevo ingrediente{% endif %}
+          {% if ingredient %}Edit ingredient{% else %}New ingredient{% endif %}
         </h2>
         {% if ingredient %}
         <p class="text-xs text-stone-400 mt-0.5">ID #{{ ingredient.id }}</p>
@@ -43,14 +43,14 @@
       <button
         @click="show = false; setTimeout(() => { document.getElementById('modal-container').innerHTML = '' }, 200)"
         class="p-2 rounded-lg text-stone-400 hover:text-stone-700 hover:bg-stone-100 transition-colors"
-        aria-label="Cerrar">
+        aria-label="Close">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
         </svg>
       </button>
     </div>
 
-    {# Form — POST crea, PUT edita. Servidor responde con _table.html + HX-Trigger:closeModal #}
+    {# Form — POST creates, PUT edits. Server responds with _table.html + HX-Trigger:closeModal #}
     <form
       {% if ingredient %}
         hx-put="/ingredients/{{ ingredient.id }}"
@@ -63,24 +63,24 @@
 
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-5 gap-y-4">
 
-        {# Nombre — ocupa fila completa #}
+        {# Name — spans full row #}
         <div class="sm:col-span-2">
           <label class="block text-sm font-medium text-espresso mb-1.5">
-            Nombre <span class="text-red-500">*</span>
+            Name <span class="text-red-500">*</span>
           </label>
           <input type="text" name="name" required autofocus
                  value="{{ ingredient.name if ingredient else '' }}"
-                 placeholder="ej: Leche entera UHT"
+                 placeholder="e.g.: Whole UHT milk"
                  class="w-full px-3 py-2 text-sm border border-stone-200 rounded-lg
                         focus:outline-none focus:ring-2 focus:ring-amber/40 focus:border-amber">
         </div>
 
-        {# Categoría #}
+        {# Category #}
         <div>
-          <label class="block text-sm font-medium text-espresso mb-1.5">Categoría</label>
+          <label class="block text-sm font-medium text-espresso mb-1.5">Category</label>
           <input type="text" name="category"
                  value="{{ ingredient.category if ingredient else '' }}"
-                 placeholder="ej: Lácteos"
+                 placeholder="e.g.: Dairy"
                  list="category-datalist"
                  class="w-full px-3 py-2 text-sm border border-stone-200 rounded-lg
                         focus:outline-none focus:ring-2 focus:ring-amber/40 focus:border-amber">
@@ -91,21 +91,21 @@
           </datalist>
         </div>
 
-        {# Placeholder para alinear grid #}
+        {# Placeholder to align grid #}
         <div class="hidden sm:block"></div>
 
-        {# ── Sección: compra al proveedor ──────────────────────────────── #}
+        {# ── Section: purchase from supplier ──────────────────────────────── #}
         <div class="sm:col-span-2">
           <p class="text-xs font-semibold text-stone-400 uppercase tracking-wider mb-3 mt-1
                     border-b border-stone-100 pb-2">
-            Compra al proveedor
+            Purchase from supplier
           </p>
         </div>
 
-        {# Precio de compra #}
+        {# Purchase price #}
         <div>
           <label class="block text-sm font-medium text-espresso mb-1.5">
-            Precio de compra <span class="text-red-500">*</span>
+            Purchase price <span class="text-red-500">*</span>
           </label>
           <div class="relative">
             <span class="absolute left-3 top-1/2 -translate-y-1/2 text-stone-400 text-sm pointer-events-none">$</span>
@@ -117,55 +117,55 @@
           </div>
         </div>
 
-        {# Unidad de compra #}
+        {# Purchase unit #}
         <div>
           <label class="block text-sm font-medium text-espresso mb-1.5">
-            Unidad de compra <span class="text-red-500">*</span>
+            Purchase unit <span class="text-red-500">*</span>
           </label>
           <input type="text" name="purchase_unit" required
                  value="{{ ingredient.purchase_unit if ingredient else '' }}"
-                 placeholder="ej: Caja 1L, kg, bolsa 5kg"
+                 placeholder="e.g.: 1L box, kg, 5kg bag"
                  class="w-full px-3 py-2 text-sm border border-stone-200 rounded-lg
                         focus:outline-none focus:ring-2 focus:ring-amber/40 focus:border-amber">
         </div>
 
-        {# ── Sección: uso en recetas ────────────────────────────────────── #}
+        {# ── Section: usage in recipes ──────────────────────────────────────── #}
         <div class="sm:col-span-2">
           <p class="text-xs font-semibold text-stone-400 uppercase tracking-wider mb-3 mt-1
                     border-b border-stone-100 pb-2">
-            Uso en recetas
+            Usage in recipes
           </p>
         </div>
 
-        {# Unidad de uso #}
+        {# Usage unit #}
         <div>
           <label class="block text-sm font-medium text-espresso mb-1.5">
-            Unidad de uso <span class="text-red-500">*</span>
+            Usage unit <span class="text-red-500">*</span>
           </label>
           <input type="text" name="usage_unit" required
                  value="{{ ingredient.usage_unit if ingredient else '' }}"
-                 placeholder="ej: ml, g, unidad"
+                 placeholder="e.g.: ml, g, unit"
                  class="w-full px-3 py-2 text-sm border border-stone-200 rounded-lg
                         focus:outline-none focus:ring-2 focus:ring-amber/40 focus:border-amber">
         </div>
 
-        {# Factor de conversión #}
+        {# Conversion factor #}
         <div>
           <label class="block text-sm font-medium text-espresso mb-1.5">
-            Factor de conversión <span class="text-red-500">*</span>
+            Conversion factor <span class="text-red-500">*</span>
           </label>
           <input type="number" name="conversion_factor" step="0.0001" min="0.0001" required
                  value="{{ ingredient.conversion_factor if ingredient and ingredient.conversion_factor else '' }}"
-                 placeholder="ej: 1000 (1L → 1000 ml)"
+                 placeholder="e.g.: 1000 (1L → 1000 ml)"
                  class="w-full px-3 py-2 text-sm border border-stone-200 rounded-lg
                         focus:outline-none focus:ring-2 focus:ring-amber/40 focus:border-amber">
-          <p class="mt-1 text-xs text-stone-400">Unidades de uso contenidas en una unidad de compra</p>
+          <p class="mt-1 text-xs text-stone-400">Usage units contained in one purchase unit</p>
         </div>
 
         {# Yield % #}
         <div>
           <label class="block text-sm font-medium text-espresso mb-1.5">
-            Yield / Aprovechamiento <span class="text-red-500">*</span>
+            Yield / Waste <span class="text-red-500">*</span>
           </label>
           <div class="relative">
             <input type="number" name="yield_percentage" step="0.01" min="0.01" max="100" required
@@ -174,42 +174,42 @@
                           focus:outline-none focus:ring-2 focus:ring-amber/40 focus:border-amber">
             <span class="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 text-sm pointer-events-none">%</span>
           </div>
-          <p class="mt-1 text-xs text-stone-400">100 % = sin merma · 80 % = se descarta el 20 %</p>
+          <p class="mt-1 text-xs text-stone-400">100% = no waste · 80% = 20% discarded</p>
         </div>
 
-        {# ── Sección: scraping ─────────────────────────────────────────── #}
+        {# ── Section: scraping ─────────────────────────────────────────── #}
         <div class="sm:col-span-2">
           <p class="text-xs font-semibold text-stone-400 uppercase tracking-wider mb-3 mt-1
                     border-b border-stone-100 pb-2">
-            Scraping (opcional)
+            Scraping (optional)
           </p>
         </div>
 
-        {# URL proveedor #}
+        {# Supplier URL #}
         <div class="sm:col-span-2">
-          <label class="block text-sm font-medium text-espresso mb-1.5">URL del proveedor</label>
+          <label class="block text-sm font-medium text-espresso mb-1.5">Supplier URL</label>
           <input type="url" name="source_url"
                  value="{{ ingredient.source_url if ingredient and ingredient.source_url else '' }}"
-                 placeholder="https://proveedor.com/producto"
+                 placeholder="https://supplier.com/product"
                  class="w-full px-3 py-2 text-sm border border-stone-200 rounded-lg
                         focus:outline-none focus:ring-2 focus:ring-amber/40 focus:border-amber font-mono text-xs">
-          <p class="mt-1 text-xs text-stone-400">Para actualización automática de precios vía scraping</p>
+          <p class="mt-1 text-xs text-stone-400">For automatic price updates via scraping</p>
         </div>
 
       </div>
 
-      {# Footer sticky con botones #}
+      {# Sticky footer with buttons #}
       <div class="flex justify-end gap-3 mt-6 pt-4 border-t border-stone-100">
         <button type="button"
                 @click="show = false; setTimeout(() => { document.getElementById('modal-container').innerHTML = '' }, 200)"
                 class="px-4 py-2 text-sm font-medium text-stone-600 bg-stone-100
                        rounded-lg hover:bg-stone-200 transition-colors">
-          Cancelar
+          Cancel
         </button>
         <button type="submit"
                 class="px-5 py-2 text-sm font-semibold text-beige bg-espresso
                        rounded-lg hover:bg-espresso-light transition-colors">
-          {% if ingredient %}Guardar cambios{% else %}Crear ingrediente{% endif %}
+          {% if ingredient %}Save changes{% else %}Create ingredient{% endif %}
         </button>
       </div>
 

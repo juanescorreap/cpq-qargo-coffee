@@ -1,13 +1,13 @@
-"""Schemas para el motor de cálculo de costos.
+"""Schemas for the cost calculation engine.
 
-Flujo típico:
-    Cliente  →  CostCalculationRequest  →  motor de costeo
-    Motor    →  CostBreakdownResponse   →  cliente
+Typical flow:
+    Client  →  CostCalculationRequest  →  costing engine
+    Engine  →  CostBreakdownResponse   →  client
 
-CostBreakdownResponse desglosa el costo total en cuatro categorías
-independientes (ingredients, sub_recipes, packaging, labor) para que
-el cliente pueda mostrar transparencia de costos al usuario final y
-facilitar análisis de márgenes por categoría.
+CostBreakdownResponse breaks down the total cost into four independent
+categories (ingredients, sub_recipes, packaging, labor) so that the client
+can show cost transparency to the end user and facilitate margin analysis
+by category.
 """
 
 from decimal import Decimal
@@ -21,11 +21,11 @@ from pydantic import BaseModel, field_validator
 # ---------------------------------------------------------------------------
 
 class CostCalculationRequest(BaseModel):
-    """Parámetros de entrada para calcular el costo de un producto.
+    """Input parameters for calculating the cost of a product.
 
-    Si size_id es None el motor usa el tamaño base del producto
-    (scale_factor = 1.0). Si store_id es None no se aplican
-    ajustes de costo por tienda.
+    If size_id is None the engine uses the product's base size
+    (scale_factor = 1.0). If store_id is None no store-level cost
+    adjustments are applied.
     """
 
     product_id: int
@@ -38,11 +38,11 @@ class CostCalculationRequest(BaseModel):
 # ---------------------------------------------------------------------------
 
 class IngredientCostDetail(BaseModel):
-    """Desglose de costo por línea de ingrediente en la receta.
+    """Cost breakdown per ingredient line in the recipe.
 
-    unit_cost ya incluye la merma del ingrediente (yield_percentage) y
-    la merma de proceso (process_yield_loss): es el costo real por
-    usage_unit después de aplicar ambos factores.
+    unit_cost already includes the ingredient waste (yield_percentage) and
+    the process waste (process_yield_loss): it is the actual cost per
+    usage_unit after applying both factors.
 
     total_cost = quantity × unit_cost
     """
@@ -55,10 +55,10 @@ class IngredientCostDetail(BaseModel):
 
 
 class SubRecipeCostDetail(BaseModel):
-    """Desglose de costo por sub-receta (batch component) referenciada.
+    """Cost breakdown per sub-recipe (batch component) referenced.
 
-    unit_cost es el costo completo de una porción de la sub-receta,
-    calculado recursivamente por el motor expandiendo sus ingredientes.
+    unit_cost is the full cost of one portion of the sub-recipe,
+    calculated recursively by the engine expanding its ingredients.
 
     total_cost = quantity × unit_cost
     """
@@ -70,11 +70,11 @@ class SubRecipeCostDetail(BaseModel):
 
 
 class PackagingCostDetail(BaseModel):
-    """Desglose de costo por ítem de packaging asociado al tamaño.
+    """Cost breakdown per packaging item associated with the size.
 
-    El packaging se costea a precio de ingrediente dividido por su
-    factor de conversión (unidades por caja). total_cost = quantity
-    × costo unitario del empaque.
+    Packaging is costed at the ingredient price divided by its
+    conversion factor (units per box). total_cost = quantity
+    × unit cost of the packaging.
     """
 
     name: str
@@ -83,10 +83,10 @@ class PackagingCostDetail(BaseModel):
 
 
 class LaborCostDetail(BaseModel):
-    """Desglose de costo de mano de obra.
+    """Labor cost breakdown.
 
     total_cost = prep_time_minutes × cost_per_minute.
-    cost_per_minute proviene del campo labor_cost_per_minute del producto.
+    cost_per_minute comes from the product's labor_cost_per_minute field.
     """
 
     prep_time_minutes: Decimal
@@ -106,19 +106,19 @@ class LaborCostDetail(BaseModel):
 # ---------------------------------------------------------------------------
 
 class CostBreakdownResponse(BaseModel):
-    """Respuesta completa del motor de costeo para un producto y tamaño.
+    """Complete response from the costing engine for a product and size.
 
-    totals agrupa los subtotales por categoría para acceso directo:
+    totals groups the subtotals by category for direct access:
         {
             "ingredients": Decimal,
             "sub_recipes":  Decimal,
             "packaging":    Decimal,
             "labor":        Decimal,
-            "total":        Decimal,   # suma de las cuatro categorías
+            "total":        Decimal,   # sum of the four categories
         }
 
-    total_cost == totals["total"] y se mantiene como campo de nivel
-    superior para facilitar el acceso sin parsear el dict.
+    total_cost == totals["total"] and is kept as a top-level field
+    for easy access without parsing the dict.
     """
 
     product_id: int

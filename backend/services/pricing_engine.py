@@ -1,12 +1,12 @@
-"""Motor de cálculo y persistencia de precios para el CPQ de Qargo Coffee.
+"""Price calculation and persistence engine for the Qargo Coffee CPQ.
 
-Responsabilidades:
-- Calcular el precio sugerido a partir del costo de producción + markup.
-- Resolver el markup según jerarquía: override explícito → override guardado en
-  ``ProductPricing`` → ``CategoryMargin`` de la categoría → default 50 %.
-- Persistir los precios en ``ProductPricing`` con auditoría automática en
-  ``ProductPriceHistory`` cuando el precio cambia.
-- Recalcular masivamente todos los productos activos (operación batch).
+Responsibilities:
+- Calculate the suggested price from the production cost + markup.
+- Resolve the markup according to hierarchy: explicit override → override saved
+  in ``ProductPricing`` → ``CategoryMargin`` of the category → default 50 %.
+- Persist prices in ``ProductPricing`` with automatic auditing in
+  ``ProductPriceHistory`` when the price changes.
+- Recalculate all active products in bulk (batch operation).
 """
 
 import logging
@@ -31,36 +31,36 @@ _DEFAULT_MARKUP = Decimal("50.0")
 
 
 class PricingEngine:
-    """Motor de cálculo de precios con márgenes para productos de cafetería.
+    """Price calculation engine with margins for coffee-shop products.
 
-    Encapsula la lógica de:
-    - Resolución del markup según jerarquía de prioridad.
-    - Cálculo del precio sugerido y redondeado a los 100 COP más cercanos.
-    - Persistencia upsert en ``ProductPricing`` con historial automático.
-    - Recálculo masivo de todos los productos activos (batch pricing).
+    Encapsulates the logic for:
+    - Markup resolution according to the priority hierarchy.
+    - Suggested price calculation rounded to the nearest 100 COP.
+    - Upsert persistence in ``ProductPricing`` with automatic history.
+    - Batch recalculation of all active products.
 
-    Las instancias son stateless respecto a los resultados calculados y pueden
-    reutilizarse entre múltiples llamadas dentro de la misma sesión de BD.
+    Instances are stateless with respect to calculated results and can be
+    reused across multiple calls within the same DB session.
 
     Attributes:
-        db: Sesión SQLAlchemy activa. El llamador es responsable de su
-            ciclo de vida (commit / rollback / close).
-        cost_calculator: Instancia de :class:`~backend.services.cost_calculator.CostCalculator`
-            construida internamente con la misma sesión.
+        db: Active SQLAlchemy session.  The caller is responsible for its
+            lifecycle (commit / rollback / close).
+        cost_calculator: Instance of :class:`~backend.services.cost_calculator.CostCalculator`
+            built internally with the same session.
     """
 
     def __init__(self, db: Session) -> None:
-        """Inicializa el motor con una sesión de base de datos.
+        """Initialise the engine with a database session.
 
         Args:
-            db: Sesión SQLAlchemy activa (e.g. ``next(get_db())`` en FastAPI,
-                o directamente ``SessionLocal()`` en scripts y tareas batch).
+            db: Active SQLAlchemy session (e.g. ``next(get_db())`` in FastAPI,
+                or directly ``SessionLocal()`` in scripts and batch tasks).
         """
         self.db = db
         self.cost_calculator = CostCalculator(db)
 
     # ------------------------------------------------------------------
-    # API pública
+    # Public API
     # ------------------------------------------------------------------
 
     def calculate_price(
@@ -70,45 +70,46 @@ class PricingEngine:
         store_id: Optional[int] = None,
         markup_override: Optional[Decimal] = None,
     ) -> Dict:
-        """Calcula el precio sugerido de un producto basado en costo + markup.
+        """Calculate the suggested price of a product based on cost + markup.
 
-        Jerarquía de markup (de mayor a menor prioridad):
+        Markup hierarchy (highest to lowest priority):
 
-        1. ``markup_override`` pasado explícitamente a este método.
-        2. ``ProductPricing.markup_override`` del registro vigente más reciente
-           en BD para la combinación (product, size, store).
-        3. ``CategoryMargin.markup_percentage`` de la categoría del producto.
-        4. Default global de 50 %.
+        1. ``markup_override`` passed explicitly to this method.
+        2. ``ProductPricing.markup_override`` from the most recent active
+           record in the DB for the (product, size, store) combination.
+        3. ``CategoryMargin.markup_percentage`` of the product's category.
+        4. Global default of 50 %.
 
-        El precio redondeado aproxima el precio sugerido al múltiplo de
-        100 COP más cercano, convención habitual de precios en Colombia.
+        The rounded price approximates the suggested price to the nearest
+        multiple of 100 COP, which is the standard pricing convention in
+        Colombia.
 
         Args:
-            product_id: PK del producto en la tabla ``products``.
-            size_id: PK del tamaño (``ProductSize``) a calcular.
-            store_id: PK de la tienda. Cuando se especifica, el costo de
-                producción usa los precios locales de esa tienda vía
-                :class:`CostCalculator`. ``None`` usa los precios base globales.
-            markup_override: Porcentaje de markup a aplicar en lugar del
-                resuelto automáticamente (e.g. ``Decimal("65.0")`` → 65 %).
-                Tiene la prioridad más alta en la jerarquía.
+            product_id: PK of the product in the ``products`` table.
+            size_id: PK of the size (``ProductSize``) to calculate.
+            store_id: PK of the store.  When specified, the production cost
+                uses that store's local prices via :class:`CostCalculator`.
+                ``None`` uses global base prices.
+            markup_override: Markup percentage to apply instead of the
+                automatically resolved one (e.g. ``Decimal("65.0")`` → 65 %).
+                Has the highest priority in the hierarchy.
 
         Returns:
-            Diccionario con todos los valores intermedios y finales::
+            Dictionary with all intermediate and final values::
 
                 {
                     'product_id':        int,
                     'size_id':           int,
                     'store_id':          int | None,
-                    'cost':              Decimal,   # costo de producción
-                    'markup_percentage': Decimal,   # markup aplicado (%)
+                    'cost':              Decimal,   # production cost
+                    'markup_percentage': Decimal,   # applied markup (%)
                     'suggested_price':   Decimal,   # cost × (1 + markup/100)
-                    'rounded_price':     Decimal,   # redondeado a 100 COP
+                    'rounded_price':     Decimal,   # rounded to 100 COP
                 }
 
         Raises:
-            ValueError: Propagado desde :class:`CostCalculator` si el producto
-                o tamaño no existen, o si un ingrediente carece de precio.
+            ValueError: Propagated from :class:`CostCalculator` if the product
+                or size do not exist, or if an ingredient has no price.
         """
         cost = self.cost_calculator.calculate_product_cost(
             product_id, size_id, store_id
@@ -138,44 +139,45 @@ class PricingEngine:
         markup_override: Optional[Decimal] = None,
         is_manual: bool = False,
     ) -> ProductPricing:
-        """Guarda o actualiza el precio de un producto en la base de datos.
+        """Save or update the price of a product in the database.
 
-        Realiza un upsert sobre ``ProductPricing`` usando la combinación
-        (product_id, size_id, store_id, effective_date=hoy) como clave
-        natural. Si el registro ya existe, lo actualiza; si no, lo crea.
+        Performs an upsert on ``ProductPricing`` using the combination
+        (product_id, size_id, store_id, effective_date=today) as the natural
+        key.  If the record already exists, it is updated; otherwise it is
+        created.
 
-        Cada vez que el precio final cambia respecto al registro anterior,
-        inserta automáticamente una fila en ``ProductPriceHistory`` para
-        permitir análisis de rentabilidad a lo largo del tiempo. El markup
-        registrado en el historial se calcula así:
+        Each time the final price changes relative to the previous record, a
+        row is automatically inserted in ``ProductPriceHistory`` to allow
+        profitability analysis over time.  The markup recorded in the history
+        is calculated as follows:
 
-        - ``markup_override`` si fue provisto.
-        - Reverse-engineer ``(final_price / cost − 1) × 100`` en caso
-          contrario, útil para registrar precios manuales manteniendo
-          la trazabilidad del margen efectivo.
+        - ``markup_override`` if provided.
+        - Reverse-engineered ``(final_price / cost − 1) × 100`` otherwise,
+          useful for recording manual prices while maintaining traceability of
+          the effective margin.
 
         Args:
-            product_id: PK del producto.
-            size_id: PK del tamaño.
-            store_id: PK de la tienda o ``None`` para precio global que aplica
-                a todas las tiendas que no tengan un precio específico.
-            final_price: Precio final a persistir (COP).
-            markup_override: Porcentaje de markup explícito a guardar en el
-                registro. Si ``None``, el campo ``markup_override`` del modelo
-                queda en ``NULL`` y el markup del historial se infiere.
-            is_manual: ``True`` cuando el precio fue establecido manualmente
-                sin respetar la fórmula de markup (e.g. precio promocional).
+            product_id: PK of the product.
+            size_id: PK of the size.
+            store_id: PK of the store or ``None`` for a global price that
+                applies to all stores without a specific price.
+            final_price: Final price to persist (COP).
+            markup_override: Explicit markup percentage to save in the record.
+                If ``None``, the ``markup_override`` field of the model is left
+                ``NULL`` and the history markup is inferred.
+            is_manual: ``True`` when the price was set manually without
+                following the markup formula (e.g. promotional price).
 
         Returns:
-            Instancia de :class:`~backend.models.ProductPricing` creada o
-            actualizada, refrescada desde la base de datos tras el commit.
+            :class:`~backend.models.ProductPricing` instance created or
+            updated, refreshed from the database after commit.
 
         Raises:
-            ValueError: Propagado desde :class:`CostCalculator` si el producto
-                o tamaño no existen.
-            ZeroDivisionError: Si el costo calculado es cero y no se provee
-                ``markup_override`` (el reverse-engineer del markup requiere
-                dividir por el costo).
+            ValueError: Propagated from :class:`CostCalculator` if the product
+                or size do not exist.
+            ZeroDivisionError: If the calculated cost is zero and no
+                ``markup_override`` is provided (the markup reverse-engineering
+                requires dividing by the cost).
         """
         cost = self.cost_calculator.calculate_product_cost(
             product_id, size_id, store_id
@@ -238,42 +240,41 @@ class PricingEngine:
         store_id: Optional[int] = None,
         save_to_db: bool = False,
     ) -> Dict:
-        """Calcula (y opcionalmente guarda) los precios de todos los productos activos.
+        """Calculate (and optionally save) prices for all active products.
 
-        Itera sobre todos los ``Product`` con ``is_active=True`` y sus
-        ``ProductSize`` asociados. Los errores por ítem individual son
-        capturados y acumulados en el resultado sin interrumpir el lote,
-        de modo que un producto con datos incompletos no bloquea el resto.
+        Iterates over all ``Product`` records with ``is_active=True`` and their
+        associated ``ProductSize`` records.  Errors for individual items are
+        captured and accumulated in the result without interrupting the batch,
+        so a product with incomplete data does not block the rest.
 
-        Logging emitido durante la operación:
+        Logging emitted during the operation:
 
-        - ``INFO`` al inicio con el total de productos encontrados.
-        - ``DEBUG`` por cada combinación producto×tamaño calculada con éxito,
-          incluyendo costo, markup y precio final.
-        - ``WARNING`` por cada combinación que falla con el mensaje de error.
-        - ``INFO`` al finalizar con el resumen de éxitos y errores.
+        - ``INFO`` at start with the total number of products found.
+        - ``DEBUG`` for each product×size combination calculated successfully,
+          including cost, markup, and final price.
+        - ``WARNING`` for each combination that fails, with the error message.
+        - ``INFO`` at finish with a summary of successes and errors.
 
-        Esta operación puede ser costosa en catálogos grandes; se recomienda
-        ejecutarla en un worker de background o tarea programada fuera del
-        ciclo de solicitud HTTP.
+        This operation can be expensive for large catalogues; it is recommended
+        to run it in a background worker or scheduled task outside the HTTP
+        request cycle.
 
         Args:
-            store_id: PK de la tienda para cálculo de costos con precios
-                locales. ``None`` usa los precios base globales de cada
-                ingrediente.
-            save_to_db: Si ``True``, persiste cada precio calculado en
-                ``ProductPricing`` (y genera historial cuando cambia). Si
-                ``False``, solo calcula sin escribir — útil para previsualizar
-                el impacto de un cambio de costos antes de confirmarlo.
+            store_id: PK of the store for cost calculation with local prices.
+                ``None`` uses the global base price of each ingredient.
+            save_to_db: If ``True``, persists each calculated price in
+                ``ProductPricing`` (and generates history when it changes).
+                If ``False``, only calculates without writing — useful for
+                previewing the impact of a cost change before confirming it.
 
         Returns:
-            Resumen de la operación batch::
+            Summary of the batch operation::
 
                 {
-                    'total_products':    int,         # productos activos encontrados
-                    'total_sizes':       int,         # combinaciones producto × tamaño
-                    'prices_calculated': int,         # calculadas con éxito
-                    'errors':            List[str],   # "<producto> (<tamaño>): <motivo>"
+                    'total_products':    int,         # active products found
+                    'total_sizes':       int,         # product × size combinations
+                    'prices_calculated': int,         # successfully calculated
+                    'errors':            List[str],   # "<product> (<size>): <reason>"
                 }
         """
         products = (
@@ -345,7 +346,7 @@ class PricingEngine:
         }
 
     # ------------------------------------------------------------------
-    # Helpers privados
+    # Private helpers
     # ------------------------------------------------------------------
 
     def _resolve_markup(
@@ -355,27 +356,27 @@ class PricingEngine:
         store_id: Optional[int],
         markup_override: Optional[Decimal],
     ) -> Decimal:
-        """Determina el markup a aplicar según jerarquía de prioridad.
+        """Determine the markup to apply according to the priority hierarchy.
 
-        Jerarquía (de mayor a menor):
+        Hierarchy (highest to lowest):
 
-        1. ``markup_override`` argumento del llamador.
-        2. ``ProductPricing.markup_override`` del registro vigente más reciente
-           para (product, size, store).
-        3. ``CategoryMargin.markup_percentage`` de la categoría del producto.
-        4. Default global ``_DEFAULT_MARKUP`` (50 %).
+        1. ``markup_override`` argument from the caller.
+        2. ``ProductPricing.markup_override`` from the most recent active
+           record for (product, size, store).
+        3. ``CategoryMargin.markup_percentage`` of the product's category.
+        4. Global default ``_DEFAULT_MARKUP`` (50 %).
 
-        Extraído como método privado para que tanto :meth:`calculate_price`
-        como futuros helpers puedan reutilizarlo sin duplicar la lógica.
+        Extracted as a private method so that both :meth:`calculate_price` and
+        future helpers can reuse it without duplicating logic.
 
         Args:
-            product_id: PK del producto.
-            size_id: PK del tamaño.
-            store_id: PK de la tienda o ``None`` para global.
-            markup_override: Override explícito pasado por el llamador externo.
+            product_id: PK of the product.
+            size_id: PK of the size.
+            store_id: PK of the store or ``None`` for global.
+            markup_override: Explicit override passed by the external caller.
 
         Returns:
-            Markup como porcentaje en ``Decimal`` (e.g. ``Decimal("65.0")``).
+            Markup as a percentage in ``Decimal`` (e.g. ``Decimal("65.0")``).
         """
         if markup_override is not None:
             return markup_override

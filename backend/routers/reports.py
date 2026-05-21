@@ -1,8 +1,8 @@
-"""Endpoints de reportes de análisis: costos, márgenes, benchmark y simulaciones.
+"""Analysis report endpoints: costs, margins, benchmark and simulations.
 
-Todos los endpoints de exportación devuelven ``StreamingResponse`` con
-``Content-Disposition: attachment`` para que el navegador descargue el archivo
-directamente sin necesidad de un endpoint HTML intermedio.
+All export endpoints return ``StreamingResponse`` with
+``Content-Disposition: attachment`` so that the browser downloads the file
+directly without needing an intermediate HTML endpoint.
 """
 
 import csv
@@ -25,11 +25,11 @@ def product_costs_report(
     store_id: Optional[int] = None,
     db: Session = Depends(get_db),
 ):
-    """Reporte de costos por producto con desglose por componente.
+    """Cost report per product with breakdown by component.
 
     Query params:
-    - **store_id**: Filtrar por tienda para usar precios locales de ingredientes.
-      Omitir para usar precios base globales.
+    - **store_id**: Filter by store to use local ingredient prices.
+      Omit to use global base prices.
     """
     generator = ReportGenerator(db)
     return generator.product_costs_report(store_id)
@@ -37,13 +37,13 @@ def product_costs_report(
 
 @router.get("/margin-analysis")
 def margin_analysis_report(db: Session = Depends(get_db)):
-    """Análisis de márgenes sobre todos los pricings vigentes.
+    """Margin analysis across all current pricings.
 
-    Clasifica los productos en cuatro categorías:
-    - **negative_margin**: margen < 0 %
-    - **low_margin**: 0 % ≤ margen < 30 %
-    - **healthy_margin**: 30 % ≤ margen ≤ 80 %
-    - **high_margin**: margen > 80 %
+    Classifies products into four categories:
+    - **negative_margin**: margin < 0 %
+    - **low_margin**: 0 % <= margin < 30 %
+    - **healthy_margin**: 30 % <= margin <= 80 %
+    - **high_margin**: margin > 80 %
     """
     generator = ReportGenerator(db)
     return generator.margin_analysis_report()
@@ -51,11 +51,11 @@ def margin_analysis_report(db: Session = Depends(get_db)):
 
 @router.get("/competitor-benchmark")
 def competitor_benchmark_report(db: Session = Depends(get_db)):
-    """Benchmark de precios propios versus competencia.
+    """Price benchmark of our products versus competitors.
 
-    Solo incluye productos con match establecido en ``ProductCompetitorMatch``
-    y precio global vigente en ``ProductPricing``.
-    Ordenado por diferencia porcentual descendente.
+    Only includes products with a match established in ``ProductCompetitorMatch``
+    and a current global price in ``ProductPricing``.
+    Ordered by percentage difference descending.
     """
     generator = ReportGenerator(db)
     return generator.competitor_benchmark_report()
@@ -67,13 +67,13 @@ def price_impact_simulation(
     percent_change: Decimal,
     db: Session = Depends(get_db),
 ):
-    """Simulación del impacto en costos de un cambio de precio en un ingrediente.
+    """Simulation of cost impact from a price change on an ingredient.
 
     Query params:
-    - **ingredient_id**: PK del ingrediente a simular.
-    - **percent_change**: % de variación (ej: `10` = +10 %, `-5` = −5 %).
+    - **ingredient_id**: PK of the ingredient to simulate.
+    - **percent_change**: % variation (e.g.: `10` = +10 %, `-5` = −5 %).
 
-    No escribe ningún dato en la BD.
+    Does not write any data to the DB.
     """
     generator = ReportGenerator(db)
     return generator.price_impact_simulation(ingredient_id, percent_change)
@@ -84,14 +84,13 @@ def export_product_costs_csv(
     store_id: Optional[int] = None,
     db: Session = Depends(get_db),
 ):
-    """Exporta el reporte de costos por producto a CSV.
+    """Exports the product cost report to CSV.
 
-    Devuelve un archivo ``product_costs.csv`` con una fila por combinación
-    producto × tamaño, incluyendo el desglose de ingredientes, packaging y
-    mano de obra.
+    Returns a ``product_costs.csv`` file with one row per product × size
+    combination, including the ingredient, packaging and labor breakdown.
 
     Query params:
-    - **store_id**: Igual que en ``/product-costs``.
+    - **store_id**: Same as in ``/product-costs``.
     """
     generator = ReportGenerator(db)
     report = generator.product_costs_report(store_id)
@@ -100,9 +99,9 @@ def export_product_costs_csv(
     writer = csv.writer(output)
 
     writer.writerow([
-        "Producto", "Categoría", "Tamaño",
-        "Costo Total", "Costo Ingredientes", "Costo Sub-recetas",
-        "Costo Packaging", "Costo Labor",
+        "Product", "Category", "Size",
+        "Total Cost", "Ingredient Cost", "Sub-recipe Cost",
+        "Packaging Cost", "Labor Cost",
     ])
 
     for product in report:
@@ -129,11 +128,11 @@ def export_product_costs_csv(
 
 @router.get("/export/margin-analysis-csv")
 def export_margin_analysis_csv(db: Session = Depends(get_db)):
-    """Exporta el análisis de márgenes a CSV.
+    """Exports the margin analysis to CSV.
 
-    Devuelve un archivo ``margin_analysis.csv`` con todas las categorías de
-    margen en una sola hoja. La columna ``Categoría Margen`` indica en cuál
-    de los cuatro grupos cae cada fila.
+    Returns a ``margin_analysis.csv`` file with all margin categories in a
+    single sheet. The ``Margin Category`` column indicates which of the four
+    groups each row falls into.
     """
     generator = ReportGenerator(db)
     report = generator.margin_analysis_report()
@@ -142,15 +141,15 @@ def export_margin_analysis_csv(db: Session = Depends(get_db)):
     writer = csv.writer(output)
 
     writer.writerow([
-        "Categoría Margen", "Producto", "Tamaño",
-        "Costo", "Precio", "Margen %",
+        "Margin Category", "Product", "Size",
+        "Cost", "Price", "Margin %",
     ])
 
     category_labels = {
-        "negative_margin": "Negativo",
-        "low_margin":      "Bajo (< 30%)",
-        "healthy_margin":  "Sano (30–80%)",
-        "high_margin":     "Alto (> 80%)",
+        "negative_margin": "Negative",
+        "low_margin":      "Low (< 30%)",
+        "healthy_margin":  "Healthy (30–80%)",
+        "high_margin":     "High (> 80%)",
     }
 
     for key, label in category_labels.items():

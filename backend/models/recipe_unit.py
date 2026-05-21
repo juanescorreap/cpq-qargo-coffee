@@ -13,44 +13,44 @@ from backend.database import Base
 
 
 class RecipeUnit(Base):
-    """Unidad de medida usada en recetas de cafetería.
+    """Unit of measure used in cafeteria recipes.
 
-    Representa unidades de sentido práctico para baristas que no siempre
-    coinciden con unidades estándar de volumen o peso:
+    Represents practically meaningful units for baristas that do not always
+    correspond to standard volume or weight units:
 
-        - 'pump'     → dosis de bomba de jarabe
-        - 'shot'     → extracción de espresso
-        - 'teaspoon' → cucharadita
-        - 'scoop'    → medidor estándar de polvo
+        - 'pump'     → syrup pump dose
+        - 'shot'     → espresso extraction
+        - 'teaspoon' → teaspoon
+        - 'scoop'    → standard powder scoop
 
-    La conversión real a usage_units del ingrediente se almacena en
-    IngredientRecipeUnitConversion, ya que puede variar por ingrediente
-    (ej: 1 pump de jarabe de vainilla ≠ 1 pump de jarabe de caramelo).
+    The actual conversion to the ingredient's usage_units is stored in
+    IngredientRecipeUnitConversion, since it can vary per ingredient
+    (e.g.: 1 pump of vanilla syrup ≠ 1 pump of caramel syrup).
     """
 
     __tablename__ = "recipe_units"
 
     id: int = Column(Integer, primary_key=True, index=True)
-    name: str = Column(String(50), unique=True, nullable=False)  # ej: "pump"
+    name: str = Column(String(50), unique=True, nullable=False)  # e.g.: "pump"
     category: str | None = Column(String(50))   # 'volume' | 'weight' | 'count' | 'visual'
     description: str | None = Column(Text)
     is_active: bool = Column(Boolean, default=True)
 
 
 class IngredientRecipeUnitConversion(Base):
-    """Conversión entre una recipe_unit y la usage_unit de un ingrediente específico.
+    """Conversion between a recipe_unit and the usage_unit of a specific ingredient.
 
-    Permite que el motor de costeo traduzca cantidades de receta a unidades
-    de uso del ingrediente para calcular el costo por bebida.
+    Allows the costing engine to translate recipe quantities into the
+    ingredient's usage units to calculate the cost per drink.
 
-    Ejemplos:
-        - 1 pump de jarabe de vainilla   = 30 ml  (usage_unit: ml)
-        - 1 shot de espresso             = 30 ml  (usage_unit: ml)
-        - 1 teaspoon de azúcar blanca    = 5 g    (usage_unit: g)
-        - 1 scoop de proteína de colágeno = 10 g  (usage_unit: g)
+    Examples:
+        - 1 pump of vanilla syrup      = 30 ml  (usage_unit: ml)
+        - 1 shot of espresso           = 30 ml  (usage_unit: ml)
+        - 1 teaspoon of white sugar    = 5 g    (usage_unit: g)
+        - 1 scoop of collagen protein  = 10 g   (usage_unit: g)
 
-    La combinación (ingredient_id, recipe_unit_id) es única: un ingrediente
-    solo puede tener una conversión definida por recipe_unit.
+    The combination (ingredient_id, recipe_unit_id) is unique: an ingredient
+    can only have one conversion defined per recipe_unit.
     """
 
     __tablename__ = "ingredient_recipe_unit_conversions"

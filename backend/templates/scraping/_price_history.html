@@ -1,4 +1,4 @@
-{# Partial: actividad reciente de scraping
+{# Partial: recent scraping activity
    Context variables:
      history — List of (IngredientPriceHistory, ingredient_name) tuples, newest first
 #}
@@ -6,16 +6,16 @@
 {% if not history %}
 <div class="bg-white rounded-xl shadow-sm p-10 text-center">
   <div class="text-4xl mb-3">📋</div>
-  <p class="text-stone-500 font-medium">Sin actividad reciente.</p>
+  <p class="text-stone-500 font-medium">No recent activity.</p>
   <p class="text-stone-400 text-sm mt-1">
-    Los cambios de precio por scraping aparecerán aquí.
+    Price changes from scraping will appear here.
   </p>
 </div>
 {% else %}
 <div class="bg-white rounded-xl shadow-sm overflow-hidden">
   <div class="px-4 py-3 border-b border-stone-100 flex items-center justify-between">
-    <p class="text-sm font-semibold text-espresso">Cambios de precio recientes</p>
-    <span class="text-xs text-stone-400">Últimos {{ history | length }} registros</span>
+    <p class="text-sm font-semibold text-espresso">Recent price changes</p>
+    <span class="text-xs text-stone-400">Last {{ history | length }} records</span>
   </div>
   <ul class="divide-y divide-stone-50">
     {% for entry, ingredient_name in history %}

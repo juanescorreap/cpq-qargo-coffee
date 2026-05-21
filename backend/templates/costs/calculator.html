@@ -1,24 +1,24 @@
 {% extends "base.html" %}
 
-{% block title %}Calculadora de Costos — CPQ Cafeterías{% endblock %}
+{% block title %}Cost Calculator — CPQ Coffee Shops{% endblock %}
 
 {% block content %}
 
-{# ── Encabezado ──────────────────────────────────────────────────────────── #}
+{# ── Heading ──────────────────────────────────────────────────────────────── #}
 <div class="mb-8">
-  <h1 class="text-3xl font-bold text-espresso">Calculadora de Costos</h1>
+  <h1 class="text-3xl font-bold text-espresso">Cost Calculator</h1>
   <p class="mt-1 text-sm text-stone-500">
-    Calcula el costo de producción por porción para cualquier producto, tamaño y tienda.
+    Calculate the production cost per serving for any product, size and store.
   </p>
 </div>
 
 <div class="flex flex-col lg:flex-row gap-6 items-start">
 
-  {# ── Sección 1: Selector de parámetros (sticky sidebar) ──────────────── #}
+  {# ── Section 1: Parameter selector (sticky sidebar) ──────────────────── #}
   <aside class="w-full lg:w-80 shrink-0 lg:sticky lg:top-24">
     <div class="bg-white rounded-xl shadow-sm p-6">
 
-      <h2 class="text-sm font-semibold text-espresso mb-5">Parámetros de cálculo</h2>
+      <h2 class="text-sm font-semibold text-espresso mb-5">Calculation parameters</h2>
 
       <form
         hx-post="/costs/calculate-htmx"
@@ -27,10 +27,10 @@
         hx-indicator="#page-spinner"
         class="flex flex-col gap-4">
 
-        {# ── Producto ─────────────────────────────────────────────────── #}
+        {# ── Product ──────────────────────────────────────────────────── #}
         <div>
           <label class="block text-xs font-medium text-stone-500 mb-1.5">
-            Producto <span class="text-red-400">*</span>
+            Product <span class="text-red-400">*</span>
           </label>
           <select
             name="product_id"
@@ -42,7 +42,7 @@
             hx-indicator="#page-spinner"
             class="w-full py-2 px-3 text-sm border border-stone-200 rounded-lg bg-white
                    focus:outline-none focus:ring-2 focus:ring-amber/40 focus:border-amber">
-            <option value="">Seleccionar producto…</option>
+            <option value="">Select product…</option>
             {% for p in products %}
             <option value="{{ p.id }}">
               {{ p.name }}{% if p.is_sub_recipe %} ↩{% endif %}
@@ -51,71 +51,71 @@
           </select>
           {% if not products %}
           <p class="mt-1 text-xs text-stone-400">
-            No hay productos activos. <a href="/products" class="text-amber underline">Crear uno</a>.
+            No active products. <a href="/products" class="text-amber underline">Create one</a>.
           </p>
           {% endif %}
         </div>
 
-        {# ── Tamaño (carga dinámica vía HTMX) ────────────────────────── #}
+        {# ── Size (dynamically loaded via HTMX) ──────────────────────── #}
         <div>
-          <label class="block text-xs font-medium text-stone-500 mb-1.5">Tamaño</label>
-          {# #size-wrapper es reemplazado por _sizes.html al cambiar el producto #}
+          <label class="block text-xs font-medium text-stone-500 mb-1.5">Size</label>
+          {# #size-wrapper is replaced by _sizes.html when the product changes #}
           <div id="size-wrapper">
             <select name="size_id"
                     class="w-full py-2 px-3 text-sm border border-stone-200 rounded-lg bg-white
                            focus:outline-none focus:ring-2 focus:ring-amber/40 focus:border-amber">
-              <option value="">Tamaño base (scale 1×)</option>
+              <option value="">Base size (scale 1×)</option>
             </select>
           </div>
         </div>
 
-        {# ── Tienda (opcional) ────────────────────────────────────────── #}
+        {# ── Store (optional) ─────────────────────────────────────────── #}
         <div>
           <label class="block text-xs font-medium text-stone-500 mb-1.5">
-            Tienda
-            <span class="text-stone-300 font-normal ml-1">— opcional</span>
+            Store
+            <span class="text-stone-300 font-normal ml-1">— optional</span>
           </label>
           <select name="store_id"
                   class="w-full py-2 px-3 text-sm border border-stone-200 rounded-lg bg-white
                          focus:outline-none focus:ring-2 focus:ring-amber/40 focus:border-amber">
-            <option value="">Precio base (sin tienda)</option>
+            <option value="">Base price (no store)</option>
             {% for s in stores %}
             <option value="{{ s.id }}">{{ s.name }}{% if s.city %} · {{ s.city }}{% endif %}</option>
             {% endfor %}
           </select>
           {% if not stores %}
           <p class="mt-1 text-xs text-stone-400">
-            Sin tiendas configuradas — se usará precio base.
+            No stores configured — base price will be used.
           </p>
           {% endif %}
         </div>
 
-        {# ── Botón Calcular ───────────────────────────────────────────── #}
+        {# ── Calculate button ─────────────────────────────────────────── #}
         <button
           type="submit"
           class="w-full py-2.5 text-sm font-semibold text-beige bg-espresso rounded-lg
                  hover:bg-espresso-light transition-colors mt-1
                  htmx-request:opacity-60 htmx-request:cursor-not-allowed">
-          Calcular costo
+          Calculate cost
         </button>
 
       </form>
 
-      {# Info adicional #}
+      {# Additional info #}
       <div class="mt-6 pt-5 border-t border-stone-100 space-y-2">
-        <p class="text-xs font-semibold text-stone-400 uppercase tracking-wider">¿Cómo funciona?</p>
+        <p class="text-xs font-semibold text-stone-400 uppercase tracking-wider">How does it work?</p>
         <ul class="space-y-1.5 text-xs text-stone-400">
           <li class="flex items-start gap-2">
             <span class="text-green-500 mt-0.5">●</span>
-            <span><b class="text-stone-500">Sin tienda</b>: precio base del ingrediente</span>
+            <span><b class="text-stone-500">No store</b>: base ingredient price</span>
           </li>
           <li class="flex items-start gap-2">
             <span class="text-blue-500 mt-0.5">●</span>
-            <span><b class="text-stone-500">Con tienda</b>: precio local si está configurado, base si no</span>
+            <span><b class="text-stone-500">With store</b>: local price if configured, base if not</span>
           </li>
           <li class="flex items-start gap-2">
             <span class="text-amber mt-0.5">●</span>
-            <span><b class="text-stone-500">Tamaño</b>: escala cantidades por el factor del tamaño</span>
+            <span><b class="text-stone-500">Size</b>: scales quantities by the size factor</span>
           </li>
         </ul>
       </div>
@@ -124,14 +124,14 @@
   </aside>
   {# /sidebar #}
 
-  {# ── Secciones 2 y 3: Resultado (HTMX target) ────────────────────────── #}
+  {# ── Sections 2 and 3: Result (HTMX target) ──────────────────────────── #}
   <div id="result-section" class="flex-1 min-w-0 flex flex-col gap-4">
 
-    {# Estado inicial — vacío antes del primer cálculo #}
+    {# Initial state — empty before the first calculation #}
     <div class="bg-white rounded-xl shadow-sm py-24 text-center text-stone-400">
       <p class="text-5xl mb-4">💰</p>
-      <p class="text-base font-semibold text-stone-500">Listo para calcular</p>
-      <p class="text-sm mt-1">Selecciona un producto y presiona "Calcular costo".</p>
+      <p class="text-base font-semibold text-stone-500">Ready to calculate</p>
+      <p class="text-sm mt-1">Select a product and press "Calculate cost".</p>
     </div>
 
   </div>
@@ -144,7 +144,7 @@
 
 {% block extra_scripts %}
 <script>
-  {# Re-inicializar Alpine cuando HTMX inyecta el breakdown (contiene x-data) #}
+  {# Re-initialize Alpine when HTMX injects the breakdown (contains x-data) #}
   document.addEventListener('htmx:afterSwap', (e) => {
     if (e.target.id === 'result-section' && window.Alpine) {
       Alpine.initTree(e.target);

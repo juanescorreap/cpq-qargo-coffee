@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session
 from backend.database import get_db
 from backend.models.product import Product
 
-router = APIRouter(prefix="/products", tags=["UI - Productos"])
+router = APIRouter(prefix="/products", tags=["UI - Products"])
 
 templates = Jinja2Templates(
     directory=Path(__file__).resolve().parent.parent / "templates"
@@ -66,7 +66,7 @@ def _table_ctx(request: Request, db: Session, search: str, category: str,
 
 
 # ---------------------------------------------------------------------------
-# GET — páginas y partiales
+# GET — pages and partials
 # ---------------------------------------------------------------------------
 
 @router.get("", response_class=HTMLResponse)
@@ -124,7 +124,7 @@ async def edit_form(
 
 
 # ---------------------------------------------------------------------------
-# POST / PUT / DELETE — mutaciones que retornan HTML
+# POST / PUT / DELETE — mutations that return HTML
 # ---------------------------------------------------------------------------
 
 def _parse_form(form) -> dict:

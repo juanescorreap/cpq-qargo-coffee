@@ -1,14 +1,14 @@
 {% extends "base.html" %}
 
-{% block title %}Competidores — CPQ Cafeterías{% endblock %}
+{% block title %}Competitors — CPQ Coffee Shops{% endblock %}
 
 {% block content %}
 
 <div class="flex items-center justify-between mb-8">
   <div>
-    <h1 class="text-3xl font-bold text-espresso">Competidores</h1>
+    <h1 class="text-3xl font-bold text-espresso">Competitors</h1>
     <p class="mt-1 text-sm text-stone-500">
-      {{ competitors | length }} competidor{{ 'es' if competitors | length != 1 else '' }} monitoreado{{ 's' if competitors | length != 1 else '' }}
+      {{ competitors | length }} competitor{{ 's' if competitors | length != 1 else '' }} monitored
     </p>
   </div>
 </div>
@@ -16,8 +16,8 @@
 {% if not competitors %}
 <div class="bg-white rounded-xl shadow-sm py-24 text-center text-stone-400">
   <p class="text-5xl mb-4">🏢</p>
-  <p class="text-base font-semibold text-stone-500">Sin competidores registrados</p>
-  <p class="text-sm mt-1">Agrega competidores para comparar precios de menú.</p>
+  <p class="text-base font-semibold text-stone-500">No competitors registered</p>
+  <p class="text-sm mt-1">Add competitors to compare menu prices.</p>
 </div>
 
 {% else %}
@@ -38,9 +38,9 @@
       </div>
       <span class="ml-auto">
         {% if c.is_active %}
-        <span class="px-2 py-0.5 rounded-full text-xs font-medium bg-green-50 text-green-700">Activo</span>
+        <span class="px-2 py-0.5 rounded-full text-xs font-medium bg-green-50 text-green-700">Active</span>
         {% else %}
-        <span class="px-2 py-0.5 rounded-full text-xs font-medium bg-stone-100 text-stone-400">Inactivo</span>
+        <span class="px-2 py-0.5 rounded-full text-xs font-medium bg-stone-100 text-stone-400">Inactive</span>
         {% endif %}
       </span>
     </div>

@@ -1,4 +1,4 @@
-{# Modal de creación/edición — inyectado en #modal-container por HTMX #}
+{# Creation/edit modal — injected into #modal-container by HTMX #}
 <div
   x-data="{ open: true }"
   x-show="open"
@@ -29,12 +29,12 @@
     {# Header #}
     <div class="flex items-center justify-between px-6 py-4 border-b border-stone-200 sticky top-0 bg-white rounded-t-2xl">
       <h2 class="text-lg font-semibold text-espresso">
-        {% if ingredient %}Editar ingrediente{% else %}Nuevo ingrediente{% endif %}
+        {% if ingredient %}Edit ingredient{% else %}New ingredient{% endif %}
       </h2>
       <button
         @click="open = false; setTimeout(() => { document.getElementById('modal-container').innerHTML = '' }, 200)"
         class="p-1.5 rounded-lg text-stone-400 hover:text-stone-700 hover:bg-stone-100 transition-colors"
-        aria-label="Cerrar">
+        aria-label="Close">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
         </svg>
@@ -52,24 +52,24 @@
       hx-indicator="#page-spinner"
       class="px-6 py-5 space-y-5">
 
-      {# Nombre #}
+      {# Name #}
       <div>
         <label class="block text-sm font-medium text-espresso mb-1.5">
-          Nombre <span class="text-red-500">*</span>
+          Name <span class="text-red-500">*</span>
         </label>
         <input type="text" name="name" required autofocus
                value="{{ ingredient.name if ingredient else '' }}"
-               placeholder="ej: Leche entera"
+               placeholder="e.g.: Whole milk"
                class="w-full px-3 py-2 text-sm border border-stone-200 rounded-lg
                       focus:outline-none focus:ring-2 focus:ring-amber/40 focus:border-amber">
       </div>
 
-      {# Categoría #}
+      {# Category #}
       <div>
-        <label class="block text-sm font-medium text-espresso mb-1.5">Categoría</label>
+        <label class="block text-sm font-medium text-espresso mb-1.5">Category</label>
         <input type="text" name="category"
                value="{{ ingredient.category if ingredient else '' }}"
-               placeholder="ej: Lácteos"
+               placeholder="e.g.: Dairy"
                list="category-datalist"
                class="w-full px-3 py-2 text-sm border border-stone-200 rounded-lg
                       focus:outline-none focus:ring-2 focus:ring-amber/40 focus:border-amber">
@@ -80,12 +80,12 @@
         </datalist>
       </div>
 
-      {# Precio y unidad de compra #}
+      {# Purchase price and unit #}
       <fieldset class="grid grid-cols-2 gap-3">
-        <legend class="col-span-2 text-sm font-medium text-espresso mb-1.5">Compra al proveedor</legend>
+        <legend class="col-span-2 text-sm font-medium text-espresso mb-1.5">Purchase from supplier</legend>
 
         <div>
-          <label class="block text-xs text-stone-500 mb-1">Precio de compra</label>
+          <label class="block text-xs text-stone-500 mb-1">Purchase price</label>
           <div class="relative">
             <span class="absolute left-3 top-1/2 -translate-y-1/2 text-stone-400 text-sm">$</span>
             <input type="number" name="purchase_price" step="0.01" min="0"
@@ -97,42 +97,42 @@
         </div>
 
         <div>
-          <label class="block text-xs text-stone-500 mb-1">Unidad de compra</label>
+          <label class="block text-xs text-stone-500 mb-1">Purchase unit</label>
           <input type="text" name="purchase_unit"
                  value="{{ ingredient.purchase_unit if ingredient else '' }}"
-                 placeholder="ej: kg, litro, caja"
+                 placeholder="e.g.: kg, liter, box"
                  class="w-full px-3 py-2 text-sm border border-stone-200 rounded-lg
                         focus:outline-none focus:ring-2 focus:ring-amber/40 focus:border-amber">
         </div>
       </fieldset>
 
-      {# Unidad de uso y factor de conversión #}
+      {# Usage unit and conversion factor #}
       <fieldset class="grid grid-cols-2 gap-3">
-        <legend class="col-span-2 text-sm font-medium text-espresso mb-1.5">Uso en recetas</legend>
+        <legend class="col-span-2 text-sm font-medium text-espresso mb-1.5">Usage in recipes</legend>
 
         <div>
-          <label class="block text-xs text-stone-500 mb-1">Unidad de uso</label>
+          <label class="block text-xs text-stone-500 mb-1">Usage unit</label>
           <input type="text" name="usage_unit"
                  value="{{ ingredient.usage_unit if ingredient else '' }}"
-                 placeholder="ej: ml, g, unidad"
+                 placeholder="e.g.: ml, g, unit"
                  class="w-full px-3 py-2 text-sm border border-stone-200 rounded-lg
                         focus:outline-none focus:ring-2 focus:ring-amber/40 focus:border-amber">
         </div>
 
         <div>
-          <label class="block text-xs text-stone-500 mb-1">Factor de conversión</label>
+          <label class="block text-xs text-stone-500 mb-1">Conversion factor</label>
           <input type="number" name="conversion_factor" step="0.0001" min="0"
                  value="{{ ingredient.conversion_factor if ingredient and ingredient.conversion_factor else '' }}"
-                 placeholder="unidades por unidad de compra"
+                 placeholder="units per purchase unit"
                  class="w-full px-3 py-2 text-sm border border-stone-200 rounded-lg
                         focus:outline-none focus:ring-2 focus:ring-amber/40 focus:border-amber">
         </div>
       </fieldset>
 
-      {# Merma #}
+      {# Yield #}
       <div>
         <label class="block text-sm font-medium text-espresso mb-1.5">
-          Aprovechamiento (% de merma)
+          Yield (% waste)
         </label>
         <div class="relative">
           <input type="number" name="yield_percentage" step="0.1" min="1" max="100"
@@ -142,22 +142,22 @@
           <span class="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 text-sm pointer-events-none">%</span>
         </div>
         <p class="mt-1 text-xs text-stone-400">
-          100 % = sin merma · 80 % = se descarta el 20 %
+          100% = no waste · 80% = 20% discarded
         </p>
       </div>
 
-      {# Footer de acciones #}
+      {# Action footer #}
       <div class="flex justify-end gap-3 pt-2 border-t border-stone-100">
         <button type="button"
                 @click="open = false; setTimeout(() => { document.getElementById('modal-container').innerHTML = '' }, 200)"
                 class="px-4 py-2 text-sm font-medium text-stone-600 bg-stone-100
                        rounded-lg hover:bg-stone-200 transition-colors">
-          Cancelar
+          Cancel
         </button>
         <button type="submit"
                 class="px-4 py-2 text-sm font-medium text-beige bg-espresso
                        rounded-lg hover:bg-espresso-light transition-colors">
-          {% if ingredient %}Guardar cambios{% else %}Crear ingrediente{% endif %}
+          {% if ingredient %}Save changes{% else %}Create ingredient{% endif %}
         </button>
       </div>
 

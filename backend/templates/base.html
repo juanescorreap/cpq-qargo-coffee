@@ -1,14 +1,14 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Sistema de costeo y pricing para cadena de cafeterías" />
+  <meta name="description" content="Costing and pricing system for a coffee shop chain" />
 
-  <title>{% block title %}CPQ Cafeterías{% endblock %}</title>
+  <title>{% block title %}CPQ Coffee Shops{% endblock %}</title>
 
-  <!-- Evita flash de elementos con x-cloak antes de que Alpine inicialice -->
+  <!-- Prevents flash of x-cloak elements before Alpine initializes -->
   <style>[x-cloak] { display: none !important; }</style>
 
   <!-- Tailwind CSS CDN -->
@@ -39,7 +39,7 @@
           integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+"
           crossorigin="anonymous"></script>
 
-  <!-- Alpine.js 3.14.9 — defer obligatorio, después de su script -->
+  <!-- Alpine.js 3.14.9 — defer required, after its script -->
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.9/dist/cdn.min.js"></script>
 
   <!-- Google Fonts: Inter -->
@@ -48,7 +48,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
         rel="stylesheet" />
 
-  <!-- Estilos propios -->
+  <!-- Custom styles -->
   <link rel="stylesheet" href="{{ url_for('static', path='css/style.css') }}" />
 
   {% block extra_head %}{% endblock %}
@@ -57,7 +57,7 @@
 <body class="min-h-screen flex flex-col bg-cream font-sans antialiased">
 
   <!-- =====================================================================
-       Navbar — sticky, sombra sutil, responsive con Alpine.js
+       Navbar — sticky, subtle shadow, responsive with Alpine.js
        ===================================================================== -->
   <header x-data="{ open: false }" class="sticky top-0 z-50 bg-espresso shadow-md">
     <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -67,19 +67,19 @@
         <a href="/"
            class="flex items-center gap-2 text-beige hover:text-amber transition-colors shrink-0">
           <span class="text-2xl leading-none">☕</span>
-          <span class="font-bold text-lg tracking-wide">CPQ Cafeterías</span>
+          <span class="font-bold text-lg tracking-wide">CPQ Coffee Shops</span>
         </a>
 
-        <!-- Links desktop -->
+        <!-- Desktop links -->
         <div class="hidden md:flex items-center gap-1">
           {% set nav_links = [
-            ("/ingredients",  "Ingredientes"),
-            ("/products",     "Productos"),
-            ("/recipes/builder", "Recetas"),
-            ("/stores",       "Tiendas"),
-            ("/costs/calculator", "Costos"),
-            ("/competitors",  "Competidores"),
-            ("/reports",      "Reportes"),
+            ("/ingredients",  "Ingredients"),
+            ("/products",     "Products"),
+            ("/recipes/builder", "Recipes"),
+            ("/stores",       "Stores"),
+            ("/costs/calculator", "Costs"),
+            ("/competitors",  "Competitors"),
+            ("/reports",      "Reports"),
           ] %}
           {% for href, label in nav_links %}
           <a href="{{ href }}"
@@ -95,12 +95,12 @@
           {% endfor %}
         </div>
 
-        <!-- Botón hamburguesa mobile -->
+        <!-- Mobile hamburger button -->
         <button @click="open = !open"
                 class="md:hidden p-2 rounded-md text-beige hover:text-amber
                        hover:bg-espresso-light focus:outline-none
                        transition-colors duration-150"
-                aria-label="Abrir menú"
+                aria-label="Open menu"
                 :aria-expanded="open.toString()">
           <svg x-show="!open" class="w-6 h-6" fill="none" stroke="currentColor"
                stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
@@ -116,7 +116,7 @@
 
       </div>
 
-      <!-- Menú mobile desplegable -->
+      <!-- Mobile dropdown menu -->
       <div x-show="open"
            x-cloak
            x-transition:enter="transition ease-out duration-150"
@@ -142,13 +142,13 @@
       </div>
     </nav>
 
-    <!-- Barra de progreso HTMX — animada via CSS en style.css -->
+    <!-- HTMX progress bar — animated via CSS in style.css -->
     <div id="page-spinner" class="htmx-indicator"></div>
   </header>
   <!-- /header -->
 
   <!-- =====================================================================
-       Contenido principal
+       Main content
        ===================================================================== -->
   <main id="main-content"
         class="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
@@ -162,8 +162,8 @@
   <footer class="bg-espresso text-beige-dark text-sm mt-auto">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4
                 flex flex-col sm:flex-row items-center justify-between gap-2">
-      <span>CPQ Cafeterías &copy; {{ now.year if now is defined else 2026 }}</span>
-      <span class="opacity-60">Sistema de costeo y pricing</span>
+      <span>CPQ Coffee Shops &copy; {{ now.year if now is defined else 2026 }}</span>
+      <span class="opacity-60">Costing and pricing system</span>
     </div>
   </footer>
   <!-- /footer -->

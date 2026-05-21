@@ -1,9 +1,9 @@
-{# Partial HTMX — <tr> devuelto por POST /stores/{id}/products-htmx/{pid} #}
-{# Contexto: store (model o dict con .id), product (dict) #}
+{# HTMX Partial — <tr> returned by POST /stores/{id}/products-htmx/{pid} #}
+{# Context: store (model or dict with .id), product (dict) #}
 
 <tr id="product-row-{{ product.id }}" class="hover:bg-stone-50 transition-colors">
 
-  {# Nombre y categoría #}
+  {# Name and category #}
   <td class="px-5 py-3 font-medium text-espresso">{{ product.name }}</td>
   <td class="px-5 py-3">
     {% if product.category %}
@@ -15,7 +15,7 @@
     {% endif %}
   </td>
 
-  {# Checkbox disponible #}
+  {# Available checkbox #}
   <td class="px-5 py-3 text-center">
     {# Hidden input always carries the current state for hx-include #}
     <input type="hidden"
@@ -36,7 +36,7 @@
            class="w-4 h-4 rounded border-stone-300 text-amber accent-amber cursor-pointer">
   </td>
 
-  {# Fecha inicio (seasonal) #}
+  {# Start date (seasonal) #}
   <td class="px-5 py-3">
     <input type="date"
            name="seasonal_start"
@@ -54,7 +54,7 @@
                   disabled:opacity-40 disabled:cursor-not-allowed">
   </td>
 
-  {# Fecha fin (seasonal) #}
+  {# End date (seasonal) #}
   <td class="px-5 py-3">
     <input type="date"
            name="seasonal_end"
@@ -72,21 +72,21 @@
                   disabled:opacity-40 disabled:cursor-not-allowed">
   </td>
 
-  {# Estado badge #}
+  {# Status badge #}
   <td class="px-5 py-3 text-center">
     {% if product.is_available %}
       {% if product.seasonal_start or product.seasonal_end %}
       <span class="px-2 py-0.5 rounded-full text-xs font-medium bg-amber/10 text-amber">
-        Estacional
+        Seasonal
       </span>
       {% else %}
       <span class="px-2 py-0.5 rounded-full text-xs font-medium bg-green-50 text-green-700">
-        Disponible
+        Available
       </span>
       {% endif %}
     {% else %}
     <span class="px-2 py-0.5 rounded-full text-xs font-medium bg-stone-100 text-stone-400">
-      No disponible
+      Unavailable
     </span>
     {% endif %}
   </td>

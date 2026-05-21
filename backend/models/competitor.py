@@ -15,13 +15,13 @@ from backend.database import Base
 
 
 class Competitor(Base):
-    """Cadena o negocio competidor monitoreado.
+    """Monitored competitor chain or business.
 
-    Representa a un competidor cuyo menú y precios se rastrean periódicamente
-    mediante scraping. is_active permite desactivar competidores sin borrar
-    su historial de precios.
+    Represents a competitor whose menu and prices are periodically tracked
+    via scraping. is_active allows deactivating competitors without deleting
+    their price history.
 
-    Ejemplo:
+    Example:
         name="Juan Valdez", website_url="https://juanvaldezcafe.com"
         name="Starbucks",   website_url="https://starbucks.com.co"
     """
@@ -35,23 +35,23 @@ class Competitor(Base):
 
 
 class CompetitorProduct(Base):
-    """Producto scrapeado del menú de un competidor.
+    """Product scraped from a competitor's menu.
 
-    Cada fila es un snapshot de un producto tal como aparece publicado en
-    el sitio del competidor en el momento del scraping. No se normaliza ni
-    interpreta: product_name y size_description se guardan exactamente como
-    vienen de la fuente para preservar fidelidad al dato original.
+    Each row is a snapshot of a product as it appears published on the
+    competitor's site at the time of scraping. It is not normalized or
+    interpreted: product_name and size_description are stored exactly as they
+    come from the source to preserve fidelity to the original data.
 
-    scraped_at permite construir series de tiempo de precios por competidor
-    y detectar cambios de precio entre scrapes sucesivos.
+    scraped_at allows building price time series per competitor and detecting
+    price changes between successive scrapes.
 
-    source_url apunta a la página o endpoint exacto donde se encontró el dato,
-    facilitando la verificación manual y el debugging del scraper.
+    source_url points to the exact page or endpoint where the data was found,
+    making manual verification and scraper debugging easier.
 
-    Ejemplo:
+    Example:
         competitor_id=1 (Juan Valdez), product_name="Cappuccino",
         size_description="12oz", price=12900.00,
-        source_url="https://juanvaldezcafe.com/menu/bebidas-calientes"
+        source_url="https://juanvaldezcafe.com/menu/hot-drinks"
     """
 
     __tablename__ = "competitor_products"
@@ -69,24 +69,24 @@ class CompetitorProduct(Base):
 
 
 class ProductCompetitorMatch(Base):
-    """Correspondencia manual entre un producto propio y uno de la competencia.
+    """Manual correspondence between an own product and a competitor's product.
 
-    Este match es SIEMPRE una decisión humana: ningún proceso automático
-    inserta filas aquí. El usuario evalúa si dos productos son comparables
-    (tamaño, preparación, mercado objetivo) y registra el match con su nombre
-    y una justificación en notes.
+    This match is ALWAYS a human decision: no automated process inserts rows
+    here. The user evaluates whether two products are comparable (size,
+    preparation, target market) and records the match with their name and a
+    justification in notes.
 
-    El motor de análisis competitivo usa esta tabla para calcular brechas de
-    precio entre productos propios y sus equivalentes en la competencia.
+    The competitive analysis engine uses this table to calculate price gaps
+    between own products and their competitor equivalents.
 
-    La constraint única en (our_product_id, our_size_id, competitor_product_id)
-    impide duplicar el mismo par, pero un producto propio puede tener múltiples
-    matches contra distintos competidores.
+    The unique constraint on (our_product_id, our_size_id, competitor_product_id)
+    prevents duplicating the same pair, but an own product can have multiple
+    matches against different competitors.
 
-    Ejemplo:
-        our_product_id=5 (Cappuccino mediano 12oz) ↔
+    Example:
+        our_product_id=5 (medium Cappuccino 12oz) ↔
         competitor_product_id=42 (Juan Valdez Cappuccino 12oz)
-        matched_by="carlos", notes="Mismo tamaño y preparación estándar"
+        matched_by="carlos", notes="Same size and standard preparation"
     """
 
     __tablename__ = "product_competitor_matches"

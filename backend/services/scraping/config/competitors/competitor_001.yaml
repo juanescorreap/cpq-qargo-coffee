@@ -1,48 +1,48 @@
 # ============================================
-# CONFIGURACIÓN DE SCRAPER - COMPETIDOR 001
+# SCRAPER CONFIGURATION - COMPETITOR 001
 # ============================================
-# Template de ejemplo para scraper de competidor tipo cafetería/restaurante.
+# Example template for a cafeteria/restaurant-type competitor scraper.
 #
-# IMPORTANTE: Los selectores CSS son PLACEHOLDERS.
-# Actualízalos inspeccionando el sitio real:
-#   1. Abrir el sitio en Chrome
-#   2. Click derecho sobre el elemento → Inspeccionar
-#   3. En el panel Elements, click derecho sobre el nodo → Copy → Copy selector
-#   4. Pegar aquí y probar con:
+# IMPORTANT: The CSS selectors are PLACEHOLDERS.
+# Update them by inspecting the real site:
+#   1. Open the site in Chrome
+#   2. Right-click on the element → Inspect
+#   3. In the Elements panel, right-click on the node → Copy → Copy selector
+#   4. Paste here and test with:
 #        python -m backend.services.scraping.tests.test_scraper competitor_001
 #
-# Campos que el sistema lee directamente (deben coincidir con ScraperConfigSchema):
+# Fields the system reads directly (must match ScraperConfigSchema):
 #   scraper_id, business_name, business_type, scraper_type, base_url,
 #   selectors, navigation, browser, rate_limiting, required_fields, metadata
 #
-# Campos ignorados por el sistema (documentación / uso futuro):
+# Fields ignored by the system (documentation / future use):
 #   regions, error_handling, transformations
 
 # ============================================
-# IDENTIFICACIÓN
+# IDENTIFICATION
 # ============================================
 scraper_id: "competitor_001"
-business_name: "Competidor Cafetería A"
+business_name: "Competitor Cafeteria A"
 business_type: "competitor"   # 'competitor' | 'supplier'
 scraper_type: "restaurant"    # 'restaurant' | 'retail' | 'marketplace' | 'custom'
 enabled: true
 
 # ============================================
-# URL BASE
+# BASE URL
 # ============================================
 base_url: "https://ejemplo-competidor.com"
 
-# Regiones (ignorado por el motor actual — documentación futura)
+# Regions (ignored by the current engine — future documentation)
 regions:
   - country: "CO"
     url: "https://ejemplo-competidor.com.co"
     currency: "COP"
 
 # ============================================
-# NAVEGADOR
+# BROWSER
 # ============================================
-# Nota: el campo 'viewport' se expresa con viewport_width / viewport_height
-# (campos planos) para coincidir con _BrowserSchema en config_loader.py.
+# Note: the 'viewport' field is expressed with viewport_width / viewport_height
+# (flat fields) to match _BrowserSchema in config_loader.py.
 browser:
   headless: true
   timeout_ms: 30000
@@ -55,22 +55,22 @@ browser:
   extra_headers: {}
 
 # ============================================
-# SELECTORES CSS/XPATH
+# CSS/XPATH SELECTORS
 # ============================================
-# Cada valor puede ser:
-#   - string corto:  ".clase"             (CSS, sin atributo, requerido)
-#   - dict completo: ver campos abajo
+# Each value can be:
+#   - short string:  ".class"             (CSS, no attribute, required)
+#   - full dict:     see fields below
 #
-# Campos de selector:
-#   selector   (str)  — expresión CSS o XPath
+# Selector fields:
+#   selector   (str)  — CSS or XPath expression
 #   type       (str)  — 'css' (default) | 'xpath'
-#   attribute  (str)  — si se quiere extraer un atributo HTML (ej: 'src', 'href')
-#   optional   (bool) — true = no lanza SelectorError si no existe (default: false)
-#   multiple   (bool) — true = extrae lista de elementos (default: false)
+#   attribute  (str)  — if you want to extract an HTML attribute (e.g.: 'src', 'href')
+#   optional   (bool) — true = does not raise SelectorError if missing (default: false)
+#   multiple   (bool) — true = extracts list of elements (default: false)
 
 selectors:
 
-  # ------ Página de producto individual ------
+  # ------ Individual product page ------
 
   product_name:
     selector: ".product-title"
@@ -101,12 +101,12 @@ selectors:
     attribute: "src"
     optional: true
 
-  # ------ Página de búsqueda / listado ------
+  # ------ Search / listing page ------
 
   search_results:
     selector: ".product-card"
     type: "css"
-    multiple: true          # extrae lista de ElementHandle
+    multiple: true          # extracts list of ElementHandle
 
   result_name:
     selector: ".card-title"
@@ -119,7 +119,7 @@ selectors:
   result_link:
     selector: "a.product-link"
     type: "css"
-    attribute: "href"       # extract_from_element usará este atributo
+    attribute: "href"       # extract_from_element will use this attribute
 
   result_image:
     selector: ".card-image img"
@@ -127,8 +127,8 @@ selectors:
     attribute: "src"
     optional: true
 
-  # ------ Metadata adicional (todos opcionales) ------
-  # Accedidos via selector_engine.extract_text(page, 'metadata.availability')
+  # ------ Additional metadata (all optional) ------
+  # Accessed via selector_engine.extract_text(page, 'metadata.availability')
 
   metadata:
     availability:
@@ -147,14 +147,14 @@ selectors:
       optional: true
 
 # ============================================
-# NAVEGACIÓN
+# NAVIGATION
 # ============================================
-# Estructura leída por NavigationEngine:
+# Structure read by NavigationEngine:
 #   search.path, search.method, search.query_param, search.path_template
 #   category.path, category.path_template
 #   product.path, product.path_template
 #   pagination.type, pagination.param, pagination.start, pagination.max_pages
-#   pagination.offset_step  (solo para type='offset')
+#   pagination.offset_step  (only for type='offset')
 #   timeouts.navigation_ms, timeouts.retry_backoff_ms
 
 navigation:
@@ -163,26 +163,26 @@ navigation:
     path: "/search"
     method: "GET"
     query_param: "q"
-    # URL resultante: https://ejemplo-competidor.com/search?q=cappuccino
+    # Resulting URL: https://ejemplo-competidor.com/search?q=cappuccino
     #
-    # Alternativa con path_template (descomentar si aplica):
-    # path_template: "/buscar/{query}"
-    # URL resultante: https://ejemplo-competidor.com/buscar/cappuccino
+    # Alternative with path_template (uncomment if applicable):
+    # path_template: "/search/{query}"
+    # Resulting URL: https://ejemplo-competidor.com/search/cappuccino
 
   category:
     path: "/menu"
     # path_template: "/menu/{category}"
 
   product:
-    path: "/producto"
-    # path_template: "/producto/{product_id}"
+    path: "/product"
+    # path_template: "/product/{product_id}"
 
   pagination:
     type: "query_param"     # 'query_param' | 'path' | 'offset'
     param: "page"
-    start: 1                # primer número de página
+    start: 1                # first page number
     max_pages: 5
-    # Para type='offset': offset_step: 20
+    # For type='offset': offset_step: 20
 
   timeouts:
     navigation_ms: 30000
@@ -198,23 +198,23 @@ rate_limiting:
   max_requests_per_hour: 300
   backoff_strategy: "exponential"   # 'fixed' | 'exponential'
   max_backoff_ms: 60000
-  bucket_capacity: 5                # token bucket: máximo burst
-  bucket_refill_rate: 0.33          # tokens/segundo (~20 rpm sostenidos)
+  bucket_capacity: 5                # token bucket: maximum burst
+  bucket_refill_rate: 0.33          # tokens/second (~20 rpm sustained)
 
 # ============================================
-# VALIDACIÓN
+# VALIDATION
 # ============================================
-# Campos que DEBEN estar presentes en cada producto scrapeado.
-# Si falta alguno, ConfigLoader rechaza la config y scraper lanza ValidationError.
+# Fields that MUST be present in each scraped product.
+# If any is missing, ConfigLoader rejects the config and scraper raises ValidationError.
 required_fields:
   - "product_name"
   - "product_price"
 
 # ============================================
-# CAMPOS IGNORADOS POR EL MOTOR (documentación)
+# FIELDS IGNORED BY THE ENGINE (documentation)
 # ============================================
-# error_handling y transformations no son leídos por ConfigLoader/ScraperAdapter.
-# Se mantienen como referencia para el operador.
+# error_handling and transformations are not read by ConfigLoader/ScraperAdapter.
+# Kept here as a reference for the operator.
 
 error_handling:
   retry_attempts: 3
@@ -223,9 +223,9 @@ error_handling:
   screenshot_on_error: false
 
 transformations:
-  # PriceCleaner detecta automáticamente el separador decimal.
-  # Si el sitio usa formato europeo/colombiano 1.500,99 → decimal_separator: ','
-  # Si usa formato inglés 1,500.99                      → decimal_separator: '.'
+  # PriceCleaner automatically detects the decimal separator.
+  # If the site uses European/Colombian format 1.500,99 → decimal_separator: ','
+  # If it uses English format 1,500.99                  → decimal_separator: '.'
   price:
     decimal_separator: ","
     remove_symbols: ["$", "COP"]
@@ -249,17 +249,17 @@ metadata:
   created_at: "2025-05-20"
   last_updated: "2025-05-20"
   version: "1.0"
-  author: "Sistema CPQ"
+  author: "CPQ System"
   currency: "COP"
   notes: |
-    Template inicial de scraper de competidor tipo cafetería.
+    Initial competitor scraper template for a cafeteria-type site.
 
-    PENDIENTE: Actualizar selectores CSS inspeccionando el sitio real.
+    PENDING: Update CSS selectors by inspecting the real site.
 
-    Pasos:
-      1. Abrir https://ejemplo-competidor.com en Chrome
-      2. DevTools → Elements → inspeccionar nombre, precio, card de producto
-      3. Click derecho nodo → Copy → Copy selector
-      4. Pegar en la sección 'selectors' arriba
-      5. Probar: python -m backend.services.scraping.tests.test_scraper competitor_001
+    Steps:
+      1. Open https://ejemplo-competidor.com in Chrome
+      2. DevTools → Elements → inspect product name, price, product card
+      3. Right-click node → Copy → Copy selector
+      4. Paste in the 'selectors' section above
+      5. Test: python -m backend.services.scraping.tests.test_scraper competitor_001
   contact: "equipo-data@empresa.com"

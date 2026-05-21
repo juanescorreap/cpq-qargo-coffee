@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}{{ competitor.name }} — CPQ Cafeterías{% endblock %}
+{% block title %}{{ competitor.name }} — CPQ Coffee Shops{% endblock %}
 
 {% block content %}
 
@@ -12,7 +12,7 @@
      hx-push-url="true"
      hx-indicator="#page-spinner"
      class="hover:text-espresso transition-colors">
-    Competidores
+    Competitors
   </a>
   <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
     <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
@@ -30,9 +30,9 @@
       <div class="flex items-center gap-2 flex-wrap">
         <h1 class="text-2xl font-bold text-espresso">{{ competitor.name }}</h1>
         {% if competitor.is_active %}
-        <span class="px-2 py-0.5 rounded-full text-xs font-medium bg-green-50 text-green-700">Activo</span>
+        <span class="px-2 py-0.5 rounded-full text-xs font-medium bg-green-50 text-green-700">Active</span>
         {% else %}
-        <span class="px-2 py-0.5 rounded-full text-xs font-medium bg-stone-100 text-stone-400">Inactivo</span>
+        <span class="px-2 py-0.5 rounded-full text-xs font-medium bg-stone-100 text-stone-400">Inactive</span>
         {% endif %}
       </div>
       {% if competitor.website_url %}
@@ -49,7 +49,7 @@
     </div>
     <div class="shrink-0 text-right">
       <p class="text-2xl font-bold text-espresso tabular-nums">{{ comp_products | length }}</p>
-      <p class="text-xs text-stone-400">productos</p>
+      <p class="text-xs text-stone-400">products</p>
     </div>
     <div class="shrink-0 text-right">
       <p class="text-2xl font-bold text-espresso tabular-nums">{{ matches | length }}</p>
@@ -72,7 +72,7 @@
         <path stroke-linecap="round" stroke-linejoin="round"
               d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
       </svg>
-      Productos Scrapeados
+      Scraped Products
       <span :class="tab === 'products' ? 'bg-white/20 text-beige' : 'bg-stone-100 text-stone-500'"
             class="px-1.5 py-0.5 rounded text-xs font-semibold tabular-nums">
         {{ comp_products | length }}
@@ -97,14 +97,14 @@
 
   </div>
 
-  {# ── Tab: Productos Scrapeados ────────────────────────────────────────── #}
+  {# ── Tab: Scraped Products ────────────────────────────────────────── #}
   <div x-show="tab === 'products'">
     <div id="comp-products-section">
       {% include "competitors/_comp_products.html" %}
     </div>
   </div>
 
-  {# ── Tab: Matches ─────────────────────────────────────────────────────── #}
+  {# ── Tab: Matches ─────────────────────────────────────────────────── #}
   <div x-show="tab === 'matches'" x-cloak>
     <div id="matches-section">
       {% include "competitors/_matches.html" %}

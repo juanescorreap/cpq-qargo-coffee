@@ -50,12 +50,12 @@ from decimal import Decimal
 from typing import Any, Dict, List, Optional
 from urllib.parse import urljoin
 
-# Railway inyecta RAILWAY_ENVIRONMENT en tiempo de ejecución.
-# En local el valor es None, por lo que la detección es segura sin config extra.
+# Railway injects RAILWAY_ENVIRONMENT at runtime.
+# Locally the value is None, so detection is safe without extra config.
 _IS_RAILWAY: bool = os.getenv("RAILWAY_ENVIRONMENT") is not None
 
-# Args de Chromium necesarios en entornos containerizados/serverless donde no
-# hay usuario root con privilegios completos ni dispositivos /dev/shm amplios.
+# Chromium args required in containerised/serverless environments where there
+# is no root user with full privileges or large /dev/shm devices.
 _RAILWAY_BROWSER_ARGS: list = [
     "--no-sandbox",
     "--disable-setuid-sandbox",
@@ -160,7 +160,7 @@ class ConfigurableScraper(BaseScraper):
             "height": browser_cfg.get("viewport_height", 800),
         }
 
-        # En Railway, forzar headless y agregar args necesarios para contenedor.
+        # On Railway, force headless and add the args required for the container.
         if _IS_RAILWAY:
             self._headless = True
             self._extra_browser_args: list = _RAILWAY_BROWSER_ARGS

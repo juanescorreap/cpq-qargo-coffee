@@ -1,4 +1,4 @@
-{# Modal creación/edición de producto — inyectado en #modal-container por HTMX #}
+{# Product create/edit modal — injected into #modal-container by HTMX #}
 <div
   x-data="{ show: true }"
   x-show="show"
@@ -27,12 +27,12 @@
        x-transition:leave-end="opacity-0 translate-y-2 scale-95"
        @click.stop>
 
-    {# Header sticky #}
+    {# Sticky header #}
     <div class="flex items-center justify-between px-6 py-4 border-b border-stone-200
                 sticky top-0 bg-white rounded-t-2xl z-10">
       <div>
         <h2 class="text-xl font-bold text-espresso">
-          {% if product %}Editar producto{% else %}Nuevo producto{% endif %}
+          {% if product %}Edit product{% else %}New product{% endif %}
         </h2>
         {% if product %}
         <p class="text-xs text-stone-400 mt-0.5">ID #{{ product.id }}</p>
@@ -41,7 +41,7 @@
       <button
         @click="show = false; setTimeout(() => { document.getElementById('modal-container').innerHTML = '' }, 200)"
         class="p-2 rounded-lg text-stone-400 hover:text-stone-700 hover:bg-stone-100 transition-colors"
-        aria-label="Cerrar">
+        aria-label="Close">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
         </svg>
@@ -61,24 +61,24 @@
 
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-5 gap-y-4">
 
-        {# Nombre — fila completa #}
+        {# Name — full row #}
         <div class="sm:col-span-2">
           <label class="block text-sm font-medium text-espresso mb-1.5">
-            Nombre <span class="text-red-500">*</span>
+            Name <span class="text-red-500">*</span>
           </label>
           <input type="text" name="name" required autofocus
                  value="{{ product.name if product else '' }}"
-                 placeholder="ej: Cappuccino, Syrup de vainilla casero"
+                 placeholder="e.g.: Cappuccino, Homemade vanilla syrup"
                  class="w-full px-3 py-2 text-sm border border-stone-200 rounded-lg
                         focus:outline-none focus:ring-2 focus:ring-amber/40 focus:border-amber">
         </div>
 
-        {# Categoría #}
+        {# Category #}
         <div>
-          <label class="block text-sm font-medium text-espresso mb-1.5">Categoría</label>
+          <label class="block text-sm font-medium text-espresso mb-1.5">Category</label>
           <input type="text" name="category"
                  value="{{ product.category if product else '' }}"
-                 placeholder="ej: bebidas_calientes"
+                 placeholder="e.g.: hot_drinks"
                  list="category-datalist"
                  class="w-full px-3 py-2 text-sm border border-stone-200 rounded-lg
                         focus:outline-none focus:ring-2 focus:ring-amber/40 focus:border-amber">
@@ -89,67 +89,67 @@
           </datalist>
         </div>
 
-        {# Tipo: Sub-receta #}
+        {# Type: Sub-recipe #}
         <div class="flex items-end pb-2">
           <label class="flex items-center gap-3 cursor-pointer select-none">
             <input type="checkbox" name="is_sub_recipe" value="true"
                    {% if product and product.is_sub_recipe %}checked{% endif %}
                    class="w-4 h-4 rounded border-stone-300 text-espresso
                           focus:ring-2 focus:ring-amber/40 accent-espresso">
-            <span class="text-sm font-medium text-espresso">Es sub-receta</span>
+            <span class="text-sm font-medium text-espresso">Is sub-recipe</span>
           </label>
           <p class="ml-7 text-xs text-stone-400 leading-tight">
-            Componente batch reutilizable en otras recetas
+            Reusable batch component in other recipes
           </p>
         </div>
 
-        {# ── Sección: dimensiones ──────────────────────────────────────── #}
+        {# ── Section: dimensions ──────────────────────────────────────── #}
         <div class="sm:col-span-2">
           <p class="text-xs font-semibold text-stone-400 uppercase tracking-wider mb-3 mt-1
                     border-b border-stone-100 pb-2">
-            Dimensiones y producción
+            Dimensions and production
           </p>
         </div>
 
-        {# Tamaño base #}
+        {# Base size #}
         <div>
-          <label class="block text-sm font-medium text-espresso mb-1.5">Tamaño base (oz)</label>
+          <label class="block text-sm font-medium text-espresso mb-1.5">Base size (oz)</label>
           <div class="relative">
             <input type="number" name="base_size_oz" step="0.5" min="0.5"
                    value="{{ product.base_size_oz if product and product.base_size_oz else '' }}"
-                   placeholder="ej: 12"
+                   placeholder="e.g.: 12"
                    class="w-full pr-10 px-3 py-2 text-sm border border-stone-200 rounded-lg
                           focus:outline-none focus:ring-2 focus:ring-amber/40 focus:border-amber">
             <span class="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 text-sm pointer-events-none">oz</span>
           </div>
-          <p class="mt-1 text-xs text-stone-400">Tamaño de referencia para escalar recetas</p>
+          <p class="mt-1 text-xs text-stone-400">Reference size for scaling recipes</p>
         </div>
 
-        {# Tiempo de preparación #}
+        {# Preparation time #}
         <div>
-          <label class="block text-sm font-medium text-espresso mb-1.5">Tiempo de preparación</label>
+          <label class="block text-sm font-medium text-espresso mb-1.5">Preparation time</label>
           <div class="relative">
             <input type="number" name="prep_time_minutes" step="0.5" min="0"
                    value="{{ product.prep_time_minutes if product and product.prep_time_minutes else '' }}"
-                   placeholder="ej: 3.5"
+                   placeholder="e.g.: 3.5"
                    class="w-full pr-12 px-3 py-2 text-sm border border-stone-200 rounded-lg
                           focus:outline-none focus:ring-2 focus:ring-amber/40 focus:border-amber">
             <span class="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 text-sm pointer-events-none">min</span>
           </div>
         </div>
 
-        {# ── Sección: costos ───────────────────────────────────────────── #}
+        {# ── Section: costs ───────────────────────────────────────────── #}
         <div class="sm:col-span-2">
           <p class="text-xs font-semibold text-stone-400 uppercase tracking-wider mb-3 mt-1
                     border-b border-stone-100 pb-2">
-            Costos de labor
+            Labor costs
           </p>
         </div>
 
-        {# Costo de labor por minuto #}
+        {# Labor cost per minute #}
         <div class="sm:col-span-2 sm:max-w-xs">
           <label class="block text-sm font-medium text-espresso mb-1.5">
-            Costo de labor por minuto
+            Labor cost per minute
           </label>
           <div class="relative">
             <span class="absolute left-3 top-1/2 -translate-y-1/2 text-stone-400 text-sm pointer-events-none">$</span>
@@ -160,24 +160,24 @@
                           focus:outline-none focus:ring-2 focus:ring-amber/40 focus:border-amber">
           </div>
           <p class="mt-1 text-xs text-stone-400">
-            Costo total de labor = tiempo × costo/min
+            Total labor cost = time × cost/min
           </p>
         </div>
 
       </div>
 
-      {# Footer sticky con botones #}
+      {# Sticky footer with buttons #}
       <div class="flex justify-end gap-3 mt-6 pt-4 border-t border-stone-100">
         <button type="button"
                 @click="show = false; setTimeout(() => { document.getElementById('modal-container').innerHTML = '' }, 200)"
                 class="px-4 py-2 text-sm font-medium text-stone-600 bg-stone-100
                        rounded-lg hover:bg-stone-200 transition-colors">
-          Cancelar
+          Cancel
         </button>
         <button type="submit"
                 class="px-5 py-2 text-sm font-semibold text-beige bg-espresso
                        rounded-lg hover:bg-espresso-light transition-colors">
-          {% if product %}Guardar cambios{% else %}Crear producto{% endif %}
+          {% if product %}Save changes{% else %}Create product{% endif %}
         </button>
       </div>
 

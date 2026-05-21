@@ -1,4 +1,4 @@
-{# Partial: grid de scrapers configurados
+{# Partial: grid of configured scrapers
    Context variable:
      available_scrapers — List[Dict] from ScraperManager.list_available_scrapers()
      Keys: id, name, type, scraper_type, base_url, enabled,
@@ -8,9 +8,9 @@
 {% if not available_scrapers %}
 <div class="bg-white rounded-xl shadow-sm p-10 text-center">
   <div class="text-4xl mb-3">🔍</div>
-  <p class="text-stone-500 font-medium">No hay scrapers configurados.</p>
+  <p class="text-stone-500 font-medium">No scrapers configured.</p>
   <p class="text-stone-400 text-sm mt-1">
-    Agrega archivos YAML en
+    Add YAML files in
     <code class="bg-stone-100 px-1 rounded text-xs font-mono">
       backend/services/scraping/config/
     </code>
@@ -26,10 +26,10 @@
 
 <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
   {% for label, value, color in [
-      ('Total',        available_scrapers | length, 'text-espresso'),
-      ('Activos',      enabled_count,               'text-emerald-600'),
-      ('Competidores', competitor_count,             'text-sky-600'),
-      ('Proveedores',  supplier_count,               'text-violet-600'),
+      ('Total',       available_scrapers | length, 'text-espresso'),
+      ('Active',      enabled_count,               'text-emerald-600'),
+      ('Competitors', competitor_count,             'text-sky-600'),
+      ('Suppliers',   supplier_count,               'text-violet-600'),
   ] %}
   <div class="bg-white rounded-xl shadow-sm px-4 py-3">
     <p class="text-xs text-stone-400 uppercase tracking-wide">{{ label }}</p>
@@ -53,14 +53,14 @@
       </div>
       <span class="shrink-0 px-2 py-1 text-xs rounded-full font-medium
                    {{ 'bg-emerald-100 text-emerald-700' if scraper.enabled else 'bg-stone-100 text-stone-500' }}">
-        {{ 'Activo' if scraper.enabled else 'Inactivo' }}
+        {{ 'Active' if scraper.enabled else 'Inactive' }}
       </span>
     </div>
 
     {# ── Info ── #}
     <div class="space-y-2 text-sm">
       <div class="flex items-center gap-2">
-        <span class="text-stone-400 w-16 shrink-0">Tipo</span>
+        <span class="text-stone-400 w-16 shrink-0">Type</span>
         <span class="font-medium px-2 py-0.5 rounded-full text-xs
                      {{ 'bg-sky-100 text-sky-700' if scraper.type == 'competitor' else 'bg-violet-100 text-violet-700' }}">
           {{ scraper.type }}
@@ -86,7 +86,7 @@
         <span class="text-stone-600 font-medium text-xs">{{ scraper.schedule }}</span>
         {% endif %}
         {% if scraper.priority %}
-        <span class="text-stone-400 text-xs ml-auto">Prioridad {{ scraper.priority }}</span>
+        <span class="text-stone-400 text-xs ml-auto">Priority {{ scraper.priority }}</span>
         {% endif %}
       </div>
       {% endif %}
@@ -110,12 +110,12 @@
                 d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992
                    m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7"/>
         </svg>
-        <span class="htmx-indicator hidden">Probando…</span>
+        <span class="htmx-indicator hidden">Testing…</span>
         <span class="not-htmx-indicator">🧪 Test</span>
       </button>
 
       <button
-        title="Ver configuración"
+        title="View configuration"
         class="px-3 py-2 bg-stone-100 text-stone-600 text-sm rounded-lg
                hover:bg-stone-200 transition-colors"
         x-data="{ open: false }"

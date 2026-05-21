@@ -1,14 +1,14 @@
 /* ==========================================================================
-   NOTA: Este proyecto usa Tailwind CDN, que NO soporta @apply en archivos
-   externos. Los componentes se definen aquí con CSS plano equivalente.
-   Para usar @apply se necesita Tailwind CLI + PostCSS (build step).
+   NOTE: This project uses Tailwind CDN, which does NOT support @apply in
+   external files. Components are defined here with equivalent plain CSS.
+   To use @apply you need Tailwind CLI + PostCSS (build step).
    ========================================================================== */
 
-/* Alpine.js — ocultar elementos antes de inicializar para evitar flash */
+/* Alpine.js — hide elements before initialization to prevent flash */
 [x-cloak] { display: none !important; }
 
 /* ==========================================================================
-   HTMX — Barra de progreso indeterminada (#page-spinner)
+   HTMX — Indeterminate progress bar (#page-spinner)
    ========================================================================== */
 #page-spinner {
   position: absolute;
@@ -35,10 +35,10 @@
 }
 
 /* ==========================================================================
-   Variables CSS — sincronizadas con tailwind.config en base.html
+   CSS Variables — synchronized with tailwind.config in base.html
    ========================================================================== */
 :root {
-  /* Paleta principal (debe coincidir con tailwind.config.theme.extend.colors) */
+  /* Primary palette (must match tailwind.config.theme.extend.colors) */
   --espresso:       #3E2723;
   --espresso-light: #5D4037;
   --beige:          #D7CCC8;
@@ -47,7 +47,7 @@
   --amber-light:    #FFA000;
   --cream:          #FFF8F0;
 
-  /* Neutros de apoyo */
+  /* Supporting neutrals */
   --white:          #ffffff;
   --stone-50:       #fafaf9;
   --stone-100:      #f5f5f4;
@@ -57,7 +57,7 @@
   --stone-600:      #57534e;
   --stone-700:      #44403c;
 
-  /* Semánticos */
+  /* Semantic */
   --success:        #16a34a;
   --success-bg:     #dcfce7;
   --warning:        #d97706;
@@ -65,23 +65,23 @@
   --error:          #dc2626;
   --error-bg:       #fee2e2;
 
-  /* Tipografía */
+  /* Typography */
   --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
   --font-mono: ui-monospace, 'Cascadia Code', 'Source Code Pro', monospace;
 
-  /* Forma */
+  /* Shape */
   --radius-sm: 0.375rem;   /* rounded */
   --radius-md: 0.5rem;     /* rounded-lg */
   --radius-lg: 0.75rem;    /* rounded-xl */
   --radius-xl: 1rem;       /* rounded-2xl */
 
-  /* Sombras */
+  /* Shadows */
   --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
   --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.10), 0 2px 4px -2px rgb(0 0 0 / 0.10);
 }
 
 /* ==========================================================================
-   Reset mínimo
+   Minimal reset
    ========================================================================== */
 *, *::before, *::after { box-sizing: border-box; }
 
@@ -100,8 +100,8 @@ img, video, svg { display: block; max-width: 100%; }
 input, button, textarea, select { font: inherit; }
 
 /* ==========================================================================
-   Componente: .btn
-   Equivalente a: inline-flex items-center gap-2 px-4 py-2 rounded-lg
+   Component: .btn
+   Equivalent to: inline-flex items-center gap-2 px-4 py-2 rounded-lg
                   font-medium text-sm transition-colors cursor-pointer border-0
    ========================================================================== */
 .btn {
@@ -126,28 +126,28 @@ input, button, textarea, select { font: inherit; }
   outline-offset: 2px;
 }
 
-/* Primario: espresso oscuro (equivale a bg-espresso text-beige hover:bg-espresso-light) */
+/* Primary: dark espresso (equivalent to bg-espresso text-beige hover:bg-espresso-light) */
 .btn-primary {
   background-color: var(--espresso);
   color: var(--beige);
 }
 .btn-primary:hover  { background-color: var(--espresso-light); }
 
-/* Secundario: fondo neutro claro (equivale a bg-stone-100 text-stone-700 hover:bg-stone-200) */
+/* Secondary: light neutral background (equivalent to bg-stone-100 text-stone-700 hover:bg-stone-200) */
 .btn-secondary {
   background-color: var(--stone-100);
   color: var(--stone-700);
 }
 .btn-secondary:hover { background-color: var(--stone-200); }
 
-/* Peligro: rojo semántico */
+/* Danger: semantic red */
 .btn-danger {
   background-color: var(--error-bg);
   color: var(--error);
 }
 .btn-danger:hover { filter: brightness(0.95); }
 
-/* Variante ghost / outline */
+/* Ghost / outline variant */
 .btn-ghost {
   background-color: transparent;
   color: var(--stone-600);
@@ -158,13 +158,13 @@ input, button, textarea, select { font: inherit; }
   border-color: var(--stone-400);
 }
 
-/* Tamaños */
+/* Sizes */
 .btn-sm { padding: 0.25rem 0.625rem; font-size: 0.75rem; }
 .btn-lg { padding: 0.625rem 1.5rem;  font-size: 1rem; }
 
 /* ==========================================================================
-   Componente: .input
-   Equivalente a: w-full px-3 py-2 text-sm border border-stone-200 rounded-lg
+   Component: .input
+   Equivalent to: w-full px-3 py-2 text-sm border border-stone-200 rounded-lg
                   focus:outline-none focus:ring-2 focus:ring-amber/40 focus:border-amber
    ========================================================================== */
 .input {
@@ -195,16 +195,16 @@ input, button, textarea, select { font: inherit; }
   cursor: not-allowed;
 }
 
-/* Select hereda .input */
+/* Select inherits .input */
 select.input { padding-right: 2.5rem; cursor: pointer; }
 
-/* Tamaños */
+/* Sizes */
 .input-sm { padding: 0.25rem 0.5rem; font-size: 0.75rem; }
 .input-lg { padding: 0.625rem 1rem;  font-size: 1rem; }
 
 /* ==========================================================================
-   Componente: .card
-   Equivalente a: bg-white rounded-xl shadow-sm border border-stone-100 p-6
+   Component: .card
+   Equivalent to: bg-white rounded-xl shadow-sm border border-stone-100 p-6
    ========================================================================== */
 .card {
   background: var(--white);
@@ -230,8 +230,8 @@ select.input { padding-right: 2.5rem; cursor: pointer; }
 }
 
 /* ==========================================================================
-   Componente: tabla responsive
-   Equivalente a: overflow-x-auto + table min-w-full divide-y divide-stone-200
+   Component: responsive table
+   Equivalent to: overflow-x-auto + table min-w-full divide-y divide-stone-200
    ========================================================================== */
 .table-responsive {
   overflow-x: auto;
@@ -271,7 +271,7 @@ select.input { padding-right: 2.5rem; cursor: pointer; }
 .table tbody tr:hover { background-color: var(--stone-50); }
 
 /* ==========================================================================
-   Componente: .badge
+   Component: .badge
    ========================================================================== */
 .badge {
   display: inline-flex;
@@ -290,7 +290,7 @@ select.input { padding-right: 2.5rem; cursor: pointer; }
 .badge-primary { background: var(--espresso);   color: var(--beige);  }
 
 /* ==========================================================================
-   Componente: .form-group / .label
+   Component: .form-group / .label
    ========================================================================== */
 .form-group {
   display: flex;
@@ -316,7 +316,7 @@ select.input { padding-right: 2.5rem; cursor: pointer; }
 }
 
 /* ==========================================================================
-   Componente: .empty-state
+   Component: .empty-state
    ========================================================================== */
 .empty-state {
   display: flex;
@@ -333,20 +333,20 @@ select.input { padding-right: 2.5rem; cursor: pointer; }
 .empty-state-desc  { font-size: 0.875rem; margin-top: 0.25rem; }
 
 /* ==========================================================================
-   Utilidades de apoyo (solo las que Tailwind CDN no cubre out-of-the-box)
+   Support utilities (only those not covered out-of-the-box by Tailwind CDN)
    ========================================================================== */
 
-/* Números monoespaciados alineados */
+/* Monospaced aligned numbers */
 .tabular { font-variant-numeric: tabular-nums; }
 
-/* Truncado con ellipsis */
+/* Truncated with ellipsis */
 .truncate {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-/* Divisor horizontal */
+/* Horizontal divider */
 .divider {
   border: none;
   border-top: 1px solid var(--stone-200);

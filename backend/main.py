@@ -10,7 +10,7 @@ from fastapi.templating import Jinja2Templates
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 
-import backend.models  # noqa: F401 — registra todos los modelos en Base.metadata
+import backend.models  # noqa: F401 — registers all models in Base.metadata
 from backend.database import get_db, init_db, test_connection
 from backend.models.ingredient import Ingredient
 from backend.models.product import Product
@@ -27,8 +27,8 @@ BASE_DIR = Path(__file__).resolve().parent
 PROJECT_ROOT = BASE_DIR.parent
 
 app = FastAPI(
-    title="CPQ Cafeterías",
-    description="Sistema de Configure-Price-Quote con Scraping",
+    title="CPQ Cafeterias",
+    description="Configure-Price-Quote System with Scraping",
     version="1.0.0",
 )
 
@@ -47,7 +47,7 @@ app.add_middleware(
 )
 
 # ============================================
-# ARCHIVOS ESTÁTICOS Y TEMPLATES
+# STATIC FILES AND TEMPLATES
 # ============================================
 app.mount("/static", StaticFiles(directory=PROJECT_ROOT / "static"), name="static")
 
@@ -56,6 +56,7 @@ templates = Jinja2Templates(directory=BASE_DIR / "templates")
 # ============================================
 # ROUTERS
 # ============================================
+
 app.include_router(ingredients.router)
 app.include_router(ingredients_ui.router)
 app.include_router(products.router)
@@ -83,32 +84,32 @@ app.include_router(scraping_ui.router)
 # ============================================
 @app.on_event("startup")
 async def startup_event():
-    """Ejecutar al iniciar la aplicación."""
-    print("🚀 Iniciando aplicación...")
+    """Run when the application starts."""
+    print("🚀 Starting application...")
 
     if test_connection():
         init_db()
-        print("✅ Conexión a Supabase OK")
+        print("✅ Supabase connection OK")
     else:
-        print("⚠️  Advertencia: No se pudo conectar a Supabase")
+        print("⚠️  Warning: Could not connect to Supabase")
 
     if os.getenv("RUN_MIGRATIONS") == "true":
-        print("🔄 Ejecutando migraciones...")
+        print("🔄 Running migrations...")
         try:
             from backend.scripts.init_production import init_database
             init_database()
-            print("✅ Migraciones completadas")
+            print("✅ Migrations completed")
         except Exception as e:
-            print(f"❌ Error en migraciones: {e}")
+            print(f"❌ Error in migrations: {e}")
 
 
 # ============================================
-# ENDPOINTS PRINCIPALES
+# MAIN ENDPOINTS
 # ============================================
 @app.get("/", tags=["General"])
 def root() -> dict:
     return {
-        "message": "CPQ Cafeterías API",
+        "message": "CPQ Cafeterias API",
         "status": "online",
         "docs": "/docs",
         "scraping_ui": "/scraping",
@@ -118,7 +119,7 @@ def root() -> dict:
 
 @app.get("/health", tags=["General"])
 def health_check() -> dict:
-    """Endpoint de health check para Railway."""
+    """Health check endpoint for Railway."""
     db_status = "healthy" if test_connection() else "unhealthy"
     return {
         "status": "healthy",
@@ -130,7 +131,7 @@ def health_check() -> dict:
 
 @app.get("/dashboard", response_class=HTMLResponse, tags=["General"])
 async def dashboard(request: Request, db: Session = Depends(get_db)) -> HTMLResponse:
-    """Renderiza el dashboard principal con estadísticas del catálogo."""
+    """Renders the main dashboard with catalog statistics."""
     stats = {
         "total_ingredients": db.query(Ingredient).filter(Ingredient.is_active == True).count(),
         "total_products":    db.query(Product).filter(Product.is_active == True).count(),

@@ -1,6 +1,6 @@
-"""Funciones auxiliares reutilizables para scripts de migración e importación de datos.
+"""Reusable helper functions for migration and data import scripts.
 
-Uso típico:
+Typical usage:
     from backend.migrations.utils import parse_quantity_with_unit, safe_decimal, normalize_text
 """
 
@@ -9,11 +9,11 @@ import unicodedata
 from decimal import Decimal, InvalidOperation
 
 # ---------------------------------------------------------------------------
-# Normalización de plurales simples en inglés (unidades de receta conocidas)
+# Simple English plural normalisation (known recipe units)
 # ---------------------------------------------------------------------------
 
 _PLURAL_TO_SINGULAR: dict[str, str] = {
-    # Plurales → singular
+    # Plurals → singular
     "pumps":       "pump",
     "shots":       "shot",
     "scoops":      "scoop",
@@ -36,16 +36,16 @@ _PLURAL_TO_SINGULAR: dict[str, str] = {
     "handfuls":    "handful",
     "rosettes":    "rosette",
     "servings":    "serving",
-    # Abreviaturas comunes
+    # Common abbreviations
     "tsp":         "teaspoon",
     "tbsp":        "tablespoon",
     "tbs":         "tablespoon",
     "gr":          "g",
-    "pumo":        "pump",   # typo frecuente en el Excel de origen
+    "pumo":        "pump",   # frequent typo in the source Excel
 }
 
-# Regex: número + unidad opcional de una o varias palabras ("2 pumps", "2 Standard Shot").
-# El grupo <unit> captura siempre la ÚLTIMA palabra, ignorando calificadores intermedios.
+# Regex: number + optional unit of one or more words ("2 pumps", "2 Standard Shot").
+# The <unit> group always captures the LAST word, ignoring intermediate qualifiers.
 _QTY_RE = re.compile(
     r"^\s*(?P<number>[0-9]+(?:[.,][0-9]+)?)"
     r"(?:\s+(?:[a-zA-Z]+\s+)*(?P<unit>[a-zA-Z]+))?"
@@ -54,9 +54,9 @@ _QTY_RE = re.compile(
 
 
 def parse_quantity_with_unit(qty_string: str) -> tuple[float | None, str | None]:
-    """Parsea un string de cantidad con unidad opcional.
+    """Parses a quantity string with an optional unit.
 
-    Ejemplos:
+    Examples:
         >>> parse_quantity_with_unit("2 pumps")
         (2.0, 'pump')
         >>> parse_quantity_with_unit("240 ml")
@@ -75,11 +75,11 @@ def parse_quantity_with_unit(qty_string: str) -> tuple[float | None, str | None]
         (None, None)
 
     Args:
-        qty_string: String con formato "<número> [unidad]".
+        qty_string: String with format "<number> [unit]".
 
     Returns:
-        Tupla (cantidad: float, unidad: str | None).
-        Retorna (None, None) si el string no puede parsearse.
+        Tuple (quantity: float, unit: str | None).
+        Returns (None, None) if the string cannot be parsed.
     """
     if not qty_string or not isinstance(qty_string, str):
         return (None, None)
@@ -107,9 +107,9 @@ def parse_quantity_with_unit(qty_string: str) -> tuple[float | None, str | None]
 # ---------------------------------------------------------------------------
 
 def safe_decimal(value: object) -> Decimal:
-    """Convierte un valor arbitrario a Decimal de forma segura.
+    """Converts an arbitrary value to Decimal safely.
 
-    Ejemplos:
+    Examples:
         >>> safe_decimal(None)
         Decimal('0')
         >>> safe_decimal(1.5)
@@ -122,10 +122,10 @@ def safe_decimal(value: object) -> Decimal:
         Decimal('0')
 
     Args:
-        value: Valor a convertir (None, str, int, float, Decimal).
+        value: Value to convert (None, str, int, float, Decimal).
 
     Returns:
-        Decimal equivalente, o Decimal("0") ante cualquier error.
+        Equivalent Decimal, or Decimal("0") on any error.
     """
     if value is None:
         return Decimal("0")
@@ -140,19 +140,19 @@ def safe_decimal(value: object) -> Decimal:
             return Decimal("0")
 
     if isinstance(value, str):
-        # Eliminar caracteres no numéricos salvo punto, coma y signo negativo
+        # Remove non-numeric characters except period, comma and negative sign
         cleaned = re.sub(r"[^\d.,-]", "", value.strip())
-        # Detectar formato: posición relativa de coma y punto determina el rol de cada uno.
-        # US/estándar  "2,500.75" → coma antes del punto → coma = miles, punto = decimal
-        # Europeo      "1.234,56" → punto antes de coma  → punto = miles, coma = decimal
+        # Detect format: relative position of comma and period determines the role of each.
+        # US/standard  "2,500.75" → comma before period → comma = thousands, period = decimal
+        # European     "1.234,56" → period before comma → period = thousands, comma = decimal
         if "," in cleaned and "." in cleaned:
             last_comma = cleaned.rfind(",")
             last_dot = cleaned.rfind(".")
             if last_comma < last_dot:
-                # Formato US: quitar comas de miles, mantener punto decimal
+                # US format: remove thousands commas, keep decimal point
                 cleaned = cleaned.replace(",", "")
             else:
-                # Formato europeo: quitar puntos de miles, convertir coma a punto
+                # European format: remove thousands periods, convert comma to point
                 cleaned = cleaned.replace(".", "").replace(",", ".")
         else:
             cleaned = cleaned.replace(",", ".")
@@ -165,7 +165,7 @@ def safe_decimal(value: object) -> Decimal:
         except InvalidOperation:
             return Decimal("0")
 
-    # Fallback para tipos inesperados
+    # Fallback for unexpected types
     try:
         return Decimal(str(value))
     except InvalidOperation:
@@ -175,16 +175,16 @@ def safe_decimal(value: object) -> Decimal:
 # ---------------------------------------------------------------------------
 
 def normalize_text(text: str) -> str:
-    """Limpia y normaliza un string de texto.
+    """Cleans and normalises a text string.
 
-    Aplica:
-        1. Strip de espacios al inicio y final.
-        2. Conversión a minúsculas.
-        3. Normalización de tildes/diacríticos a ASCII (opcional vía parámetro
-           en la versión extendida; aquí se mantienen para preservar nombres
-           de productos en español).
+    Applies:
+        1. Strip of leading and trailing spaces.
+        2. Conversion to lowercase.
+        3. Normalisation of accents/diacritics to ASCII (optional via parameter
+           in the extended version; here they are kept to preserve product
+           names in Spanish).
 
-    Ejemplos:
+    Examples:
         >>> normalize_text("  Café Latte  ")
         'café latte'
         >>> normalize_text("ESPRESSO")
@@ -195,10 +195,10 @@ def normalize_text(text: str) -> str:
         ''
 
     Args:
-        text: String a normalizar.
+        text: String to normalise.
 
     Returns:
-        String limpio y en minúsculas. Retorna '' ante None o error.
+        Clean lowercase string. Returns '' for None or on error.
     """
     if not text or not isinstance(text, str):
         return ""
@@ -210,11 +210,11 @@ def normalize_text(text: str) -> str:
 
 
 def normalize_text_ascii(text: str) -> str:
-    """Igual que normalize_text pero además convierte diacríticos a ASCII.
+    """Same as normalize_text but also converts diacritics to ASCII.
 
-    Útil para comparaciones y búsquedas insensibles a tildes.
+    Useful for accent-insensitive comparisons and searches.
 
-    Ejemplos:
+    Examples:
         >>> normalize_text_ascii("Café Latte")
         'cafe latte'
         >>> normalize_text_ascii("Açaí")
