@@ -1,13 +1,16 @@
 # nixpacks.toml
-# Configuración de build para Railway con soporte de Playwright/Chromium.
-# Las X11 libs deben referenciarse como xorg.<name> (no existen en el top level
-# de nixpkgs). libgbm es parte de mesa, no un paquete independiente.
+# Python, Playwright y Chromium para Railway.
+#
+# Creamos el virtualenv explícitamente en phases.install para evitar
+# depender de $NIXPACKS_PATH (variable interna de nixpacks que genera
+# una advertencia "undefined" en algunos buildpacks y deja pip fuera del
+# PATH durante las etapas de build).  Todos los binarios se referencian
+# con ruta absoluta /opt/venv/bin/* para que no importe el PATH.
 
 [phases.setup]
 nixPkgs = [
   "python311",
   "nodejs-18_x",
-  "playwright-driver",
   "chromium"
 ]
 nixLibs = [
@@ -36,10 +39,12 @@ nixLibs = [
 
 [phases.install]
 cmds = [
-  "pip install -r requirements.txt",
-  "playwright install chromium",
-  "playwright install-deps chromium"
+  "python3 -m venv /opt/venv",
+  "/opt/venv/bin/pip install --upgrade pip",
+  "/opt/venv/bin/pip install -r requirements.txt",
+  "/opt/venv/bin/playwright install chromium",
+  "/opt/venv/bin/playwright install-deps chromium"
 ]
 
 [start]
-cmd = "uvicorn backend.main:app --host 0.0.0.0 --port $PORT"
+cmd = "/opt/venv/bin/uvicorn backend.main:app --host 0.0.0.0 --port $PORT"
