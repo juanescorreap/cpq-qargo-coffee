@@ -1,7 +1,7 @@
 # nixpacks.toml
 # Configuración de build para Railway con soporte de Playwright/Chromium.
-# Los nixLibs proveen las dependencias del sistema operativo que Chromium
-# necesita en un entorno headless Linux.
+# Las X11 libs deben referenciarse como xorg.<name> (no existen en el top level
+# de nixpkgs). libgbm es parte de mesa, no un paquete independiente.
 
 [phases.setup]
 nixPkgs = [
@@ -20,14 +20,14 @@ nixLibs = [
   "dbus",
   "expat",
   "libdrm",
-  "libX11",
-  "libxcb",
-  "libXcomposite",
-  "libXdamage",
-  "libXext",
-  "libXfixes",
-  "libXrandr",
-  "libgbm",
+  "xorg.libX11",
+  "xorg.libxcb",
+  "xorg.libXcomposite",
+  "xorg.libXdamage",
+  "xorg.libXext",
+  "xorg.libXfixes",
+  "xorg.libXrandr",
+  "mesa",
   "pango",
   "cairo",
   "alsa-lib",
