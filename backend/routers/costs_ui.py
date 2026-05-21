@@ -2,7 +2,7 @@ from pathlib import Path
 from typing import Optional
 
 from fastapi import APIRouter, Depends, Request
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 
@@ -16,6 +16,12 @@ router = APIRouter(prefix="/costs", tags=["UI - Costos"])
 templates = Jinja2Templates(
     directory=Path(__file__).resolve().parent.parent / "templates"
 )
+
+
+@router.get("", response_class=RedirectResponse)
+@router.get("/", response_class=RedirectResponse)
+async def costs_redirect() -> RedirectResponse:
+    return RedirectResponse(url="/costs/calculator", status_code=302)
 
 
 @router.get("/calculator", response_class=HTMLResponse)
