@@ -30,8 +30,8 @@ class Settings(BaseSettings):
     """
 
     # ── Base de datos ──────────────────────────────────────────────────────
-    DATABASE_URL: str
-    DATABASE_URL_POOLING: Optional[str] = None
+    SUPABASE_DB_URL: str
+    SUPABASE_POOLER_URL: Optional[str] = None
 
     # ── Aplicación ─────────────────────────────────────────────────────────
     DEBUG: bool = False

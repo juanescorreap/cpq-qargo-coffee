@@ -1,43 +1,50 @@
+import os
+
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import declarative_base, sessionmaker
+from sqlalchemy.pool import NullPool
 
-from .config import settings
+# ============================================
+# CONFIGURACIÓN DE SUPABASE
+# ============================================
 
+SUPABASE_DB_URL = os.getenv("SUPABASE_DB_URL")
+SUPABASE_POOLER_URL = os.getenv("SUPABASE_POOLER_URL")
 
-def _resolve_database_url() -> str:
-    """Selecciona y normaliza la URL de conexión a la base de datos.
+DATABASE_URL = SUPABASE_POOLER_URL or SUPABASE_DB_URL
 
-    Orden de prioridad:
-    1. DATABASE_URL_POOLING (Supabase PgBouncer, puerto 6543) — preferida en
-       producción porque reduce el número de conexiones abiertas contra
-       el servidor Postgres subyacente.
-    2. DATABASE_URL (conexión directa, puerto 5432) — fallback para desarrollo
-       local o cuando no se configure el pooler.
+if not DATABASE_URL:
+    raise ValueError(
+        "SUPABASE_DB_URL o SUPABASE_POOLER_URL debe estar configurado. "
+        "Obtén estas URLs desde tu proyecto de Supabase."
+    )
 
-    Además aplica el fix necesario para Railway y algunas versiones antiguas
-    de Heroku que emiten ``postgres://`` en lugar del esquema estándar
-    ``postgresql://`` que SQLAlchemy requiere.
+if DATABASE_URL.startswith("postgres://"):
+    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
 
-    Returns:
-        URL lista para pasarle a ``create_engine``.
-    """
-    url = settings.DATABASE_URL_POOLING or settings.DATABASE_URL
-    if url.startswith("postgres://"):
-        url = url.replace("postgres://", "postgresql://", 1)
-    return url
+IS_PRODUCTION = os.getenv("RAILWAY_ENVIRONMENT") is not None
 
+# ============================================
+# CONFIGURACIÓN DEL ENGINE
+# ============================================
 
-_DATABASE_URL = _resolve_database_url()
-
-engine = create_engine(
-    _DATABASE_URL,
-    pool_pre_ping=True,   # descarta conexiones caídas antes de usarlas
-    pool_recycle=300,     # renueva conexiones cada 5 min (evita timeouts de Supabase)
-    echo=False,
-    connect_args={
-        "options": "-c timezone=America/Bogota"
-    },
-)
+if IS_PRODUCTION and SUPABASE_POOLER_URL:
+    engine = create_engine(
+        DATABASE_URL,
+        poolclass=NullPool,
+        echo=False,
+    )
+    print("✅ Usando Supabase Pooler (NullPool)")
+else:
+    engine = create_engine(
+        DATABASE_URL,
+        pool_pre_ping=True,
+        pool_recycle=300,
+        pool_size=5,
+        max_overflow=10,
+        echo=False,
+    )
+    print("✅ Usando pool de conexiones estándar")
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
@@ -45,12 +52,7 @@ Base = declarative_base()
 
 
 def get_db():
-    """Dependency de FastAPI que provee una sesión de base de datos por request.
-
-    Yields:
-        Session: Sesión de SQLAlchemy. Se cierra automáticamente al finalizar
-        el request, tanto en caso de éxito como de excepción.
-    """
+    """Dependency para obtener sesión de DB."""
     db = SessionLocal()
     try:
         yield db
@@ -59,28 +61,25 @@ def get_db():
 
 
 def init_db():
-    """Crea todas las tablas definidas en los modelos que hereden de Base.
-
-    Debe llamarse al iniciar la aplicación. No recrea tablas que ya existan
-    (``CREATE TABLE IF NOT EXISTS`` semántico vía SQLAlchemy).
-    """
+    """Crea todas las tablas definidas en los modelos que hereden de Base."""
     Base.metadata.create_all(bind=engine)
 
 
+# ============================================
+# TEST DE CONEXIÓN
+# ============================================
+
 def test_connection() -> bool:
-    """Verifica que la conexión a la base de datos esté disponible.
-
-    Ejecuta una consulta mínima (``SELECT 1``) y reporta el resultado.
-    Usado en el lifespan de FastAPI para dar feedback inmediato en el arranque.
-
-    Returns:
-        bool: ``True`` si la conexión es exitosa, ``False`` en caso de error.
-    """
+    """Test de conexión a Supabase."""
     try:
         with engine.connect() as conn:
             conn.execute(text("SELECT 1"))
-        print("Conexión a la base de datos exitosa.")
+        print("✅ Conexión a Supabase exitosa")
         return True
     except Exception as e:
-        print(f"Error al conectar con la base de datos: {e}")
+        print(f"❌ Error conectando a Supabase: {e}")
         return False
+
+
+if IS_PRODUCTION:
+    test_connection()
