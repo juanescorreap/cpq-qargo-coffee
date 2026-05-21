@@ -44,10 +44,24 @@ Usage::
 """
 
 import logging
+import os
 from datetime import datetime
 from decimal import Decimal
 from typing import Any, Dict, List, Optional
 from urllib.parse import urljoin
+
+# Railway inyecta RAILWAY_ENVIRONMENT en tiempo de ejecución.
+# En local el valor es None, por lo que la detección es segura sin config extra.
+_IS_RAILWAY: bool = os.getenv("RAILWAY_ENVIRONMENT") is not None
+
+# Args de Chromium necesarios en entornos containerizados/serverless donde no
+# hay usuario root con privilegios completos ni dispositivos /dev/shm amplios.
+_RAILWAY_BROWSER_ARGS: list = [
+    "--no-sandbox",
+    "--disable-setuid-sandbox",
+    "--disable-dev-shm-usage",
+    "--disable-gpu",
+]
 
 from playwright.sync_api import Browser, ElementHandle, Page, Playwright, sync_playwright
 
@@ -146,6 +160,13 @@ class ConfigurableScraper(BaseScraper):
             "height": browser_cfg.get("viewport_height", 800),
         }
 
+        # En Railway, forzar headless y agregar args necesarios para contenedor.
+        if _IS_RAILWAY:
+            self._headless = True
+            self._extra_browser_args: list = _RAILWAY_BROWSER_ARGS
+        else:
+            self._extra_browser_args = []
+
         # Playwright handle — set by setup(), cleared by teardown().
         self._playwright: Optional[Playwright] = None
 
@@ -163,7 +184,10 @@ class ConfigurableScraper(BaseScraper):
         """
         super().setup()
         self._playwright = sync_playwright().start()
-        self._browser = self._playwright.chromium.launch(headless=self._headless)
+        self._browser = self._playwright.chromium.launch(
+            headless=self._headless,
+            args=self._extra_browser_args,
+        )
         self.logger.info(
             "[%s] Browser launched (headless=%s)", self.scraper_id, self._headless
         )

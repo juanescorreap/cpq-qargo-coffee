@@ -1,3 +1,4 @@
+import os
 from contextlib import asynccontextmanager
 from pathlib import Path
 
@@ -128,11 +129,17 @@ async def root() -> dict:
 async def health() -> dict:
     """Verifica el estado de salud de la aplicación y sus dependencias.
 
+    Usado por Railway como health-check endpoint. Retorna 200 mientras la
+    aplicación esté en pie; Railway reinicia el servicio si este endpoint
+    no responde según la política definida en railway.json.
+
     Returns:
-        dict: Estado general y fuente de base de datos.
+        dict: Estado general, servicio y entorno.
     """
     return {
-        "status": "ok",
+        "status": "healthy",
+        "service": "cpq-cafeterias",
+        "environment": settings.ENVIRONMENT,
         "database": "supabase",
     }
 
@@ -156,9 +163,10 @@ async def dashboard(request: Request, db: Session = Depends(get_db)) -> HTMLResp
 # Entry point para ejecución directa
 # ---------------------------------------------------------------------------
 if __name__ == "__main__":
+    port = int(os.getenv("PORT", 8000))
     uvicorn.run(
         "backend.main:app",
         host="0.0.0.0",
-        port=8000,
-        reload=True,
+        port=port,
+        reload=settings.DEBUG,
     )

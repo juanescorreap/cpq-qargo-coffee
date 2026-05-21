@@ -1,0 +1,45 @@
+# nixpacks.toml
+# Configuración de build para Railway con soporte de Playwright/Chromium.
+# Los nixLibs proveen las dependencias del sistema operativo que Chromium
+# necesita en un entorno headless Linux.
+
+[phases.setup]
+nixPkgs = [
+  "python311",
+  "nodejs-18_x",
+  "playwright-driver",
+  "chromium"
+]
+nixLibs = [
+  "glib",
+  "nss",
+  "nspr",
+  "atk",
+  "at-spi2-atk",
+  "cups",
+  "dbus",
+  "expat",
+  "libdrm",
+  "libX11",
+  "libxcb",
+  "libXcomposite",
+  "libXdamage",
+  "libXext",
+  "libXfixes",
+  "libXrandr",
+  "libgbm",
+  "pango",
+  "cairo",
+  "alsa-lib",
+  "gtk3"
+]
+
+[phases.install]
+cmds = [
+  "pip install -r requirements.txt",
+  "playwright install chromium",
+  "playwright install-deps chromium"
+]
+
+[start]
+cmd = "uvicorn backend.main:app --host 0.0.0.0 --port $PORT"
