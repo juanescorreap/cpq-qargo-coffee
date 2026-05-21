@@ -1,0 +1,20 @@
+{% if success %}
+<div class="p-3 bg-green-50 border border-green-200 rounded">
+  <div class="text-sm font-medium text-green-800 mb-2">
+    ✅ Test exitoso
+  </div>
+  <div class="text-xs text-gray-600 space-y-1">
+    <div>Productos encontrados: <strong>{{ products_found }}</strong></div>
+    <div>Tiempo de ejecución: <strong>{{ "{:.2f}".format(execution_time_ms / 1000) }}s</strong></div>
+  </div>
+</div>
+{% else %}
+<div class="p-3 bg-red-50 border border-red-200 rounded">
+  <div class="text-sm font-medium text-red-800 mb-2">
+    ❌ Test fallido
+  </div>
+  <div class="text-xs text-gray-700">
+    {{ error }}
+  </div>
+</div>
+{% endif %}

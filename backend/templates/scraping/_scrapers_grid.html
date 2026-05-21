@@ -1,0 +1,141 @@
+{# Partial: grid de scrapers configurados
+   Context variable:
+     available_scrapers — List[Dict] from ScraperManager.list_available_scrapers()
+     Keys: id, name, type, scraper_type, base_url, enabled,
+           priority, schedule, notes
+#}
+
+{% if not available_scrapers %}
+<div class="bg-white rounded-xl shadow-sm p-10 text-center">
+  <div class="text-4xl mb-3">🔍</div>
+  <p class="text-stone-500 font-medium">No hay scrapers configurados.</p>
+  <p class="text-stone-400 text-sm mt-1">
+    Agrega archivos YAML en
+    <code class="bg-stone-100 px-1 rounded text-xs font-mono">
+      backend/services/scraping/config/
+    </code>
+  </p>
+</div>
+
+{% else %}
+
+{# ── Summary bar ─────────────────────────────────────────────────────────── #}
+{% set enabled_count    = available_scrapers | selectattr('enabled') | list | length %}
+{% set competitor_count = available_scrapers | selectattr('type', 'equalto', 'competitor') | list | length %}
+{% set supplier_count   = available_scrapers | selectattr('type', 'equalto', 'supplier')   | list | length %}
+
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+  {% for label, value, color in [
+      ('Total',        available_scrapers | length, 'text-espresso'),
+      ('Activos',      enabled_count,               'text-emerald-600'),
+      ('Competidores', competitor_count,             'text-sky-600'),
+      ('Proveedores',  supplier_count,               'text-violet-600'),
+  ] %}
+  <div class="bg-white rounded-xl shadow-sm px-4 py-3">
+    <p class="text-xs text-stone-400 uppercase tracking-wide">{{ label }}</p>
+    <p class="text-2xl font-bold {{ color }}">{{ value }}</p>
+  </div>
+  {% endfor %}
+</div>
+
+{# ── Cards grid ───────────────────────────────────────────────────────────── #}
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+  {% for scraper in available_scrapers %}
+  <div class="bg-white rounded-xl shadow-sm p-6 border-l-4
+              {{ 'border-emerald-400' if scraper.enabled else 'border-stone-200' }}
+              flex flex-col gap-4">
+
+    {# ── Header ── #}
+    <div class="flex justify-between items-start gap-2">
+      <div class="min-w-0">
+        <h3 class="text-lg font-bold text-espresso leading-tight">{{ scraper.name }}</h3>
+        <p class="text-sm text-stone-400 mt-0.5 font-mono">{{ scraper.id }}</p>
+      </div>
+      <span class="shrink-0 px-2 py-1 text-xs rounded-full font-medium
+                   {{ 'bg-emerald-100 text-emerald-700' if scraper.enabled else 'bg-stone-100 text-stone-500' }}">
+        {{ 'Activo' if scraper.enabled else 'Inactivo' }}
+      </span>
+    </div>
+
+    {# ── Info ── #}
+    <div class="space-y-2 text-sm">
+      <div class="flex items-center gap-2">
+        <span class="text-stone-400 w-16 shrink-0">Tipo</span>
+        <span class="font-medium px-2 py-0.5 rounded-full text-xs
+                     {{ 'bg-sky-100 text-sky-700' if scraper.type == 'competitor' else 'bg-violet-100 text-violet-700' }}">
+          {{ scraper.type }}
+        </span>
+        <span class="px-2 py-0.5 rounded-full text-xs bg-stone-100 text-stone-600">
+          {{ scraper.scraper_type }}
+        </span>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <span class="text-stone-400 w-16 shrink-0">URL</span>
+        <a href="{{ scraper.base_url }}" target="_blank"
+           class="text-sky-600 hover:underline text-xs truncate max-w-[200px]"
+           title="{{ scraper.base_url }}">
+          {{ scraper.base_url | replace('https://', '') | replace('http://', '') }}
+        </a>
+      </div>
+
+      {% if scraper.schedule or scraper.priority %}
+      <div class="flex items-center gap-3">
+        {% if scraper.schedule %}
+        <span class="text-stone-400 w-16 shrink-0">Schedule</span>
+        <span class="text-stone-600 font-medium text-xs">{{ scraper.schedule }}</span>
+        {% endif %}
+        {% if scraper.priority %}
+        <span class="text-stone-400 text-xs ml-auto">Prioridad {{ scraper.priority }}</span>
+        {% endif %}
+      </div>
+      {% endif %}
+    </div>
+
+    {# ── Actions ── #}
+    <div class="flex gap-2 mt-auto">
+      <button
+        hx-post="/scraping/partials/test"
+        hx-vals='{"scraper_id": "{{ scraper.id }}", "search_query": "coffee", "limit": 3}'
+        hx-target="#test-result-{{ scraper.id }}"
+        hx-swap="innerHTML"
+        hx-indicator="#spinner-{{ scraper.id }}"
+        class="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2
+               bg-espresso text-beige text-sm rounded-lg
+               hover:bg-espresso-light transition-colors">
+        <svg id="spinner-{{ scraper.id }}"
+             class="htmx-indicator w-4 h-4 animate-spin shrink-0"
+             fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round"
+                d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992
+                   m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7"/>
+        </svg>
+        <span class="htmx-indicator hidden">Probando…</span>
+        <span class="not-htmx-indicator">🧪 Test</span>
+      </button>
+
+      <button
+        title="Ver configuración"
+        class="px-3 py-2 bg-stone-100 text-stone-600 text-sm rounded-lg
+               hover:bg-stone-200 transition-colors"
+        x-data="{ open: false }"
+        @click="open = !open"
+        :class="open && 'bg-amber/20 text-amber'">
+        📋
+      </button>
+    </div>
+
+    {# ── HTMX test result ── #}
+    <div id="test-result-{{ scraper.id }}"></div>
+
+    {# ── Notes ── #}
+    {% if scraper.notes %}
+    <div class="p-3 bg-amber/10 border border-amber/20 rounded-lg text-xs text-stone-600 leading-relaxed">
+      💡 {{ scraper.notes }}
+    </div>
+    {% endif %}
+
+  </div>{# /card #}
+  {% endfor %}
+</div>{# /grid #}
+{% endif %}

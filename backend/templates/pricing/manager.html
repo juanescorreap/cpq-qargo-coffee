@@ -1,0 +1,970 @@
+{% extends "base.html" %}
+
+{% block title %}Gestión de Precios — CPQ Cafeterías{% endblock %}
+
+{% block extra_head %}
+{# Chart.js — cargado antes de Alpine para que esté disponible cuando el componente inicia #}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+
+{# Datos de productos+tamaños inyectados como JSON para que Alpine los consuma sin HTMX extra #}
+<script id="products-data" type="application/json">{{ products_json }}</script>
+{% endblock %}
+
+
+{% block content %}
+
+{# ── Encabezado ──────────────────────────────────────────────────────────── #}
+<div class="mb-8 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+  <div>
+    <h1 class="text-3xl font-bold text-espresso">Gestión de Precios</h1>
+    <p class="mt-1 text-sm text-stone-500">
+      Calcula, ajusta y guarda precios basados en costo&nbsp;+&nbsp;margen.
+    </p>
+  </div>
+  <a href="/costs/calculator"
+     class="self-start sm:self-center text-xs font-medium text-stone-400
+            hover:text-espresso transition-colors px-3 py-1.5 border border-stone-200
+            rounded-lg hover:border-stone-300">
+    ← Calculadora de costos
+  </a>
+</div>
+
+
+{# ── Wrapper Alpine principal ────────────────────────────────────────────── #}
+<div x-data="pricingManager()" x-init="init()">
+
+
+  {# ═══════════════════════════════════════════════════════════════════════
+     FILA 1: Panel de edición (2/5) + Gráfica de historial (3/5)
+     ═══════════════════════════════════════════════════════════════════════ #}
+  <div class="grid grid-cols-1 lg:grid-cols-5 gap-6 mb-6">
+
+
+    {# ── COLUMNA A: Selector + Panel de cálculo ──────────────────────────── #}
+    <aside class="lg:col-span-2 flex flex-col gap-4">
+
+
+      {# Card — Selector de parámetros #}
+      <div class="bg-white rounded-xl shadow-sm p-6">
+
+        <h2 class="text-sm font-semibold text-espresso mb-5">Seleccionar producto</h2>
+
+        {# Producto #}
+        <div class="mb-3">
+          <label class="block text-xs font-medium text-stone-500 mb-1.5">
+            Producto <span class="text-red-400">*</span>
+          </label>
+          <select x-model="productId" @change="onProductChange()"
+                  class="w-full py-2 px-3 text-sm border border-stone-200 rounded-lg bg-white
+                         focus:outline-none focus:ring-2 focus:ring-amber/40 focus:border-amber">
+            <option value="">Seleccionar producto…</option>
+            <template x-for="p in allProducts" :key="p.id">
+              <option :value="p.id" x-text="p.name"></option>
+            </template>
+          </select>
+          {% if not products %}
+          <p class="mt-1 text-xs text-stone-400">
+            Sin productos activos.
+            <a href="/products" class="text-amber underline">Crear uno</a>.
+          </p>
+          {% endif %}
+        </div>
+
+        {# Tamaño — filtrado en cliente según producto seleccionado #}
+        <div class="mb-3">
+          <label class="block text-xs font-medium text-stone-500 mb-1.5">Tamaño</label>
+          <select x-model="sizeId" @change="resetCalc()"
+                  :disabled="!productId"
+                  class="w-full py-2 px-3 text-sm border border-stone-200 rounded-lg bg-white
+                         focus:outline-none focus:ring-2 focus:ring-amber/40 focus:border-amber
+                         disabled:bg-stone-50 disabled:text-stone-400">
+            <option value="">Tamaño base (scale 1×)</option>
+            <template x-for="s in currentSizes" :key="s.id">
+              <option :value="s.id" x-text="s.name + (s.volume ? ' · ' + s.volume + ' oz' : '')"></option>
+            </template>
+          </select>
+        </div>
+
+        {# Tienda #}
+        <div class="mb-5">
+          <label class="block text-xs font-medium text-stone-500 mb-1.5">
+            Tienda
+            <span class="text-stone-300 font-normal ml-1">— opcional</span>
+          </label>
+          <select x-model="storeId" @change="resetCalc()"
+                  class="w-full py-2 px-3 text-sm border border-stone-200 rounded-lg bg-white
+                         focus:outline-none focus:ring-2 focus:ring-amber/40 focus:border-amber">
+            <option value="">Precio base (sin tienda)</option>
+            {% for s in stores %}
+            <option value="{{ s.id }}">
+              {{ s.name }}{% if s.city %} · {{ s.city }}{% endif %}
+            </option>
+            {% endfor %}
+          </select>
+          {% if not stores %}
+          <p class="mt-1 text-xs text-stone-400">Sin tiendas — se usará precio base.</p>
+          {% endif %}
+        </div>
+
+        <button @click="calculatePrice()"
+                :disabled="!productId || calculating"
+                class="w-full py-2.5 text-sm font-semibold text-beige bg-espresso rounded-lg
+                       hover:bg-espresso-light transition-colors
+                       disabled:opacity-40 disabled:cursor-not-allowed">
+          <span x-show="!calculating">Calcular precio</span>
+          <span x-show="calculating" x-cloak class="flex items-center justify-center gap-2">
+            <svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+              <path class="opacity-75" fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+            </svg>
+            Calculando…
+          </span>
+        </button>
+
+        {# Error de cálculo #}
+        <div x-show="calcError" x-cloak
+             class="mt-3 flex items-start gap-2 text-xs text-red-600 bg-red-50
+                    border border-red-200 rounded-lg px-3 py-2">
+          <svg class="w-4 h-4 shrink-0 mt-0.5" fill="none" stroke="currentColor"
+               stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+          </svg>
+          <span x-text="calcError"></span>
+        </div>
+
+      </div>
+      {# /card selector #}
+
+
+      {# Card — Panel de cálculo (aparece tras calcular) #}
+      <div class="bg-white rounded-xl shadow-sm p-6"
+           x-show="cost !== null" x-cloak
+           x-transition:enter="transition ease-out duration-200"
+           x-transition:enter-start="opacity-0 translate-y-2"
+           x-transition:enter-end="opacity-100 translate-y-0">
+
+        <h2 class="text-sm font-semibold text-espresso mb-5">Panel de precios</h2>
+
+        {# Costo actual (readonly) #}
+        <div class="mb-4">
+          <label class="block text-xs font-medium text-stone-500 mb-1.5">
+            Costo de producción
+            <span class="text-stone-300 font-normal ml-1">— calculado</span>
+          </label>
+          <div class="flex items-center justify-between py-2.5 px-3
+                      bg-stone-50 border border-stone-200 rounded-lg">
+            <span class="text-sm font-mono font-bold text-espresso" x-text="formatCOP(cost)"></span>
+            <span class="text-xs text-stone-400">COP / porción</span>
+          </div>
+        </div>
+
+        {# Markup con slider #}
+        <div class="mb-4">
+          <div class="flex items-center justify-between mb-2">
+            <label class="text-xs font-medium text-stone-500">Markup&nbsp;%</label>
+            <div class="flex items-center gap-1">
+              <input type="number" x-model.number="markup" @input="recalcSuggested()"
+                     min="0" max="500" step="0.5"
+                     class="w-20 py-1 px-2 text-sm font-mono text-right border border-stone-200
+                            rounded-lg focus:outline-none focus:ring-2 focus:ring-amber/40
+                            focus:border-amber" />
+              <span class="text-sm text-stone-400">%</span>
+            </div>
+          </div>
+
+          <input type="range" x-model.number="markup" @input="recalcSuggested()"
+                 min="0" max="200" step="0.5"
+                 class="w-full h-2 rounded-full cursor-pointer accent-amber" />
+
+          <div class="flex justify-between text-xs text-stone-400 mt-1.5 px-0.5">
+            <span>0 %</span>
+            <span class="font-semibold"
+                  :class="markup >= 50 ? 'text-green-600' : markup >= 20 ? 'text-amber' : 'text-red-500'"
+                  x-text="markup.toFixed(1) + ' %'"></span>
+            <span>200 %</span>
+          </div>
+        </div>
+
+        {# Precio sugerido (redondeado, readonly) #}
+        <div class="mb-4">
+          <label class="block text-xs font-medium text-stone-500 mb-1.5">
+            Precio sugerido
+          </label>
+          <div class="flex items-center justify-between py-2.5 px-3
+                      bg-blue-50 border border-blue-200 rounded-lg">
+            <span class="text-sm font-mono font-bold text-blue-700"
+                  x-text="formatCOP(suggestedPrice)"></span>
+            <span class="text-xs text-blue-400">≈ $100 COP</span>
+          </div>
+        </div>
+
+        {# Precio final (editable) #}
+        <div class="mb-2">
+          <label class="block text-xs font-medium text-stone-500 mb-1.5">
+            Precio final
+            <span class="text-stone-300 font-normal ml-1">— editable</span>
+          </label>
+          <div class="relative">
+            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-sm font-medium
+                         text-stone-400 pointer-events-none">$</span>
+            <input type="number" x-model.number="finalPrice"
+                   min="0" step="100"
+                   class="w-full py-2 pl-7 pr-3 text-sm font-mono border border-stone-200
+                          rounded-lg focus:outline-none focus:ring-2 focus:ring-amber/40
+                          focus:border-amber font-bold text-espresso" />
+          </div>
+        </div>
+
+        {# Indicador de margen efectivo #}
+        <div class="mb-5 h-5">
+          <template x-if="finalPrice > 0 && cost > 0">
+            <p class="text-xs font-medium flex items-center gap-1"
+               :class="effectiveMargin >= 40 ? 'text-green-600'
+                      : effectiveMargin >= 20 ? 'text-amber'
+                      : 'text-red-500'">
+              <span x-text="effectiveMargin >= 40 ? '✓' : effectiveMargin >= 20 ? '⚠' : '↓'"></span>
+              Margen efectivo:
+              <span class="font-bold" x-text="effectiveMargin.toFixed(1) + '%'"></span>
+            </p>
+          </template>
+        </div>
+
+        {# Botón guardar #}
+        <button @click="savePrice()"
+                :disabled="!finalPrice || saving"
+                class="w-full py-2.5 text-sm font-semibold rounded-lg transition-colors
+                       bg-green-600 hover:bg-green-700 text-white
+                       disabled:opacity-40 disabled:cursor-not-allowed">
+          <span x-show="!saving">💾 Guardar Precio</span>
+          <span x-show="saving" x-cloak class="flex items-center justify-center gap-2">
+            <svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+              <path class="opacity-75" fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+            </svg>
+            Guardando…
+          </span>
+        </button>
+
+        {# Feedback guardar #}
+        <div x-show="saveMessage" x-cloak
+             class="mt-3 text-xs text-center font-medium py-1.5 rounded-lg"
+             :class="saveError ? 'text-red-600 bg-red-50' : 'text-green-600 bg-green-50'"
+             x-text="saveMessage"></div>
+
+      </div>
+      {# /card panel cálculo #}
+
+
+      {# Estado vacío del panel — visible antes del primer cálculo #}
+      <div x-show="cost === null" x-cloak
+           class="bg-white rounded-xl shadow-sm py-10 text-center text-stone-400 flex-1">
+        <p class="text-4xl mb-3">💰</p>
+        <p class="text-sm font-medium text-stone-500">Panel de precios</p>
+        <p class="text-xs mt-1">Selecciona un producto y pulsa "Calcular precio".</p>
+      </div>
+
+    </aside>
+    {# /columna A #}
+
+
+    {# ── COLUMNA B: Gráfica de historial ─────────────────────────────────── #}
+    <div class="lg:col-span-3">
+      <div class="bg-white rounded-xl shadow-sm p-6 flex flex-col h-full min-h-80">
+
+        {# Encabezado gráfica #}
+        <div class="flex items-start justify-between mb-4 shrink-0">
+          <div>
+            <h2 class="text-sm font-semibold text-espresso">Historial de precios</h2>
+            <p class="text-xs text-stone-400 mt-0.5"
+               x-text="selectedProductName
+                        ? selectedProductName + (selectedSizeName ? ' · ' + selectedSizeName : '')
+                        : 'Selecciona un producto para ver el historial'">
+            </p>
+          </div>
+          <span x-show="historyLoading" x-cloak
+                class="text-xs text-stone-400 animate-pulse">Cargando…</span>
+        </div>
+
+        {# Estado: sin producto seleccionado #}
+        <div x-show="cost === null && !historyLoading"
+             class="flex-1 flex items-center justify-center">
+          <div class="text-center text-stone-300">
+            <p class="text-5xl mb-3">📈</p>
+            <p class="text-sm">El historial aparecerá aquí</p>
+          </div>
+        </div>
+
+        {# Estado: producto calculado pero sin historial #}
+        <div x-show="cost !== null && historyData.length === 0 && !historyLoading" x-cloak
+             class="flex-1 flex items-center justify-center">
+          <div class="text-center text-stone-400">
+            <p class="text-4xl mb-3">🆕</p>
+            <p class="text-sm font-medium text-stone-500">Sin historial aún</p>
+            <p class="text-xs mt-1">Guarda un precio para empezar a registrar el historial.</p>
+          </div>
+        </div>
+
+        {# Canvas Chart.js #}
+        <div x-show="historyData.length > 0" x-cloak class="flex-1 relative min-h-64">
+          <canvas id="historyChart"></canvas>
+        </div>
+
+      </div>
+    </div>
+    {# /columna B #}
+
+  </div>
+  {# /fila 1 #}
+
+
+  {# ═══════════════════════════════════════════════════════════════════════
+     FILA 2: Tabla de todos los productos con pricing
+     ═══════════════════════════════════════════════════════════════════════ #}
+  <div class="bg-white rounded-xl shadow-sm mb-6">
+
+    <div class="px-6 py-4 border-b border-stone-100 flex items-center justify-between">
+      <div>
+        <h2 class="text-sm font-semibold text-espresso">Todos los productos</h2>
+        <p class="text-xs text-stone-400 mt-0.5">
+          Haz click en una fila para cargarla en el panel de edición.
+        </p>
+      </div>
+      <button @click="loadTable()"
+              :disabled="tableLoading"
+              class="flex items-center gap-1.5 text-xs font-medium text-amber
+                     hover:text-espresso transition-colors disabled:opacity-40">
+        <svg class="w-3.5 h-3.5" :class="{'animate-spin': tableLoading}"
+             fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round"
+                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+        </svg>
+        Actualizar
+      </button>
+    </div>
+
+    {# Skeleton cargando #}
+    <div x-show="tableLoading" class="p-6 space-y-3">
+      <template x-for="i in [1,2,3,4]" :key="i">
+        <div class="h-9 bg-stone-100 rounded animate-pulse"></div>
+      </template>
+    </div>
+
+    {# Sin datos #}
+    <div x-show="!tableLoading && tableRows.length === 0" x-cloak
+         class="py-12 text-center text-stone-400">
+      <p class="text-4xl mb-3">🏷️</p>
+      <p class="text-sm font-medium text-stone-500">Sin pricing configurado</p>
+      <p class="text-xs mt-1">Calcula y guarda un precio para que aparezca aquí.</p>
+    </div>
+
+    {# Tabla #}
+    <div x-show="!tableLoading && tableRows.length > 0" x-cloak class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-stone-100 text-sm">
+        <thead>
+          <tr class="text-xs font-medium text-stone-400 bg-stone-50 uppercase tracking-wide">
+            <th class="px-6 py-3 text-left">Producto</th>
+            <th class="px-6 py-3 text-left">Tamaño</th>
+            <th class="px-6 py-3 text-right">Costo</th>
+            <th class="px-6 py-3 text-right">Precio</th>
+            <th class="px-6 py-3 text-right">Margen&nbsp;%</th>
+            <th class="px-6 py-3 text-left">Última actualización</th>
+            <th class="px-6 py-3 text-center">Tipo</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-stone-50">
+          <template x-for="row in tableRows" :key="row.id">
+            <tr @click="loadFromRow(row)"
+                class="cursor-pointer transition-colors hover:bg-amber/5"
+                :class="isSelectedRow(row)
+                        ? 'bg-amber/10 ring-1 ring-inset ring-amber/20'
+                        : ''">
+
+              <td class="px-6 py-3.5 font-medium text-espresso" x-text="row.product_name"></td>
+
+              <td class="px-6 py-3.5 text-stone-500 text-xs">
+                <span class="px-2 py-0.5 rounded-full bg-stone-100 font-medium"
+                      x-text="row.size_name"></span>
+              </td>
+
+              <td class="px-6 py-3.5 text-right font-mono tabular-nums text-stone-500 text-xs"
+                  x-text="formatCOP(row.cost)"></td>
+
+              <td class="px-6 py-3.5 text-right font-mono tabular-nums font-bold text-espresso"
+                  x-text="formatCOP(row.price)"></td>
+
+              <td class="px-6 py-3.5 text-right">
+                <span class="px-2 py-0.5 rounded-full text-xs font-semibold"
+                      :class="row.margin >= 40 ? 'bg-green-100 text-green-700'
+                             : row.margin >= 20 ? 'bg-amber/10 text-amber'
+                             : 'bg-red-100 text-red-600'"
+                      x-text="row.margin.toFixed(1) + '%'"></span>
+              </td>
+
+              <td class="px-6 py-3.5 text-stone-400 text-xs" x-text="row.updated"></td>
+
+              <td class="px-6 py-3.5 text-center">
+                <span x-show="row.is_manual"
+                      class="px-2 py-0.5 rounded text-xs bg-purple-50 text-purple-600 font-medium">
+                  Manual
+                </span>
+                <span x-show="!row.is_manual"
+                      class="px-2 py-0.5 rounded text-xs bg-stone-100 text-stone-400">
+                  Auto
+                </span>
+              </td>
+
+            </tr>
+          </template>
+        </tbody>
+      </table>
+      <div class="px-6 py-3 border-t border-stone-50 text-xs text-stone-400">
+        <span x-text="tableRows.length + ' registros'"></span>
+      </div>
+    </div>
+
+  </div>
+  {# /tabla #}
+
+
+  {# ═══════════════════════════════════════════════════════════════════════
+     FILA 3: Pricing masivo
+     ═══════════════════════════════════════════════════════════════════════ #}
+  <div class="bg-white rounded-xl shadow-sm p-6">
+
+    <div class="flex items-start gap-3 mb-5">
+      <div class="w-8 h-8 bg-espresso/10 rounded-lg flex items-center justify-center shrink-0 mt-0.5">
+        <span class="text-base">⚡</span>
+      </div>
+      <div>
+        <h2 class="text-sm font-semibold text-espresso">Pricing masivo</h2>
+        <p class="text-xs text-stone-400 mt-0.5">
+          Recalcula los precios de todos los productos activos en un solo paso.
+        </p>
+      </div>
+    </div>
+
+    <div class="flex flex-col sm:flex-row gap-4 items-start sm:items-end">
+
+      {# Tienda para batch #}
+      <div class="flex-1 max-w-xs">
+        <label class="block text-xs font-medium text-stone-500 mb-1.5">
+          Tienda <span class="text-stone-300 font-normal">— opcional</span>
+        </label>
+        <select x-model="batchStoreId"
+                class="w-full py-2 px-3 text-sm border border-stone-200 rounded-lg bg-white
+                       focus:outline-none focus:ring-2 focus:ring-amber/40 focus:border-amber">
+          <option value="">Precios base globales</option>
+          {% for s in stores %}
+          <option value="{{ s.id }}">{{ s.name }}{% if s.city %} · {{ s.city }}{% endif %}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      {# Checkbox guardar en DB #}
+      <label class="flex items-center gap-2.5 cursor-pointer py-2 group">
+        <div class="relative">
+          <input type="checkbox" x-model="batchSaveToDB"
+                 class="sr-only peer" id="save-db-check" />
+          <div class="w-10 h-5 bg-stone-200 peer-checked:bg-green-500 rounded-full
+                       transition-colors duration-200"></div>
+          <div class="absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full shadow
+                       transition-transform duration-200 peer-checked:translate-x-5"></div>
+        </div>
+        <span class="text-sm font-medium text-stone-700 group-hover:text-espresso
+                     transition-colors select-none">
+          Guardar en DB
+        </span>
+      </label>
+
+      {# Botón calcular todos #}
+      <button @click="runBatch()"
+              :disabled="batchRunning"
+              class="px-6 py-2.5 text-sm font-semibold rounded-lg transition-colors
+                     bg-espresso hover:bg-espresso-light text-beige shrink-0
+                     disabled:opacity-40 disabled:cursor-not-allowed">
+        <span x-show="!batchRunning">⚡ Calcular Todos</span>
+        <span x-show="batchRunning" x-cloak class="flex items-center gap-2">
+          <svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+            <path class="opacity-75" fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+          </svg>
+          Calculando…
+        </span>
+      </button>
+
+    </div>
+
+    {# Progress bar — solo visible durante el batch #}
+    <div x-show="batchRunning" x-cloak class="mt-5">
+      <div class="flex items-center justify-between text-xs text-stone-400 mb-1.5">
+        <span>Procesando productos activos…</span>
+        <span class="font-mono" x-text="batchProgress + '%'"></span>
+      </div>
+      <div class="w-full bg-stone-100 rounded-full h-2 overflow-hidden">
+        <div class="bg-amber h-2 rounded-full transition-all duration-300"
+             :style="'width: ' + batchProgress + '%'"></div>
+      </div>
+    </div>
+
+    {# Resultado del batch #}
+    <div x-show="batchResult && !batchRunning" x-cloak
+         class="mt-5 pt-5 border-t border-stone-100"
+         x-transition:enter="transition ease-out duration-200"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100">
+
+      {# Error genérico del servidor #}
+      <template x-if="batchResult?.error">
+        <div class="flex items-start gap-2 text-sm text-red-600 bg-red-50
+                    border border-red-200 rounded-lg px-4 py-3 mb-4">
+          <span>⚠</span>
+          <span x-text="batchResult.error"></span>
+        </div>
+      </template>
+
+      {# KPIs del resultado #}
+      <template x-if="!batchResult?.error">
+        <div>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
+            <div class="text-center bg-stone-50 rounded-xl py-4">
+              <p class="text-xs text-stone-400 mb-1">Productos</p>
+              <p class="text-2xl font-bold text-espresso"
+                 x-text="batchResult?.total_products ?? '—'"></p>
+            </div>
+            <div class="text-center bg-stone-50 rounded-xl py-4">
+              <p class="text-xs text-stone-400 mb-1">Variantes</p>
+              <p class="text-2xl font-bold text-stone-700"
+                 x-text="batchResult?.total_sizes ?? '—'"></p>
+            </div>
+            <div class="text-center bg-green-50 rounded-xl py-4">
+              <p class="text-xs text-stone-400 mb-1">Calculados ✓</p>
+              <p class="text-2xl font-bold text-green-600"
+                 x-text="batchResult?.prices_calculated ?? '—'"></p>
+            </div>
+            <div class="text-center rounded-xl py-4"
+                 :class="(batchResult?.errors?.length ?? 0) > 0
+                         ? 'bg-red-50' : 'bg-green-50'">
+              <p class="text-xs text-stone-400 mb-1">Errores</p>
+              <p class="text-2xl font-bold"
+                 :class="(batchResult?.errors?.length ?? 0) > 0
+                         ? 'text-red-600' : 'text-green-600'"
+                 x-text="batchResult?.errors?.length ?? 0"></p>
+            </div>
+          </div>
+
+          {# Lista de errores #}
+          <template x-if="batchResult?.errors?.length > 0">
+            <div class="mb-4">
+              <p class="text-xs font-semibold text-red-600 mb-2">
+                Errores de cálculo:
+              </p>
+              <div class="max-h-36 overflow-y-auto rounded-lg bg-red-50
+                          border border-red-100 p-3 space-y-1">
+                <template x-for="err in batchResult.errors" :key="err">
+                  <p class="text-xs text-red-600 font-mono" x-text="err"></p>
+                </template>
+              </div>
+            </div>
+          </template>
+
+          {# Botón refrescar tabla tras guardar #}
+          <template x-if="batchSaveToDB && (batchResult?.prices_calculated ?? 0) > 0">
+            <button @click="loadTable()"
+                    class="px-4 py-2 text-xs font-semibold rounded-lg border border-amber/40
+                           text-amber hover:bg-amber/5 transition-colors">
+              Actualizar tabla de productos
+            </button>
+          </template>
+        </div>
+      </template>
+
+    </div>
+    {# /resultado batch #}
+
+  </div>
+  {# /pricing masivo #}
+
+
+</div>
+{# /x-data #}
+
+{% endblock %}
+
+
+{% block extra_scripts %}
+<script>
+function pricingManager() {
+  return {
+    // ── Datos base (inyectados desde el servidor) ──────────────────────────
+    allProducts: [],   // [{id, name, sizes:[{id, name, volume}]}]
+
+    // ── Estado del selector ────────────────────────────────────────────────
+    productId:  '',
+    sizeId:     '',
+    storeId:    '',
+
+    // ── Estado del panel de cálculo ────────────────────────────────────────
+    cost:           null,
+    markup:         50,
+    suggestedPrice: null,
+    finalPrice:     null,
+    calculating:    false,
+    calcError:      '',
+    saving:         false,
+    saveMessage:    '',
+    saveError:      false,
+
+    // ── Estado del historial / gráfica ─────────────────────────────────────
+    historyData:    [],
+    historyLoading: false,
+    chart:          null,
+
+    // ── Estado de la tabla de productos ────────────────────────────────────
+    tableRows:    [],
+    tableLoading: false,
+
+    // ── Estado del pricing masivo ──────────────────────────────────────────
+    batchStoreId:  '',
+    batchSaveToDB: false,
+    batchRunning:  false,
+    batchProgress: 0,
+    batchResult:   null,
+
+    // ── Derivados ──────────────────────────────────────────────────────────
+    get currentSizes() {
+      if (!this.productId) return [];
+      const p = this.allProducts.find(x => x.id == this.productId);
+      return p ? p.sizes : [];
+    },
+
+    get selectedProductName() {
+      if (!this.productId) return '';
+      const p = this.allProducts.find(x => x.id == this.productId);
+      return p ? p.name : '';
+    },
+
+    get selectedSizeName() {
+      if (!this.sizeId) return '';
+      const sizes = this.currentSizes;
+      const s = sizes.find(x => x.id == this.sizeId);
+      return s ? s.name : '';
+    },
+
+    get effectiveMargin() {
+      if (!this.finalPrice || !this.cost || this.cost === 0) return 0;
+      return (this.finalPrice / this.cost - 1) * 100;
+    },
+
+    // ── Ciclo de vida ──────────────────────────────────────────────────────
+    init() {
+      // Cargar productos+tamaños desde el script tag inyectado por Jinja2
+      const raw = document.getElementById('products-data');
+      if (raw) {
+        try { this.allProducts = JSON.parse(raw.textContent); } catch {}
+      }
+      this.loadTable();
+    },
+
+    // ── Handlers de cambio de selector ────────────────────────────────────
+    onProductChange() {
+      this.sizeId = '';
+      this.resetCalc();
+    },
+
+    resetCalc() {
+      this.cost           = null;
+      this.suggestedPrice = null;
+      this.finalPrice     = null;
+      this.calcError      = '';
+      this.saveMessage    = '';
+      this.historyData    = [];
+      this._destroyChart();
+    },
+
+    // ── Cálculo de precio ─────────────────────────────────────────────────
+    async calculatePrice() {
+      if (!this.productId) return;
+      this.calculating = true;
+      this.calcError   = '';
+      this.saveMessage = '';
+
+      try {
+        const res = await fetch('/api/pricing/calculate', {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            product_id:      parseInt(this.productId),
+            size_id:         this.sizeId  ? parseInt(this.sizeId)  : null,
+            store_id:        this.storeId ? parseInt(this.storeId) : null,
+            markup_override: null,
+          }),
+        });
+
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}));
+          throw new Error(err.detail || `Error ${res.status}`);
+        }
+
+        const data = await res.json();
+        this.cost           = parseFloat(data.cost);
+        this.markup         = parseFloat(data.markup_percentage);
+        this.suggestedPrice = parseFloat(data.rounded_price);
+        this.finalPrice     = parseFloat(data.rounded_price);
+
+        await this.loadHistory();
+
+      } catch (e) {
+        this.calcError = e.message;
+      } finally {
+        this.calculating = false;
+      }
+    },
+
+    recalcSuggested() {
+      if (this.cost === null) return;
+      const raw     = this.cost * (1 + this.markup / 100);
+      const rounded = Math.round(raw / 100) * 100;
+      this.suggestedPrice = rounded;
+      this.finalPrice     = rounded;
+    },
+
+    // ── Guardar precio ────────────────────────────────────────────────────
+    async savePrice() {
+      if (!this.finalPrice || !this.productId) return;
+      this.saving      = true;
+      this.saveMessage = '';
+      this.saveError   = false;
+
+      try {
+        const res = await fetch('/api/pricing/set', {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            product_id:      parseInt(this.productId),
+            size_id:         this.sizeId  ? parseInt(this.sizeId)  : null,
+            store_id:        this.storeId ? parseInt(this.storeId) : null,
+            final_price:     this.finalPrice,
+            markup_override: this.markup,
+            is_manual:       false,
+          }),
+        });
+
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}));
+          throw new Error(err.detail || `Error ${res.status}`);
+        }
+
+        this.saveMessage = '✓ Precio guardado correctamente';
+        await this.loadHistory();
+        await this.loadTable();
+
+      } catch (e) {
+        this.saveMessage = e.message;
+        this.saveError   = true;
+      } finally {
+        this.saving = false;
+        setTimeout(() => { this.saveMessage = ''; }, 3500);
+      }
+    },
+
+    // ── Cargar desde fila de tabla ─────────────────────────────────────────
+    loadFromRow(row) {
+      this.productId = String(row.product_id);
+      this.sizeId    = row.size_id   ? String(row.size_id)   : '';
+      this.storeId   = row.store_id  ? String(row.store_id)  : '';
+
+      this.cost           = parseFloat(row.cost);
+      this.markup         = parseFloat(row.margin);
+      this.suggestedPrice = parseFloat(row.price);
+      this.finalPrice     = parseFloat(row.price);
+      this.calcError      = '';
+      this.saveMessage    = '';
+
+      this.loadHistory();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    },
+
+    isSelectedRow(row) {
+      return String(row.product_id) === String(this.productId) &&
+             String(row.size_id)    === String(this.sizeId);
+    },
+
+    // ── Historial + Chart.js ───────────────────────────────────────────────
+    async loadHistory() {
+      if (!this.productId || !this.sizeId) return;
+      this.historyLoading = true;
+
+      try {
+        const q   = this.storeId ? `?store_id=${this.storeId}` : '';
+        const res = await fetch(
+          `/api/pricing/history/${this.productId}/${this.sizeId}${q}`
+        );
+        if (!res.ok) throw new Error();
+        this.historyData = await res.json();
+        this.$nextTick(() => this._renderChart());
+      } catch {
+        this.historyData = [];
+      } finally {
+        this.historyLoading = false;
+      }
+    },
+
+    _renderChart() {
+      const canvas = document.getElementById('historyChart');
+      if (!canvas || this.historyData.length === 0) return;
+      this._destroyChart();
+
+      // Los datos vienen en orden desc — invertir para mostrar cronológico
+      const reversed = [...this.historyData].reverse();
+
+      const labels = reversed.map(h => {
+        const d = new Date(h.date);
+        return d.toLocaleDateString('es-CO', { month: 'short', day: 'numeric' });
+      });
+      const costs  = reversed.map(h => parseFloat(h.cost));
+      const prices = reversed.map(h => parseFloat(h.price));
+
+      this.chart = new Chart(canvas, {
+        type: 'line',
+        data: {
+          labels,
+          datasets: [
+            {
+              label:           'Precio',
+              data:            prices,
+              borderColor:     '#FF6F00',
+              backgroundColor: 'rgba(255,111,0,0.07)',
+              borderWidth:     2.5,
+              pointBackgroundColor: '#FF6F00',
+              pointRadius:     4,
+              pointHoverRadius: 6,
+              tension:         0.35,
+              fill:            true,
+            },
+            {
+              label:           'Costo',
+              data:            costs,
+              borderColor:     '#78909C',
+              backgroundColor: 'rgba(120,144,156,0.04)',
+              borderWidth:     2,
+              borderDash:      [5, 4],
+              pointBackgroundColor: '#78909C',
+              pointRadius:     3,
+              pointHoverRadius: 5,
+              tension:         0.35,
+            },
+          ],
+        },
+        options: {
+          responsive:          true,
+          maintainAspectRatio: false,
+          interaction: { mode: 'index', intersect: false },
+          plugins: {
+            legend: {
+              position: 'top',
+              align:    'end',
+              labels: {
+                font:            { size: 12 },
+                color:           '#78716C',
+                usePointStyle:   true,
+                pointStyleWidth: 8,
+                padding:         16,
+              },
+            },
+            tooltip: {
+              backgroundColor: '#1C1917',
+              titleColor:      '#D6D3D1',
+              bodyColor:       '#FAFAF9',
+              padding:         10,
+              callbacks: {
+                label: ctx =>
+                  ` ${ctx.dataset.label}: $${ctx.parsed.y.toLocaleString('es-CO')}`,
+              },
+            },
+          },
+          scales: {
+            x: {
+              grid:  { color: '#F5F5F4', drawBorder: false },
+              ticks: { color: '#A8A29E', font: { size: 11 } },
+            },
+            y: {
+              grid:  { color: '#F5F5F4', drawBorder: false },
+              ticks: {
+                color:    '#A8A29E',
+                font:     { size: 11 },
+                callback: v => '$' + v.toLocaleString('es-CO'),
+              },
+            },
+          },
+        },
+      });
+    },
+
+    _destroyChart() {
+      if (this.chart) { this.chart.destroy(); this.chart = null; }
+    },
+
+    // ── Tabla de productos ─────────────────────────────────────────────────
+    async loadTable() {
+      this.tableLoading = true;
+      try {
+        const res = await fetch('/api/pricing/table');
+        if (!res.ok) throw new Error();
+        this.tableRows = await res.json();
+      } catch {
+        this.tableRows = [];
+      } finally {
+        this.tableLoading = false;
+      }
+    },
+
+    // ── Pricing masivo ─────────────────────────────────────────────────────
+    async runBatch() {
+      this.batchRunning  = true;
+      this.batchProgress = 0;
+      this.batchResult   = null;
+
+      // Animación de progreso mientras la request está en vuelo
+      const ticker = setInterval(() => {
+        if (this.batchProgress < 82) this.batchProgress += 4;
+      }, 250);
+
+      try {
+        const params = new URLSearchParams();
+        if (this.batchStoreId)  params.append('store_id',   this.batchStoreId);
+        if (this.batchSaveToDB) params.append('save_to_db', 'true');
+
+        const res = await fetch(`/api/pricing/calculate-all?${params}`, {
+          method: 'POST',
+        });
+
+        if (!res.ok) throw new Error(`Error del servidor (${res.status})`);
+        this.batchResult   = await res.json();
+        this.batchProgress = 100;
+
+      } catch (e) {
+        this.batchResult = { error: e.message };
+      } finally {
+        clearInterval(ticker);
+        setTimeout(() => { this.batchRunning = false; }, 450);
+      }
+    },
+
+    // ── Utilidades ─────────────────────────────────────────────────────────
+    formatCOP(value) {
+      if (value === null || value === undefined || value === '') return '—';
+      const n = parseFloat(value);
+      if (isNaN(n)) return '—';
+      return '$' + n.toLocaleString('es-CO', {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0,
+      });
+    },
+  };
+}
+</script>
+{% endblock %}

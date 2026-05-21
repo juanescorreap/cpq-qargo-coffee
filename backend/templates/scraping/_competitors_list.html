@@ -1,0 +1,84 @@
+{# Partial: competidores activos con acción de scrape
+   Context variables:
+     competitors — List of (Competitor, product_count) tuples
+#}
+
+{% if not competitors %}
+<div class="bg-white rounded-xl shadow-sm p-10 text-center">
+  <div class="text-4xl mb-3">🏪</div>
+  <p class="text-stone-500 font-medium">No hay competidores registrados.</p>
+  <p class="text-stone-400 text-sm mt-1">
+    Agrega competidores en
+    <a href="/competitors" class="text-amber hover:underline">Competidores</a>
+    para activar el scraping de menús.
+  </p>
+</div>
+{% else %}
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+  {% for competitor, product_count in competitors %}
+  <div class="bg-white rounded-xl shadow-sm p-5 flex flex-col gap-4"
+       id="comp-card-{{ competitor.id }}">
+
+    {# Header #}
+    <div class="flex items-start justify-between gap-2">
+      <div class="min-w-0">
+        <p class="font-semibold text-espresso truncate">{{ competitor.name }}</p>
+        {% if competitor.website_url %}
+        <a href="{{ competitor.website_url }}" target="_blank"
+           class="text-xs text-sky-600 hover:underline truncate block mt-0.5"
+           title="{{ competitor.website_url }}">
+          {{ competitor.website_url | replace('https://', '') | replace('http://', '') | truncate(30) }}
+        </a>
+        {% else %}
+        <p class="text-xs text-stone-300 mt-0.5 italic">Sin URL configurada</p>
+        {% endif %}
+      </div>
+      {% if competitor.is_active %}
+      <span class="flex items-center gap-1 text-xs text-emerald-600 font-medium shrink-0">
+        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block"></span>
+        Activo
+      </span>
+      {% else %}
+      <span class="flex items-center gap-1 text-xs text-stone-400 font-medium shrink-0">
+        <span class="w-1.5 h-1.5 rounded-full bg-stone-300 inline-block"></span>
+        Inactivo
+      </span>
+      {% endif %}
+    </div>
+
+    {# Stats #}
+    <div class="flex items-center gap-4 text-sm">
+      <div>
+        <p class="text-stone-400 text-xs">Productos scrapeados</p>
+        <p class="font-bold text-espresso">{{ product_count }}</p>
+      </div>
+    </div>
+
+    {# Result area #}
+    <div id="comp-result-{{ competitor.id }}" class="text-xs"></div>
+
+    {# Action #}
+    <button
+      hx-post="/scraping/partials/scrape-competitor/{{ competitor.id }}"
+      hx-target="#comp-result-{{ competitor.id }}"
+      hx-swap="innerHTML"
+      hx-indicator="#comp-spinner-{{ competitor.id }}"
+      {% if not competitor.website_url %}disabled title="Configura website_url primero"{% endif %}
+      class="w-full inline-flex items-center justify-center gap-2 px-3 py-2
+             rounded-lg border border-stone-200 text-sm font-medium text-stone-600
+             hover:border-amber hover:text-amber transition-colors
+             disabled:opacity-40 disabled:cursor-not-allowed">
+      <svg id="comp-spinner-{{ competitor.id }}"
+           class="htmx-indicator w-4 h-4 animate-spin"
+           fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round"
+              d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992
+                 m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031
+                 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"/>
+      </svg>
+      Scrape Menú
+    </button>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}

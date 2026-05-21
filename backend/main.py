@@ -16,7 +16,8 @@ from backend.models.product import Product
 from backend.models.store import Store
 from backend.routers import (
     competitors, competitors_ui, costs, costs_ui, ingredients, ingredients_ui,
-    product_sizes, products, products_ui, recipe_units, recipes, recipes_ui, stores, stores_ui,
+    pricing, pricing_ui, product_sizes, products, products_ui, recipe_units, recipes, recipes_ui,
+    scraping, scraping_ui, stores, stores_ui,
 )
 
 
@@ -97,6 +98,10 @@ app.include_router(stores_ui.router)
 app.include_router(recipe_units.router)
 app.include_router(competitors.router)
 app.include_router(competitors_ui.router)
+app.include_router(pricing.router)
+app.include_router(pricing_ui.router)
+app.include_router(scraping.router)
+app.include_router(scraping_ui.router)
 
 
 # ---------------------------------------------------------------------------

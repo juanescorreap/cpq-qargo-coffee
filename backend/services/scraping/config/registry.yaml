@@ -1,0 +1,112 @@
+# ============================================
+# REGISTRO MAESTRO DE SCRAPERS
+# ============================================
+# Este archivo define todos los scrapers disponibles en el sistema.
+#
+# Para agregar un nuevo scraper:
+#   1. Crear archivo YAML en competitors/ o suppliers/
+#      (el filename sin .yaml es el scraper_id)
+#   2. Agregar una entrada en la lista correspondiente abajo
+#   3. El sistema lo detectará en el próximo arranque
+#
+# ConfigLoader carga este archivo como "registry.yaml".
+# El nombre canónico es registry.yaml — scrapers_registry.yaml es un alias.
+
+version: "1.0"
+last_updated: "2025-05-20"
+
+# ============================================
+# Configuración global (referencia / documentación)
+# Estos valores NO son leídos directamente por ConfigLoader.
+# Cada scraper YAML define sus propios valores en browser/rate_limiting.
+# Mantener aquí como fuente de verdad para nuevos scrapers.
+# ============================================
+global_defaults:
+  browser:
+    headless: true
+    timeout_ms: 30000
+    viewport_width: 1280
+    viewport_height: 800
+    user_agent: >-
+      Mozilla/5.0 (Windows NT 10.0; Win64; x64)
+      AppleWebKit/537.36 (KHTML, like Gecko)
+      Chrome/120.0.0.0 Safari/537.36
+  rate_limiting:
+    enabled: true
+    delay_ms: 1500
+    max_requests_per_minute: 20
+    max_requests_per_hour: 300
+    backoff_strategy: exponential
+    max_backoff_ms: 60000
+  retry_attempts: 3
+  cache_ttl_seconds: 300
+  max_concurrent_scrapers: 3   # reservado para implementación futura de threading
+
+# ============================================
+# Scrapers registrados
+# ============================================
+# Campos por entrada:
+#   id          (str)  — debe coincidir con el filename YAML sin extensión
+#   name        (str)  — nombre legible (solo para display, no funcional)
+#   enabled     (bool) — sobreescrito por el campo enabled dentro del YAML
+#   priority    (int)  — orden de ejecución en batch (menor = primero)
+#   schedule    (str)  — frecuencia sugerida: "daily" | "weekly" | "monthly"
+#   notes       (str)  — comentarios del operador / razón de desactivar
+
+scrapers:
+
+  competitors:
+    - id: "competitor_001"
+      name: "Competidor Cafetería A"
+      enabled: true
+      priority: 1
+      schedule: "weekly"
+      notes: "Scraper de ejemplo — actualizar selectores según sitio real"
+
+    # Plantilla para nuevas entradas:
+    # - id: "competitor_002"
+    #   name: "Nombre del competidor"
+    #   enabled: true
+    #   priority: 2
+    #   schedule: "weekly"
+    #   notes: ""
+
+  suppliers:
+    - id: "supplier_001"
+      name: "Proveedor Retail A"
+      enabled: true
+      priority: 1
+      schedule: "daily"
+      notes: "Scraper de ejemplo — actualizar selectores según sitio real"
+
+    # Plantilla para nuevas entradas:
+    # - id: "supplier_002"
+    #   name: "Nombre del proveedor"
+    #   enabled: true
+    #   priority: 2
+    #   schedule: "daily"
+    #   notes: ""
+
+# ============================================
+# Grupos de ejecución batch
+# ============================================
+# Usados por ScraperManager para ejecutar subconjuntos lógicos.
+# Los IDs deben existir en la lista de scrapers de arriba.
+
+scraping_groups:
+
+  daily_suppliers:
+    description: "Actualización diaria de precios de proveedores"
+    scraper_ids:
+      - "supplier_001"
+
+  weekly_competitors:
+    description: "Revisión semanal de menús de competidores"
+    scraper_ids:
+      - "competitor_001"
+
+  monthly_full:
+    description: "Scraping completo mensual (todos los scrapers activos)"
+    scraper_ids:
+      - "competitor_001"
+      - "supplier_001"

@@ -1,0 +1,6 @@
+Defaulting to user installation because normal site-packages is not writeable
+Requirement already satisfied: pyyaml in /usr/lib/python3/dist-packages (6.0.3)
+Requirement already satisfied: playwright in /home/juan_esteban_correa/.local/lib/python3.11/site-packages (1.41.0)
+Requirement already satisfied: greenlet==3.0.3 in /home/juan_esteban_correa/.local/lib/python3.11/site-packages (from playwright) (3.0.3)
+Requirement already satisfied: pyee==11.0.1 in /home/juan_esteban_correa/.local/lib/python3.11/site-packages (from playwright) (11.0.1)
+Requirement already satisfied: typing-extensions in /usr/lib/python3/dist-packages (from pyee==11.0.1->playwright) (4.15.0)

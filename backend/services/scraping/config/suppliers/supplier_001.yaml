@@ -1,0 +1,268 @@
+# ============================================
+# CONFIGURACIÓN DE SCRAPER - PROVEEDOR 001
+# ============================================
+# Template para proveedor tipo retail / mayorista.
+#
+# Diferencias clave respecto a competidores:
+#   - required_fields incluye 'product_unit' (crítico para calcular costo/porción)
+#   - rate_limiting más conservador (proveedores bloquean agresivamente bots)
+#   - Selectores adicionales: minimum_order_quantity, bulk_discount
+#   - search.query_param típicamente 'keyword' o 'search' (no 'q')
+#
+# Para actualizar selectores:
+#   1. Abrir el sitio del proveedor en Chrome
+#   2. Buscar un insumo (ej: "café verde 500g")
+#   3. Inspeccionar nombre, precio, unidad de empaque
+#   4. Click derecho nodo → Copy → Copy selector
+#   5. Pegar abajo y probar:
+#        python -m backend.services.scraping.tests.test_scraper supplier_001
+
+# ============================================
+# IDENTIFICACIÓN
+# ============================================
+scraper_id: "supplier_001"
+business_name: "Proveedor Retail A"
+business_type: "supplier"    # 'competitor' | 'supplier'
+scraper_type: "retail"       # 'restaurant' | 'retail' | 'marketplace' | 'custom'
+enabled: true
+
+# ============================================
+# URL BASE
+# ============================================
+base_url: "https://ejemplo-proveedor.com"
+
+# ============================================
+# NAVEGADOR
+# ============================================
+browser:
+  headless: true
+  timeout_ms: 30000
+  viewport_width: 1280
+  viewport_height: 800
+  user_agent: >-
+    Mozilla/5.0 (Windows NT 10.0; Win64; x64)
+    AppleWebKit/537.36 (KHTML, like Gecko)
+    Chrome/120.0.0.0 Safari/537.36
+  extra_headers: {}
+
+# ============================================
+# SELECTORES CSS/XPATH
+# ============================================
+selectors:
+
+  # ------ Página de producto individual ------
+
+  product_name:
+    selector: ".item-name"
+    type: "css"
+
+  product_price:
+    selector: ".bulk-price"
+    type: "css"
+
+  product_unit:
+    selector: ".package-size"
+    type: "css"
+    # Ejemplos de valores esperados: "Bolsa 500g", "Caja x12 unidades", "1 Kg"
+
+  product_category:
+    selector: ".product-breadcrumb .category"
+    type: "css"
+    optional: true
+
+  product_description:
+    selector: ".item-description"
+    type: "css"
+    optional: true
+
+  product_image:
+    selector: ".item-photo img"
+    type: "css"
+    attribute: "src"
+    optional: true
+
+  # ------ Campos específicos de proveedores ------
+
+  minimum_order_quantity:
+    selector: ".min-order"
+    type: "css"
+    optional: true
+    # Ej: "Pedido mínimo: 6 unidades"
+
+  bulk_discount:
+    selector: ".bulk-discount-badge"
+    type: "css"
+    optional: true
+    # Ej: "10% dto. comprando +10 unidades"
+
+  # ------ Página de búsqueda / listado ------
+
+  search_results:
+    selector: ".item-card"
+    type: "css"
+    multiple: true
+
+  result_name:
+    selector: ".item-title"
+    type: "css"
+
+  result_price:
+    selector: ".item-price"
+    type: "css"
+
+  result_link:
+    selector: "a.item-link"
+    type: "css"
+    attribute: "href"
+
+  result_image:
+    selector: ".item-card img"
+    type: "css"
+    attribute: "src"
+    optional: true
+
+  # ------ Metadata de proveedor (todos opcionales) ------
+
+  metadata:
+    minimum_order_quantity:
+      selector: ".min-order"
+      type: "css"
+      optional: true
+
+    bulk_discount:
+      selector: ".bulk-discount-badge"
+      type: "css"
+      optional: true
+
+    sku:
+      selector: ".item-sku"
+      type: "css"
+      optional: true
+
+    stock_status:
+      selector: ".stock-badge"
+      type: "css"
+      optional: true
+
+# ============================================
+# NAVEGACIÓN
+# ============================================
+navigation:
+
+  search:
+    path: "/products/search"
+    method: "GET"
+    query_param: "keyword"
+    # URL resultante: https://ejemplo-proveedor.com/products/search?keyword=cafe
+    #
+    # Alternativa path_template (descomentar si aplica):
+    # path_template: "/productos/{query}"
+
+  category:
+    path: "/categories"
+    path_template: "/categories/{category}"
+    # URL resultante: https://ejemplo-proveedor.com/categories/cafe-verde
+
+  product:
+    path: "/product"
+    path_template: "/product/{product_id}"
+
+  pagination:
+    type: "query_param"   # 'query_param' | 'path' | 'offset'
+    param: "page"
+    start: 1
+    max_pages: 3          # Más conservador: proveedores tienen catálogos grandes
+    # Alternativa offset (descomentar si el sitio usa ?offset=0&limit=20):
+    # type: "offset"
+    # param: "offset"
+    # offset_step: 20
+    # max_pages: 5
+
+  timeouts:
+    navigation_ms: 30000
+    retry_backoff_ms: 3000   # Más tiempo entre reintentos para proveedores
+
+# ============================================
+# RATE LIMITING
+# ============================================
+# Proveedores suelen tener WAF/Cloudflare agresivos.
+# Ser más conservador que con competidores.
+rate_limiting:
+  enabled: true
+  delay_ms: 2000                  # 2s entre requests (vs 1.5s en competidores)
+  max_requests_per_minute: 15     # Más bajo que el default
+  max_requests_per_hour: 200
+  backoff_strategy: "exponential"
+  max_backoff_ms: 120000          # 2 min máximo (el doble que competidores)
+  bucket_capacity: 3              # Burst pequeño
+  bucket_refill_rate: 0.25        # ~15 rpm sostenidos
+
+# ============================================
+# VALIDACIÓN
+# ============================================
+# product_unit es REQUERIDO en proveedores:
+# sin la unidad de empaque no se puede calcular costo por porción.
+required_fields:
+  - "product_name"
+  - "product_price"
+  - "product_unit"
+
+# ============================================
+# CAMPOS IGNORADOS POR EL MOTOR (documentación)
+# ============================================
+error_handling:
+  retry_attempts: 3
+  retry_delay_ms: 3000
+  ignore_ssl_errors: false
+
+transformations:
+  price:
+    decimal_separator: ","   # Formato colombiano: 12.500,00
+    remove_symbols: ["$", "COP"]
+
+  unit:
+    # Normalización de unidades de empaque de proveedores
+    mappings:
+      "kg": "Kg"
+      "kilo": "Kg"
+      "kilogramo": "Kg"
+      "gr": "g"
+      "gramo": "g"
+      "lt": "L"
+      "lts": "L"
+      "litro": "L"
+      "ml": "ml"
+      "mililitro": "ml"
+      "und": "unidad"
+      "unidad": "unidad"
+      "caja": "caja"
+      "bolsa": "bolsa"
+      "saco": "saco"
+
+# ============================================
+# METADATA
+# ============================================
+metadata:
+  created_at: "2025-05-20"
+  last_updated: "2025-05-20"
+  version: "1.0"
+  author: "Sistema CPQ"
+  currency: "COP"
+  notes: |
+    Template de proveedor tipo retail/mayorista.
+
+    PENDIENTE: Actualizar selectores inspeccionando el sitio real.
+
+    Proveedores comunes a implementar:
+      - Makro Colombia
+      - Alkosto / Ktronix
+      - Éxito / Carulla (sección hogar/cocina)
+      - Pricesmart
+      - Distribuidores locales con tienda online
+
+    Pasos:
+      1. Buscar el insumo en el sitio del proveedor
+      2. Inspeccionar: nombre, precio, unidad de empaque
+      3. Actualizar selectores en la sección 'selectors'
+      4. Probar: python -m backend.services.scraping.tests.test_scraper supplier_001
+  contact: "equipo-data@empresa.com"

@@ -1,0 +1,144 @@
+{# Partial: ingredientes con scraping activo
+   Context variables:
+     ingredients — List[Ingredient] filtered by source_url IS NOT NULL and is_active
+#}
+
+{% if not ingredients %}
+<div class="bg-white rounded-xl shadow-sm p-10 text-center">
+  <div class="text-4xl mb-3">🛒</div>
+  <p class="text-stone-500 font-medium">No hay ingredientes con URL de scraping.</p>
+  <p class="text-stone-400 text-sm mt-1">
+    Configura el campo
+    <code class="bg-stone-100 px-1 rounded text-xs font-mono">source_url</code>
+    en un ingrediente para activar el scraping de precios.
+  </p>
+</div>
+
+{% else %}
+
+<div class="bg-white rounded-xl shadow-sm overflow-hidden">
+
+  {# ── Header ── #}
+  <div class="px-6 py-4 border-b border-stone-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+    <div>
+      <p class="text-sm font-semibold text-espresso">Ingredientes con Scraping</p>
+      <p class="text-xs text-stone-400 mt-0.5">{{ ingredients | length }} ingrediente(s) configurado(s)</p>
+    </div>
+    <div class="flex flex-col items-stretch sm:items-end gap-2">
+      <button
+        hx-post="/scraping/partials/scrape-all-ingredients"
+        hx-target="#batch-result"
+        hx-swap="innerHTML"
+        hx-indicator="#batch-spinner"
+        hx-confirm="¿Scrape todos los ingredientes? Esto puede tardar varios minutos."
+        class="inline-flex items-center justify-center gap-2 px-4 py-2
+               bg-espresso text-beige text-sm font-medium rounded-lg
+               hover:bg-espresso-light transition-colors">
+        <svg id="batch-spinner"
+             class="htmx-indicator w-4 h-4 animate-spin shrink-0"
+             fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round"
+                d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992
+                   m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7"/>
+        </svg>
+        <span class="htmx-indicator hidden">Scrapeando…</span>
+        <span class="not-htmx-indicator">🚀 Scrape Todos ({{ ingredients | length }})</span>
+      </button>
+      <div id="batch-result"></div>
+    </div>
+  </div>
+
+  {# ── Table ── #}
+  <div class="overflow-x-auto">
+    <table class="min-w-full divide-y divide-stone-100">
+      <thead>
+        <tr class="bg-stone-50">
+          <th class="px-6 py-3 text-left text-xs font-medium text-stone-400 uppercase tracking-wide">
+            Ingrediente
+          </th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-stone-400 uppercase tracking-wide">
+            Precio Actual
+          </th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-stone-400 uppercase tracking-wide hidden md:table-cell">
+            Proveedor
+          </th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-stone-400 uppercase tracking-wide hidden lg:table-cell">
+            Último Scraping
+          </th>
+          <th class="px-6 py-3 text-right text-xs font-medium text-stone-400 uppercase tracking-wide">
+            Acciones
+          </th>
+        </tr>
+      </thead>
+      <tbody class="bg-white divide-y divide-stone-50">
+        {% for ing in ingredients %}
+        <tr class="hover:bg-stone-50/60 transition-colors">
+
+          {# Nombre + categoría #}
+          <td class="px-6 py-4 whitespace-nowrap">
+            <p class="font-medium text-espresso text-sm">{{ ing.name }}</p>
+            <p class="text-xs text-stone-400 mt-0.5">{{ ing.category or 'Sin categoría' }}</p>
+          </td>
+
+          {# Precio #}
+          <td class="px-6 py-4 whitespace-nowrap">
+            {% if ing.purchase_price %}
+              <span class="font-mono text-sm font-semibold text-espresso">
+                ${{ "{:,.0f}".format(ing.purchase_price) }}
+              </span>
+            {% else %}
+              <span class="text-stone-300 text-sm">N/A</span>
+            {% endif %}
+          </td>
+
+          {# URL proveedor #}
+          <td class="px-6 py-4 whitespace-nowrap text-sm hidden md:table-cell">
+            <a href="{{ ing.source_url }}" target="_blank"
+               class="text-sky-600 hover:underline text-xs truncate max-w-[180px] inline-block"
+               title="{{ ing.source_url }}">
+              {{ ing.source_url | replace('https://', '') | replace('http://', '') | truncate(30) }}
+            </a>
+          </td>
+
+          {# Último scraping #}
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-stone-400 hidden lg:table-cell">
+            {% if ing.last_scraped %}
+              {{ ing.last_scraped.strftime('%d/%m/%Y %H:%M') }}
+            {% else %}
+              <span class="italic text-stone-300">Nunca</span>
+            {% endif %}
+          </td>
+
+          {# Acción + resultado inline #}
+          <td class="px-6 py-4 whitespace-nowrap text-right">
+            <div class="inline-flex items-center gap-2">
+              <span id="ing-result-{{ ing.id }}" class="text-xs"></span>
+              <button
+                hx-post="/scraping/partials/scrape-ingredient/{{ ing.id }}"
+                hx-target="#ing-result-{{ ing.id }}"
+                hx-swap="innerHTML"
+                hx-indicator="#ing-spinner-{{ ing.id }}"
+                class="inline-flex items-center gap-1.5 px-3 py-1.5
+                       border border-stone-200 text-stone-600 text-xs font-medium rounded-lg
+                       hover:border-amber hover:text-amber transition-colors">
+                <svg id="ing-spinner-{{ ing.id }}"
+                     class="htmx-indicator w-3.5 h-3.5 animate-spin shrink-0"
+                     fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992
+                           m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7"/>
+                </svg>
+                <span class="not-htmx-indicator">🔄 Scrape</span>
+                <span class="htmx-indicator hidden">…</span>
+              </button>
+            </div>
+          </td>
+
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+</div>
+{% endif %}

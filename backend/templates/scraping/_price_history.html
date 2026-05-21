@@ -1,0 +1,41 @@
+{# Partial: actividad reciente de scraping
+   Context variables:
+     history — List of (IngredientPriceHistory, ingredient_name) tuples, newest first
+#}
+
+{% if not history %}
+<div class="bg-white rounded-xl shadow-sm p-10 text-center">
+  <div class="text-4xl mb-3">📋</div>
+  <p class="text-stone-500 font-medium">Sin actividad reciente.</p>
+  <p class="text-stone-400 text-sm mt-1">
+    Los cambios de precio por scraping aparecerán aquí.
+  </p>
+</div>
+{% else %}
+<div class="bg-white rounded-xl shadow-sm overflow-hidden">
+  <div class="px-4 py-3 border-b border-stone-100 flex items-center justify-between">
+    <p class="text-sm font-semibold text-espresso">Cambios de precio recientes</p>
+    <span class="text-xs text-stone-400">Últimos {{ history | length }} registros</span>
+  </div>
+  <ul class="divide-y divide-stone-50">
+    {% for entry, ingredient_name in history %}
+    <li class="px-4 py-3 flex items-center justify-between gap-4 hover:bg-stone-50/60 transition-colors">
+      <div class="min-w-0">
+        <p class="text-sm font-medium text-espresso truncate">{{ ingredient_name }}</p>
+        <p class="text-xs text-stone-400 mt-0.5">
+          {{ entry.changed_at.strftime('%d/%m/%Y %H:%M') if entry.changed_at else '—' }}
+          {% if entry.source %}
+          · <span class="italic">{{ entry.source }}</span>
+          {% endif %}
+        </p>
+      </div>
+      <div class="text-right shrink-0">
+        <p class="font-mono text-sm font-semibold text-espresso">
+          ${{ "%.0f"|format(entry.price) }}
+        </p>
+      </div>
+    </li>
+    {% endfor %}
+  </ul>
+</div>
+{% endif %}

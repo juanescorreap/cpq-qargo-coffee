@@ -1,0 +1,156 @@
+{% extends "base.html" %}
+
+{% block title %}Scraping — CPQ Cafeterías{% endblock %}
+
+{% block content %}
+<div x-data="scrapingDashboard()" x-cloak>
+
+  {# ── Header ──────────────────────────────────────────────────────────── #}
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+    <div>
+      <h1 class="text-3xl font-bold text-espresso">Sistema de Scraping</h1>
+      <p class="mt-1 text-sm text-stone-500">
+        Gestión de scrapers, actualización de precios y monitoreo de competidores
+      </p>
+    </div>
+    <button
+      @click="refreshActive()"
+      :disabled="loading"
+      class="inline-flex items-center gap-2 px-4 py-2 rounded-lg
+             bg-espresso text-beige text-sm font-semibold
+             hover:bg-espresso-light transition-colors shrink-0
+             disabled:opacity-50 disabled:cursor-not-allowed">
+      <svg class="w-4 h-4" :class="loading ? 'animate-spin' : ''"
+           fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round"
+              d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0
+                 l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0
+                 0113.803-3.7l3.181 3.182m0-4.991v4.99"/>
+      </svg>
+      <span x-text="loading ? 'Actualizando…' : 'Actualizar'"></span>
+    </button>
+  </div>
+
+  {# ── Tabs ─────────────────────────────────────────────────────────────── #}
+  <div class="mb-6 border-b border-stone-200">
+    <nav class="-mb-px flex space-x-1 overflow-x-auto">
+      {% set tabs = [
+        ('scrapers',     'Scrapers',      'M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v4m0 0H5m4 0h10M5 7v10a2 2 0 002 2h10a2 2 0 002-2V7'),
+        ('ingredients',  'Ingredientes',  'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4'),
+        ('competitors',  'Competidores',  'M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9'),
+        ('logs',         'Actividad',     'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z'),
+      ] %}
+      {% for id, label, icon_path in tabs %}
+      <button
+        @click="setTab('{{ id }}')"
+        :class="activeTab === '{{ id }}'
+          ? 'border-amber text-amber'
+          : 'border-transparent text-stone-500 hover:text-espresso hover:border-stone-300'"
+        class="flex items-center gap-2 whitespace-nowrap py-3 px-4
+               border-b-2 font-medium text-sm transition-colors duration-150">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="{{ icon_path }}"/>
+        </svg>
+        {{ label }}
+      </button>
+      {% endfor %}
+    </nav>
+  </div>
+
+  {# ── Tab: Scrapers ────────────────────────────────────────────────────── #}
+  <div x-show="activeTab === 'scrapers'"
+       x-transition:enter="transition ease-out duration-150"
+       x-transition:enter-start="opacity-0 translate-y-1"
+       x-transition:enter-end="opacity-100 translate-y-0">
+    <div hx-get="/scraping/partials/scrapers"
+         hx-trigger="load, scrapers-refresh from:body"
+         hx-indicator="#page-spinner">
+      {% include 'scraping/_loading_skeleton.html' %}
+    </div>
+  </div>
+
+  {# ── Tab: Ingredientes ───────────────────────────────────────────────── #}
+  <div x-show="activeTab === 'ingredients'"
+       x-transition:enter="transition ease-out duration-150"
+       x-transition:enter-start="opacity-0 translate-y-1"
+       x-transition:enter-end="opacity-100 translate-y-0">
+    <div hx-get="/scraping/partials/ingredients"
+         hx-trigger="ingredients-tab-activated from:body, ingredients-refresh from:body"
+         hx-indicator="#page-spinner">
+      <div class="text-center py-12 text-stone-400 text-sm">
+        Selecciona la pestaña para cargar los ingredientes.
+      </div>
+    </div>
+  </div>
+
+  {# ── Tab: Competidores ───────────────────────────────────────────────── #}
+  <div x-show="activeTab === 'competitors'"
+       x-transition:enter="transition ease-out duration-150"
+       x-transition:enter-start="opacity-0 translate-y-1"
+       x-transition:enter-end="opacity-100 translate-y-0">
+    <div hx-get="/scraping/partials/competitors"
+         hx-trigger="competitors-tab-activated from:body, competitors-refresh from:body"
+         hx-indicator="#page-spinner">
+      <div class="text-center py-12 text-stone-400 text-sm">
+        Selecciona la pestaña para cargar los competidores.
+      </div>
+    </div>
+  </div>
+
+  {# ── Tab: Actividad ──────────────────────────────────────────────────── #}
+  <div x-show="activeTab === 'logs'"
+       x-transition:enter="transition ease-out duration-150"
+       x-transition:enter-start="opacity-0 translate-y-1"
+       x-transition:enter-end="opacity-100 translate-y-0">
+    <div hx-get="/scraping/partials/logs"
+         hx-trigger="logs-tab-activated from:body, logs-refresh from:body"
+         hx-indicator="#page-spinner">
+      <div class="text-center py-12 text-stone-400 text-sm">
+        Selecciona la pestaña para cargar la actividad.
+      </div>
+    </div>
+  </div>
+
+</div>{# /x-data #}
+
+{# ── Modal container (resultados inline) ─────────────────────────────── #}
+<div id="modal-container"></div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+function scrapingDashboard() {
+  return {
+    activeTab: 'scrapers',
+    loading: false,
+
+    setTab(tab) {
+      if (this.activeTab === tab) return;
+      this.activeTab = tab;
+      // Fire HTMX load for tabs loaded lazily.
+      const events = {
+        ingredients: 'ingredients-tab-activated',
+        competitors:  'competitors-tab-activated',
+        logs:         'logs-tab-activated',
+      };
+      if (events[tab]) {
+        htmx.trigger(document.body, events[tab]);
+      }
+    },
+
+    refreshActive() {
+      this.loading = true;
+      const eventMap = {
+        scrapers:    'scrapers-refresh',
+        ingredients: 'ingredients-refresh',
+        competitors: 'competitors-refresh',
+        logs:        'logs-refresh',
+      };
+      htmx.trigger(document.body, eventMap[this.activeTab]);
+      // Reset after reasonable delay (actual request may take longer).
+      setTimeout(() => { this.loading = false; }, 1500);
+    },
+  };
+}
+</script>
+{% endblock %}
