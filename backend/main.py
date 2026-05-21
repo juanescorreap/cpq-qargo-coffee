@@ -27,7 +27,7 @@ BASE_DIR = Path(__file__).resolve().parent
 PROJECT_ROOT = BASE_DIR.parent
 
 app = FastAPI(
-    title="CPQ Cafeterias",
+    title="CPQ Qargo Coffee",
     description="Configure-Price-Quote System with Scraping",
     version="1.0.0",
 )
@@ -109,7 +109,7 @@ async def startup_event():
 @app.get("/", tags=["General"])
 def root() -> dict:
     return {
-        "message": "CPQ Cafeterias API",
+        "message": "CPQ Qargo Coffee API",
         "status": "online",
         "docs": "/docs",
         "scraping_ui": "/scraping",
