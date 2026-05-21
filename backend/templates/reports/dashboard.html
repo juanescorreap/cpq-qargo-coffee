@@ -1,0 +1,939 @@
+{% extends "base.html" %}
+
+{% block title %}Reportes — CPQ Cafeterías{% endblock %}
+
+{% block extra_head %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+
+<script id="stores-data"      type="application/json">{{ stores_json }}</script>
+<script id="ingredients-data" type="application/json">{{ ingredients_json }}</script>
+{% endblock %}
+
+
+{% block content %}
+
+{# ── Encabezado ──────────────────────────────────────────────────────────── #}
+<div class="mb-8 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+  <div>
+    <h1 class="text-3xl font-bold text-espresso">Reportes</h1>
+    <p class="mt-1 text-sm text-stone-500">
+      Análisis de costos, márgenes, competencia y simulaciones de impacto.
+    </p>
+  </div>
+</div>
+
+
+{# ── Wrapper Alpine ──────────────────────────────────────────────────────── #}
+<div x-data="reportsDashboard()" x-init="init()" x-cloak>
+
+
+  {# ═══════════════════════════════════════════════════════════════════════
+     TABS — barra de navegación
+     ═══════════════════════════════════════════════════════════════════════ #}
+  <div class="mb-6 border-b border-stone-200">
+    <nav class="-mb-px flex gap-0 overflow-x-auto">
+
+      {% set report_tabs = [
+        ('costs',      'Costos por Producto', 'M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 11h.01M12 11h.01M15 11h.01M12 7h.01M9 3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V5a2 2 0 00-2-2h-4'),
+        ('margins',    'Análisis de Márgenes','M13 7h8m0 0v8m0-8l-8 8-4-4-6 6'),
+        ('benchmark',  'Benchmark Competencia','M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z'),
+        ('simulator',  'Simulador de Impacto','M13 10V3L4 14h7v7l9-11h-7'),
+      ] %}
+
+      {% for id, label, icon_path in report_tabs %}
+      <button
+        @click="setTab('{{ id }}')"
+        :class="activeTab === '{{ id }}'
+          ? 'border-amber text-amber'
+          : 'border-transparent text-stone-500 hover:text-espresso hover:border-stone-300'"
+        class="flex items-center gap-2 whitespace-nowrap py-3 px-4
+               border-b-2 font-medium text-sm transition-colors duration-150">
+        <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor"
+             stroke-width="1.75" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="{{ icon_path }}"/>
+        </svg>
+        {{ label }}
+      </button>
+      {% endfor %}
+
+    </nav>
+  </div>
+
+
+  {# ═══════════════════════════════════════════════════════════════════════
+     TAB 1: COSTOS POR PRODUCTO
+     ═══════════════════════════════════════════════════════════════════════ #}
+  <div x-show="activeTab === 'costs'"
+       x-transition:enter="transition ease-out duration-150"
+       x-transition:enter-start="opacity-0 translate-y-1"
+       x-transition:enter-end="opacity-100 translate-y-0">
+
+    {# Toolbar #}
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
+
+      <div class="flex items-center gap-3">
+        <label class="text-sm font-medium text-stone-600 shrink-0">Tienda</label>
+        <select x-model="costsStoreId"
+                @change="costsLoaded = false; loadCosts()"
+                class="rounded-lg border border-stone-200 bg-white px-3 py-2
+                       text-sm text-espresso focus:outline-none focus:ring-2
+                       focus:ring-amber/40 focus:border-amber transition-colors">
+          <option value="">Todas las tiendas</option>
+          <template x-for="s in stores" :key="s.id">
+            <option :value="s.id" x-text="s.name"></option>
+          </template>
+        </select>
+        <button @click="costsLoaded = false; loadCosts()"
+                :disabled="costsLoading"
+                class="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg
+                       bg-stone-100 hover:bg-stone-200 text-stone-600 text-sm
+                       font-medium transition-colors disabled:opacity-50">
+          <svg class="w-3.5 h-3.5" :class="costsLoading ? 'animate-spin' : ''"
+               fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993
+                     0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25
+                     0 0113.803-3.7l3.181 3.182m0-4.991v4.99"/>
+          </svg>
+          Recargar
+        </button>
+      </div>
+
+      <a :href="'/api/reports/export/product-costs-csv' + (costsStoreId ? '?store_id=' + costsStoreId : '')"
+         class="inline-flex items-center gap-2 px-4 py-2 rounded-lg
+                bg-espresso text-beige text-sm font-semibold
+                hover:bg-espresso-light transition-colors shrink-0">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round"
+                d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586
+                   a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+        </svg>
+        Exportar CSV
+      </a>
+    </div>
+
+    {# Skeleton loader #}
+    <div x-show="costsLoading" class="space-y-4">
+      <div class="bg-white rounded-xl h-72 animate-pulse"></div>
+      <div class="bg-white rounded-xl h-48 animate-pulse"></div>
+    </div>
+
+    <template x-if="!costsLoading && costsData !== null">
+      <div>
+
+        {# Gráfica Top-10 #}
+        <div class="bg-white rounded-xl shadow-sm p-6 mb-5">
+          <h2 class="text-sm font-semibold text-espresso mb-4">
+            Top 10 — combinaciones más costosas
+          </h2>
+          <div class="relative h-72">
+            <canvas id="costs-chart"></canvas>
+          </div>
+        </div>
+
+        {# Tabla #}
+        <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="border-b border-stone-100 bg-stone-50">
+                  <th class="px-5 py-3 text-left font-semibold text-stone-500 uppercase tracking-wide text-xs">Producto</th>
+                  <th class="px-5 py-3 text-left font-semibold text-stone-500 uppercase tracking-wide text-xs">Categoría</th>
+                  <th class="px-5 py-3 text-left font-semibold text-stone-500 uppercase tracking-wide text-xs">Tamaño</th>
+                  <th class="px-5 py-3 text-right font-semibold text-stone-500 uppercase tracking-wide text-xs">Costo Total</th>
+                  <th class="px-5 py-3 text-right font-semibold text-stone-500 uppercase tracking-wide text-xs hidden lg:table-cell">Ingredientes</th>
+                  <th class="px-5 py-3 text-right font-semibold text-stone-500 uppercase tracking-wide text-xs hidden lg:table-cell">Sub-recetas</th>
+                  <th class="px-5 py-3 text-right font-semibold text-stone-500 uppercase tracking-wide text-xs hidden lg:table-cell">Packaging</th>
+                  <th class="px-5 py-3 text-right font-semibold text-stone-500 uppercase tracking-wide text-xs hidden lg:table-cell">Labor</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-stone-50">
+                <template x-for="product in costsData" :key="product.product_id">
+                  <template x-for="(size, si) in product.sizes" :key="size.size_name">
+                    <tr class="hover:bg-stone-50/70 transition-colors">
+                      <td class="px-5 py-3 font-medium text-espresso"
+                          x-text="si === 0 ? product.product_name : ''"
+                          :class="si === 0 ? '' : 'text-transparent select-none'">
+                      </td>
+                      <td class="px-5 py-3 text-stone-400 text-xs"
+                          x-text="si === 0 ? (product.category || '—') : ''">
+                      </td>
+                      <td class="px-5 py-3">
+                        <span class="px-2 py-0.5 rounded-full bg-beige/50 text-espresso text-xs font-medium"
+                              x-text="size.size_name"></span>
+                      </td>
+                      <td class="px-5 py-3 text-right font-semibold text-espresso"
+                          x-text="formatCOP(size.cost)"></td>
+                      <td class="px-5 py-3 text-right text-stone-500 hidden lg:table-cell"
+                          x-text="formatCOP(size.cost_breakdown.ingredients ?? 0)"></td>
+                      <td class="px-5 py-3 text-right text-stone-500 hidden lg:table-cell"
+                          x-text="formatCOP(size.cost_breakdown.sub_recipes ?? 0)"></td>
+                      <td class="px-5 py-3 text-right text-stone-500 hidden lg:table-cell"
+                          x-text="formatCOP(size.cost_breakdown.packaging ?? 0)"></td>
+                      <td class="px-5 py-3 text-right text-stone-500 hidden lg:table-cell"
+                          x-text="formatCOP(size.cost_breakdown.labor ?? 0)"></td>
+                    </tr>
+                  </template>
+                </template>
+              </tbody>
+            </table>
+          </div>
+
+          <div x-show="costsData.length === 0"
+               class="text-center py-16 text-stone-400">
+            <p class="text-4xl mb-3">📊</p>
+            <p class="text-sm font-medium">Sin datos de costos disponibles.</p>
+            <p class="text-xs mt-1">Verifica que los productos tengan recetas configuradas.</p>
+          </div>
+        </div>
+
+      </div>
+    </template>
+  </div>
+
+
+  {# ═══════════════════════════════════════════════════════════════════════
+     TAB 2: ANÁLISIS DE MÁRGENES
+     ═══════════════════════════════════════════════════════════════════════ #}
+  <div x-show="activeTab === 'margins'"
+       x-transition:enter="transition ease-out duration-150"
+       x-transition:enter-start="opacity-0 translate-y-1"
+       x-transition:enter-end="opacity-100 translate-y-0">
+
+    {# Toolbar #}
+    <div class="flex justify-end mb-5">
+      <a href="/api/reports/export/margin-analysis-csv"
+         class="inline-flex items-center gap-2 px-4 py-2 rounded-lg
+                bg-espresso text-beige text-sm font-semibold
+                hover:bg-espresso-light transition-colors">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round"
+                d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586
+                   a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+        </svg>
+        Exportar CSV
+      </a>
+    </div>
+
+    {# Skeleton #}
+    <div x-show="marginsLoading" class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+      <template x-for="i in 4" :key="i">
+        <div class="bg-white rounded-xl h-48 animate-pulse"></div>
+      </template>
+    </div>
+
+    <template x-if="!marginsLoading && marginsData !== null">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+
+        {# Macro para cada sección de margen #}
+        {# Negativo #}
+        <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+          <div class="flex items-center justify-between px-5 py-3.5 bg-red-50 border-b border-red-100">
+            <div class="flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-red-500"></span>
+              <h3 class="text-sm font-semibold text-red-700">Margen Negativo</h3>
+            </div>
+            <span class="text-xs font-bold text-red-700 bg-red-100 px-2 py-0.5 rounded-full"
+                  x-text="(marginsData.negative_margin || []).length"></span>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="border-b border-stone-100">
+                  <th class="px-4 py-2 text-left text-xs font-semibold text-stone-400 uppercase">Producto</th>
+                  <th class="px-4 py-2 text-left text-xs font-semibold text-stone-400 uppercase">Tamaño</th>
+                  <th class="px-4 py-2 text-right text-xs font-semibold text-stone-400 uppercase">Costo</th>
+                  <th class="px-4 py-2 text-right text-xs font-semibold text-stone-400 uppercase">Precio</th>
+                  <th class="px-4 py-2 text-right text-xs font-semibold text-stone-400 uppercase">Margen</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-stone-50">
+                <template x-for="item in (marginsData.negative_margin || [])" :key="item.product_name + item.size_name">
+                  <tr class="hover:bg-red-50/30 transition-colors">
+                    <td class="px-4 py-2.5 font-medium text-stone-700" x-text="item.product_name"></td>
+                    <td class="px-4 py-2.5 text-stone-400 text-xs" x-text="item.size_name"></td>
+                    <td class="px-4 py-2.5 text-right text-stone-500" x-text="formatCOP(item.cost)"></td>
+                    <td class="px-4 py-2.5 text-right text-stone-500" x-text="formatCOP(item.price)"></td>
+                    <td class="px-4 py-2.5 text-right">
+                      <span class="text-red-600 font-semibold" x-text="item.margin_pct.toFixed(1) + '%'"></span>
+                    </td>
+                  </tr>
+                </template>
+              </tbody>
+            </table>
+          </div>
+          <div x-show="!(marginsData.negative_margin || []).length"
+               class="py-8 text-center text-stone-400 text-xs">Sin productos en esta categoría.</div>
+        </div>
+
+        {# Bajo < 30% #}
+        <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+          <div class="flex items-center justify-between px-5 py-3.5 bg-amber/5 border-b border-amber/20">
+            <div class="flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-amber"></span>
+              <h3 class="text-sm font-semibold text-amber">Margen Bajo (&lt; 30%)</h3>
+            </div>
+            <span class="text-xs font-bold text-amber bg-amber/10 px-2 py-0.5 rounded-full"
+                  x-text="(marginsData.low_margin || []).length"></span>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="border-b border-stone-100">
+                  <th class="px-4 py-2 text-left text-xs font-semibold text-stone-400 uppercase">Producto</th>
+                  <th class="px-4 py-2 text-left text-xs font-semibold text-stone-400 uppercase">Tamaño</th>
+                  <th class="px-4 py-2 text-right text-xs font-semibold text-stone-400 uppercase">Costo</th>
+                  <th class="px-4 py-2 text-right text-xs font-semibold text-stone-400 uppercase">Precio</th>
+                  <th class="px-4 py-2 text-right text-xs font-semibold text-stone-400 uppercase">Margen</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-stone-50">
+                <template x-for="item in (marginsData.low_margin || [])" :key="item.product_name + item.size_name">
+                  <tr class="hover:bg-amber/5 transition-colors">
+                    <td class="px-4 py-2.5 font-medium text-stone-700" x-text="item.product_name"></td>
+                    <td class="px-4 py-2.5 text-stone-400 text-xs" x-text="item.size_name"></td>
+                    <td class="px-4 py-2.5 text-right text-stone-500" x-text="formatCOP(item.cost)"></td>
+                    <td class="px-4 py-2.5 text-right text-stone-500" x-text="formatCOP(item.price)"></td>
+                    <td class="px-4 py-2.5 text-right">
+                      <span class="text-amber font-semibold" x-text="item.margin_pct.toFixed(1) + '%'"></span>
+                    </td>
+                  </tr>
+                </template>
+              </tbody>
+            </table>
+          </div>
+          <div x-show="!(marginsData.low_margin || []).length"
+               class="py-8 text-center text-stone-400 text-xs">Sin productos en esta categoría.</div>
+        </div>
+
+        {# Saludable 30-80% #}
+        <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+          <div class="flex items-center justify-between px-5 py-3.5 bg-green-50 border-b border-green-100">
+            <div class="flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-green-500"></span>
+              <h3 class="text-sm font-semibold text-green-700">Margen Saludable (30–80%)</h3>
+            </div>
+            <span class="text-xs font-bold text-green-700 bg-green-100 px-2 py-0.5 rounded-full"
+                  x-text="(marginsData.healthy_margin || []).length"></span>
+          </div>
+          <div class="overflow-x-auto max-h-80 overflow-y-auto">
+            <table class="w-full text-sm">
+              <thead class="sticky top-0 bg-white">
+                <tr class="border-b border-stone-100">
+                  <th class="px-4 py-2 text-left text-xs font-semibold text-stone-400 uppercase">Producto</th>
+                  <th class="px-4 py-2 text-left text-xs font-semibold text-stone-400 uppercase">Tamaño</th>
+                  <th class="px-4 py-2 text-right text-xs font-semibold text-stone-400 uppercase">Costo</th>
+                  <th class="px-4 py-2 text-right text-xs font-semibold text-stone-400 uppercase">Precio</th>
+                  <th class="px-4 py-2 text-right text-xs font-semibold text-stone-400 uppercase">Margen</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-stone-50">
+                <template x-for="item in (marginsData.healthy_margin || [])" :key="item.product_name + item.size_name">
+                  <tr class="hover:bg-green-50/40 transition-colors">
+                    <td class="px-4 py-2.5 font-medium text-stone-700" x-text="item.product_name"></td>
+                    <td class="px-4 py-2.5 text-stone-400 text-xs" x-text="item.size_name"></td>
+                    <td class="px-4 py-2.5 text-right text-stone-500" x-text="formatCOP(item.cost)"></td>
+                    <td class="px-4 py-2.5 text-right text-stone-500" x-text="formatCOP(item.price)"></td>
+                    <td class="px-4 py-2.5 text-right">
+                      <span class="text-green-600 font-semibold" x-text="item.margin_pct.toFixed(1) + '%'"></span>
+                    </td>
+                  </tr>
+                </template>
+              </tbody>
+            </table>
+          </div>
+          <div x-show="!(marginsData.healthy_margin || []).length"
+               class="py-8 text-center text-stone-400 text-xs">Sin productos en esta categoría.</div>
+        </div>
+
+        {# Alto > 80% #}
+        <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+          <div class="flex items-center justify-between px-5 py-3.5 bg-blue-50 border-b border-blue-100">
+            <div class="flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+              <h3 class="text-sm font-semibold text-blue-700">Margen Alto (&gt; 80%)</h3>
+            </div>
+            <span class="text-xs font-bold text-blue-700 bg-blue-100 px-2 py-0.5 rounded-full"
+                  x-text="(marginsData.high_margin || []).length"></span>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="border-b border-stone-100">
+                  <th class="px-4 py-2 text-left text-xs font-semibold text-stone-400 uppercase">Producto</th>
+                  <th class="px-4 py-2 text-left text-xs font-semibold text-stone-400 uppercase">Tamaño</th>
+                  <th class="px-4 py-2 text-right text-xs font-semibold text-stone-400 uppercase">Costo</th>
+                  <th class="px-4 py-2 text-right text-xs font-semibold text-stone-400 uppercase">Precio</th>
+                  <th class="px-4 py-2 text-right text-xs font-semibold text-stone-400 uppercase">Margen</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-stone-50">
+                <template x-for="item in (marginsData.high_margin || [])" :key="item.product_name + item.size_name">
+                  <tr class="hover:bg-blue-50/40 transition-colors">
+                    <td class="px-4 py-2.5 font-medium text-stone-700" x-text="item.product_name"></td>
+                    <td class="px-4 py-2.5 text-stone-400 text-xs" x-text="item.size_name"></td>
+                    <td class="px-4 py-2.5 text-right text-stone-500" x-text="formatCOP(item.cost)"></td>
+                    <td class="px-4 py-2.5 text-right text-stone-500" x-text="formatCOP(item.price)"></td>
+                    <td class="px-4 py-2.5 text-right">
+                      <span class="text-blue-600 font-semibold" x-text="item.margin_pct.toFixed(1) + '%'"></span>
+                    </td>
+                  </tr>
+                </template>
+              </tbody>
+            </table>
+          </div>
+          <div x-show="!(marginsData.high_margin || []).length"
+               class="py-8 text-center text-stone-400 text-xs">Sin productos en esta categoría.</div>
+        </div>
+
+      </div>
+    </template>
+  </div>
+
+
+  {# ═══════════════════════════════════════════════════════════════════════
+     TAB 3: BENCHMARK COMPETENCIA
+     ═══════════════════════════════════════════════════════════════════════ #}
+  <div x-show="activeTab === 'benchmark'"
+       x-transition:enter="transition ease-out duration-150"
+       x-transition:enter-start="opacity-0 translate-y-1"
+       x-transition:enter-end="opacity-100 translate-y-0">
+
+    <div class="flex justify-end mb-5">
+      <a href="/api/reports/export/competitor-benchmark-csv"
+         class="inline-flex items-center gap-2 px-4 py-2 rounded-lg
+                bg-espresso text-beige text-sm font-semibold
+                hover:bg-espresso-light transition-colors">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round"
+                d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586
+                   a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+        </svg>
+        Exportar CSV
+      </a>
+    </div>
+
+    <div x-show="benchmarkLoading"
+         class="bg-white rounded-xl h-64 animate-pulse"></div>
+
+    <template x-if="!benchmarkLoading && benchmarkData !== null">
+      <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+
+        {# Legend #}
+        <div class="flex items-center gap-5 px-5 py-3 bg-stone-50 border-b border-stone-100">
+          <div class="flex items-center gap-1.5 text-xs text-stone-500">
+            <span class="w-3 h-3 rounded-full bg-red-400 inline-block"></span>
+            Más caro que la competencia
+          </div>
+          <div class="flex items-center gap-1.5 text-xs text-stone-500">
+            <span class="w-3 h-3 rounded-full bg-green-400 inline-block"></span>
+            Más barato que la competencia
+          </div>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="border-b border-stone-100 bg-stone-50/60">
+                <th class="px-5 py-3 text-left text-xs font-semibold text-stone-400 uppercase tracking-wide">Nuestro Producto</th>
+                <th class="px-5 py-3 text-left text-xs font-semibold text-stone-400 uppercase tracking-wide hidden sm:table-cell">Tamaño</th>
+                <th class="px-5 py-3 text-right text-xs font-semibold text-stone-400 uppercase tracking-wide">Nuestro Precio</th>
+                <th class="px-5 py-3 text-left text-xs font-semibold text-stone-400 uppercase tracking-wide">Competidor</th>
+                <th class="px-5 py-3 text-left text-xs font-semibold text-stone-400 uppercase tracking-wide hidden md:table-cell">Producto Competidor</th>
+                <th class="px-5 py-3 text-right text-xs font-semibold text-stone-400 uppercase tracking-wide">Precio Comp.</th>
+                <th class="px-5 py-3 text-right text-xs font-semibold text-stone-400 uppercase tracking-wide">Diferencia</th>
+                <th class="px-5 py-3 text-right text-xs font-semibold text-stone-400 uppercase tracking-wide">Dif. %</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-stone-50">
+              <template x-for="row in benchmarkData" :key="row.our_product + row.our_size + row.competitor">
+                <tr class="hover:bg-stone-50/60 transition-colors">
+                  <td class="px-5 py-3.5 font-medium text-espresso" x-text="row.our_product"></td>
+                  <td class="px-5 py-3.5 text-stone-400 text-xs hidden sm:table-cell">
+                    <span class="px-2 py-0.5 rounded-full bg-beige/50 text-espresso text-xs"
+                          x-text="row.our_size"></span>
+                  </td>
+                  <td class="px-5 py-3.5 text-right font-semibold text-espresso"
+                      x-text="formatCOP(row.our_price)"></td>
+                  <td class="px-5 py-3.5 text-stone-600" x-text="row.competitor"></td>
+                  <td class="px-5 py-3.5 text-stone-400 hidden md:table-cell" x-text="row.competitor_product"></td>
+                  <td class="px-5 py-3.5 text-right text-stone-500"
+                      x-text="formatCOP(row.competitor_price)"></td>
+                  <td class="px-5 py-3.5 text-right font-semibold"
+                      :class="row.price_difference > 0 ? 'text-red-600' : row.price_difference < 0 ? 'text-green-600' : 'text-stone-400'"
+                      x-text="(row.price_difference > 0 ? '+' : '') + formatCOP(row.price_difference)">
+                  </td>
+                  <td class="px-5 py-3.5 text-right">
+                    <span class="px-2 py-0.5 rounded-full text-xs font-bold"
+                          :class="row.price_difference_pct > 5
+                            ? 'bg-red-100 text-red-700'
+                            : row.price_difference_pct < -5
+                              ? 'bg-green-100 text-green-700'
+                              : 'bg-stone-100 text-stone-500'"
+                          x-text="(row.price_difference_pct > 0 ? '+' : '') + row.price_difference_pct.toFixed(1) + '%'">
+                    </span>
+                  </td>
+                </tr>
+              </template>
+            </tbody>
+          </table>
+        </div>
+
+        <div x-show="benchmarkData.length === 0"
+             class="text-center py-16 text-stone-400">
+          <p class="text-4xl mb-3">🏢</p>
+          <p class="text-sm font-medium">Sin datos de benchmark disponibles.</p>
+          <p class="text-xs mt-1">Configura matches de productos con competidores para ver comparaciones.</p>
+        </div>
+      </div>
+    </template>
+  </div>
+
+
+  {# ═══════════════════════════════════════════════════════════════════════
+     TAB 4: SIMULADOR DE IMPACTO
+     ═══════════════════════════════════════════════════════════════════════ #}
+  <div x-show="activeTab === 'simulator'"
+       x-transition:enter="transition ease-out duration-150"
+       x-transition:enter-start="opacity-0 translate-y-1"
+       x-transition:enter-end="opacity-100 translate-y-0">
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+      {# ── Panel de configuración ─────────────────────────────────────── #}
+      <aside class="lg:col-span-1">
+        <div class="bg-white rounded-xl shadow-sm p-6">
+          <h2 class="text-sm font-semibold text-espresso mb-5">Configurar simulación</h2>
+
+          <div class="space-y-5">
+
+            {# Selector de ingrediente #}
+            <div>
+              <label class="block text-xs font-semibold text-stone-500 uppercase tracking-wide mb-2">
+                Ingrediente
+              </label>
+              <select x-model="simIngredientId"
+                      class="w-full rounded-lg border border-stone-200 bg-white px-3 py-2.5
+                             text-sm text-espresso focus:outline-none focus:ring-2
+                             focus:ring-amber/40 focus:border-amber transition-colors">
+                <option value="">Seleccionar ingrediente…</option>
+                <template x-for="ing in ingredients" :key="ing.id">
+                  <option :value="ing.id" x-text="ing.name"></option>
+                </template>
+              </select>
+            </div>
+
+            {# % de cambio #}
+            <div>
+              <label class="block text-xs font-semibold text-stone-500 uppercase tracking-wide mb-2">
+                Cambio de precio
+              </label>
+              <div class="flex items-center gap-2">
+                <input type="number"
+                       x-model.number="simPercentChange"
+                       step="0.5"
+                       class="w-full rounded-lg border border-stone-200 bg-white px-3 py-2.5
+                              text-sm text-espresso focus:outline-none focus:ring-2
+                              focus:ring-amber/40 focus:border-amber transition-colors"
+                       placeholder="ej: 10 o -5">
+                <span class="text-stone-400 text-sm shrink-0">%</span>
+              </div>
+              <p class="mt-1.5 text-xs text-stone-400">
+                Positivo = aumento · Negativo = reducción
+              </p>
+            </div>
+
+            {# Preview del cambio #}
+            <div x-show="simIngredientId"
+                 class="rounded-lg bg-stone-50 border border-stone-100 px-4 py-3">
+              <p class="text-xs text-stone-400 mb-1">Ingrediente seleccionado</p>
+              <p class="text-sm font-semibold text-espresso"
+                 x-text="ingredients.find(i => i.id == simIngredientId)?.name || '—'"></p>
+              <div class="mt-2 flex items-center gap-2 text-xs">
+                <span :class="simPercentChange > 0 ? 'text-red-500' : simPercentChange < 0 ? 'text-green-600' : 'text-stone-400'"
+                      class="font-semibold"
+                      x-text="(simPercentChange > 0 ? '+' : '') + simPercentChange + '%'"></span>
+                <span class="text-stone-400">de variación</span>
+              </div>
+            </div>
+
+            {# Botón simular #}
+            <button @click="runSimulation()"
+                    :disabled="!simIngredientId || simLoading"
+                    class="w-full flex items-center justify-center gap-2 px-4 py-3
+                           rounded-lg bg-amber text-white text-sm font-semibold
+                           hover:bg-amber-light transition-colors
+                           disabled:opacity-50 disabled:cursor-not-allowed">
+              <svg x-show="!simLoading" class="w-4 h-4" fill="none" stroke="currentColor"
+                   stroke-width="2.5" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7"/>
+              </svg>
+              <svg x-show="simLoading" class="w-4 h-4 animate-spin" fill="none"
+                   stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                      d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993
+                         0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25
+                         0 0113.803-3.7l3.181 3.182m0-4.991v4.99"/>
+              </svg>
+              <span x-text="simLoading ? 'Calculando…' : 'Simular impacto'"></span>
+            </button>
+          </div>
+        </div>
+      </aside>
+
+      {# ── Panel de resultados ────────────────────────────────────────── #}
+      <div class="lg:col-span-2 space-y-4">
+
+        {# Error #}
+        <div x-show="simError"
+             class="bg-red-50 border border-red-200 rounded-xl px-5 py-4
+                    flex items-start gap-3 text-sm text-red-700">
+          <svg class="w-5 h-5 shrink-0 mt-0.5" fill="none" stroke="currentColor"
+               stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374
+                     1.948 3.374h14.71c1.73 0 2.813-1.874
+                     1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898
+                     0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/>
+          </svg>
+          <span x-text="simError"></span>
+        </div>
+
+        {# Estado vacío inicial #}
+        <div x-show="!simResult && !simLoading && !simError"
+             class="bg-white rounded-xl shadow-sm flex flex-col items-center
+                    justify-center py-20 text-stone-400">
+          <svg class="w-10 h-10 mb-3 opacity-40" fill="none" stroke="currentColor"
+               stroke-width="1.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M13 10V3L4 14h7v7l9-11h-7"/>
+          </svg>
+          <p class="text-sm font-medium">Configura un ingrediente y ejecuta la simulación.</p>
+        </div>
+
+        {# Resultados #}
+        <template x-if="simResult && !simLoading">
+          <div class="space-y-4">
+
+            {# Tarjetas de resumen #}
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+
+              {# Precio actual #}
+              <div class="bg-white rounded-xl shadow-sm p-4">
+                <p class="text-xs text-stone-400 mb-1">Precio actual</p>
+                <p class="text-lg font-bold text-espresso"
+                   x-text="formatCOP(simResult.current_price)"></p>
+              </div>
+
+              {# Precio nuevo #}
+              <div class="bg-white rounded-xl shadow-sm p-4">
+                <p class="text-xs text-stone-400 mb-1">Precio nuevo</p>
+                <p class="text-lg font-bold"
+                   :class="simResult.percent_change > 0 ? 'text-red-600' : 'text-green-600'"
+                   x-text="formatCOP(simResult.new_price)"></p>
+              </div>
+
+              {# Productos afectados #}
+              <div class="bg-white rounded-xl shadow-sm p-4">
+                <p class="text-xs text-stone-400 mb-1">Productos afectados</p>
+                <p class="text-lg font-bold text-espresso"
+                   x-text="simResult.affected_products.length"></p>
+              </div>
+
+              {# Impacto promedio #}
+              <div class="bg-white rounded-xl shadow-sm p-4">
+                <p class="text-xs text-stone-400 mb-1">Impacto promedio</p>
+                <p class="text-lg font-bold"
+                   :class="simAvgImpact > 0 ? 'text-red-500' : 'text-green-600'"
+                   x-text="(simAvgImpact > 0 ? '+' : '') + simAvgImpact + '%'"></p>
+              </div>
+            </div>
+
+            {# Tabla de productos afectados #}
+            <div x-show="simResult.affected_products.length > 0"
+                 class="bg-white rounded-xl shadow-sm overflow-hidden">
+              <div class="px-5 py-3.5 border-b border-stone-100 bg-stone-50">
+                <h3 class="text-sm font-semibold text-espresso">
+                  Productos afectados
+                  <span class="ml-2 text-xs font-normal text-stone-400">
+                    ordenados por mayor impacto
+                  </span>
+                </h3>
+              </div>
+              <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                  <thead>
+                    <tr class="border-b border-stone-100">
+                      <th class="px-5 py-3 text-left text-xs font-semibold text-stone-400 uppercase">Producto</th>
+                      <th class="px-5 py-3 text-left text-xs font-semibold text-stone-400 uppercase">Tamaño</th>
+                      <th class="px-5 py-3 text-right text-xs font-semibold text-stone-400 uppercase">Costo actual</th>
+                      <th class="px-5 py-3 text-right text-xs font-semibold text-stone-400 uppercase">Costo nuevo</th>
+                      <th class="px-5 py-3 text-right text-xs font-semibold text-stone-400 uppercase">Δ Costo</th>
+                      <th class="px-5 py-3 text-right text-xs font-semibold text-stone-400 uppercase">Δ %</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-stone-50">
+                    <template x-for="item in simResult.affected_products"
+                              :key="item.product + item.size">
+                      <tr class="hover:bg-stone-50/60 transition-colors">
+                        <td class="px-5 py-3.5 font-medium text-espresso" x-text="item.product"></td>
+                        <td class="px-5 py-3.5 text-stone-400 text-xs">
+                          <span class="px-2 py-0.5 rounded-full bg-beige/50 text-espresso text-xs"
+                                x-text="item.size"></span>
+                        </td>
+                        <td class="px-5 py-3.5 text-right text-stone-500"
+                            x-text="formatCOP(item.current_cost)"></td>
+                        <td class="px-5 py-3.5 text-right font-medium"
+                            :class="item.cost_increase > 0 ? 'text-red-600' : 'text-green-600'"
+                            x-text="formatCOP(item.new_cost)"></td>
+                        <td class="px-5 py-3.5 text-right text-stone-400"
+                            x-text="(item.cost_increase > 0 ? '+' : '') + formatCOP(item.cost_increase)"></td>
+                        <td class="px-5 py-3.5 text-right">
+                          <span class="px-2 py-0.5 rounded-full text-xs font-bold"
+                                :class="item.cost_increase_pct > 0
+                                  ? 'bg-red-100 text-red-700'
+                                  : item.cost_increase_pct < 0
+                                    ? 'bg-green-100 text-green-700'
+                                    : 'bg-stone-100 text-stone-500'"
+                                x-text="(item.cost_increase_pct > 0 ? '+' : '')
+                                        + parseFloat(item.cost_increase_pct).toFixed(2) + '%'">
+                          </span>
+                        </td>
+                      </tr>
+                    </template>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div x-show="simResult.affected_products.length === 0"
+                 class="bg-white rounded-xl shadow-sm py-12 text-center text-stone-400">
+              <p class="text-sm">Este ingrediente no figura en ninguna receta activa.</p>
+            </div>
+
+          </div>
+        </template>
+
+      </div>
+    </div>
+  </div>
+
+
+</div>
+{# /x-data reportsDashboard #}
+
+{% endblock %}
+
+
+{% block extra_scripts %}
+<script>
+function reportsDashboard() {
+  return {
+
+    // ── Estado de navegación ───────────────────────────────────────────────
+    activeTab: 'costs',
+
+    // ── Datos base inyectados por el servidor ──────────────────────────────
+    stores:      [],
+    ingredients: [],
+
+    // ── Tab 1: Costos ──────────────────────────────────────────────────────
+    costsStoreId: '',
+    costsData:    null,
+    costsLoading: false,
+    costsLoaded:  false,
+    costsChart:   null,
+
+    // ── Tab 2: Márgenes ────────────────────────────────────────────────────
+    marginsData:    null,
+    marginsLoading: false,
+    marginsLoaded:  false,
+
+    // ── Tab 3: Benchmark ───────────────────────────────────────────────────
+    benchmarkData:    null,
+    benchmarkLoading: false,
+    benchmarkLoaded:  false,
+
+    // ── Tab 4: Simulador ───────────────────────────────────────────────────
+    simIngredientId:  '',
+    simPercentChange: 10,
+    simLoading:       false,
+    simResult:        null,
+    simError:         '',
+
+    // ── Derivados ──────────────────────────────────────────────────────────
+    get simAvgImpact() {
+      const rows = this.simResult?.affected_products ?? [];
+      if (!rows.length) return '0.00';
+      const sum = rows.reduce((acc, p) => acc + parseFloat(p.cost_increase_pct), 0);
+      return (sum / rows.length).toFixed(2);
+    },
+
+    // ── Ciclo de vida ──────────────────────────────────────────────────────
+    init() {
+      const storesEl = document.getElementById('stores-data');
+      if (storesEl) {
+        try { this.stores = JSON.parse(storesEl.textContent); } catch {}
+      }
+      const ingsEl = document.getElementById('ingredients-data');
+      if (ingsEl) {
+        try { this.ingredients = JSON.parse(ingsEl.textContent); } catch {}
+      }
+      this.loadCosts();
+    },
+
+    // ── Navegación ─────────────────────────────────────────────────────────
+    setTab(tab) {
+      this.activeTab = tab;
+      if (tab === 'costs'     && !this.costsLoaded)     this.loadCosts();
+      if (tab === 'margins'   && !this.marginsLoaded)   this.loadMargins();
+      if (tab === 'benchmark' && !this.benchmarkLoaded) this.loadBenchmark();
+    },
+
+    // ── Loaders ────────────────────────────────────────────────────────────
+    async loadCosts() {
+      this.costsLoading = true;
+      this.costsLoaded  = false;
+      try {
+        const q   = this.costsStoreId ? `?store_id=${this.costsStoreId}` : '';
+        const res = await fetch(`/api/reports/product-costs${q}`);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        this.costsData  = await res.json();
+        this.costsLoaded = true;
+        await this.$nextTick();
+        this._renderCostsChart();
+      } catch (e) {
+        console.error('loadCosts:', e);
+        this.costsData = [];
+      } finally {
+        this.costsLoading = false;
+      }
+    },
+
+    async loadMargins() {
+      this.marginsLoading = true;
+      try {
+        const res = await fetch('/api/reports/margin-analysis');
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        this.marginsData   = await res.json();
+        this.marginsLoaded = true;
+      } catch (e) {
+        console.error('loadMargins:', e);
+        this.marginsData = { negative_margin: [], low_margin: [], healthy_margin: [], high_margin: [] };
+      } finally {
+        this.marginsLoading = false;
+      }
+    },
+
+    async loadBenchmark() {
+      this.benchmarkLoading = true;
+      try {
+        const res = await fetch('/api/reports/competitor-benchmark');
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        this.benchmarkData   = await res.json();
+        this.benchmarkLoaded = true;
+      } catch (e) {
+        console.error('loadBenchmark:', e);
+        this.benchmarkData = [];
+      } finally {
+        this.benchmarkLoading = false;
+      }
+    },
+
+    async runSimulation() {
+      if (!this.simIngredientId) return;
+      this.simLoading = true;
+      this.simResult  = null;
+      this.simError   = '';
+      try {
+        const url = `/api/reports/price-impact?ingredient_id=${this.simIngredientId}&percent_change=${this.simPercentChange}`;
+        const res = await fetch(url);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        if (data.error) {
+          this.simError = data.error;
+        } else {
+          this.simResult = data;
+        }
+      } catch (e) {
+        this.simError = 'Error al conectar con el servidor. Intenta de nuevo.';
+        console.error('runSimulation:', e);
+      } finally {
+        this.simLoading = false;
+      }
+    },
+
+    // ── Chart.js ───────────────────────────────────────────────────────────
+    _renderCostsChart() {
+      if (this.costsChart) {
+        this.costsChart.destroy();
+        this.costsChart = null;
+      }
+
+      const allRows = [];
+      for (const p of this.costsData ?? []) {
+        for (const s of p.sizes ?? []) {
+          allRows.push({
+            label: `${p.product_name} · ${s.size_name}`,
+            cost:  parseFloat(s.cost) || 0,
+          });
+        }
+      }
+
+      const top10 = allRows.sort((a, b) => b.cost - a.cost).slice(0, 10);
+      if (!top10.length) return;
+
+      const ctx = document.getElementById('costs-chart');
+      if (!ctx) return;
+
+      this.costsChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: top10.map(x => x.label),
+          datasets: [{
+            label: 'Costo de producción',
+            data:  top10.map(x => x.cost),
+            backgroundColor: 'rgba(255,111,0,0.75)',
+            borderColor:     '#FF6F00',
+            borderWidth:     1,
+            borderRadius:    5,
+          }],
+        },
+        options: {
+          indexAxis: 'y',
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: ctx => ` $${ctx.raw.toLocaleString('es-CO', { maximumFractionDigits: 0 })} COP`,
+              },
+            },
+          },
+          scales: {
+            x: {
+              grid: { color: 'rgba(0,0,0,0.04)' },
+              ticks: {
+                callback: v =>
+                  '$' + Number(v).toLocaleString('es-CO', { maximumFractionDigits: 0 }),
+                font: { size: 11 },
+              },
+            },
+            y: {
+              ticks: { font: { size: 11 } },
+            },
+          },
+        },
+      });
+    },
+
+    // ── Utilidades ─────────────────────────────────────────────────────────
+    formatCOP(val) {
+      const n = parseFloat(val) || 0;
+      return '$' + n.toLocaleString('es-CO', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+    },
+  };
+}
+</script>
+{% endblock %}

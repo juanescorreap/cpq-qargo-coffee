@@ -10,6 +10,7 @@ from sqlalchemy.orm import Session
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 import backend.models  # noqa: F401 — registra todos los modelos en Base.metadata
+from backend.config import settings
 from backend.database import get_db, init_db, test_connection
 from backend.models.ingredient import Ingredient
 from backend.models.product import Product
@@ -17,7 +18,7 @@ from backend.models.store import Store
 from backend.routers import (
     competitors, competitors_ui, costs, costs_ui, ingredients, ingredients_ui,
     pricing, pricing_ui, product_sizes, products, products_ui, recipe_units, recipes, recipes_ui,
-    scraping, scraping_ui, stores, stores_ui,
+    reports, reports_ui, scraping, scraping_ui, stores, stores_ui,
 )
 
 
@@ -67,7 +68,7 @@ app = FastAPI(
 # En producción reemplazar con la lista exacta de dominios permitidos.
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=settings.ALLOWED_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -100,6 +101,8 @@ app.include_router(competitors.router)
 app.include_router(competitors_ui.router)
 app.include_router(pricing.router)
 app.include_router(pricing_ui.router)
+app.include_router(reports.router)
+app.include_router(reports_ui.router)
 app.include_router(scraping.router)
 app.include_router(scraping_ui.router)
 

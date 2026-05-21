@@ -94,7 +94,7 @@ def test_calculate_with_recipe_unit(test_db: Session):
         purchase_price=Decimal("28000"),
         usage_unit="ml",
         conversion_factor=Decimal("750"),
-        yield_percentage=Decimal("98"),
+        yield_percentage=Decimal("0.98"),
     )
     pump_unit = RecipeUnit(name="test_pump", category="volume")
     product = Product(
@@ -150,14 +150,14 @@ def test_scaling_with_size(test_db: Session):
         purchase_price=Decimal("4500"),
         usage_unit="ml",
         conversion_factor=Decimal("1000"),
-        yield_percentage=Decimal("100"),
+        yield_percentage=Decimal("1.00"),
     )
     espresso = Ingredient(
         name="Test Espresso Scaling",
         purchase_price=Decimal("25000"),
         usage_unit="g",
         conversion_factor=Decimal("500"),
-        yield_percentage=Decimal("100"),
+        yield_percentage=Decimal("1.00"),
     )
     product = Product(name="Test Scaling Product", is_sub_recipe=False)
     test_db.add_all([milk, espresso, product])
@@ -241,14 +241,14 @@ def test_yield_loss(test_db: Session):
         purchase_price=Decimal("10000"),
         usage_unit="g",
         conversion_factor=Decimal("1000"),
-        yield_percentage=Decimal("80"),
+        yield_percentage=Decimal("0.80"),
     )
     fruit_full_yield = Ingredient(
         name="Test Fruit 100pct Yield",
         purchase_price=Decimal("10000"),
         usage_unit="g",
         conversion_factor=Decimal("1000"),
-        yield_percentage=Decimal("100"),
+        yield_percentage=Decimal("1.00"),
     )
     product_80  = Product(name="Test Yield 80",  is_sub_recipe=False)
     product_100 = Product(name="Test Yield 100", is_sub_recipe=False)
@@ -300,7 +300,7 @@ def test_store_price_override(test_db: Session):
         purchase_price=Decimal("1000"),
         usage_unit="unit",
         conversion_factor=Decimal("1"),
-        yield_percentage=Decimal("100"),
+        yield_percentage=Decimal("1.00"),
     )
     store = Store(code="TEST-STORE-01", name="Test Store Alpha", city="Bogotá")
     product = Product(name="Test Override Product", is_sub_recipe=False)

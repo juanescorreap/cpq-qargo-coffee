@@ -87,7 +87,7 @@ def sample_ingredient(test_db: Session) -> Ingredient:
         purchase_price=Decimal("4500"),
         usage_unit="ml",
         conversion_factor=Decimal("1000"),
-        yield_percentage=Decimal("95"),
+        yield_percentage=Decimal("0.95"),
     )
     test_db.add(ingredient)
     test_db.commit()
