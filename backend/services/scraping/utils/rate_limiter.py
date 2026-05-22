@@ -326,8 +326,10 @@ class RateLimiter:
         """
         Release the lock, sleep, then re-acquire.
 
-        Releasing the lock during sleep lets other threads read stats or call
-        ``mark_error`` / ``mark_success`` while this thread waits.
+        Intentionally releases the lock during sleep so that concurrent threads
+        can call mark_success / mark_error while this thread waits.  This is safe
+        because wait() is expected to be called by a single thread per scraper
+        instance; only mark_success/mark_error may be called concurrently.
         """
         if seconds <= 0:
             return

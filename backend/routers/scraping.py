@@ -208,6 +208,7 @@ def scrape_ingredients_batch(
             )
         except Exception as exc:
             logger.error("Batch scraping task failed: %s", exc)
+            bg_db.rollback()
         finally:
             bg_db.close()
 

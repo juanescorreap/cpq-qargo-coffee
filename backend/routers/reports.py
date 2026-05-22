@@ -10,7 +10,7 @@ from decimal import Decimal
 from io import StringIO
 from typing import Optional
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
 
@@ -63,8 +63,8 @@ def competitor_benchmark_report(db: Session = Depends(get_db)):
 
 @router.get("/price-impact")
 def price_impact_simulation(
-    ingredient_id: int,
-    percent_change: Decimal,
+    ingredient_id: int = Query(..., gt=0, description="PK of the ingredient to simulate"),
+    percent_change: Decimal = Query(..., ge=-100, le=10000, description="% variation (e.g. 10 = +10%, -5 = -5%)"),
     db: Session = Depends(get_db),
 ):
     """Simulation of cost impact from a price change on an ingredient.

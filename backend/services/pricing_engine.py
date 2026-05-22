@@ -185,8 +185,10 @@ class PricingEngine:
 
         if markup_override is not None:
             markup_used = markup_override
-        else:
+        elif cost > 0:
             markup_used = ((final_price / cost) - Decimal("1")) * Decimal("100")
+        else:
+            markup_used = _DEFAULT_MARKUP
 
         today = date.today()
         existing = (
@@ -231,8 +233,12 @@ class PricingEngine:
             )
             self.db.add(history)
 
-        self.db.commit()
-        self.db.refresh(existing)
+        try:
+            self.db.commit()
+            self.db.refresh(existing)
+        except Exception:
+            self.db.rollback()
+            raise
         return existing
 
     def calculate_all_prices(

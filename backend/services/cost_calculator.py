@@ -451,6 +451,7 @@ class CostCalculator:
         ingredient: Ingredient,
         scale_factor: Decimal,
         store_id: Optional[int],
+        _effective_price: Optional[Decimal] = None,
     ) -> Decimal:
         """Calculate the cost of a single ingredient within a recipe.
 
@@ -515,8 +516,8 @@ class CostCalculator:
                 ``ingredient.yield_percentage`` are zero in the DB (corrupt
                 data; must be corrected in the catalogue).
         """
-        # 1. Ingredient price
-        price = self._get_ingredient_price(ingredient.id, store_id)
+        # 1. Ingredient price (use pre-resolved price from batch caller to avoid N+1)
+        price = _effective_price if _effective_price is not None else self._get_ingredient_price(ingredient.id, store_id)
 
         # 2. Quantity in recipe_unit → usage_unit
         if recipe_ing.recipe_unit_id:
@@ -587,24 +588,56 @@ class CostCalculator:
             .all()
         )
 
+        if not recipe_ingredients:
+            return Decimal("0")
+
+        # Pre-fetch all ingredients in one query to avoid N+1
+        ingredient_ids = [ri.ingredient_id for ri in recipe_ingredients]
+        ingredients_map: Dict[int, Ingredient] = {
+            i.id: i
+            for i in self.db.query(Ingredient)
+            .filter(Ingredient.id.in_(ingredient_ids))
+            .all()
+        }
+
+        # Pre-fetch all store price overrides in one query
+        store_prices_map: Dict[int, StoreIngredientPrice] = {}
+        if store_id and ingredient_ids:
+            store_prices_map = {
+                sp.ingredient_id: sp
+                for sp in self.db.query(StoreIngredientPrice)
+                .filter(
+                    StoreIngredientPrice.store_id == store_id,
+                    StoreIngredientPrice.ingredient_id.in_(ingredient_ids),
+                )
+                .all()
+            }
+
         total_cost = Decimal("0")
 
         for recipe_ing in recipe_ingredients:
-            ingredient = (
-                self.db.query(Ingredient)
-                .filter(Ingredient.id == recipe_ing.ingredient_id)
-                .first()
-            )
-
+            ingredient = ingredients_map.get(recipe_ing.ingredient_id)
             if not ingredient:
                 # Orphan ingredient: skip without blocking the calculation
                 continue
+
+            # Resolve effective price from pre-fetched data (no per-row DB hit)
+            if store_id:
+                sp = store_prices_map.get(recipe_ing.ingredient_id)
+                effective_price = (
+                    sp.local_price
+                    if sp and sp.local_price
+                    else (ingredient.purchase_price or Decimal("0"))
+                )
+            else:
+                effective_price = ingredient.purchase_price or Decimal("0")
 
             total_cost += self._calculate_ingredient_cost(
                 recipe_ing,
                 ingredient,
                 scale_factor,
                 store_id,
+                _effective_price=effective_price,
             )
 
         return total_cost
@@ -643,21 +676,52 @@ class CostCalculator:
             .all()
         )
 
+        if not packaging_items:
+            return Decimal("0")
+
+        # Pre-fetch all packaging ingredients in one query to avoid N+1
+        pkg_ingredient_ids = [p.packaging_ingredient_id for p in packaging_items]
+        pkg_ingredients_map: Dict[int, Ingredient] = {
+            i.id: i
+            for i in self.db.query(Ingredient)
+            .filter(Ingredient.id.in_(pkg_ingredient_ids))
+            .all()
+        }
+
+        # Pre-fetch all store price overrides in one query
+        pkg_store_prices_map: Dict[int, StoreIngredientPrice] = {}
+        if store_id and pkg_ingredient_ids:
+            pkg_store_prices_map = {
+                sp.ingredient_id: sp
+                for sp in self.db.query(StoreIngredientPrice)
+                .filter(
+                    StoreIngredientPrice.store_id == store_id,
+                    StoreIngredientPrice.ingredient_id.in_(pkg_ingredient_ids),
+                )
+                .all()
+            }
+
         total_cost = Decimal("0")
 
         for pkg_item in packaging_items:
-            ingredient = (
-                self.db.query(Ingredient)
-                .filter(Ingredient.id == pkg_item.packaging_ingredient_id)
-                .first()
-            )
-
+            ingredient = pkg_ingredients_map.get(pkg_item.packaging_ingredient_id)
             if not ingredient:
                 continue
 
-            price = self._get_ingredient_price(
-                pkg_item.packaging_ingredient_id, store_id
-            )
+            if not ingredient.conversion_factor:
+                continue
+
+            # Resolve price from pre-fetched data (no per-row DB hit)
+            if store_id:
+                sp = pkg_store_prices_map.get(pkg_item.packaging_ingredient_id)
+                price = (
+                    sp.local_price
+                    if sp and sp.local_price
+                    else (ingredient.purchase_price or Decimal("0"))
+                )
+            else:
+                price = ingredient.purchase_price or Decimal("0")
+
             unit_cost = price / ingredient.conversion_factor
             total_cost += unit_cost * pkg_item.quantity
 

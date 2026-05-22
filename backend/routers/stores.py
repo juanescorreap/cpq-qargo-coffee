@@ -123,15 +123,20 @@ def deactivate_store(store_id: int, db: Session = Depends(get_db)) -> dict:
 
 @router.get("/{store_id}/ingredient-prices", response_model=List[StoreIngredientPriceResponse])
 def list_ingredient_prices(
-    store_id: int, db: Session = Depends(get_db)
+    store_id: int,
+    skip: int = Query(0, ge=0),
+    limit: int = Query(100, ge=1, le=500),
+    db: Session = Depends(get_db),
 ) -> List[StoreIngredientPriceResponse]:
-    """Return all local price overrides configured for a store."""
+    """Return paginated local price overrides configured for a store."""
     _get_store_or_404(store_id, db)
     rows = (
         db.query(StoreIngredientPrice, Ingredient.name.label("ingredient_name"))
         .join(Ingredient, StoreIngredientPrice.ingredient_id == Ingredient.id)
         .filter(StoreIngredientPrice.store_id == store_id)
         .order_by(Ingredient.name)
+        .offset(skip)
+        .limit(limit)
         .all()
     )
     return [

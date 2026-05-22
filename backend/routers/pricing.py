@@ -1,14 +1,14 @@
 from decimal import Decimal
 from typing import Optional
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Path, Query
 from sqlalchemy.orm import Session
 
 from backend.database import get_db
 from backend.models import ProductPriceHistory, ProductPricing
 from backend.models.product import Product, ProductSize
 from backend.services.pricing_engine import PricingEngine
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 router = APIRouter(prefix="/api/pricing", tags=["pricing"])
 
@@ -24,7 +24,7 @@ class SetPriceRequest(BaseModel):
     product_id: int
     size_id: int
     store_id: Optional[int] = None
-    final_price: Decimal
+    final_price: Decimal = Field(gt=0, description="Final price in COP (must be positive)")
     markup_override: Optional[Decimal] = None
     is_manual: bool = True
 
@@ -80,9 +80,9 @@ def calculate_all_prices(
 
 @router.get("/history/{product_id}/{size_id}")
 def get_price_history(
-    product_id: int,
-    size_id: int,
-    store_id: Optional[int] = None,
+    product_id: int = Path(..., gt=0),
+    size_id: int = Path(..., gt=0),
+    store_id: Optional[int] = Query(None, gt=0),
     db: Session = Depends(get_db),
 ):
     """Returns the price history for a product/size."""
@@ -156,9 +156,9 @@ def get_pricing_table(
 
 @router.get("/current/{product_id}/{size_id}")
 def get_current_pricing(
-    product_id: int,
-    size_id: int,
-    store_id: Optional[int] = None,
+    product_id: int = Path(..., gt=0),
+    size_id: int = Path(..., gt=0),
+    store_id: Optional[int] = Query(None, gt=0),
     db: Session = Depends(get_db),
 ):
     """Returns the most recent current pricing for a product/size."""

@@ -469,8 +469,10 @@ class ScraperManager:
                         if cfg.business_type != "supplier":
                             totals["skipped"] += 1
                             continue
-                    except Exception:
-                        pass
+                    except Exception as exc:
+                        self.logger.warning(
+                            "Could not load config for scraper '%s': %s", sid, exc
+                        )
 
             result = self.scrape_ingredient(ing.id, update_db=True)
             results.append(result)

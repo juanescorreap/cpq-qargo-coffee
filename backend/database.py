@@ -28,7 +28,9 @@ IS_PRODUCTION = os.getenv("RAILWAY_ENVIRONMENT") is not None
 # ENGINE CONFIGURATION
 # ============================================
 
-if IS_PRODUCTION and SUPABASE_POOLER_URL:
+if SUPABASE_POOLER_URL:
+    # Supabase's PgBouncer manages the actual connection pool — SQLAlchemy
+    # should not add its own pool on top (would exceed Supabase's connection limits).
     engine = create_engine(
         DATABASE_URL,
         poolclass=NullPool,
