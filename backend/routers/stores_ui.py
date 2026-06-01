@@ -5,13 +5,19 @@ from typing import Optional
 from fastapi import APIRouter, Depends, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
-from sqlalchemy import and_
+from sqlalchemy import and_, text
 from sqlalchemy.orm import Session
 
 from backend.database import get_db
 from backend.models.ingredient import Ingredient
-from backend.models.product import Product, StoreProduct
+from backend.models.product import Product, RecipeIngredient, StoreProduct
 from backend.models.store import Store, StoreIngredientPrice
+from backend.models.supply_chain import (
+    Distributor,
+    Manufacturer,
+    Region,
+    SupplyRoutePrice,
+)
 
 router = APIRouter(prefix="/stores", tags=["UI - Stores"])
 
@@ -82,6 +88,76 @@ def _ingredients_for_select(db: Session) -> list:
     )
 
 
+def _regions_for_select(db: Session) -> list:
+    return db.query(Region).filter(Region.is_active == True).order_by(Region.code).all()
+
+
+def _resolve_active_routes(store_id: int, db: Session) -> list[dict]:
+    """Call fn_resolve_supply_route for every ingredient used in any active recipe.
+
+    Returns rows sorted by (unresolved first → resolved, then alphabetically).
+    Used by the 'Active Routes' tab in the store detail page.
+    """
+    ingredient_ids = (
+        db.query(RecipeIngredient.ingredient_id)
+        .join(Product, RecipeIngredient.product_id == Product.id)
+        .filter(Product.is_active == True, Product.is_sub_recipe == False)
+        .distinct()
+        .all()
+    )
+
+    results = []
+    for (iid,) in ingredient_ids:
+        row = db.execute(
+            text(
+                "SELECT supply_route_id, scope, priority, "
+                "manufacturer_id, distributor_id, is_direct "
+                "FROM public.fn_resolve_supply_route(:iid, :sid)"
+            ),
+            {"iid": iid, "sid": store_id},
+        ).fetchone()
+
+        ingredient = db.get(Ingredient, iid)
+        ing_name = ingredient.name if ingredient else f"Ingredient #{iid}"
+
+        if row:
+            mfr = db.get(Manufacturer, row.manufacturer_id) if row.manufacturer_id else None
+            dst = db.get(Distributor, row.distributor_id) if row.distributor_id else None
+            price = (
+                db.query(SupplyRoutePrice)
+                .filter(
+                    SupplyRoutePrice.supply_route_id == row.supply_route_id,
+                    SupplyRoutePrice.valid_until.is_(None),
+                )
+                .first()
+            )
+            results.append({
+                "ingredient_name": ing_name,
+                "ingredient_id": iid,
+                "resolved": True,
+                "scope": row.scope,
+                "priority": row.priority,
+                "supply_route_id": row.supply_route_id,
+                "source_name": mfr.name if mfr else (dst.name if dst else "Direct purchase"),
+                "is_direct": row.is_direct,
+                "price": price,
+            })
+        else:
+            results.append({
+                "ingredient_name": ing_name,
+                "ingredient_id": iid,
+                "resolved": False,
+                "scope": None,
+                "priority": None,
+                "supply_route_id": None,
+                "source_name": None,
+                "is_direct": False,
+                "price": None,
+            })
+
+    return sorted(results, key=lambda x: (0 if not x["resolved"] else 1, x["ingredient_name"]))
+
+
 # ---------------------------------------------------------------------------
 # Endpoints
 # ---------------------------------------------------------------------------
@@ -108,6 +184,9 @@ async def store_detail(
     return templates.TemplateResponse("stores/detail.html", {
         "request":               request,
         "store":                 store,
+        "region":                db.get(Region, store.region_id) if store.region_id else None,
+        "regions":               _regions_for_select(db),
+        "active_routes":         _resolve_active_routes(store_id, db),
         "prices":                _price_rows(store_id, db),
         "products":              _product_rows(store_id, db),
         "ingredients_available": _ingredients_for_select(db),
@@ -244,4 +323,32 @@ async def upsert_store_product(
         "request": request,
         "store":   store,
         "product": row,
+    })
+
+
+# ── Region assignment (HTMX partial) ────────────────────────────────────────
+
+@router.post("/{store_id}/region-htmx", response_class=HTMLResponse)
+async def assign_region(
+    request: Request, store_id: int, db: Session = Depends(get_db)
+) -> HTMLResponse:
+    """Assign or clear the region for a store.
+
+    Returns the `_region_section.html` partial that replaces only the
+    region section inside the info card, preserving the tab state.
+    """
+    form = await request.form()
+    raw_region = form.get("region_id", "").strip()
+
+    store = db.get(Store, store_id)
+    if store:
+        store.region_id = int(raw_region) if raw_region else None
+        db.commit()
+        db.refresh(store)
+
+    return templates.TemplateResponse("stores/_region_section.html", {
+        "request": request,
+        "store":   store,
+        "region":  db.get(Region, store.region_id) if store and store.region_id else None,
+        "regions": _regions_for_select(db),
     })

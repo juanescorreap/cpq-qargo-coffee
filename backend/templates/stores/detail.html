@@ -36,7 +36,7 @@
           <span class="px-2 py-0.5 rounded-full text-xs font-medium bg-stone-100 text-stone-400">Inactive</span>
           {% endif %}
         </div>
-        <div class="flex items-center gap-3 mt-1 text-sm text-stone-500">
+        <div class="flex items-center gap-3 mt-1 text-sm text-stone-500 flex-wrap">
           <span class="font-mono text-xs px-2 py-0.5 rounded bg-stone-100 text-stone-600">
             {{ store.code }}
           </span>
@@ -51,15 +51,21 @@
           </span>
           {% endif %}
         </div>
+        {# ── Region assignment ──────────────────────────────────────────────── #}
+        <div class="mt-3">
+          {% include "stores/_region_section.html" %}
+        </div>
       </div>
     </div>
   </div>
 </div>
 
 {# ── Tabs ────────────────────────────────────────────────────────────────── #}
-{% set prices_count   = prices | length %}
+{% set prices_count    = prices | length %}
 {% set available_count = products | selectattr('is_available') | list | length %}
 {% set products_count  = products | length %}
+{% set routes_count    = active_routes | length %}
+{% set routes_resolved = active_routes | selectattr('resolved') | list | length %}
 
 <div x-data="{ tab: 'prices' }">
 
@@ -95,6 +101,22 @@
       <span :class="tab === 'products' ? 'bg-white/20 text-beige' : 'bg-stone-100 text-stone-500'"
             class="px-1.5 py-0.5 rounded text-xs font-semibold tabular-nums">
         {{ available_count }}/{{ products_count }}
+      </span>
+    </button>
+
+    <button @click="tab = 'routes'"
+            :class="tab === 'routes'
+              ? 'bg-espresso text-beige shadow-sm'
+              : 'text-stone-500 hover:text-espresso hover:bg-stone-50'"
+            class="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round"
+              d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
+      </svg>
+      Active Routes
+      <span :class="tab === 'routes' ? 'bg-white/20 text-beige' : 'bg-stone-100 text-stone-500'"
+            class="px-1.5 py-0.5 rounded text-xs font-semibold tabular-nums">
+        {{ routes_resolved }}/{{ routes_count }}
       </span>
     </button>
 
@@ -162,6 +184,135 @@
   </div>
   {# /tab products #}
 
+  {# ── Tab: Active Routes ──────────────────────────────────────────────────── #}
+  <div x-show="tab === 'routes'" x-cloak>
+
+    {% if not store.region_id %}
+    <div class="flex items-start gap-3 mb-5 bg-amber/10 border border-amber/20 rounded-xl p-4 text-sm text-amber">
+      <svg class="w-5 h-5 shrink-0 mt-0.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+      </svg>
+      <div>
+        <p class="font-semibold">This store has no region assigned.</p>
+        <p class="text-stone-500 mt-0.5">Regional route assignments won't apply. Assign a region above so the cost calculator can resolve supply routes automatically.</p>
+      </div>
+    </div>
+    {% endif %}
+
+    {% if not active_routes %}
+    <div class="bg-white rounded-xl shadow-sm py-20 text-center">
+      <p class="text-4xl mb-3">🔗</p>
+      <p class="text-base font-semibold text-stone-500">No recipe ingredients found</p>
+      <p class="text-sm text-stone-400 mt-1">Add products with recipes to see which supply routes are resolved for this store.</p>
+    </div>
+
+    {% else %}
+
+    {# ── Legend ── #}
+    <div class="flex flex-wrap items-center gap-x-6 gap-y-1 text-xs text-stone-400 mb-4">
+      <span class="flex items-center gap-1.5">
+        <span class="w-2 h-2 rounded-full bg-green-500"></span> Route resolved
+      </span>
+      <span class="flex items-center gap-1.5">
+        <span class="w-2 h-2 rounded-full bg-amber"></span> No route — uses base price
+      </span>
+      <span class="ml-auto">
+        {{ routes_resolved }} of {{ routes_count }} ingredients have an active route
+      </span>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+      <table class="min-w-full divide-y divide-stone-100 text-sm">
+        <thead class="bg-stone-50">
+          <tr class="text-xs text-stone-400 font-semibold uppercase tracking-wider">
+            <th class="px-5 py-3 text-left">Ingredient</th>
+            <th class="px-5 py-3 text-left">Source</th>
+            <th class="px-5 py-3 text-left">Scope</th>
+            <th class="px-5 py-3 text-left">Priority</th>
+            <th class="px-5 py-3 text-left">Active price</th>
+            <th class="px-5 py-3 text-left">Status</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-stone-50">
+          {% for r in active_routes %}
+          <tr class="{{ 'bg-amber/5' if not r.resolved else 'hover:bg-cream' }} transition-colors">
+            <td class="px-5 py-3 font-medium text-stone-800">{{ r.ingredient_name }}</td>
+
+            <td class="px-5 py-3 text-stone-600">
+              {% if r.resolved %}
+                {% if r.source_name %}
+                <div class="flex items-center gap-1.5">
+                  {% if r.is_direct %}
+                  <span class="text-xs px-1.5 py-0.5 rounded bg-blue-100 text-blue-700">DIRECT</span>
+                  {% endif %}
+                  {{ r.source_name }}
+                </div>
+                {% else %}—{% endif %}
+              {% else %}
+              <span class="text-stone-400 italic text-xs">not configured</span>
+              {% endif %}
+            </td>
+
+            <td class="px-5 py-3">
+              {% if r.resolved %}
+              <span class="px-2 py-0.5 rounded-full text-xs font-medium
+                           {{ 'bg-purple-100 text-purple-700' if r.scope == 'store_override' else 'bg-blue-100 text-blue-700' }}">
+                {{ 'Store override' if r.scope == 'store_override' else 'Regional' }}
+              </span>
+              {% else %}—{% endif %}
+            </td>
+
+            <td class="px-5 py-3">
+              {% if r.resolved %}
+              <span class="px-2 py-0.5 rounded-full text-xs font-semibold
+                           {{ 'bg-green-100 text-green-700' if r.priority == 1 else 'bg-amber/10 text-amber' }}">
+                {{ '1° Primary' if r.priority == 1 else (r.priority | string ~ '° Alt') }}
+              </span>
+              {% else %}—{% endif %}
+            </td>
+
+            <td class="px-5 py-3">
+              {% if r.resolved and r.price %}
+              <p class="font-semibold text-espresso tabular-nums">
+                {{ "{:,.0f}".format(r.price.qargo_price) }} {{ r.price.currency_code }}
+              </p>
+              <p class="text-xs text-stone-400">{{ r.price.price_per_unit }}</p>
+              {% elif r.resolved %}
+              <span class="text-xs text-amber font-medium">No price set</span>
+              {% else %}—{% endif %}
+            </td>
+
+            <td class="px-5 py-3">
+              {% if r.resolved %}
+              <span class="flex items-center gap-1.5 text-xs text-green-600">
+                <span class="w-2 h-2 rounded-full bg-green-500"></span> Resolved
+              </span>
+              {% else %}
+              <span class="flex items-center gap-1.5 text-xs text-amber">
+                <span class="w-2 h-2 rounded-full bg-amber"></span> Base price
+              </span>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    {% if routes_resolved < routes_count %}
+    <div class="mt-4 p-3 bg-stone-50 border border-stone-200 rounded-lg text-xs text-stone-500">
+      <span class="font-semibold">{{ routes_count - routes_resolved }}</span> ingredient{{ 's' if (routes_count - routes_resolved) != 1 else '' }} without a configured route will use
+      <span class="font-semibold">base prices</span> (Ingredient.purchase_price).
+      <a href="/supply-chain/assignments"
+         hx-get="/supply-chain/assignments" hx-target="#main-content" hx-push-url="true" hx-indicator="#page-spinner"
+         class="ml-1 text-amber underline hover:text-amber-light">Configure assignments →</a>
+    </div>
+    {% endif %}
+
+    {% endif %}
+  </div>
+  {# /tab active-routes #}
+
 </div>
 {# /x-data tabs #}
 
@@ -170,9 +321,10 @@
 
 {% block extra_scripts %}
 <script>
-  {# Re-initialize Alpine when HTMX replaces #prices-section #}
   document.addEventListener('htmx:afterSwap', (e) => {
-    if (e.detail && e.detail.target && e.detail.target.id === 'prices-section' && window.Alpine) {
+    if (!e.detail || !e.detail.target || !window.Alpine) return;
+    const id = e.detail.target.id;
+    if (id === 'prices-section' || id === 'region-section') {
       Alpine.initTree(e.detail.target);
     }
   });

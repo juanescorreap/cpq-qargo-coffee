@@ -1,0 +1,66 @@
+{# Partial: region assignment inside the store info card.
+   Rendered standalone by POST /{store_id}/region-htmx
+   and included by stores/detail.html. #}
+
+<div id="region-section" x-data="{ editRegion: false }">
+
+  {# ── Current region status ──────────────────────────────────────────────── #}
+  {% if region %}
+  <div class="flex items-center gap-2 flex-wrap">
+    <div class="flex items-center gap-1.5 text-sm text-stone-600">
+      <svg class="w-3.5 h-3.5 text-green-500" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+        <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+      </svg>
+      <span class="font-medium text-stone-700">{{ region.name }}</span>
+      <span class="font-mono text-xs text-stone-400 px-1.5 py-0.5 rounded bg-stone-100">{{ region.code }}</span>
+    </div>
+    <button @click="editRegion = !editRegion"
+            class="text-xs text-stone-400 hover:text-amber transition-colors underline underline-offset-2">
+      <span x-text="editRegion ? 'cancel' : 'change'"></span>
+    </button>
+  </div>
+  {% else %}
+  <div class="flex items-center gap-2 flex-wrap">
+    <div class="flex items-center gap-1.5 text-xs font-medium text-amber bg-amber/10 border border-amber/20 rounded-lg px-2.5 py-1.5">
+      <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+      </svg>
+      No region — costs use base prices
+    </div>
+    <button @click="editRegion = !editRegion"
+            class="text-xs text-stone-400 hover:text-espresso transition-colors underline underline-offset-2">
+      <span x-text="editRegion ? 'cancel' : 'assign region'"></span>
+    </button>
+  </div>
+  {% endif %}
+
+  {# ── Region assignment form ─────────────────────────────────────────────── #}
+  <div x-show="editRegion" x-cloak
+       x-transition:enter="transition ease-out duration-150"
+       x-transition:enter-start="opacity-0 -translate-y-1"
+       x-transition:enter-end="opacity-100 translate-y-0"
+       class="mt-3">
+    <form hx-post="/stores/{{ store.id }}/region-htmx"
+          hx-target="#region-section"
+          hx-swap="outerHTML"
+          hx-indicator="#page-spinner"
+          class="flex items-center gap-2 flex-wrap"
+          @htmx:after-request="editRegion = false">
+      <select name="region_id"
+              class="px-3 py-1.5 text-sm border border-stone-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber/40 focus:border-amber bg-white min-w-[160px]">
+        <option value="">— No region —</option>
+        {% for r in regions %}
+        <option value="{{ r.id }}" {% if store.region_id == r.id %}selected{% endif %}>
+          {{ r.name }} ({{ r.code }})
+        </option>
+        {% endfor %}
+      </select>
+      <button type="submit"
+              class="px-3 py-1.5 text-sm font-medium text-beige bg-espresso rounded-lg hover:bg-espresso-light transition-colors htmx-request:opacity-60">
+        Save
+      </button>
+    </form>
+  </div>
+
+</div>
