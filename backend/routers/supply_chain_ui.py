@@ -140,16 +140,21 @@ def create_region_htmx(
 ):
     error = None
     try:
+        from sqlalchemy import func as sqlfunc
         code = code.strip().upper()
         name = name.strip()
         if not code or not name:
             raise ValueError("Name and code are required")
-        from sqlalchemy import func as sqlfunc
-        existing = db.query(Region).filter(sqlfunc.upper(Region.code) == code).first()
-        if existing:
+        if db.query(Region).filter(sqlfunc.upper(Region.code) == code).first():
             raise ValueError(f"Region with code '{code}' already exists")
-        db.add(Region(name=name, code=code, country_code=country_code.strip().upper() or "CO"))
+        # ValueError path above never touches the DB, so no rollback needed.
+        # Only wrap the actual write in a savepoint so DB errors don't wipe the
+        # outer transaction (important in the test environment and defensive in prod).
+        with db.begin_nested():
+            db.add(Region(name=name, code=code, country_code=country_code.strip().upper() or "CO"))
         db.commit()
+    except ValueError as exc:
+        error = str(exc)
     except Exception as exc:
         db.rollback()
         error = str(exc)
@@ -202,13 +207,16 @@ def create_manufacturer_htmx(
         name = name.strip()
         if not name:
             raise ValueError("Name is required")
-        db.add(Manufacturer(
-            name=name,
-            country_code=country_code.strip().upper() or "CO",
-            tax_id=tax_id.strip() or None,
-            website=website.strip() or None,
-        ))
+        with db.begin_nested():
+            db.add(Manufacturer(
+                name=name,
+                country_code=country_code.strip().upper() or "CO",
+                tax_id=tax_id.strip() or None,
+                website=website.strip() or None,
+            ))
         db.commit()
+    except ValueError as exc:
+        error = str(exc)
     except Exception as exc:
         db.rollback()
         error = str(exc)
@@ -262,14 +270,17 @@ def create_distributor_htmx(
         name = name.strip()
         if not name:
             raise ValueError("Name is required")
-        db.add(Distributor(
-            name=name,
-            country_code=country_code.strip().upper() or "CO",
-            tax_id=tax_id.strip() or None,
-            contact_email=contact_email.strip() or None,
-            contact_phone=contact_phone.strip() or None,
-        ))
+        with db.begin_nested():
+            db.add(Distributor(
+                name=name,
+                country_code=country_code.strip().upper() or "CO",
+                tax_id=tax_id.strip() or None,
+                contact_email=contact_email.strip() or None,
+                contact_phone=contact_phone.strip() or None,
+            ))
         db.commit()
+    except ValueError as exc:
+        error = str(exc)
     except Exception as exc:
         db.rollback()
         error = str(exc)
@@ -463,28 +474,29 @@ def create_route_price_htmx(
             raise ValueError("Invalid currency code (must be 3 letters, e.g. COP)")
         if not created_by.strip():
             raise ValueError("Created by is required")
-
-        # Close active price
+        # ValueError path above: no DB writes yet, no rollback needed.
         active = (
             db.query(SupplyRoutePrice)
             .filter(SupplyRoutePrice.supply_route_id == route_id, SupplyRoutePrice.valid_until.is_(None))
             .first()
         )
-        if active:
-            active.valid_until = date.today()
-
-        db.add(SupplyRoutePrice(
-            supply_route_id=route_id,
-            list_price=lp,
-            qargo_price=qp,
-            currency_code=currency,
-            price_per_unit=price_per_unit.strip(),
-            source=source.strip() or None,
-            created_by=created_by.strip(),
-        ))
+        with db.begin_nested():
+            if active:
+                active.valid_until = date.today()
+            db.add(SupplyRoutePrice(
+                supply_route_id=route_id,
+                list_price=lp,
+                qargo_price=qp,
+                currency_code=currency,
+                price_per_unit=price_per_unit.strip(),
+                source=source.strip() or None,
+                created_by=created_by.strip(),
+            ))
         db.commit()
         return _render_prices(route_id, request, db)
     except (InvalidOperation, ValueError) as exc:
+        return _render_prices(route_id, request, db, price_error=str(exc))
+    except Exception as exc:
         db.rollback()
         return _render_prices(route_id, request, db, price_error=str(exc))
 
@@ -525,17 +537,20 @@ def create_route_ref_htmx(
         if not external_name or not purchase_unit:
             raise ValueError("External name and purchase unit are required")
         pack = Decimal(units_per_pack.strip()) if units_per_pack.strip() else None
-        db.add(IngredientSupplierRef(
-            ingredient_id=ingredient_id,
-            supply_route_id=route_id,
-            external_name=external_name,
-            external_code=external_code.strip() or None,
-            purchase_unit=purchase_unit,
-            units_per_pack=pack,
-            notes=notes.strip() or None,
-        ))
+        with db.begin_nested():
+            db.add(IngredientSupplierRef(
+                ingredient_id=ingredient_id,
+                supply_route_id=route_id,
+                external_name=external_name,
+                external_code=external_code.strip() or None,
+                purchase_unit=purchase_unit,
+                units_per_pack=pack,
+                notes=notes.strip() or None,
+            ))
         db.commit()
         return _render_refs(route_id, request, db)
+    except ValueError as exc:
+        return _render_refs(route_id, request, db, ref_error=str(exc))
     except Exception as exc:
         db.rollback()
         return _render_refs(route_id, request, db, ref_error=str(exc))

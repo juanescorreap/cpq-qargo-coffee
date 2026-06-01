@@ -108,7 +108,7 @@ class TestRegionsUI:
 
     def test_blank_name_shows_error(self, test_client: TestClient):
         r = test_client.post("/supply-chain/regions/htmx",
-                             data=_form({"name": "", "code": "ERR"}))
+                             data=_form({"name": "   ", "code": "ERR"}))
         _assert_html(r, contains=["required"])
 
     def test_deactivate_region(self, test_client: TestClient, sc_region: Region, test_db: Session):
@@ -166,7 +166,7 @@ class TestManufacturersUI:
 
     def test_blank_name_shows_error(self, test_client: TestClient):
         r = test_client.post("/supply-chain/manufacturers/htmx",
-                             data=_form({"name": "  "}))
+                             data=_form({"name": "   "}))
         _assert_html(r, contains=["required"])
 
     def test_blank_name_does_not_persist(self, test_client: TestClient, test_db: Session):
@@ -229,7 +229,7 @@ class TestDistributorsUI:
         assert d.contact_phone == "+57 300 0000000"
 
     def test_blank_name_shows_error(self, test_client: TestClient):
-        r = test_client.post("/supply-chain/distributors/htmx", data=_form({"name": ""}))
+        r = test_client.post("/supply-chain/distributors/htmx", data=_form({"name": "   "}))
         _assert_html(r, contains=["required"])
 
     def test_deactivate_distributor(self, test_client: TestClient,
@@ -551,7 +551,7 @@ class TestRouteRefsUI:
         r = test_client.post(f"/supply-chain/routes/{sc_supply_route.id}/refs/htmx",
                              data=_form({
                                  "ingredient_id": sc_ingredient.id,
-                                 "external_name": "",
+                                 "external_name": "   ",
                                  "purchase_unit": "Bolsa 1L",
                              }))
         _assert_html(r, contains=["required"])
@@ -577,7 +577,7 @@ class TestRouteRefsUI:
                              data=_form({
                                  "ingredient_id": sc_ingredient.id,
                                  "external_name": "Leche Fresca",
-                                 "purchase_unit": "",
+                                 "purchase_unit": "   ",
                              }))
         _assert_html(r, contains=["required"])
 
