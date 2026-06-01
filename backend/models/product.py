@@ -35,7 +35,7 @@ class Product(Base):
 
     id: int = Column(Integer, primary_key=True, index=True)
     name: str = Column(String(200), nullable=False)
-    category: str | None = Column(String(100), index=True)  # e.g.: "bebidas_calientes"
+    category: str | None = Column(String(100), ForeignKey("categories.slug"), index=True)
     base_size_oz: float | None = Column(Numeric(6, 2))      # reference size for scaling
     prep_time_minutes: float | None = Column(Numeric(5, 2))
     labor_cost_per_minute: float = Column(Numeric(6, 2), default=0)
@@ -75,6 +75,8 @@ class ProductSize(Base):
     volume_oz: float | None = Column(Numeric(6, 2))
     scale_factor: float = Column(Numeric(5, 3), default=1.0)
     is_default: bool = Column(Boolean, default=False)
+    created_at: object = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at: object = Column(DateTime(timezone=True), server_default=func.now())
 
 
 class RecipeIngredient(Base):
@@ -124,6 +126,8 @@ class RecipeIngredient(Base):
     scales_with_size: bool = Column(Boolean, default=True)
     process_yield_loss: float = Column(Numeric(5, 2), default=0)
     notes: str | None = Column(Text)
+    created_at: object = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at: object = Column(DateTime(timezone=True), server_default=func.now())
 
 
 class RecipeSubRecipe(Base):
@@ -150,6 +154,8 @@ class RecipeSubRecipe(Base):
     )
     quantity: float = Column(Numeric(10, 4), nullable=False)
     scales_with_size: bool = Column(Boolean, default=True)
+    created_at: object = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at: object = Column(DateTime(timezone=True), server_default=func.now())
 
 
 class SizePackaging(Base):

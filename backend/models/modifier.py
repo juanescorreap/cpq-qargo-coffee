@@ -6,6 +6,7 @@ from sqlalchemy import (
     Integer,
     Numeric,
     String,
+    UniqueConstraint,
 )
 from sqlalchemy.sql import func
 
@@ -13,29 +14,17 @@ from backend.database import Base
 
 
 class Modifier(Base):
-    """Modification applicable to a product that affects cost and ingredients.
+    """Named modification applicable to a product (e.g. almond milk swap, extra shot).
 
-    Each row represents an atomic change to a specific ingredient.
-    A complex substitution (e.g.: replacing regular milk with almond milk)
-    requires TWO records: one that subtracts the regular milk and another that
-    adds the almond milk.
+    Effects on ingredients are stored in ModifierIngredientEffect, allowing one
+    modifier to affect multiple ingredients. A substitution like "almond milk instead
+    of regular milk" has two effects: remove regular milk (-240 ml) and add almond
+    milk (+240 ml).
 
     Supported types:
-        - 'substitution': replaces one ingredient with another (pair of records).
+        - 'substitution': replaces one ingredient with another (two effects).
         - 'addition':     adds an extra ingredient to the base recipe.
         - 'extra_shot':   semantic shortcut for additional espresso shots.
-
-    quantity_change uses the same unit as the ingredient's usage_unit.
-    Negative values subtract, positive values add.
-
-    Examples:
-        "Almond milk instead of regular" → two records:
-            affects_ingredient_id=regular_milk,  quantity_change=-240
-            affects_ingredient_id=almond_milk,   quantity_change=+240
-
-        "Extra espresso shot" →
-            affects_ingredient_id=espresso, quantity_change=+1,
-            type='extra_shot'
     """
 
     __tablename__ = "modifiers"
@@ -43,22 +32,45 @@ class Modifier(Base):
     id: int = Column(Integer, primary_key=True, index=True)
     name: str = Column(String(200), nullable=False)
     type: str | None = Column(String(50))
-    affects_ingredient_id: int | None = Column(
-        Integer, ForeignKey("ingredients.id"), nullable=True
-    )
-    quantity_change: float | None = Column(Numeric(10, 4))
     is_active: bool = Column(Boolean, default=True)
 
 
+class ModifierIngredientEffect(Base):
+    """Ingredient-level effect of applying a modifier.
+
+    quantity_change uses the ingredient's usage_unit. Negative values subtract,
+    positive values add.
+
+    Examples:
+        "Almond milk instead of regular" → two rows for the same modifier_id:
+            ingredient_id=regular_milk,  quantity_change=-240
+            ingredient_id=almond_milk,   quantity_change=+240
+
+        "Extra espresso shot" → one row:
+            ingredient_id=espresso, quantity_change=+1
+    """
+
+    __tablename__ = "modifier_ingredient_effects"
+
+    __table_args__ = (
+        UniqueConstraint("modifier_id", "ingredient_id", name="uq_modifier_ingredient"),
+    )
+
+    id: int = Column(Integer, primary_key=True, index=True)
+    modifier_id: int = Column(
+        Integer, ForeignKey("modifiers.id"), nullable=False, index=True
+    )
+    ingredient_id: int = Column(
+        Integer, ForeignKey("ingredients.id"), nullable=False
+    )
+    quantity_change: float = Column(Numeric(10, 4), nullable=False)
+
+
 class ProductModifierCost(Base):
-    """Cost impact of applying a modifier to a specific product.
+    """Pre-calculated cost delta of applying a modifier to a specific product.
 
-    The costing engine pre-calculates the cost delta for each modifier per
-    product and stores it here. This avoids recalculating at query time and
-    allows auditing how the impact changes when ingredient prices vary.
-
-    calculated_at records when the last calculation was made, making it easy
-    to detect stale records after a price update.
+    calculated_at records the last computation, making stale records detectable
+    after an ingredient price update.
     """
 
     __tablename__ = "product_modifier_costs"

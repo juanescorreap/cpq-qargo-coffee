@@ -4,11 +4,13 @@ from sqlalchemy import (
     Date,
     DateTime,
     ForeignKey,
+    Index,
     Integer,
     Numeric,
     String,
     Text,
     UniqueConstraint,
+    text,
 )
 from sqlalchemy.sql import func
 
@@ -31,7 +33,7 @@ class CategoryMargin(Base):
     __tablename__ = "category_margins"
 
     id: int = Column(Integer, primary_key=True, index=True)
-    category: str = Column(String(100), unique=True, nullable=False)
+    category: str = Column(String(100), ForeignKey("categories.slug"), unique=True, nullable=False)
     markup_percentage: float = Column(Numeric(5, 2), nullable=False)
     notes: str | None = Column(Text)
 
@@ -59,12 +61,24 @@ class ProductPricing(Base):
     __tablename__ = "product_pricing"
 
     __table_args__ = (
-        UniqueConstraint(
-            "product_id",
-            "size_id",
-            "store_id",
-            "effective_date",
-            name="uq_product_pricing",
+        # Partial unique: store-specific prices — NULL-safe because store_id IS NOT NULL
+        Index(
+            "uq_product_pricing_store",
+            "product_id", "size_id", "store_id", "effective_date",
+            unique=True,
+            postgresql_where=text("store_id IS NOT NULL"),
+        ),
+        # Partial unique: global prices — excludes store_id from index to handle NULLs
+        Index(
+            "uq_product_pricing_global",
+            "product_id", "size_id", "effective_date",
+            unique=True,
+            postgresql_where=text("store_id IS NULL"),
+        ),
+        # Composite lookup index for "most recent price <= today" queries
+        Index(
+            "ix_product_pricing_lookup",
+            "product_id", "size_id", "store_id", "effective_date",
         ),
     )
 
@@ -83,6 +97,7 @@ class ProductPricing(Base):
     effective_date: object = Column(
         Date, nullable=False, server_default=func.current_date()
     )
+    currency_code: str = Column(String(3), nullable=False, server_default="COP")
 
 
 class ProductPriceHistory(Base):
@@ -112,6 +127,7 @@ class ProductPriceHistory(Base):
     cost: float = Column(Numeric(10, 2), nullable=False)
     price: float = Column(Numeric(10, 2), nullable=False)
     markup_used: float = Column(Numeric(5, 2), nullable=False)
+    currency_code: str = Column(String(3), nullable=False, server_default="COP")
     changed_at: object = Column(
         DateTime(timezone=True), server_default=func.now()
     )

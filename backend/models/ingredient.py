@@ -45,10 +45,15 @@ class Ingredient(Base):
     source_url: str | None = Column(Text)
     last_scraped: object | None = Column(DateTime(timezone=True))
 
+    canonical_unit: str | None = Column(String(100))
+
     # --- Control ---
     is_active: bool = Column(Boolean, default=True, index=True)
     created_at: object = Column(
         DateTime(timezone=True), server_default=func.now()
+    )
+    updated_at: object = Column(
+        DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
     )
 
 

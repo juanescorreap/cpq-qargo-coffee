@@ -14,7 +14,12 @@ from backend.database import Base
 import backend.models.ingredient   # noqa: F401
 import backend.models.recipe_unit  # noqa: F401
 import backend.models.store        # noqa: F401
+import backend.models.category     # noqa: F401
 import backend.models.product      # noqa: F401
+import backend.models.pricing      # noqa: F401
+import backend.models.competitor   # noqa: F401
+import backend.models.modifier      # noqa: F401
+import backend.models.supply_chain  # noqa: F401
 
 # ---------------------------------------------------------------------------
 # Alembic configuration object

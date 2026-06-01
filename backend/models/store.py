@@ -23,6 +23,8 @@ class Store(Base):
     name: str = Column(String(200), nullable=False)
     city: str | None = Column(String(100))
     is_active: bool = Column(Boolean, default=True)
+    region_id: int | None = Column(Integer, ForeignKey("regions.id"), nullable=True)
+    default_currency_code: str = Column(String(3), nullable=False, server_default="COP")
 
 
 class StoreIngredientPrice(Base):
