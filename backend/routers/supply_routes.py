@@ -207,7 +207,7 @@ def create_ref(
     ingredient = db.get(Ingredient, body.ingredient_id)
     if ingredient is None:
         raise HTTPException(status_code=404, detail="Ingredient not found")
-    ref = IngredientSupplierRef(supply_route_id=route_id, **body.model_dump())
+    ref = IngredientSupplierRef(**body.model_dump())
     db.add(ref)
     db.commit()
     db.refresh(ref)

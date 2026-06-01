@@ -8,7 +8,7 @@ from datetime import date, datetime
 from decimal import Decimal
 from typing import Optional
 
-from pydantic import BaseModel, ConfigDict, field_validator
+from pydantic import BaseModel, ConfigDict, field_validator, model_validator
 
 
 # ---------------------------------------------------------------------------
@@ -294,6 +294,12 @@ class SupplyRoutePriceCreate(BaseModel):
         if not v.strip():
             raise ValueError("created_by must not be blank")
         return v.strip()
+
+    @model_validator(mode="after")
+    def qargo_not_greater_than_list(self) -> "SupplyRoutePriceCreate":
+        if self.qargo_price > self.list_price:
+            raise ValueError("qargo_price cannot be greater than list_price")
+        return self
 
 
 class SupplyRoutePriceResponse(BaseModel):

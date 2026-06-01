@@ -124,8 +124,10 @@ def create_assignment(
 
     existing = q.first()
     if existing:
-        from datetime import timedelta
-        existing.valid_until = body.valid_from - timedelta(days=1)
+        # Close on body.valid_from: creates daterange [existing.valid_from, body.valid_from)
+        # which is either a valid range (if existing started before) or an empty range
+        # (if same day). Both satisfy the EXCLUDE constraint without a DataError.
+        existing.valid_until = body.valid_from
         existing.change_reason = body.change_reason
 
     obj = SupplyRouteAssignment(**body.model_dump())

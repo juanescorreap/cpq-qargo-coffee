@@ -24,8 +24,18 @@ from decimal import Decimal
 
 import pytest
 
-from backend.database import engine
+from fastapi.testclient import TestClient
+
+from backend.database import engine, get_db
 from backend.models import Ingredient, Product, ProductSize, RecipeIngredient
+from backend.models.supply_chain import (
+    Distributor,
+    Manufacturer,
+    Region,
+    SupplyRoute,
+    SupplyRouteAssignment,
+)
+from backend.models.store import Store
 from sqlalchemy.orm import Session
 
 
@@ -188,3 +198,124 @@ def sample_recipe(
     test_db.commit()
     test_db.refresh(recipe_line)
     return recipe_line
+
+
+# ---------------------------------------------------------------------------
+# TestClient with test_db dependency override
+# ---------------------------------------------------------------------------
+
+@pytest.fixture
+def test_client(test_db: Session):
+    """FastAPI TestClient wired to the isolated test session.
+
+    All HTTP requests made through this client share the same SQLAlchemy
+    session as `test_db`, so data created in either is visible to both and
+    everything is rolled back automatically at the end of the test.
+    """
+    from backend.main import app
+
+    def _override_get_db():
+        yield test_db
+
+    app.dependency_overrides[get_db] = _override_get_db
+    with TestClient(app, raise_server_exceptions=True) as client:
+        yield client
+    app.dependency_overrides.clear()
+
+
+# ---------------------------------------------------------------------------
+# Supply chain base fixtures
+# ---------------------------------------------------------------------------
+
+@pytest.fixture
+def sc_region(test_db: Session) -> Region:
+    region = Region(name="Bogotá", code="BOG-TEST", country_code="CO")
+    test_db.add(region)
+    test_db.commit()
+    test_db.refresh(region)
+    return region
+
+
+@pytest.fixture
+def sc_manufacturer(test_db: Session) -> Manufacturer:
+    manufacturer = Manufacturer(name="Lácteos Test S.A.", country_code="CO", tax_id="900123456-1")
+    test_db.add(manufacturer)
+    test_db.commit()
+    test_db.refresh(manufacturer)
+    return manufacturer
+
+
+@pytest.fixture
+def sc_distributor(test_db: Session) -> Distributor:
+    distributor = Distributor(
+        name="Distribuidor Norte Test",
+        country_code="CO",
+        contact_email="norte@test.com",
+    )
+    test_db.add(distributor)
+    test_db.commit()
+    test_db.refresh(distributor)
+    return distributor
+
+
+@pytest.fixture
+def sc_ingredient(test_db: Session) -> Ingredient:
+    ingredient = Ingredient(
+        name="Leche Entera Test SC",
+        purchase_price=Decimal("4500"),
+        usage_unit="ml",
+        conversion_factor=Decimal("1000"),
+        yield_percentage=Decimal("1.00"),
+    )
+    test_db.add(ingredient)
+    test_db.commit()
+    test_db.refresh(ingredient)
+    return ingredient
+
+
+@pytest.fixture
+def sc_supply_route(
+    test_db: Session, sc_ingredient: Ingredient, sc_manufacturer: Manufacturer
+) -> SupplyRoute:
+    route = SupplyRoute(
+        ingredient_id=sc_ingredient.id,
+        manufacturer_id=sc_manufacturer.id,
+        is_direct=False,
+        is_active=True,
+    )
+    test_db.add(route)
+    test_db.commit()
+    test_db.refresh(route)
+    return route
+
+
+@pytest.fixture
+def sc_store(test_db: Session, sc_region: Region) -> Store:
+    store = Store(
+        code="SC-TEST-01",
+        name="Tienda Test Supply Chain",
+        city="Bogotá",
+        region_id=sc_region.id,
+    )
+    test_db.add(store)
+    test_db.commit()
+    test_db.refresh(store)
+    return store
+
+
+@pytest.fixture
+def sc_assignment(
+    test_db: Session, sc_supply_route: SupplyRoute, sc_region: Region
+) -> SupplyRouteAssignment:
+    from datetime import date
+    assignment = SupplyRouteAssignment(
+        supply_route_id=sc_supply_route.id,
+        region_id=sc_region.id,
+        priority=1,
+        valid_from=date.today(),
+        assigned_by="conftest",
+    )
+    test_db.add(assignment)
+    test_db.commit()
+    test_db.refresh(assignment)
+    return assignment
