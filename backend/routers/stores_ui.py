@@ -93,14 +93,23 @@ def _regions_for_select(db: Session) -> list:
 
 
 def _resolve_active_routes(store_id: int, db: Session) -> list[dict]:
-    """Call fn_resolve_supply_route for every ingredient used in any active recipe.
+    """Call fn_resolve_supply_route for each ingredient in the store's active menu.
 
-    Returns rows sorted by (unresolved first → resolved, then alphabetically).
-    Used by the 'Active Routes' tab in the store detail page.
+    Only considers ingredients from products that the store has explicitly set as
+    available in store_products. A new store with no configured products returns [].
+    Sorted: unresolved rows first (base price), then alphabetically by ingredient.
     """
     ingredient_ids = (
         db.query(RecipeIngredient.ingredient_id)
         .join(Product, RecipeIngredient.product_id == Product.id)
+        .join(
+            StoreProduct,
+            and_(
+                StoreProduct.product_id == Product.id,
+                StoreProduct.store_id == store_id,
+                StoreProduct.is_available == True,
+            ),
+        )
         .filter(Product.is_active == True, Product.is_sub_recipe == False)
         .distinct()
         .all()

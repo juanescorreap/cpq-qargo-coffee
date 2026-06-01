@@ -21,7 +21,7 @@ from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
 from backend.models.ingredient import Ingredient
-from backend.models.product import Product, RecipeIngredient
+from backend.models.product import Product, RecipeIngredient, StoreProduct
 from backend.models.store import Store
 from backend.models.supply_chain import (
     Manufacturer,
@@ -49,8 +49,14 @@ def _assert_html(response, *, status: int = 200, contains: list[str] = (), absen
 # ---------------------------------------------------------------------------
 
 @pytest.fixture
-def product_with_sc_ingredient(test_db: Session, sc_ingredient: Ingredient) -> Product:
-    """Active product whose recipe uses sc_ingredient."""
+def product_with_sc_ingredient(
+    test_db: Session, sc_store: Store, sc_ingredient: Ingredient
+) -> Product:
+    """Active product whose recipe uses sc_ingredient, available at sc_store.
+
+    Sets store_products.is_available=True so _resolve_active_routes includes
+    this ingredient when querying the store's active menu.
+    """
     product = Product(
         name="Test Cappuccino Fase C",
         category="hot_beverages",
@@ -68,6 +74,14 @@ def product_with_sc_ingredient(test_db: Session, sc_ingredient: Ingredient) -> P
         process_yield_loss=0,
     )
     test_db.add(recipe_line)
+
+    # Register the product as available at sc_store so the Active Routes tab sees it
+    store_product = StoreProduct(
+        store_id=sc_store.id,
+        product_id=product.id,
+        is_available=True,
+    )
+    test_db.add(store_product)
     test_db.commit()
     return product
 
