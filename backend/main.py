@@ -21,6 +21,11 @@ from backend.routers import (
     recipes, recipes_ui, reports, reports_ui, scraping, scraping_ui, stores,
     stores_ui,
 )
+from backend.routers import (
+    regions, manufacturers, distributors,
+    supply_routes, supply_route_assignments, supply_route_prices,
+    supply_chain,
+)
 
 
 BASE_DIR = Path(__file__).resolve().parent
@@ -77,6 +82,13 @@ app.include_router(reports.router)
 app.include_router(reports_ui.router)
 app.include_router(scraping.router)
 app.include_router(scraping_ui.router)
+app.include_router(regions.router)
+app.include_router(manufacturers.router)
+app.include_router(distributors.router)
+app.include_router(supply_routes.router)
+app.include_router(supply_route_assignments.router)
+app.include_router(supply_route_prices.router)
+app.include_router(supply_chain.router)
 
 
 # ============================================

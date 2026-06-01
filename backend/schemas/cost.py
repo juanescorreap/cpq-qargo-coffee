@@ -45,6 +45,11 @@ class IngredientCostDetail(BaseModel):
     usage_unit after applying both factors.
 
     total_cost = quantity × unit_cost
+
+    price_source indicates which price resolution tier was used:
+        "route"          — supply route price via fn_resolve_supply_route (Fase D)
+        "store_override" — StoreIngredientPrice manual override (legacy)
+        "base"           — Ingredient.purchase_price global fallback
     """
 
     name: str
@@ -52,6 +57,9 @@ class IngredientCostDetail(BaseModel):
     unit: str
     unit_cost: Decimal
     total_cost: Decimal
+    price_source: str = "base"
+    supply_route_id: Optional[int] = None
+    route_scope: Optional[str] = None  # "store_override" | "region_default"
 
 
 class SubRecipeCostDetail(BaseModel):

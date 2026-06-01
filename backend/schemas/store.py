@@ -38,6 +38,8 @@ class StoreUpdate(BaseModel):
     name: Optional[str] = None
     city: Optional[str] = None
     is_active: Optional[bool] = None
+    region_id: Optional[int] = None
+    default_currency_code: Optional[str] = None
 
     @field_validator("code")
     @classmethod
@@ -59,6 +61,8 @@ class StoreResponse(StoreBase):
 
     id: int
     is_active: bool
+    region_id: Optional[int] = None
+    default_currency_code: str = "COP"
 
 
 # ---------------------------------------------------------------------------
