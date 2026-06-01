@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Assignments — Supply Chain{% endblock %}
+{% block content %}
+
+<div class="mb-8 flex items-start justify-between gap-4 flex-wrap">
+  <div>
+    <h1 class="text-3xl font-bold text-espresso">Route Assignments</h1>
+    <p class="mt-1 text-sm text-stone-500">
+      Which supply route each region or store uses for each ingredient, with priority and temporal validity.
+      <span class="font-medium text-espresso">Priority 1 = primary, 2 = alternative</span> (activates if primary fails).
+    </p>
+  </div>
+  <div class="flex gap-2 shrink-0">
+    <a href="/supply-chain/routes"
+       hx-get="/supply-chain/routes" hx-target="#main-content" hx-push-url="true" hx-indicator="#page-spinner"
+       class="px-3 py-1.5 text-sm rounded-lg bg-white border border-stone-200 text-stone-600 hover:text-espresso transition-colors">
+      🔗 Routes
+    </a>
+    <a href="/supply-chain/regions"
+       hx-get="/supply-chain/regions" hx-target="#main-content" hx-push-url="true" hx-indicator="#page-spinner"
+       class="px-3 py-1.5 text-sm rounded-lg bg-white border border-stone-200 text-stone-600 hover:text-espresso transition-colors">
+      🗺️ Regions
+    </a>
+  </div>
+</div>
+
+{# ── Info banner about the resolution logic ────────────────────────────────── #}
+<div class="flex items-start gap-3 mb-6 bg-blue-50 border border-blue-200 rounded-xl p-4 text-sm text-blue-700">
+  <svg class="w-5 h-5 shrink-0 mt-0.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+  </svg>
+  <div>
+    <p class="font-semibold mb-0.5">Resolution order: Store override → Regional default → Base price</p>
+    <p class="text-blue-600">A store-level assignment always takes precedence over its region's assignment. Assign a region to each store in the Stores section for regional routes to apply.</p>
+  </div>
+</div>
+
+{% set today = today if today is defined else '' %}
+{% include "supply_chain/assignments/_content.html" %}
+
+{% endblock %}

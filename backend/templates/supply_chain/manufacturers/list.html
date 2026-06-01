@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Manufacturers — Supply Chain{% endblock %}
+{% block content %}
+
+<div class="mb-8">
+  <h1 class="text-3xl font-bold text-espresso">Manufacturers</h1>
+  <p class="mt-1 text-sm text-stone-500">Companies that physically produce the ingredients. A manufacturer can supply multiple ingredients through one or more supply routes.</p>
+</div>
+
+{% include "supply_chain/manufacturers/_content.html" %}
+
+{% endblock %}

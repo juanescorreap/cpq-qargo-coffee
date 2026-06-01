@@ -24,7 +24,7 @@ from backend.routers import (
 from backend.routers import (
     regions, manufacturers, distributors,
     supply_routes, supply_route_assignments, supply_route_prices,
-    supply_chain,
+    supply_chain, supply_chain_ui,
 )
 
 
@@ -89,6 +89,7 @@ app.include_router(supply_routes.router)
 app.include_router(supply_route_assignments.router)
 app.include_router(supply_route_prices.router)
 app.include_router(supply_chain.router)
+app.include_router(supply_chain_ui.router)
 
 
 # ============================================

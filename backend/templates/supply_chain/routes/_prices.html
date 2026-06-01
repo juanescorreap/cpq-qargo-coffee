@@ -1,0 +1,154 @@
+{# Partial: prices tab content for route detail #}
+<div id="route-prices" x-data="{ showForm: false }">
+
+  {% if price_error %}
+  <div class="flex items-start gap-3 mb-4 bg-red-50 border border-red-200 rounded-xl p-3 text-sm text-red-700">
+    <svg class="w-4 h-4 shrink-0 mt-0.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+    </svg>
+    <span>{{ price_error }}</span>
+  </div>
+  {% endif %}
+
+  {# ── Current active price ────────────────────────────────────────────── #}
+  {% if active_price %}
+  <div class="bg-green-50 border border-green-200 rounded-xl p-5 mb-5 flex items-center justify-between gap-4">
+    <div>
+      <p class="text-xs font-semibold text-green-700 uppercase tracking-wider mb-1">Current negotiated price</p>
+      <p class="text-3xl font-bold text-green-800 tabular-nums">
+        {{ "{:,.0f}".format(active_price.qargo_price) }} <span class="text-base font-medium">{{ active_price.currency_code }}</span>
+      </p>
+      <p class="text-sm text-green-600 mt-0.5">{{ active_price.price_per_unit }}</p>
+    </div>
+    <div class="text-right text-sm text-green-600">
+      <p>List price: <span class="font-semibold">{{ "{:,.0f}".format(active_price.list_price) }} {{ active_price.currency_code }}</span></p>
+      <p class="text-xs text-green-500 mt-0.5">Since {{ active_price.valid_from.strftime('%d %b %Y') }}</p>
+      {% if active_price.source %}<p class="text-xs text-stone-400 mt-0.5">Source: {{ active_price.source }}</p>{% endif %}
+    </div>
+  </div>
+  {% else %}
+  <div class="bg-amber/10 border border-amber/20 rounded-xl p-4 mb-5 flex items-center gap-3 text-sm text-amber">
+    <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+    </svg>
+    No active price set. The cost calculator cannot use this route until a price is registered.
+  </div>
+  {% endif %}
+
+  {# ── Set new price form ──────────────────────────────────────────────── #}
+  <div class="flex items-center justify-between mb-4">
+    <p class="text-sm font-semibold text-stone-600">Price history ({{ prices | length }} record{{ 's' if prices | length != 1 else '' }})</p>
+    <button @click="showForm = !showForm"
+            class="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold bg-espresso text-beige hover:bg-espresso-light transition-colors">
+      <svg class="w-4 h-4 transition-transform" :class="showForm ? 'rotate-45' : ''"
+           fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
+      </svg>
+      <span x-text="showForm ? 'Cancel' : 'Set new price'"></span>
+    </button>
+  </div>
+
+  <div x-show="showForm" x-cloak
+       x-transition:enter="transition ease-out duration-150"
+       x-transition:enter-start="opacity-0 -translate-y-1"
+       x-transition:enter-end="opacity-100 translate-y-0"
+       class="bg-amber/5 border border-amber/20 rounded-xl p-5 mb-5">
+    <p class="text-xs font-semibold text-stone-500 uppercase tracking-wider mb-4">
+      New price — closes current active price automatically
+    </p>
+    <form hx-post="/supply-chain/routes/{{ route_id }}/prices/htmx"
+          hx-target="#route-prices"
+          hx-swap="outerHTML"
+          hx-indicator="#page-spinner"
+          class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"
+          @htmx:after-request="if(!event.detail.failed) showForm = false">
+      <div>
+        <label class="block text-sm font-medium text-espresso mb-1.5">List price <span class="text-red-500">*</span></label>
+        <div class="relative">
+          <span class="absolute left-3 top-1/2 -translate-y-1/2 text-stone-400 text-sm">$</span>
+          <input type="number" name="list_price" required min="0.01" step="0.01" placeholder="5000"
+                 class="w-full pl-7 pr-3 py-2 text-sm border border-stone-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber/40 focus:border-amber">
+        </div>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-espresso mb-1.5">Negotiated (Qargo) price <span class="text-red-500">*</span></label>
+        <div class="relative">
+          <span class="absolute left-3 top-1/2 -translate-y-1/2 text-stone-400 text-sm">$</span>
+          <input type="number" name="qargo_price" required min="0.01" step="0.01" placeholder="4500"
+                 class="w-full pl-7 pr-3 py-2 text-sm border border-stone-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber/40 focus:border-amber">
+        </div>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-espresso mb-1.5">Currency</label>
+        <select name="currency_code"
+                class="w-full px-3 py-2 text-sm border border-stone-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber/40 focus:border-amber bg-white">
+          <option value="COP" selected>COP</option>
+          <option value="USD">USD</option>
+          <option value="EUR">EUR</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-espresso mb-1.5">Price per unit <span class="text-red-500">*</span></label>
+        <input type="text" name="price_per_unit" required placeholder="e.g. per kg, per liter, per box"
+               class="w-full px-3 py-2 text-sm border border-stone-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber/40 focus:border-amber">
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-espresso mb-1.5">Source / reference</label>
+        <input type="text" name="source" placeholder="e.g. invoice-2024-01, email-quote"
+               class="w-full px-3 py-2 text-sm border border-stone-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber/40 focus:border-amber">
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-espresso mb-1.5">Registered by <span class="text-red-500">*</span></label>
+        <input type="text" name="created_by" required placeholder="Name or role"
+               class="w-full px-3 py-2 text-sm border border-stone-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber/40 focus:border-amber">
+      </div>
+      <div class="sm:col-span-2 lg:col-span-3 flex justify-end pt-1">
+        <button type="submit"
+                class="px-5 py-2 text-sm font-semibold text-beige bg-espresso rounded-lg hover:bg-espresso-light transition-colors htmx-request:opacity-60">
+          Save price
+        </button>
+      </div>
+    </form>
+  </div>
+
+  {# ── Price history table ─────────────────────────────────────────────── #}
+  {% if prices %}
+  <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+    <table class="min-w-full divide-y divide-stone-100 text-sm">
+      <thead class="bg-stone-50">
+        <tr class="text-xs text-stone-400 font-semibold uppercase tracking-wider">
+          <th class="px-5 py-3 text-left">Qargo price</th>
+          <th class="px-5 py-3 text-left">List price</th>
+          <th class="px-5 py-3 text-left">Per unit</th>
+          <th class="px-5 py-3 text-left">Valid from</th>
+          <th class="px-5 py-3 text-left">Valid until</th>
+          <th class="px-5 py-3 text-left">Source</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-stone-50">
+        {% for p in prices %}
+        <tr class="{{ 'bg-green-50/50' if p.valid_until is none else '' }}">
+          <td class="px-5 py-3 font-semibold tabular-nums {{ 'text-green-800' if p.valid_until is none else 'text-stone-600' }}">
+            {{ "{:,.0f}".format(p.qargo_price) }} {{ p.currency_code }}
+            {% if p.valid_until is none %}
+            <span class="ml-1 px-1.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700">current</span>
+            {% endif %}
+          </td>
+          <td class="px-5 py-3 text-stone-500 tabular-nums">{{ "{:,.0f}".format(p.list_price) }} {{ p.currency_code }}</td>
+          <td class="px-5 py-3 text-stone-500">{{ p.price_per_unit }}</td>
+          <td class="px-5 py-3 text-stone-500 tabular-nums">{{ p.valid_from.strftime('%d %b %Y') }}</td>
+          <td class="px-5 py-3 text-stone-400 tabular-nums">{{ p.valid_until.strftime('%d %b %Y') if p.valid_until else '—' }}</td>
+          <td class="px-5 py-3 text-stone-400 text-xs">{{ p.source or '—' }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="bg-white rounded-xl border border-stone-100 py-14 text-center">
+    <p class="text-3xl mb-2">💰</p>
+    <p class="text-sm font-medium text-stone-500">No prices recorded yet</p>
+  </div>
+  {% endif %}
+
+</div>

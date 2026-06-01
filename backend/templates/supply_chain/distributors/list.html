@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Distributors — Supply Chain{% endblock %}
+{% block content %}
+
+<div class="mb-8">
+  <h1 class="text-3xl font-bold text-espresso">Distributors</h1>
+  <p class="mt-1 text-sm text-stone-500">Intermediaries between manufacturer and store. Geographic coverage is determined by active route assignments, not a field here.</p>
+</div>
+
+{% include "supply_chain/distributors/_content.html" %}
+
+{% endblock %}

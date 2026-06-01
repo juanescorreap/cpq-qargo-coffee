@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Regions — Supply Chain{% endblock %}
+{% block content %}
+
+<div class="mb-8 flex items-start justify-between gap-4">
+  <div>
+    <h1 class="text-3xl font-bold text-espresso">Regions</h1>
+    <p class="mt-1 text-sm text-stone-500">Geographic operating units. Stores are assigned to a region to inherit supply route assignments.</p>
+  </div>
+  <div class="flex gap-2 shrink-0 text-sm text-stone-400">
+    <a href="/supply-chain/routes"
+       hx-get="/supply-chain/routes" hx-target="#main-content" hx-push-url="true" hx-indicator="#page-spinner"
+       class="px-3 py-1.5 rounded-lg bg-white border border-stone-200 text-stone-600 hover:text-espresso hover:border-stone-300 transition-colors">
+      🔗 Routes
+    </a>
+    <a href="/supply-chain/assignments"
+       hx-get="/supply-chain/assignments" hx-target="#main-content" hx-push-url="true" hx-indicator="#page-spinner"
+       class="px-3 py-1.5 rounded-lg bg-white border border-stone-200 text-stone-600 hover:text-espresso hover:border-stone-300 transition-colors">
+      📋 Assignments
+    </a>
+  </div>
+</div>
+
+{% include "supply_chain/regions/_content.html" %}
+
+{% endblock %}

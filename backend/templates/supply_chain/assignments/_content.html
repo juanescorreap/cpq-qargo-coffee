@@ -1,0 +1,197 @@
+{# Partial: assignments form + table #}
+<div id="assignments-content" x-data="{ showForm: false, scopeType: 'region' }">
+
+  {% if error %}
+  <div class="flex items-start gap-3 mb-4 bg-red-50 border border-red-200 rounded-xl p-3 text-sm text-red-700">
+    <svg class="w-4 h-4 shrink-0 mt-0.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+    </svg>
+    <span>{{ error }}</span>
+  </div>
+  {% endif %}
+
+  <div class="flex items-center justify-between mb-4">
+    <p class="text-sm text-stone-500">
+      {{ assignments | length }} active assignment{{ 's' if assignments | length != 1 else '' }}
+    </p>
+    <button @click="showForm = !showForm"
+            class="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold bg-espresso text-beige hover:bg-espresso-light transition-colors">
+      <svg class="w-4 h-4 transition-transform" :class="showForm ? 'rotate-45' : ''"
+           fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
+      </svg>
+      <span x-text="showForm ? 'Cancel' : 'New assignment'"></span>
+    </button>
+  </div>
+
+  {# ── Create assignment form ───────────────────────────────────────────── #}
+  <div x-show="showForm" x-cloak
+       x-transition:enter="transition ease-out duration-150"
+       x-transition:enter-start="opacity-0 -translate-y-1"
+       x-transition:enter-end="opacity-100 translate-y-0"
+       class="bg-amber/5 border border-amber/20 rounded-xl p-5 mb-5">
+    <p class="text-xs font-semibold text-stone-500 uppercase tracking-wider mb-4">Assign supply route to region or store</p>
+    <form hx-post="/supply-chain/assignments/htmx"
+          hx-target="#assignments-content"
+          hx-swap="outerHTML"
+          hx-indicator="#page-spinner"
+          class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"
+          @htmx:after-request="if(!event.detail.failed) showForm = false">
+
+      <div class="sm:col-span-2 lg:col-span-3">
+        <label class="block text-sm font-medium text-espresso mb-1.5">Supply route <span class="text-red-500">*</span></label>
+        <select name="supply_route_id" required
+                class="w-full px-3 py-2 text-sm border border-stone-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber/40 focus:border-amber bg-white">
+          <option value="">Select a supply route...</option>
+          {% for r in routes %}
+          <option value="{{ r.id }}">
+            {{ r.ingredient_name }}
+            {% if r.manufacturer_name %} — {{ r.manufacturer_name }}{% endif %}
+            {% if r.distributor_name %} via {{ r.distributor_name }}{% endif %}
+            {% if r.is_direct %} (direct){% endif %}
+          </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="sm:col-span-2 lg:col-span-3">
+        <label class="block text-sm font-medium text-espresso mb-2">Scope <span class="text-red-500">*</span></label>
+        <div class="flex gap-4 mb-3">
+          <label class="flex items-center gap-2 cursor-pointer">
+            <input type="radio" name="scope_type" value="region" x-model="scopeType" class="w-4 h-4 accent-espresso">
+            <span class="text-sm text-stone-700">Region (applies to all stores in the region)</span>
+          </label>
+          <label class="flex items-center gap-2 cursor-pointer">
+            <input type="radio" name="scope_type" value="store" x-model="scopeType" class="w-4 h-4 accent-espresso">
+            <span class="text-sm text-stone-700">Store (specific override)</span>
+          </label>
+        </div>
+        <div x-show="scopeType === 'region'">
+          <select name="region_id"
+                  class="w-full px-3 py-2 text-sm border border-stone-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber/40 focus:border-amber bg-white">
+            <option value="">Select region...</option>
+            {% for reg in regions %}
+            {% if reg.is_active %}
+            <option value="{{ reg.id }}">{{ reg.name }} ({{ reg.code }})</option>
+            {% endif %}
+            {% endfor %}
+          </select>
+        </div>
+        <div x-show="scopeType === 'store'" x-cloak>
+          <select name="store_id"
+                  class="w-full px-3 py-2 text-sm border border-stone-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber/40 focus:border-amber bg-white">
+            <option value="">Select store...</option>
+            {% for s in stores %}
+            <option value="{{ s.id }}">{{ s.name }} ({{ s.code }})</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-espresso mb-1.5">Priority</label>
+        <select name="priority"
+                class="w-full px-3 py-2 text-sm border border-stone-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber/40 focus:border-amber bg-white">
+          <option value="1">1 — Primary route</option>
+          <option value="2">2 — Alternative route</option>
+          <option value="3">3 — Emergency route</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-espresso mb-1.5">Valid from <span class="text-red-500">*</span></label>
+        <input type="date" name="valid_from" required
+               value="{{ today if today is defined else '' }}"
+               class="w-full px-3 py-2 text-sm border border-stone-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber/40 focus:border-amber">
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-espresso mb-1.5">Assigned by <span class="text-red-500">*</span></label>
+        <input type="text" name="assigned_by" required placeholder="Name or role"
+               class="w-full px-3 py-2 text-sm border border-stone-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber/40 focus:border-amber">
+      </div>
+      <div class="sm:col-span-2 lg:col-span-3">
+        <label class="block text-sm font-medium text-espresso mb-1.5">Reason</label>
+        <input type="text" name="change_reason"
+               placeholder="e.g. price, shortage, logistics, new_distributor"
+               class="w-full px-3 py-2 text-sm border border-stone-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber/40 focus:border-amber">
+      </div>
+      <div class="sm:col-span-2 lg:col-span-3 flex justify-end pt-1">
+        <button type="submit"
+                class="px-5 py-2 text-sm font-semibold text-beige bg-espresso rounded-lg hover:bg-espresso-light transition-colors htmx-request:opacity-60">
+          Create assignment
+        </button>
+      </div>
+    </form>
+  </div>
+
+  {# ── Assignments table ───────────────────────────────────────────────── #}
+  {% if assignments %}
+  <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+    <table class="min-w-full divide-y divide-stone-100 text-sm">
+      <thead class="bg-stone-50">
+        <tr class="text-xs text-stone-400 font-semibold uppercase tracking-wider">
+          <th class="px-5 py-3 text-left">Ingredient</th>
+          <th class="px-5 py-3 text-left">Scope</th>
+          <th class="px-5 py-3 text-left">Priority</th>
+          <th class="px-5 py-3 text-left">Valid from</th>
+          <th class="px-5 py-3 text-left">Valid until</th>
+          <th class="px-5 py-3 text-left">Assigned by</th>
+          <th class="px-5 py-3"></th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-stone-50">
+        {% for a in assignments %}
+        <tr class="hover:bg-cream transition-colors group">
+          <td class="px-5 py-3">
+            <p class="font-medium text-stone-800">{{ a.ingredient_name }}</p>
+          </td>
+          <td class="px-5 py-3">
+            <div class="flex items-center gap-1.5">
+              <span class="text-xs px-1.5 py-0.5 rounded {{ 'bg-blue-100 text-blue-700' if a.scope_type == 'region' else 'bg-purple-100 text-purple-700' }}">
+                {{ a.scope_type | upper }}
+              </span>
+              <span class="text-stone-600">{{ a.scope_label }}</span>
+            </div>
+          </td>
+          <td class="px-5 py-3">
+            <span class="px-2 py-0.5 rounded-full text-xs font-semibold
+                         {{ 'bg-green-100 text-green-700' if a.priority == 1 else 'bg-amber/10 text-amber' }}">
+              {{ '1° Primary' if a.priority == 1 else (a.priority | string ~ '° Alt') }}
+            </span>
+          </td>
+          <td class="px-5 py-3 text-stone-500 tabular-nums">{{ a.valid_from.strftime('%d %b %Y') }}</td>
+          <td class="px-5 py-3 text-stone-400 tabular-nums">
+            {% if a.valid_until %}{{ a.valid_until.strftime('%d %b %Y') }}{% else %}
+            <span class="text-green-600 font-medium text-xs">Active</span>
+            {% endif %}
+          </td>
+          <td class="px-5 py-3 text-stone-500 text-xs">{{ a.assigned_by }}</td>
+          <td class="px-5 py-3">
+            {% if a.is_active %}
+            <div class="flex justify-end opacity-0 group-hover:opacity-100 transition-opacity" x-data="{ showReason: false }">
+              <form hx-post="/supply-chain/assignments/htmx/{{ a.id }}/close"
+                    hx-target="#assignments-content"
+                    hx-swap="outerHTML"
+                    hx-indicator="#page-spinner"
+                    hx-confirm="Close this assignment? It will be inactive from today."">
+                <button type="submit"
+                        class="px-2.5 py-1 text-xs rounded-lg border border-red-200 text-red-600 hover:bg-red-50 transition-colors">
+                  Close
+                </button>
+              </form>
+            </div>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="bg-white rounded-xl shadow-sm py-20 text-center">
+    <p class="text-4xl mb-3">📋</p>
+    <p class="text-base font-semibold text-stone-500">No active assignments</p>
+    <p class="text-sm text-stone-400 mt-1">Assign supply routes to regions or stores so the cost calculator can resolve ingredient prices.</p>
+  </div>
+  {% endif %}
+
+</div>
