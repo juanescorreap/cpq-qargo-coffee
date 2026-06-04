@@ -16,6 +16,7 @@ from sqlalchemy.orm import Session
 
 from backend.models import (
     Competitor,
+    CompetitorPriceObservation,
     CompetitorProduct,
     Ingredient,
     Product,
@@ -281,11 +282,8 @@ class ReportGenerator:
             try:
                 our_product  = self.db.get(Product, match.our_product_id)
                 our_size     = self.db.get(ProductSize, match.our_size_id)
-                # competitor_products is partitioned → composite PK (id, scraped_at).
-                comp_product = self.db.get(
-                    CompetitorProduct,
-                    (match.competitor_product_id, match.competitor_product_scraped_at),
-                )
+                # V2: matches reference the stable catalog (simple PK).
+                comp_product = self.db.get(CompetitorProduct, match.competitor_product_id)
 
                 if not our_product or not our_size or not comp_product:
                     logger.warning(
@@ -316,11 +314,18 @@ class ReportGenerator:
                 if not our_pricing:
                     continue
 
-                if not comp_product.price or float(comp_product.price) <= 0:
+                # V2: competitor price comes from the latest observation.
+                latest_obs = (
+                    self.db.query(CompetitorPriceObservation)
+                    .filter(CompetitorPriceObservation.competitor_product_id == comp_product.id)
+                    .order_by(CompetitorPriceObservation.scraped_at.desc())
+                    .first()
+                )
+                if not latest_obs or not latest_obs.price or float(latest_obs.price) <= 0:
                     continue
 
                 our_price  = float(our_pricing.final_price)
-                comp_price = float(comp_product.price)
+                comp_price = float(latest_obs.price)
                 price_diff     = our_price - comp_price
                 price_diff_pct = price_diff / comp_price * 100
 

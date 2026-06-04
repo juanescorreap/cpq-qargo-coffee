@@ -4,7 +4,12 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session, aliased
 
 from backend.database import get_db
-from backend.models.competitor import Competitor, CompetitorProduct, ProductCompetitorMatch
+from backend.models.competitor import (
+    Competitor,
+    CompetitorPriceObservation,
+    CompetitorProduct,
+    ProductCompetitorMatch,
+)
 from backend.models.product import Product, ProductSize
 from backend.schemas.competitor import (
     CompetitorCreate,
@@ -30,6 +35,31 @@ def _get_competitor_or_404(competitor_id: int, db: Session) -> Competitor:
     return c
 
 
+def _latest_obs(cp_id: int, db: Session) -> Optional[CompetitorPriceObservation]:
+    """Most recent price observation for a catalog product, or None."""
+    return (
+        db.query(CompetitorPriceObservation)
+        .filter(CompetitorPriceObservation.competitor_product_id == cp_id)
+        .order_by(CompetitorPriceObservation.scraped_at.desc())
+        .first()
+    )
+
+
+def _product_response(cp: CompetitorProduct, competitor_name: Optional[str], db: Session) -> CompetitorProductResponse:
+    obs = _latest_obs(cp.id, db)
+    return CompetitorProductResponse.model_validate({
+        "id": cp.id,
+        "competitor_id": cp.competitor_id,
+        "product_name": cp.product_name,
+        "category": cp.category,
+        "size_description": cp.size_description,
+        "price": obs.price if obs else None,
+        "source_url": obs.source_url if obs else None,
+        "scraped_at": obs.scraped_at if obs else None,
+        "competitor_name": competitor_name,
+    })
+
+
 def _fetch_competitor_product(cp_id: int, db: Session) -> CompetitorProductResponse:
     row = (
         db.query(CompetitorProduct, Competitor.name.label("competitor_name"))
@@ -42,17 +72,7 @@ def _fetch_competitor_product(cp_id: int, db: Session) -> CompetitorProductRespo
             status_code=status.HTTP_404_NOT_FOUND, detail="Competitor product not found"
         )
     cp, competitor_name = row
-    return CompetitorProductResponse.model_validate({
-        "id": cp.id,
-        "competitor_id": cp.competitor_id,
-        "product_name": cp.product_name,
-        "category": cp.category,
-        "size_description": cp.size_description,
-        "price": cp.price,
-        "source_url": cp.source_url,
-        "scraped_at": cp.scraped_at,
-        "competitor_name": competitor_name,
-    })
+    return _product_response(cp, competitor_name, db)
 
 
 def _fetch_match(match_id: int, db: Session) -> ProductCompetitorMatchResponse:
@@ -182,20 +202,7 @@ def list_competitor_products(
         .order_by(CompetitorProduct.product_name)
         .all()
     )
-    return [
-        CompetitorProductResponse.model_validate({
-            "id": cp.id,
-            "competitor_id": cp.competitor_id,
-            "product_name": cp.product_name,
-            "category": cp.category,
-            "size_description": cp.size_description,
-            "price": cp.price,
-            "source_url": cp.source_url,
-            "scraped_at": cp.scraped_at,
-            "competitor_name": competitor_name,
-        })
-        for cp, competitor_name in rows
-    ]
+    return [_product_response(cp, competitor_name, db) for cp, competitor_name in rows]
 
 
 @router.post(
@@ -208,10 +215,36 @@ def create_competitor_product(
     body: CompetitorProductBase,
     db: Session = Depends(get_db),
 ) -> CompetitorProductResponse:
-    """Add a scraped product for a competitor. competitor_id is taken from the URL path."""
+    """Add a competitor product. Upserts the stable catalog entry and records an
+    initial price observation. competitor_id is taken from the URL path."""
     _get_competitor_or_404(competitor_id, db)
-    cp = CompetitorProduct(competitor_id=competitor_id, **body.model_dump())
-    db.add(cp)
+
+    cp = (
+        db.query(CompetitorProduct)
+        .filter(
+            CompetitorProduct.competitor_id == competitor_id,
+            CompetitorProduct.product_name == body.product_name,
+            CompetitorProduct.size_description == body.size_description,
+        )
+        .first()
+    )
+    if cp is None:
+        cp = CompetitorProduct(
+            competitor_id=competitor_id,
+            product_name=body.product_name,
+            category=body.category,
+            size_description=body.size_description,
+        )
+        db.add(cp)
+        db.flush()
+    else:
+        cp.category = body.category or cp.category
+
+    db.add(CompetitorPriceObservation(
+        competitor_product_id=cp.id,
+        price=body.price,
+        source_url=body.source_url,
+    ))
     db.commit()
     return _fetch_competitor_product(cp.id, db)
 

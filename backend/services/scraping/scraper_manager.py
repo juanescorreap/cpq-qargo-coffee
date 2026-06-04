@@ -49,6 +49,7 @@ from sqlalchemy.orm import Session
 
 from backend.models import (
     Competitor,
+    CompetitorPriceObservation,
     CompetitorProduct,
     Ingredient,
     IngredientPriceHistory,
@@ -592,33 +593,38 @@ class ScraperManager:
 
         for product in products:
             try:
+                # V2 split: upsert the stable catalog entry (competitor, name,
+                # size), then append a price observation.
                 existing: Optional[CompetitorProduct] = (
                     self.db.query(CompetitorProduct)
                     .filter(
                         CompetitorProduct.competitor_id == competitor_id,
                         CompetitorProduct.product_name == product.product_name,
+                        CompetitorProduct.size_description == (product.unit or ""),
                     )
                     .first()
                 )
 
                 if existing:
-                    existing.price = float(product.price)
-                    existing.size_description = product.unit or existing.size_description
                     existing.category = product.category or existing.category
-                    existing.source_url = product.url or existing.source_url
-                    existing.scraped_at = now
                     updated_count += 1
                 else:
-                    self.db.add(CompetitorProduct(
+                    existing = CompetitorProduct(
                         competitor_id=competitor_id,
                         product_name=product.product_name,
-                        price=float(product.price),
                         size_description=product.unit or "",
                         category=product.category,
-                        source_url=product.url,
-                        scraped_at=now,
-                    ))
+                    )
+                    self.db.add(existing)
+                    self.db.flush()
                     new_count += 1
+
+                self.db.add(CompetitorPriceObservation(
+                    competitor_product_id=existing.id,
+                    price=float(product.price),
+                    source_url=product.url,
+                    scraped_at=now,
+                ))
 
             except Exception as exc:
                 msg = f"'{product.product_name}': {exc}"

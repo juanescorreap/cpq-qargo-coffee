@@ -37,6 +37,7 @@ def _fetch_price_response(store_id: int, ingredient_id: int, db: Session) -> Sto
         .filter(
             StoreIngredientPrice.store_id == store_id,
             StoreIngredientPrice.ingredient_id == ingredient_id,
+            StoreIngredientPrice.valid_until.is_(None),
         )
         .first()
     )
@@ -48,7 +49,10 @@ def _fetch_price_response(store_id: int, ingredient_id: int, db: Session) -> Sto
         "store_id": price.store_id,
         "ingredient_id": price.ingredient_id,
         "local_price": price.local_price,
+        "currency_code": price.currency_code,
         "local_supplier": price.local_supplier,
+        "valid_from": price.valid_from,
+        "valid_until": price.valid_until,
         "updated_at": price.updated_at,
         "ingredient_name": ingredient_name,
     })
@@ -178,6 +182,7 @@ def upsert_ingredient_price(
         .filter(
             StoreIngredientPrice.store_id == store_id,
             StoreIngredientPrice.ingredient_id == body.ingredient_id,
+            StoreIngredientPrice.valid_until.is_(None),
         )
         .first()
     )
@@ -185,6 +190,7 @@ def upsert_ingredient_price(
     if existing:
         existing.local_price = body.local_price
         existing.local_supplier = body.local_supplier
+        existing.currency_code = body.currency_code
         db.commit()
     else:
         price = StoreIngredientPrice(store_id=store_id, **body.model_dump())

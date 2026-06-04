@@ -241,6 +241,9 @@ class IngredientAvailability(Base):
             "valid_until IS NULL OR valid_until >= valid_from", name="ck_ia_validity"
         ),
         CheckConstraint(
+            "supply_route_id IS NOT NULL OR region_id IS NOT NULL", name="ck_ia_scope"
+        ),
+        CheckConstraint(
             "expected_resume IS NULL OR status = 'shortage'",
             name="ck_ia_resume_only_for_shortage",
         ),
@@ -251,9 +254,9 @@ class IngredientAvailability(Base):
         BigInteger, ForeignKey("ingredients.id", ondelete="CASCADE"), nullable=False
     )
     supply_route_id: int | None = Column(
-        BigInteger, ForeignKey("supply_routes.id", ondelete="SET NULL")
+        BigInteger, ForeignKey("supply_routes.id", ondelete="CASCADE")
     )
-    region_id: int | None = Column(BigInteger, ForeignKey("regions.id", ondelete="SET NULL"))
+    region_id: int | None = Column(BigInteger, ForeignKey("regions.id", ondelete="CASCADE"))
     status: str = Column(String(20), nullable=False)
     expected_resume: object | None = Column(Date)
     valid_from: object = Column(Date, nullable=False, server_default=func.current_date())
@@ -286,10 +289,9 @@ class IngredientSubstitute(Base):
             "valid_until IS NULL OR valid_until >= valid_from",
             name="ck_ingredient_substitutes_validity",
         ),
-        UniqueConstraint(
-            "original_ingredient_id", "substitute_ingredient_id",
-            name="uq_ingredient_substitutes",
-        ),
+        # Temporal EXCLUDE (no_overlap_isub) defined in migration 0006: forbids
+        # overlapping validity windows for the same (original, substitute) pair
+        # while allowing re-approval over time.
     )
 
     id: int = Column(BigInteger, Identity(always=True), primary_key=True)

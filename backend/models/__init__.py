@@ -37,6 +37,7 @@ is sufficient for `Base.metadata` to contain all tables before calling
 from backend.models.category import Category
 from backend.models.competitor import (
     Competitor,
+    CompetitorPriceObservation,
     CompetitorProduct,
     ProductCompetitorMatch,
 )
@@ -46,7 +47,6 @@ from backend.models.ingredient_substitute_region import IngredientSubstituteRegi
 from backend.models.modifier import (
     Modifier,
     ModifierIngredientEffect,
-    ProductModifierCost,
 )
 from backend.models.pricing import CategoryMargin, ProductPriceHistory, ProductPricing
 from backend.models.product import (
@@ -78,6 +78,7 @@ __all__ = [
     "Category",
     "CategoryMargin",
     "Competitor",
+    "CompetitorPriceObservation",
     "CompetitorProduct",
     "Currency",
     "Distributor",
@@ -93,7 +94,6 @@ __all__ = [
     "ModifierIngredientEffect",
     "Product",
     "ProductCompetitorMatch",
-    "ProductModifierCost",
     "ProductPriceHistory",
     "ProductPricing",
     "ProductSize",

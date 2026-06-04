@@ -82,5 +82,6 @@ class IngredientResponse(IngredientBase):
 
     id: int
     is_active: bool
+    current_price: Optional[Decimal] = None
     created_at: datetime
     last_scraped: Optional[datetime] = None

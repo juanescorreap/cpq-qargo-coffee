@@ -75,25 +75,36 @@ class CompetitorProductCreate(CompetitorProductBase):
     competitor_id: int
 
 
-class CompetitorProductResponse(CompetitorProductBase):
+class CompetitorProductResponse(BaseModel):
+    """Catalog product enriched with its latest observed price (V2 split).
+
+    ``price``, ``source_url`` and ``scraped_at`` are derived from the most
+    recent ``competitor_price_observations`` row; they are None when the
+    catalog product has no observations yet.
+    """
+
     model_config = ConfigDict(from_attributes=True)
 
     id: int
     competitor_id: int
     competitor_name: Optional[str] = None
+    product_name: str
+    category: Optional[str] = None
+    size_description: Optional[str] = None
+    price: Optional[Decimal] = None
+    source_url: Optional[str] = None
     scraped_at: Optional[datetime] = None
 
-    @model_validator(mode="before")
-    @classmethod
-    def extract_competitor_name(cls, data: Any) -> Any:
-        """Pull competitor name from loaded ORM relationship when available."""
-        if not hasattr(data, "__dict__"):
-            return data
-        if not getattr(data, "competitor_name", None):
-            competitor = getattr(data, "competitor", None)
-            if competitor is not None:
-                data.__dict__["competitor_name"] = competitor.name
-        return data
+
+class CompetitorPriceObservationResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    competitor_product_id: int
+    price: Optional[Decimal] = None
+    currency_code: str
+    source_url: Optional[str] = None
+    scraped_at: datetime
 
 
 # ---------------------------------------------------------------------------

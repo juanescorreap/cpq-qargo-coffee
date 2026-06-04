@@ -2,12 +2,12 @@ from sqlalchemy import (
     BigInteger,
     Boolean,
     Column,
+    Date,
     DateTime,
     ForeignKey,
     Identity,
     Numeric,
     String,
-    UniqueConstraint,
 )
 from sqlalchemy.sql import func
 
@@ -55,13 +55,9 @@ class StoreIngredientPrice(Base):
 
     __tablename__ = "store_ingredient_prices"
 
-    __table_args__ = (
-        UniqueConstraint(
-            "store_id",
-            "ingredient_id",
-            name="uq_store_ingredient_prices",
-        ),
-    )
+    # V2 (migration 0012): temporal. The no-overlap EXCLUDE (no_overlap_sip) and
+    # validity CHECK are defined in the migration. One valid local price per
+    # (store, ingredient) at any given date.
 
     id: int = Column(BigInteger, Identity(always=True), primary_key=True)
     store_id: int = Column(
@@ -70,8 +66,16 @@ class StoreIngredientPrice(Base):
     ingredient_id: int = Column(
         BigInteger, ForeignKey("ingredients.id"), nullable=False
     )
-    local_price: float | None = Column(Numeric(14, 4))
+    local_price: float = Column(Numeric(14, 4), nullable=False)
+    currency_code: str = Column(
+        String(3),
+        ForeignKey("currencies.code", onupdate="CASCADE", ondelete="RESTRICT"),
+        nullable=False,
+        server_default="COP",
+    )
     local_supplier: str | None = Column(String(160))
+    valid_from: object = Column(Date, nullable=False, server_default=func.current_date())
+    valid_until: object | None = Column(Date)
     created_at: object = Column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )

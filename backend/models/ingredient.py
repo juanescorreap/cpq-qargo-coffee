@@ -44,6 +44,10 @@ class Ingredient(Base):
 
     canonical_unit: str | None = Column(String(40))
 
+    # Latest known price, denormalized from ingredient_price_history by the
+    # sync_ingredient_current_price trigger. O(1) read for the costing engine.
+    current_price: float | None = Column(Numeric(14, 4))   # price_amount
+
     # --- Scraping ---
     source_url: str | None = Column(Text)
     last_scraped: object | None = Column(DateTime(timezone=True))

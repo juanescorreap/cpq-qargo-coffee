@@ -72,32 +72,6 @@ class ModifierIngredientEffect(Base):
     updated_at: object = Column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )
-
-
-class ProductModifierCost(Base):
-    """Pre-calculated cost delta of applying a modifier to a specific product.
-
-    calculated_at records the last computation, making stale records detectable
-    after an ingredient price update. (The view ``v_product_modifier_cost``
-    recomputes this live.)
-    """
-
-    __tablename__ = "product_modifier_costs"
-
-    __table_args__ = (
-        UniqueConstraint(
-            "product_id", "modifier_id", name="uq_product_modifier_costs"
-        ),
-    )
-
-    id: int = Column(BigInteger, Identity(always=True), primary_key=True)
-    product_id: int = Column(
-        BigInteger, ForeignKey("products.id", ondelete="CASCADE"), nullable=False
-    )
-    modifier_id: int = Column(
-        BigInteger, ForeignKey("modifiers.id", ondelete="CASCADE"), nullable=False
-    )
-    cost_impact: float = Column(Numeric(14, 4), nullable=False)
-    calculated_at: object = Column(
-        DateTime(timezone=True), server_default=func.now(), nullable=False
-    )
+# NOTE: ProductModifierCost removed in V2 (migration 0011). The derived modifier
+# cost now lives in the materialized view ``mv_product_modifier_cost`` (refreshed
+# on price/effect changes) instead of a table that silently went stale.

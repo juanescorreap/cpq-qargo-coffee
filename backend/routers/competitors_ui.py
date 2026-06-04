@@ -7,8 +7,30 @@ from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session, aliased
 
 from backend.database import get_db
-from backend.models.competitor import Competitor, CompetitorProduct, ProductCompetitorMatch
+from backend.models.competitor import (
+    Competitor,
+    CompetitorPriceObservation,
+    CompetitorProduct,
+    ProductCompetitorMatch,
+)
 from backend.models.product import Product, ProductSize
+
+
+def _latest_obs_map(cp_ids: list[int], db: Session) -> dict[int, CompetitorPriceObservation]:
+    """Map competitor_product_id -> its latest price observation."""
+    if not cp_ids:
+        return {}
+    rows = (
+        db.query(CompetitorPriceObservation)
+        .filter(CompetitorPriceObservation.competitor_product_id.in_(cp_ids))
+        .order_by(
+            CompetitorPriceObservation.competitor_product_id,
+            CompetitorPriceObservation.scraped_at.desc(),
+        )
+        .distinct(CompetitorPriceObservation.competitor_product_id)
+        .all()
+    )
+    return {o.competitor_product_id: o for o in rows}
 
 router = APIRouter(prefix="/competitors", tags=["UI - Competitors"])
 
@@ -28,18 +50,20 @@ def _comp_products(competitor_id: int, db: Session) -> list[dict]:
         .order_by(CompetitorProduct.product_name)
         .all()
     )
-    return [
-        {
+    obs_map = _latest_obs_map([cp.id for cp in rows], db)
+    result = []
+    for cp in rows:
+        obs = obs_map.get(cp.id)
+        result.append({
             "id":               cp.id,
             "product_name":     cp.product_name or "",
             "category":         cp.category or "",
             "size_description": cp.size_description or "",
-            "price":            float(cp.price) if cp.price else None,
-            "scraped_at":       cp.scraped_at,
-            "source_url":       cp.source_url or "",
-        }
-        for cp in rows
-    ]
+            "price":            float(obs.price) if obs and obs.price else None,
+            "scraped_at":       obs.scraped_at if obs else None,
+            "source_url":       (obs.source_url if obs else None) or "",
+        })
+    return result
 
 
 def _matches(competitor_id: int, db: Session) -> list[dict]:
@@ -53,7 +77,6 @@ def _matches(competitor_id: int, db: Session) -> list[dict]:
             OurSize.size_name.label("our_size_name"),
             CompetitorProduct.product_name.label("comp_product_name"),
             CompetitorProduct.size_description.label("comp_size"),
-            CompetitorProduct.price.label("comp_price"),
         )
         .join(OurProduct,        ProductCompetitorMatch.our_product_id      == OurProduct.id)
         .join(OurSize,           ProductCompetitorMatch.our_size_id          == OurSize.id)
@@ -62,20 +85,22 @@ def _matches(competitor_id: int, db: Session) -> list[dict]:
         .order_by(OurProduct.name, OurSize.size_name)
         .all()
     )
-    return [
-        {
+    obs_map = _latest_obs_map([m.competitor_product_id for m, *_ in rows], db)
+    result = []
+    for m, our_product_name, our_size_name, comp_product_name, comp_size in rows:
+        obs = obs_map.get(m.competitor_product_id)
+        result.append({
             "id":                m.id,
             "our_product_name":  our_product_name,
             "our_size_name":     our_size_name or "Base",
             "comp_product_name": comp_product_name or "",
             "comp_size":         comp_size or "",
-            "comp_price":        float(comp_price) if comp_price else None,
+            "comp_price":        float(obs.price) if obs and obs.price else None,
             "matched_by":        m.matched_by or "",
             "notes":             m.notes or "",
             "matched_at":        m.matched_at,
-        }
-        for m, our_product_name, our_size_name, comp_product_name, comp_size, comp_price in rows
-    ]
+        })
+    return result
 
 
 def _our_products_json(db: Session) -> list[dict]:
@@ -202,13 +227,29 @@ async def add_comp_product(
     except ValueError:
         return _render("Invalid price.")
 
-    db.add(CompetitorProduct(
-        competitor_id    = competitor_id,
-        product_name     = product_name,
-        category         = form.get("category", "").strip() or None,
-        size_description = size_description,
-        price            = price,
-        source_url       = form.get("source_url", "").strip() or None,
+    # V2 split: upsert the stable catalog entry, then record an observation.
+    cp = (
+        db.query(CompetitorProduct)
+        .filter(
+            CompetitorProduct.competitor_id == competitor_id,
+            CompetitorProduct.product_name == product_name,
+            CompetitorProduct.size_description == size_description,
+        )
+        .first()
+    )
+    if cp is None:
+        cp = CompetitorProduct(
+            competitor_id    = competitor_id,
+            product_name     = product_name,
+            category         = form.get("category", "").strip() or None,
+            size_description = size_description,
+        )
+        db.add(cp)
+        db.flush()
+    db.add(CompetitorPriceObservation(
+        competitor_product_id = cp.id,
+        price                 = price,
+        source_url            = form.get("source_url", "").strip() or None,
     ))
     db.commit()
     return _render()

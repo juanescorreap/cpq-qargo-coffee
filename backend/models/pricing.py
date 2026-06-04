@@ -11,7 +11,6 @@ from sqlalchemy import (
     String,
     Text,
     UniqueConstraint,
-    text,
 )
 from sqlalchemy.sql import func
 
@@ -65,9 +64,10 @@ class ProductPricing(Base):
             "uq_product_pricing_current",
             "product_id",
             "size_id",
-            text("COALESCE(store_id, 0)"),
+            "store_id",
             "currency_code",
             unique=True,
+            postgresql_nulls_not_distinct=True,
         ),
     )
 

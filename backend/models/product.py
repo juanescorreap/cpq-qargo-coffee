@@ -137,7 +137,7 @@ class RecipeIngredient(Base):
     )
     quantity: float = Column(Numeric(14, 6), nullable=False)
     recipe_unit_id: int | None = Column(
-        BigInteger, ForeignKey("recipe_units.id", ondelete="SET NULL"), nullable=True
+        BigInteger, ForeignKey("recipe_units.id", ondelete="RESTRICT"), nullable=True
     )
     scales_with_size: bool = Column(Boolean, nullable=False, default=True)
     process_yield_loss: float | None = Column(Numeric(6, 3), default=0)

@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import date, datetime
 from decimal import Decimal
 from typing import Any, Optional
 
@@ -82,6 +82,7 @@ class StoreResponse(StoreBase):
 class StoreIngredientPriceBase(BaseModel):
     ingredient_id: int
     local_price: Decimal
+    currency_code: str = "COP"
     local_supplier: Optional[str] = None
 
     @field_validator("local_price")
@@ -89,6 +90,14 @@ class StoreIngredientPriceBase(BaseModel):
     def price_non_negative(cls, v: Decimal) -> Decimal:
         if v < 0:
             raise ValueError("local_price must be >= 0")
+        return v
+
+    @field_validator("currency_code")
+    @classmethod
+    def currency_valid(cls, v: str) -> str:
+        v = v.strip().upper()
+        if len(v) != 3 or not v.isalpha():
+            raise ValueError("currency_code must be a 3-letter ISO 4217 code")
         return v
 
 
@@ -102,6 +111,8 @@ class StoreIngredientPriceResponse(StoreIngredientPriceBase):
     id: int
     store_id: int
     ingredient_name: Optional[str] = None
+    valid_from: Optional[date] = None
+    valid_until: Optional[date] = None
     updated_at: Optional[datetime] = None
 
     @model_validator(mode="before")

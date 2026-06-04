@@ -20,6 +20,7 @@ from sqlalchemy.orm import Session
 
 from backend.models import (
     Competitor,
+    CompetitorPriceObservation,
     CompetitorProduct,
     Ingredient,
     Product,
@@ -352,9 +353,14 @@ class TestCompetitorBenchmarkReport:
         comp_product = CompetitorProduct(
             competitor_id=competitor.id,
             product_name="Comp Cappuccino",
-            price=comp_price,
+            size_description="12oz",
         )
         db.add(comp_product)
+        db.commit()
+        db.add(CompetitorPriceObservation(
+            competitor_product_id=comp_product.id,
+            price=comp_price,
+        ))
         db.commit()
 
         our_product = Product(name="Our Cappuccino Bench", is_sub_recipe=False)
@@ -374,7 +380,6 @@ class TestCompetitorBenchmarkReport:
             our_product_id=our_product.id,
             our_size_id=our_size.id,
             competitor_product_id=comp_product.id,
-            competitor_product_scraped_at=comp_product.scraped_at,
         )
         db.add(match)
         db.commit()
@@ -446,9 +451,14 @@ class TestCompetitorBenchmarkReport:
         comp_product = CompetitorProduct(
             competitor_id=competitor.id,
             product_name="Some Coffee",
-            price=Decimal("12000"),
+            size_description="16oz",
         )
         test_db.add(comp_product)
+        test_db.commit()
+        test_db.add(CompetitorPriceObservation(
+            competitor_product_id=comp_product.id,
+            price=Decimal("12000"),
+        ))
         test_db.commit()
 
         our_product = Product(name="Our No Pricing Product", is_sub_recipe=False)
@@ -466,7 +476,6 @@ class TestCompetitorBenchmarkReport:
             our_product_id=our_product.id,
             our_size_id=our_size.id,
             competitor_product_id=comp_product.id,
-            competitor_product_scraped_at=comp_product.scraped_at,
         )
         test_db.add(match)
         test_db.commit()

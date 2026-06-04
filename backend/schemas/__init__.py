@@ -1,6 +1,7 @@
 from backend.schemas.competitor import (
     CompetitorBase,
     CompetitorCreate,
+    CompetitorPriceObservationResponse,
     CompetitorProductBase,
     CompetitorProductCreate,
     CompetitorProductResponse,
@@ -73,6 +74,7 @@ __all__ = [
     "CompetitorProductBase",
     "CompetitorProductCreate",
     "CompetitorProductResponse",
+    "CompetitorPriceObservationResponse",
     "ProductCompetitorMatchBase",
     "ProductCompetitorMatchCreate",
     "ProductCompetitorMatchResponse",
