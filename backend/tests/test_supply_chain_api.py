@@ -240,10 +240,15 @@ class TestSupplyRoutesRouter:
         assert r.json()["distributor_id"] == sc_distributor.id
 
     def test_create_direct_purchase(
-        self, test_client: TestClient, sc_ingredient: Ingredient
+        self, test_client: TestClient, sc_ingredient: Ingredient,
+        sc_manufacturer: Manufacturer,
     ):
+        # Direct purchase = bought straight from a manufacturer, so manufacturer_id
+        # is set and distributor_id stays null (ck_supply_routes_endpoint requires
+        # at least one supplier endpoint).
         r = test_client.post("/api/supply-routes", json={
             "ingredient_id": sc_ingredient.id,
+            "manufacturer_id": sc_manufacturer.id,
             "is_direct": True,
         })
         assert r.status_code == 201
@@ -559,8 +564,8 @@ class TestSupplyRoutePricesRouter:
         )
         assert r.status_code == 201
         body = r.json()
-        assert body["list_price"] == "5000"
-        assert body["qargo_price"] == "4500"
+        assert Decimal(body["list_price"]) == 5000
+        assert Decimal(body["qargo_price"]) == 4500
         assert body["currency_code"] == "COP"
         assert body["valid_until"] is None
         assert body["valid_from"] == str(date.today())
@@ -573,7 +578,7 @@ class TestSupplyRoutePricesRouter:
         )
         r = test_client.get(f"/api/supply-route-prices/route/{sc_supply_route.id}/active")
         assert r.status_code == 200
-        assert r.json()["qargo_price"] == "4500"
+        assert Decimal(r.json()["qargo_price"]) == 4500
 
     def test_create_second_price_closes_first(
         self, test_client: TestClient, sc_supply_route: SupplyRoute
@@ -592,7 +597,7 @@ class TestSupplyRoutePricesRouter:
         active = test_client.get(
             f"/api/supply-route-prices/route/{sc_supply_route.id}/active"
         ).json()
-        assert active["qargo_price"] == "5000"
+        assert Decimal(active["qargo_price"]) == 5000
 
     def test_price_history_contains_both_prices(
         self, test_client: TestClient, sc_supply_route: SupplyRoute
@@ -728,7 +733,7 @@ class TestResolveRouteEndpoint:
         body = r.json()
         assert body["resolved"] is True
         assert body["active_price"] is not None
-        assert body["active_price"]["qargo_price"] == "4500"
+        assert Decimal(body["active_price"]["qargo_price"]) == 4500
         assert body["active_price"]["currency_code"] == "COP"
 
     def test_bulk_resolve_with_no_routes_returns_all_unresolved(

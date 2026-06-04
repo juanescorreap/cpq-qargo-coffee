@@ -374,6 +374,7 @@ class TestCompetitorBenchmarkReport:
             our_product_id=our_product.id,
             our_size_id=our_size.id,
             competitor_product_id=comp_product.id,
+            competitor_product_scraped_at=comp_product.scraped_at,
         )
         db.add(match)
         db.commit()
@@ -465,6 +466,7 @@ class TestCompetitorBenchmarkReport:
             our_product_id=our_product.id,
             our_size_id=our_size.id,
             competitor_product_id=comp_product.id,
+            competitor_product_scraped_at=comp_product.scraped_at,
         )
         test_db.add(match)
         test_db.commit()

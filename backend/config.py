@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import List, Optional
 
-from pydantic import model_validator
+from pydantic import AliasChoices, Field, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 _PRODUCTION_ORIGINS = [
@@ -30,8 +30,20 @@ class Settings(BaseSettings):
     """
 
     # ── Database ───────────────────────────────────────────────────────────
-    SUPABASE_DB_URL: str
-    SUPABASE_POOLER_URL: Optional[str] = None
+    # Accept both the canonical name (SUPABASE_DB_URL) and the legacy .env name
+    # (DATABASE_URL) so existing local environments keep working without changes.
+    SUPABASE_DB_URL: str = Field(
+        validation_alias=AliasChoices("SUPABASE_DB_URL", "DATABASE_URL")
+    )
+    SUPABASE_POOLER_URL: Optional[str] = Field(
+        default=None,
+        validation_alias=AliasChoices("SUPABASE_POOLER_URL", "DATABASE_URL_POOLING"),
+    )
+
+    @property
+    def DATABASE_URL_POOLING(self) -> str:
+        """SQLAlchemy URL: prefers the pooler URL when available."""
+        return self.SUPABASE_POOLER_URL or self.SUPABASE_DB_URL
 
     # ── Application ────────────────────────────────────────────────────────
     DEBUG: bool = False

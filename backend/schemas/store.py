@@ -41,6 +41,16 @@ class StoreUpdate(BaseModel):
     region_id: Optional[int] = None
     default_currency_code: Optional[str] = None
 
+    @field_validator("default_currency_code")
+    @classmethod
+    def currency_valid(cls, v: Optional[str]) -> Optional[str]:
+        if v is None:
+            return v
+        v = v.strip().upper()
+        if len(v) != 3 or not v.isalpha():
+            raise ValueError("default_currency_code must be a 3-letter ISO 4217 code")
+        return v
+
     @field_validator("code")
     @classmethod
     def code_not_empty(cls, v: Optional[str]) -> Optional[str]:

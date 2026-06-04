@@ -4,20 +4,16 @@ from sqlalchemy import create_engine, text
 from sqlalchemy.orm import declarative_base, sessionmaker
 from sqlalchemy.pool import NullPool
 
+from backend.config import settings
+
 # ============================================
 # SUPABASE CONFIGURATION
 # ============================================
 
-SUPABASE_DB_URL = os.getenv("SUPABASE_DB_URL")
-SUPABASE_POOLER_URL = os.getenv("SUPABASE_POOLER_URL")
+SUPABASE_DB_URL = settings.SUPABASE_DB_URL
+SUPABASE_POOLER_URL = settings.SUPABASE_POOLER_URL
 
 DATABASE_URL = SUPABASE_POOLER_URL or SUPABASE_DB_URL
-
-if not DATABASE_URL:
-    raise ValueError(
-        "SUPABASE_DB_URL or SUPABASE_POOLER_URL must be configured. "
-        "Get these URLs from your Supabase project."
-    )
 
 if DATABASE_URL.startswith("postgres://"):
     DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)

@@ -22,6 +22,7 @@ from backend.routers import (
     stores_ui,
 )
 from backend.routers import (
+    currencies,
     regions, manufacturers, distributors,
     supply_routes, supply_route_assignments, supply_route_prices,
     supply_chain, supply_chain_ui,
@@ -82,6 +83,7 @@ app.include_router(reports.router)
 app.include_router(reports_ui.router)
 app.include_router(scraping.router)
 app.include_router(scraping_ui.router)
+app.include_router(currencies.router)
 app.include_router(regions.router)
 app.include_router(manufacturers.router)
 app.include_router(distributors.router)

@@ -191,13 +191,18 @@ class PricingEngine:
             markup_used = _DEFAULT_MARKUP
 
         today = date.today()
+        # product_pricing holds the CURRENT effective price; uniqueness is
+        # (product_id, size_id, COALESCE(store_id, 0), currency_code) — NOT dated.
+        # The dated trail lives in product_price_history. So upsert on that key
+        # and refresh effective_date, instead of inserting one row per day.
+        currency_code = "COP"
         existing = (
             self.db.query(ProductPricing)
             .filter(
                 ProductPricing.product_id == product_id,
                 ProductPricing.size_id == size_id,
                 ProductPricing.store_id == store_id,
-                ProductPricing.effective_date == today,
+                ProductPricing.currency_code == currency_code,
             )
             .first()
         )
@@ -208,6 +213,7 @@ class PricingEngine:
             existing.markup_override = markup_override
             existing.final_price = final_price
             existing.is_manual_price = is_manual
+            existing.effective_date = today
         else:
             existing = ProductPricing(
                 product_id=product_id,
@@ -218,6 +224,7 @@ class PricingEngine:
                 final_price=final_price,
                 is_manual_price=is_manual,
                 effective_date=today,
+                currency_code=currency_code,
             )
             self.db.add(existing)
             old_price = None

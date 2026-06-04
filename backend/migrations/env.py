@@ -11,7 +11,9 @@ from backend.config import settings
 from backend.database import Base
 
 # Import all models so that Alembic detects them in autogenerate
+import backend.models.currency    # noqa: F401
 import backend.models.ingredient   # noqa: F401
+import backend.models.ingredient_substitute_region  # noqa: F401
 import backend.models.recipe_unit  # noqa: F401
 import backend.models.store        # noqa: F401
 import backend.models.category     # noqa: F401

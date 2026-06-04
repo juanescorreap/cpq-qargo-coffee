@@ -1,0 +1,316 @@
+erDiagram
+  %% =====================================================================
+  %% QARGO COFFEE — Entity-Relationship Diagram (refactored / target state)
+  %% Grouped by logical domain. erDiagram has no visual subgraphs, so each
+  %% domain is delimited by comment banners. Only PK / FK / key business
+  %% columns are shown to keep the map readable.
+  %% =====================================================================
+
+  %% ---------- DOMAIN: Reference / lookups ----------
+  currencies {
+    char(3)  code PK
+    varchar  name
+    smallint minor_unit
+  }
+  categories {
+    varchar slug PK
+    varchar display_name
+  }
+  regions {
+    bigint     id PK
+    varchar    code UK
+    iso_country country_code
+  }
+  recipe_units {
+    bigint  id PK
+    varchar name UK
+  }
+  ingredients {
+    bigint       id PK
+    varchar      name
+    price_amount purchase_price
+    quantity_amount conversion_factor
+  }
+  manufacturers {
+    bigint      id PK
+    varchar     name
+    iso_country country_code
+  }
+  distributors {
+    bigint      id PK
+    varchar     name
+    iso_country country_code
+  }
+  competitors {
+    bigint  id PK
+    varchar name
+  }
+  modifiers {
+    bigint  id PK
+    varchar name
+  }
+
+  %% ---------- DOMAIN: Stores & geography ----------
+  stores {
+    bigint  id PK
+    varchar code UK
+    bigint  region_id FK
+    char(3) default_currency_code FK
+  }
+
+  %% ---------- DOMAIN: Product & recipe catalog ----------
+  products {
+    bigint  id PK
+    varchar name
+    varchar category FK
+    boolean is_sub_recipe
+  }
+  category_margins {
+    bigint     id PK
+    varchar    category FK,UK
+    pct_amount markup_percentage
+  }
+  product_sizes {
+    bigint  id PK
+    bigint  product_id FK
+    varchar size_name
+    boolean is_default
+  }
+  recipe_ingredients {
+    bigint          id PK
+    bigint          product_id FK
+    bigint          ingredient_id FK
+    bigint          recipe_unit_id FK
+    quantity_amount quantity
+  }
+  recipe_sub_recipes {
+    bigint id PK
+    bigint parent_product_id FK
+    bigint sub_recipe_id FK
+  }
+  size_packaging {
+    bigint id PK
+    bigint size_id FK
+    bigint packaging_ingredient_id FK
+  }
+  modifier_ingredient_effects {
+    bigint  id PK
+    bigint  modifier_id FK
+    bigint  ingredient_id FK
+    numeric quantity_change
+  }
+  product_modifier_costs {
+    bigint  id PK
+    bigint  product_id FK
+    bigint  modifier_id FK
+    numeric cost_impact
+  }
+
+  %% ---------- DOMAIN: Ingredient catalog extensions ----------
+  ingredient_recipe_unit_conversions {
+    bigint id PK
+    bigint ingredient_id FK
+    bigint recipe_unit_id FK
+  }
+  ingredient_substitutes {
+    bigint id PK
+    bigint original_ingredient_id FK
+    bigint substitute_ingredient_id FK
+    bigint recipe_unit_id FK
+    date   valid_from
+    date   valid_until
+  }
+  ingredient_substitute_regions {
+    bigint substitute_id PK,FK
+    bigint region_id PK,FK
+  }
+
+  %% ---------- DOMAIN: Supply chain ----------
+  supply_routes {
+    bigint  id PK
+    bigint  ingredient_id FK
+    bigint  manufacturer_id FK
+    bigint  distributor_id FK
+    boolean is_direct
+  }
+  supply_route_assignments {
+    bigint  id PK
+    bigint  supply_route_id FK
+    bigint  region_id FK
+    bigint  store_id FK
+    integer priority
+  }
+  ingredient_supplier_refs {
+    bigint  id PK
+    bigint  ingredient_id FK
+    bigint  supply_route_id FK
+    varchar external_code
+  }
+  supplier_unit_conversions {
+    bigint id PK
+    bigint ingredient_ref_id FK
+    bigint recipe_unit_id FK
+  }
+  supply_route_prices {
+    bigint       id PK
+    bigint       supply_route_id FK
+    char(3)      currency_code FK
+    price_amount qargo_price
+    date         valid_from
+    date         valid_until
+  }
+  ingredient_availability {
+    bigint  id PK
+    bigint  ingredient_id FK
+    bigint  supply_route_id FK
+    bigint  region_id FK
+    varchar status
+  }
+  store_supplier_history {
+    bigint id PK
+    bigint store_id FK
+    bigint ingredient_id FK
+    bigint supply_route_id FK
+    date   valid_from
+  }
+
+  %% ---------- DOMAIN: Pricing, costs & history ----------
+  store_ingredient_prices {
+    bigint       id PK
+    bigint       store_id FK
+    bigint       ingredient_id FK
+    price_amount local_price
+  }
+  product_pricing {
+    bigint       id PK
+    bigint       product_id FK
+    bigint       size_id FK
+    bigint       store_id FK
+    char(3)      currency_code FK
+    price_amount final_price
+    boolean      is_manual_price
+  }
+  product_price_history {
+    bigint       id PK
+    timestamptz  changed_at PK
+    bigint       product_id FK
+    bigint       size_id FK
+    bigint       store_id FK
+    char(3)      currency_code FK
+  }
+  ingredient_price_history {
+    bigint       id PK
+    timestamptz  changed_at PK
+    bigint       ingredient_id FK
+    price_amount price
+  }
+  recipe_cost_snapshots {
+    bigint       id PK
+    timestamptz  calculated_at PK
+    bigint       product_id FK
+    bigint       store_id FK
+    char(3)      currency_code FK
+    jsonb        snapshot_detail
+  }
+
+  %% ---------- DOMAIN: Competitive intelligence ----------
+  competitor_products {
+    bigint      id PK
+    timestamptz scraped_at PK
+    bigint      competitor_id FK
+    price_amount price
+  }
+  product_competitor_matches {
+    bigint      id PK
+    bigint      our_product_id FK
+    bigint      our_size_id FK
+    bigint      competitor_product_id FK
+    timestamptz competitor_product_scraped_at FK
+  }
+
+  %% ---------- DOMAIN: Stores <-> products ----------
+  store_products {
+    bigint  id PK
+    bigint  store_id FK
+    bigint  product_id FK
+    boolean is_available
+  }
+
+  %% =====================================================================
+  %% RELATIONSHIPS
+  %% =====================================================================
+
+  %% Reference -> consumers
+  currencies   ||--o{ stores                : "default currency"
+  currencies   ||--o{ supply_route_prices   : prices
+  currencies   ||--o{ product_pricing       : prices
+  currencies   ||--o{ product_price_history : prices
+  currencies   ||--o{ recipe_cost_snapshots : prices
+  categories   ||--o{ products              : classifies
+  categories   ||--|| category_margins      : "margin rule"
+  regions      ||--o{ stores                : locates
+
+  %% Catalog
+  products     ||--o{ product_sizes         : "has sizes"
+  products     ||--o{ recipe_ingredients    : "recipe of"
+  ingredients  ||--o{ recipe_ingredients    : "used in"
+  recipe_units ||--o{ recipe_ingredients    : "measured in"
+  products     ||--o{ recipe_sub_recipes    : "parent (BOM)"
+  products     ||--o{ recipe_sub_recipes    : "sub-recipe (BOM)"
+  product_sizes ||--o{ size_packaging       : packaged
+  ingredients  ||--o{ size_packaging        : "packaging item"
+  modifiers    ||--o{ modifier_ingredient_effects : adjusts
+  ingredients  ||--o{ modifier_ingredient_effects : "affected"
+  products     ||--o{ product_modifier_costs : "modifier cost"
+  modifiers    ||--o{ product_modifier_costs : "modifier cost"
+
+  %% Ingredient extensions
+  ingredients  ||--o{ ingredient_recipe_unit_conversions : converts
+  recipe_units ||--o{ ingredient_recipe_unit_conversions : converts
+  ingredients  ||--o{ ingredient_substitutes : "original"
+  ingredients  ||--o{ ingredient_substitutes : "substitute"
+  recipe_units ||--o{ ingredient_substitutes : "ratio unit"
+  ingredient_substitutes ||--o{ ingredient_substitute_regions : "scoped to"
+  regions      ||--o{ ingredient_substitute_regions : "scoped to"
+
+  %% Supply chain
+  ingredients   ||--o{ supply_routes        : sourced
+  manufacturers ||--o{ supply_routes        : makes
+  distributors  ||--o{ supply_routes        : distributes
+  supply_routes ||--o{ supply_route_assignments : "assigned via"
+  regions       ||--o{ supply_route_assignments : "scope: region"
+  stores        ||--o{ supply_route_assignments : "scope: store"
+  ingredients   ||--o{ ingredient_supplier_refs : "supplier SKU"
+  supply_routes ||--o{ ingredient_supplier_refs : "supplier SKU"
+  ingredient_supplier_refs ||--o{ supplier_unit_conversions : converts
+  recipe_units  ||--o{ supplier_unit_conversions : converts
+  supply_routes ||--o{ supply_route_prices  : "priced (dated)"
+  ingredients   ||--o{ ingredient_availability : status
+  supply_routes ||--o{ ingredient_availability : status
+  regions       ||--o{ ingredient_availability : status
+  stores        ||--o{ store_supplier_history : history
+  ingredients   ||--o{ store_supplier_history : history
+  supply_routes ||--o{ store_supplier_history : history
+
+  %% Pricing & history
+  stores        ||--o{ store_ingredient_prices : "local price"
+  ingredients   ||--o{ store_ingredient_prices : "local price"
+  products      ||--o{ product_pricing       : priced
+  product_sizes ||--o{ product_pricing       : priced
+  stores        ||--o{ product_pricing       : priced
+  products      ||--o{ product_price_history : audited
+  product_sizes ||--o{ product_price_history : audited
+  stores        ||--o{ product_price_history : audited
+  ingredients   ||--o{ ingredient_price_history : audited
+  products      ||--o{ recipe_cost_snapshots : "cost freeze"
+  stores        ||--o{ recipe_cost_snapshots : "cost freeze"
+
+  %% Competitive intel
+  competitors   ||--o{ competitor_products  : scraped
+  products      ||--o{ product_competitor_matches : "our product"
+  product_sizes ||--o{ product_competitor_matches : "our size"
+  competitor_products ||--o{ product_competitor_matches : "their product"
+
+  %% Stores <-> products
+  stores        ||--o{ store_products        : offers
+  products      ||--o{ store_products        : "offered at"

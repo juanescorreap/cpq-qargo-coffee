@@ -1,9 +1,10 @@
 from sqlalchemy import (
+    BigInteger,
     Boolean,
     Column,
     DateTime,
     ForeignKey,
-    Integer,
+    Identity,
     Numeric,
     String,
     UniqueConstraint,
@@ -18,13 +19,26 @@ class Store(Base):
 
     __tablename__ = "stores"
 
-    id: int = Column(Integer, primary_key=True, index=True)
-    code: str = Column(String(20), unique=True, nullable=False)  # e.g.: "BOG-ZONA-T"
-    name: str = Column(String(200), nullable=False)
-    city: str | None = Column(String(100))
-    is_active: bool = Column(Boolean, default=True)
-    region_id: int | None = Column(Integer, ForeignKey("regions.id"), nullable=True)
-    default_currency_code: str = Column(String(3), nullable=False, server_default="COP")
+    id: int = Column(BigInteger, Identity(always=True), primary_key=True)
+    code: str = Column(String(40), unique=True, nullable=False)  # e.g.: "BOG-ZONA-T"
+    name: str = Column(String(160), nullable=False)
+    city: str | None = Column(String(120))
+    region_id: int | None = Column(
+        BigInteger, ForeignKey("regions.id", ondelete="SET NULL"), nullable=True
+    )
+    default_currency_code: str = Column(
+        String(3),
+        ForeignKey("currencies.code", onupdate="CASCADE", ondelete="RESTRICT"),
+        nullable=False,
+        server_default="COP",
+    )
+    is_active: bool = Column(Boolean, nullable=False, default=True)
+    created_at: object = Column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
+    updated_at: object = Column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
 
 
 class StoreIngredientPrice(Base):
@@ -45,21 +59,22 @@ class StoreIngredientPrice(Base):
         UniqueConstraint(
             "store_id",
             "ingredient_id",
-            name="uq_store_ingredient",
+            name="uq_store_ingredient_prices",
         ),
     )
 
-    id: int = Column(Integer, primary_key=True, index=True)
+    id: int = Column(BigInteger, Identity(always=True), primary_key=True)
     store_id: int = Column(
-        Integer, ForeignKey("stores.id"), nullable=False, index=True
+        BigInteger, ForeignKey("stores.id"), nullable=False, index=True
     )
     ingredient_id: int = Column(
-        Integer, ForeignKey("ingredients.id"), nullable=False
+        BigInteger, ForeignKey("ingredients.id"), nullable=False
     )
-    local_price: float | None = Column(Numeric(10, 2))
-    local_supplier: str | None = Column(String(200))
+    local_price: float | None = Column(Numeric(14, 4))
+    local_supplier: str | None = Column(String(160))
+    created_at: object = Column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
     updated_at: object = Column(
-        DateTime(timezone=True),
-        server_default=func.now(),
-        onupdate=func.now(),
+        DateTime(timezone=True), server_default=func.now(), nullable=False
     )

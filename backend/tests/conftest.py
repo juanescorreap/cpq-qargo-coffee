@@ -28,6 +28,7 @@ from fastapi.testclient import TestClient
 
 from backend.database import engine, get_db
 from backend.models import Ingredient, Product, ProductSize, RecipeIngredient
+from backend.models.category import Category
 from backend.models.supply_chain import (
     Distributor,
     Manufacturer,
@@ -37,6 +38,20 @@ from backend.models.supply_chain import (
 )
 from backend.models.store import Store
 from sqlalchemy.orm import Session
+
+
+# Category slugs referenced by product fixtures across the suite. products.category
+# is now a FK to categories(slug), so these rows must exist before any product is
+# created. Seeded inside each test's rolled-back transaction.
+_TEST_CATEGORY_SLUGS = (
+    "hot_beverages",
+    "cold_beverages",
+    "food",
+    "bebidas_calientes",
+    "bebidas_frias",
+    "alimentos",
+    "otros",
+)
 
 
 # ---------------------------------------------------------------------------
@@ -68,6 +83,24 @@ def test_db():
         db.close()
         transaction.rollback()
         connection.close()
+
+
+# ---------------------------------------------------------------------------
+# Category seeding (products.category is a FK to categories(slug))
+# ---------------------------------------------------------------------------
+
+@pytest.fixture(autouse=True)
+def seed_categories(test_db: Session) -> None:
+    """Ensure the category slugs used by product fixtures exist.
+
+    Runs automatically for every test that uses ``test_db``; the inserts live
+    inside the test's outer transaction and are rolled back with it.
+    """
+    existing = {c.slug for c in test_db.query(Category.slug).all()}
+    new = [Category(slug=s) for s in _TEST_CATEGORY_SLUGS if s not in existing]
+    if new:
+        test_db.add_all(new)
+        test_db.commit()
 
 
 # ---------------------------------------------------------------------------
@@ -212,15 +245,28 @@ def test_client(test_db: Session):
     session as `test_db`, so data created in either is visible to both and
     everything is rolled back automatically at the end of the test.
     """
+    import backend.main as main
     from backend.main import app
 
     def _override_get_db():
         yield test_db
 
+    # The app's startup event runs init_db() (Base.metadata.create_all) and
+    # test_connection() on every TestClient context-enter. Against the remote
+    # Supabase pooler that reflects ~49 tables per test (~10s each), which blows
+    # the suite's time budget. The schema is owned by Alembic, so skip both in
+    # tests — patch the names main.py imported into its own namespace.
+    monkeypatch = pytest.MonkeyPatch()
+    monkeypatch.setattr(main, "init_db", lambda: None)
+    monkeypatch.setattr(main, "test_connection", lambda: True)
+
     app.dependency_overrides[get_db] = _override_get_db
-    with TestClient(app, raise_server_exceptions=True) as client:
-        yield client
-    app.dependency_overrides.clear()
+    try:
+        with TestClient(app, raise_server_exceptions=True) as client:
+            yield client
+    finally:
+        app.dependency_overrides.clear()
+        monkeypatch.undo()
 
 
 # ---------------------------------------------------------------------------

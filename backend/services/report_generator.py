@@ -281,7 +281,11 @@ class ReportGenerator:
             try:
                 our_product  = self.db.get(Product, match.our_product_id)
                 our_size     = self.db.get(ProductSize, match.our_size_id)
-                comp_product = self.db.get(CompetitorProduct, match.competitor_product_id)
+                # competitor_products is partitioned → composite PK (id, scraped_at).
+                comp_product = self.db.get(
+                    CompetitorProduct,
+                    (match.competitor_product_id, match.competitor_product_scraped_at),
+                )
 
                 if not our_product or not our_size or not comp_product:
                     logger.warning(

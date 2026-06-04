@@ -1,9 +1,10 @@
 from sqlalchemy import (
+    BigInteger,
     Boolean,
     Column,
     DateTime,
     ForeignKey,
-    Integer,
+    Identity,
     Numeric,
     String,
     Text,
@@ -26,53 +27,52 @@ class Ingredient(Base):
 
     __tablename__ = "ingredients"
 
-    id: int = Column(Integer, primary_key=True, index=True)
-    name: str = Column(String(200), nullable=False)
-    category: str | None = Column(String(100), index=True)
+    id: int = Column(BigInteger, Identity(always=True), primary_key=True)
+    name: str = Column(String(180), nullable=False)
+    category: str | None = Column(String(80), index=True)
 
     # --- Purchase unit (how it arrives from the supplier) ---
-    purchase_unit: str | None = Column(String(50))          # e.g.: "1L box"
-    purchase_price: float | None = Column(Numeric(10, 2))   # price per purchase_unit
+    purchase_unit: str | None = Column(String(40))          # e.g.: "1L box"
+    purchase_price: float | None = Column(Numeric(14, 4))   # price per purchase_unit (price_amount)
 
     # --- Recipe usage unit ---
-    usage_unit: str | None = Column(String(50))             # e.g.: "ml"
-    conversion_factor: float | None = Column(Numeric(10, 4))  # usage_units per purchase_unit
+    usage_unit: str | None = Column(String(40))             # e.g.: "ml"
+    conversion_factor: float | None = Column(Numeric(14, 6))  # usage_units per purchase_unit (quantity_amount)
 
     # --- Waste and yield ---
-    yield_percentage: float = Column(Numeric(5, 2), default=100.00)
+    yield_percentage: float | None = Column(Numeric(6, 3))   # pct_amount
+
+    canonical_unit: str | None = Column(String(40))
 
     # --- Scraping ---
     source_url: str | None = Column(Text)
     last_scraped: object | None = Column(DateTime(timezone=True))
 
-    canonical_unit: str | None = Column(String(100))
-
     # --- Control ---
-    is_active: bool = Column(Boolean, default=True, index=True)
+    is_active: bool = Column(Boolean, nullable=False, default=True)
     created_at: object = Column(
-        DateTime(timezone=True), server_default=func.now()
+        DateTime(timezone=True), server_default=func.now(), nullable=False
     )
     updated_at: object = Column(
-        DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
+        DateTime(timezone=True), server_default=func.now(), nullable=False
     )
 
 
 class IngredientPriceHistory(Base):
-    """Price change history for an ingredient.
+    """Price change history for an ingredient (append-only, partitioned by month).
 
-    Each row records a point-in-time price together with its source: it can
-    come from an automatic scraping, a manual edit, or a bulk upload. Allows
-    auditing cost evolution over time and detecting supplier price variations.
+    The table is range-partitioned on ``changed_at`` in PostgreSQL, so the
+    primary key is composite ``(id, changed_at)``.
     """
 
     __tablename__ = "ingredient_price_history"
 
-    id: int = Column(Integer, primary_key=True, index=True)
+    id: int = Column(BigInteger, Identity(always=True), primary_key=True)
     ingredient_id: int = Column(
-        Integer, ForeignKey("ingredients.id"), nullable=False, index=True
+        BigInteger, ForeignKey("ingredients.id"), nullable=False, index=True
     )
-    price: float = Column(Numeric(10, 2), nullable=False)
-    source: str | None = Column(String(50))  # 'scraping' | 'manual' | 'bulk_upload'
+    price: float = Column(Numeric(14, 4), nullable=False)
+    source: str | None = Column(String(120))  # 'scraping' | 'manual' | 'bulk_upload'
     changed_at: object = Column(
-        DateTime(timezone=True), server_default=func.now()
+        DateTime(timezone=True), server_default=func.now(), primary_key=True
     )

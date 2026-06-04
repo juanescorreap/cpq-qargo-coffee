@@ -14,6 +14,7 @@ class IngredientBase(BaseModel):
     conversion_factor: Optional[Decimal] = None
     # Stored as fraction 0.0–1.0 (e.g. 0.98 = 98 % yield)
     yield_percentage: Optional[Decimal] = None
+    canonical_unit: Optional[str] = None
     source_url: Optional[str] = None
 
     @field_validator("purchase_price")
@@ -50,6 +51,7 @@ class IngredientUpdate(BaseModel):
     usage_unit: Optional[str] = None
     conversion_factor: Optional[Decimal] = None
     yield_percentage: Optional[Decimal] = None
+    canonical_unit: Optional[str] = None
     source_url: Optional[str] = None
     is_active: Optional[bool] = None
 

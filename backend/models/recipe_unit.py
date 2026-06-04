@@ -1,13 +1,16 @@
 from sqlalchemy import (
+    BigInteger,
     Boolean,
     Column,
+    DateTime,
     ForeignKey,
-    Integer,
+    Identity,
     Numeric,
     String,
     Text,
     UniqueConstraint,
 )
+from sqlalchemy.sql import func
 
 from backend.database import Base
 
@@ -30,11 +33,17 @@ class RecipeUnit(Base):
 
     __tablename__ = "recipe_units"
 
-    id: int = Column(Integer, primary_key=True, index=True)
-    name: str = Column(String(50), unique=True, nullable=False)  # e.g.: "pump"
-    category: str | None = Column(String(50))   # 'volume' | 'weight' | 'count' | 'visual'
+    id: int = Column(BigInteger, Identity(always=True), primary_key=True)
+    name: str = Column(String(60), unique=True, nullable=False)  # e.g.: "pump"
+    category: str | None = Column(String(60))   # 'volume' | 'weight' | 'count' | 'visual'
     description: str | None = Column(Text)
-    is_active: bool = Column(Boolean, default=True)
+    is_active: bool = Column(Boolean, nullable=False, default=True)
+    created_at: object = Column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
+    updated_at: object = Column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
 
 
 class IngredientRecipeUnitConversion(Base):
@@ -59,16 +68,22 @@ class IngredientRecipeUnitConversion(Base):
         UniqueConstraint(
             "ingredient_id",
             "recipe_unit_id",
-            name="uq_ingredient_recipe_unit",
+            name="uq_iruc",
         ),
     )
 
-    id: int = Column(Integer, primary_key=True, index=True)
+    id: int = Column(BigInteger, Identity(always=True), primary_key=True)
     ingredient_id: int = Column(
-        Integer, ForeignKey("ingredients.id"), nullable=False, index=True
+        BigInteger, ForeignKey("ingredients.id"), nullable=False, index=True
     )
     recipe_unit_id: int = Column(
-        Integer, ForeignKey("recipe_units.id"), nullable=False
+        BigInteger, ForeignKey("recipe_units.id"), nullable=False
     )
-    usage_unit_quantity: float = Column(Numeric(10, 4), nullable=False)
+    usage_unit_quantity: float = Column(Numeric(14, 6), nullable=False)
     notes: str | None = Column(Text)
+    created_at: object = Column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
+    updated_at: object = Column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )

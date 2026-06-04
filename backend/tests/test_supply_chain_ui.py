@@ -583,7 +583,22 @@ class TestRouteRefsUI:
 
     def test_multiple_refs_all_shown(self, test_client: TestClient,
                                       sc_supply_route: SupplyRoute,
-                                      sc_ingredient: Ingredient):
+                                      sc_ingredient: Ingredient,
+                                      test_db: Session):
+        # uq_isr_refs is UNIQUE(ingredient_id, supply_route_id): one ref per
+        # ingredient per route. Multiple refs on a route = different ingredients.
+        from decimal import Decimal
+        ingredient_b = Ingredient(
+            name="Segundo Ingrediente Ref",
+            purchase_price=Decimal("1000"),
+            usage_unit="g",
+            conversion_factor=Decimal("1000"),
+            yield_percentage=Decimal("1.00"),
+        )
+        test_db.add(ingredient_b)
+        test_db.commit()
+        test_db.refresh(ingredient_b)
+
         test_client.post(f"/supply-chain/routes/{sc_supply_route.id}/refs/htmx",
                          data=_form({
                              "ingredient_id": sc_ingredient.id,
@@ -591,7 +606,7 @@ class TestRouteRefsUI:
                          }))
         r = test_client.post(f"/supply-chain/routes/{sc_supply_route.id}/refs/htmx",
                               data=_form({
-                                  "ingredient_id": sc_ingredient.id,
+                                  "ingredient_id": ingredient_b.id,
                                   "external_name": "Ref B", "purchase_unit": "Bolsa",
                               }))
         _assert_html(r, contains=["Ref A", "Ref B"])

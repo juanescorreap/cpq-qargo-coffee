@@ -34,13 +34,20 @@ is sufficient for `Base.metadata` to contain all tables before calling
 `create_all()`.
 """
 
+from backend.models.category import Category
 from backend.models.competitor import (
     Competitor,
     CompetitorProduct,
     ProductCompetitorMatch,
 )
+from backend.models.currency import Currency
 from backend.models.ingredient import Ingredient, IngredientPriceHistory
-from backend.models.modifier import Modifier, ProductModifierCost
+from backend.models.ingredient_substitute_region import IngredientSubstituteRegion
+from backend.models.modifier import (
+    Modifier,
+    ModifierIngredientEffect,
+    ProductModifierCost,
+)
 from backend.models.pricing import CategoryMargin, ProductPriceHistory, ProductPricing
 from backend.models.product import (
     Product,
@@ -52,26 +59,56 @@ from backend.models.product import (
 )
 from backend.models.recipe_unit import IngredientRecipeUnitConversion, RecipeUnit
 from backend.models.store import Store, StoreIngredientPrice
+from backend.models.supply_chain import (
+    Distributor,
+    IngredientAvailability,
+    IngredientSubstitute,
+    IngredientSupplierRef,
+    Manufacturer,
+    Region,
+    RecipeCostSnapshot,
+    StoreSupplierHistory,
+    SupplierUnitConversion,
+    SupplyRoute,
+    SupplyRouteAssignment,
+    SupplyRoutePrice,
+)
 
 __all__ = [
+    "Category",
     "CategoryMargin",
     "Competitor",
     "CompetitorProduct",
+    "Currency",
+    "Distributor",
     "Ingredient",
+    "IngredientAvailability",
     "IngredientPriceHistory",
     "IngredientRecipeUnitConversion",
+    "IngredientSubstitute",
+    "IngredientSubstituteRegion",
+    "IngredientSupplierRef",
+    "Manufacturer",
     "Modifier",
+    "ModifierIngredientEffect",
     "Product",
     "ProductCompetitorMatch",
     "ProductModifierCost",
     "ProductPriceHistory",
     "ProductPricing",
     "ProductSize",
+    "RecipeCostSnapshot",
     "RecipeIngredient",
     "RecipeSubRecipe",
     "RecipeUnit",
+    "Region",
     "SizePackaging",
     "Store",
     "StoreIngredientPrice",
     "StoreProduct",
+    "StoreSupplierHistory",
+    "SupplierUnitConversion",
+    "SupplyRoute",
+    "SupplyRouteAssignment",
+    "SupplyRoutePrice",
 ]

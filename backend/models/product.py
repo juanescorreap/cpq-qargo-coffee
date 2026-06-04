@@ -1,10 +1,11 @@
 from sqlalchemy import (
+    BigInteger,
     Boolean,
     Column,
     Date,
     DateTime,
     ForeignKey,
-    Integer,
+    Identity,
     Numeric,
     String,
     Text,
@@ -27,21 +28,30 @@ class Product(Base):
     added to the ingredient cost to obtain the total cost per portion.
 
     Example:
-        name="Cappuccino", category="bebidas_calientes", base_size_oz=12,
+        name="Cappuccino", category="bebidas-calientes", base_size_oz=12,
         prep_time_minutes=3.5, labor_cost_per_minute=150
     """
 
     __tablename__ = "products"
 
-    id: int = Column(Integer, primary_key=True, index=True)
-    name: str = Column(String(200), nullable=False)
-    category: str | None = Column(String(100), ForeignKey("categories.slug"), index=True)
-    base_size_oz: float | None = Column(Numeric(6, 2))      # reference size for scaling
-    prep_time_minutes: float | None = Column(Numeric(5, 2))
-    labor_cost_per_minute: float = Column(Numeric(6, 2), default=0)
-    is_sub_recipe: bool = Column(Boolean, default=False, index=True)
-    is_active: bool = Column(Boolean, default=True)
-    created_at: object = Column(DateTime(timezone=True), server_default=func.now())
+    id: int = Column(BigInteger, Identity(always=True), primary_key=True)
+    name: str = Column(String(180), nullable=False)
+    category: str | None = Column(
+        String(80),
+        ForeignKey("categories.slug", onupdate="CASCADE", ondelete="SET NULL"),
+        index=True,
+    )
+    base_size_oz: float | None = Column(Numeric(10, 3))      # reference size for scaling
+    prep_time_minutes: float | None = Column(Numeric(8, 2))
+    labor_cost_per_minute: float | None = Column(Numeric(14, 4))  # price_amount
+    is_sub_recipe: bool = Column(Boolean, nullable=False, default=False)
+    is_active: bool = Column(Boolean, nullable=False, default=True)
+    created_at: object = Column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
+    updated_at: object = Column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
 
 
 class ProductSize(Base):
@@ -63,20 +73,24 @@ class ProductSize(Base):
         UniqueConstraint(
             "product_id",
             "size_name",
-            name="uq_product_size_name",
+            name="uq_product_sizes_name",
         ),
     )
 
-    id: int = Column(Integer, primary_key=True, index=True)
+    id: int = Column(BigInteger, Identity(always=True), primary_key=True)
     product_id: int = Column(
-        Integer, ForeignKey("products.id"), nullable=False, index=True
+        BigInteger, ForeignKey("products.id", ondelete="CASCADE"), nullable=False, index=True
     )
-    size_name: str | None = Column(String(50))      # "small" | "medium" | "large"
-    volume_oz: float | None = Column(Numeric(6, 2))
-    scale_factor: float = Column(Numeric(5, 3), default=1.0)
-    is_default: bool = Column(Boolean, default=False)
-    created_at: object = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at: object = Column(DateTime(timezone=True), server_default=func.now())
+    size_name: str = Column(String(60), nullable=False)      # "small" | "medium" | "large"
+    volume_oz: float | None = Column(Numeric(10, 3))
+    scale_factor: float | None = Column(Numeric(14, 6), default=1.0)
+    is_default: bool = Column(Boolean, nullable=False, default=False)
+    created_at: object = Column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
+    updated_at: object = Column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
 
 
 class RecipeIngredient(Base):
@@ -102,32 +116,38 @@ class RecipeIngredient(Base):
     preparation, distinct from the ingredient's purchase waste:
         - milk foam: 10% of the volume is lost when steaming
         - fruit for juice: 20% loss when pressing
-
-    Examples:
-        "2 pumps of vanilla syrup" → quantity=2, recipe_unit_id=[pump_id]
-        "240 ml of milk"           → quantity=240, recipe_unit_id=None
-        "2 espresso shots"         → quantity=2, recipe_unit_id=[shot_id],
-                                     scales_with_size=False
     """
 
     __tablename__ = "recipe_ingredients"
 
-    id: int = Column(Integer, primary_key=True, index=True)
+    __table_args__ = (
+        UniqueConstraint(
+            "product_id",
+            "ingredient_id",
+            name="uq_recipe_ingredients",
+        ),
+    )
+
+    id: int = Column(BigInteger, Identity(always=True), primary_key=True)
     product_id: int = Column(
-        Integer, ForeignKey("products.id"), nullable=False, index=True
+        BigInteger, ForeignKey("products.id", ondelete="CASCADE"), nullable=False, index=True
     )
     ingredient_id: int = Column(
-        Integer, ForeignKey("ingredients.id"), nullable=False
+        BigInteger, ForeignKey("ingredients.id", ondelete="RESTRICT"), nullable=False
     )
-    quantity: float = Column(Numeric(10, 4), nullable=False)
+    quantity: float = Column(Numeric(14, 6), nullable=False)
     recipe_unit_id: int | None = Column(
-        Integer, ForeignKey("recipe_units.id"), nullable=True
+        BigInteger, ForeignKey("recipe_units.id", ondelete="SET NULL"), nullable=True
     )
-    scales_with_size: bool = Column(Boolean, default=True)
-    process_yield_loss: float = Column(Numeric(5, 2), default=0)
+    scales_with_size: bool = Column(Boolean, nullable=False, default=True)
+    process_yield_loss: float | None = Column(Numeric(6, 3), default=0)
     notes: str | None = Column(Text)
-    created_at: object = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at: object = Column(DateTime(timezone=True), server_default=func.now())
+    created_at: object = Column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
+    updated_at: object = Column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
 
 
 class RecipeSubRecipe(Base):
@@ -136,26 +156,33 @@ class RecipeSubRecipe(Base):
     Allows reusing batch preparations across multiple drinks without duplicating
     ingredients. The costing engine recursively expands the sub-recipe to
     calculate the unit cost of the quantity used.
-
-    Example:
-        "Homemade vanilla syrup" (is_sub_recipe=True) used in:
-            - Vanilla Latte       → quantity=2 (pumps resolved in the sub-recipe)
-            - Vanilla Frappuccino → quantity=3
     """
 
     __tablename__ = "recipe_sub_recipes"
 
-    id: int = Column(Integer, primary_key=True, index=True)
+    __table_args__ = (
+        UniqueConstraint(
+            "parent_product_id",
+            "sub_recipe_id",
+            name="uq_recipe_sub_recipes",
+        ),
+    )
+
+    id: int = Column(BigInteger, Identity(always=True), primary_key=True)
     parent_product_id: int = Column(
-        Integer, ForeignKey("products.id"), nullable=False, index=True
+        BigInteger, ForeignKey("products.id", ondelete="CASCADE"), nullable=False, index=True
     )
     sub_recipe_id: int = Column(
-        Integer, ForeignKey("products.id"), nullable=False
+        BigInteger, ForeignKey("products.id", ondelete="RESTRICT"), nullable=False
     )
-    quantity: float = Column(Numeric(10, 4), nullable=False)
-    scales_with_size: bool = Column(Boolean, default=True)
-    created_at: object = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at: object = Column(DateTime(timezone=True), server_default=func.now())
+    quantity: float = Column(Numeric(14, 6), nullable=False)
+    scales_with_size: bool = Column(Boolean, nullable=False, default=True)
+    created_at: object = Column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
+    updated_at: object = Column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
 
 
 class SizePackaging(Base):
@@ -164,24 +191,32 @@ class SizePackaging(Base):
     Links packaging supplies (modeled as ingredients) to the specific size of
     a drink. Allows costing cups, lids, sleeves, straws, and napkins
     differentiated by size.
-
-    Example:
-        Medium Cappuccino (12 oz):
-            packaging_ingredient="Kraft cup 12oz", quantity=1
-            packaging_ingredient="Flat lid",        quantity=1
-            packaging_ingredient="Cardboard sleeve", quantity=1
     """
 
     __tablename__ = "size_packaging"
 
-    id: int = Column(Integer, primary_key=True, index=True)
+    __table_args__ = (
+        UniqueConstraint(
+            "size_id",
+            "packaging_ingredient_id",
+            name="uq_size_packaging",
+        ),
+    )
+
+    id: int = Column(BigInteger, Identity(always=True), primary_key=True)
     size_id: int = Column(
-        Integer, ForeignKey("product_sizes.id"), nullable=False, index=True
+        BigInteger, ForeignKey("product_sizes.id", ondelete="CASCADE"), nullable=False, index=True
     )
     packaging_ingredient_id: int = Column(
-        Integer, ForeignKey("ingredients.id"), nullable=False
+        BigInteger, ForeignKey("ingredients.id", ondelete="RESTRICT"), nullable=False
     )
-    quantity: float = Column(Numeric(6, 2), default=1)
+    quantity: float = Column(Numeric(14, 6), nullable=False, default=1)
+    created_at: object = Column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
+    updated_at: object = Column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
 
 
 class StoreProduct(Base):
@@ -202,17 +237,23 @@ class StoreProduct(Base):
         UniqueConstraint(
             "store_id",
             "product_id",
-            name="uq_store_product",
+            name="uq_store_products",
         ),
     )
 
-    id: int = Column(Integer, primary_key=True, index=True)
+    id: int = Column(BigInteger, Identity(always=True), primary_key=True)
     store_id: int = Column(
-        Integer, ForeignKey("stores.id"), nullable=False, index=True
+        BigInteger, ForeignKey("stores.id", ondelete="CASCADE"), nullable=False, index=True
     )
     product_id: int = Column(
-        Integer, ForeignKey("products.id"), nullable=False
+        BigInteger, ForeignKey("products.id", ondelete="CASCADE"), nullable=False
     )
-    is_available: bool = Column(Boolean, default=True)
+    is_available: bool = Column(Boolean, nullable=False, default=True)
     seasonal_start_date: object | None = Column(Date, nullable=True)
     seasonal_end_date: object | None = Column(Date, nullable=True)
+    created_at: object = Column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
+    updated_at: object = Column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
