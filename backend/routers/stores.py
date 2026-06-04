@@ -187,16 +187,25 @@ def upsert_ingredient_price(
         .first()
     )
 
-    if existing:
-        existing.local_price = body.local_price
-        existing.local_supplier = body.local_supplier
-        existing.currency_code = body.currency_code
-        db.commit()
-    else:
-        price = StoreIngredientPrice(store_id=store_id, **body.model_dump())
-        db.add(price)
-        db.commit()
+    # Temporal pattern (P2): never mutate the live row in place — close it and
+    # insert a new one, so store_ingredient_prices accrues real price history.
+    changed = existing is not None and (
+        existing.local_price != body.local_price
+        or existing.local_supplier != body.local_supplier
+        or existing.currency_code != body.currency_code
+    )
+    if changed:
+        from datetime import date as _date
+        existing.valid_until = _date.today()
+        # Flush the close before inserting so the no_overlap_sip EXCLUDE never
+        # sees two open windows for the same (store, ingredient).
+        db.flush()
+        existing = None
 
+    if existing is None:
+        db.add(StoreIngredientPrice(store_id=store_id, **body.model_dump()))
+
+    db.commit()
     return _fetch_price_response(store_id, body.ingredient_id, db)
 
 

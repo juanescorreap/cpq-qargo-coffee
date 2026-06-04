@@ -215,7 +215,10 @@ class SupplyRoutePrice(Base):
         ForeignKey("currencies.code", onupdate="CASCADE", ondelete="RESTRICT"),
         nullable=False,
     )
-    price_per_unit: str = Column(String(40), nullable=False)
+    price_per_unit: str = Column(String(40), nullable=False)  # DEPRECATED: use price_unit_id
+    price_unit_id: int | None = Column(
+        BigInteger, ForeignKey("recipe_units.id", ondelete="RESTRICT")
+    )
     valid_from: object = Column(Date, nullable=False, server_default=func.current_date())
     valid_until: object | None = Column(Date)
     source: str | None = Column(String(120))

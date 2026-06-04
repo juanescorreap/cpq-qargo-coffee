@@ -42,6 +42,7 @@ from backend.models.competitor import (
     ProductCompetitorMatch,
 )
 from backend.models.currency import Currency
+from backend.models.fx_rate import FxRate
 from backend.models.ingredient import Ingredient, IngredientPriceHistory
 from backend.models.ingredient_substitute_region import IngredientSubstituteRegion
 from backend.models.modifier import (
@@ -82,6 +83,7 @@ __all__ = [
     "CompetitorProduct",
     "Currency",
     "Distributor",
+    "FxRate",
     "Ingredient",
     "IngredientAvailability",
     "IngredientPriceHistory",
