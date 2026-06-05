@@ -5,7 +5,7 @@ from pydantic import AliasChoices, Field, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 _PRODUCTION_ORIGINS = [
-    "https://cpq-cafeterias-production.up.railway.app",
+    "https://cpq-qargo-coffee-production.up.railway.app",
 ]
 
 
