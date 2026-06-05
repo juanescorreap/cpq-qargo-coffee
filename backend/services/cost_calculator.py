@@ -25,7 +25,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from decimal import Decimal
-from typing import Dict, List, Optional, Set, Tuple
+from typing import Dict, List, Optional, Set, Tuple, TypedDict
 
 from sqlalchemy import text
 
@@ -45,6 +45,78 @@ from backend.models import (
 
 _ZERO = Decimal("0")
 _HUNDRED = Decimal("100")
+
+
+# ---------------------------------------------------------------------------
+# Template / API contract (FRONTEND_AUDIT #6)
+# Explicit, type-checkable shape of get_cost_breakdown's return so the template
+# (costs/_result.html) and the JSON adapter (routers/costs.py) share one contract
+# and shape drift is caught statically instead of at render time.
+# ---------------------------------------------------------------------------
+
+class IngredientLineDetail(TypedDict):
+    ingredient_id: int
+    name: str
+    quantity: Decimal
+    unit: Optional[str]
+    unit_cost: Decimal
+    line_cost: Decimal
+    price_source: str
+    supply_route_id: Optional[int]
+    manufacturer_id: Optional[int]
+    distributor_id: Optional[int]
+    is_substitute: bool
+    original_ingredient_id: Optional[int]
+
+
+class SubRecipeLineDetail(TypedDict):
+    sub_product_id: int
+    name: Optional[str]
+    quantity: Decimal
+    unit_cost: Decimal
+    line_cost: Decimal
+
+
+class PackagingLineDetail(TypedDict):
+    ingredient_id: int
+    name: str
+    quantity: Decimal
+    unit_cost: Decimal
+    line_cost: Decimal
+    price_source: str
+
+
+class LaborDetail(TypedDict):
+    minutes: Decimal
+    cost_per_minute: Decimal
+    cost: Decimal
+
+
+class BreakdownSections(TypedDict):
+    ingredients: List[IngredientLineDetail]
+    sub_recipes: List[SubRecipeLineDetail]
+    packaging: List[PackagingLineDetail]
+    labor: LaborDetail
+
+
+class CostTotals(TypedDict):
+    ingredients: Decimal
+    sub_recipes: Decimal
+    packaging: Decimal
+    labor: Decimal
+
+
+class CostBreakdown(TypedDict):
+    product_id: int
+    product_name: str
+    size_id: Optional[int]
+    size_name: Optional[str]
+    store_id: Optional[int]
+    store_name: Optional[str]
+    total_cost: Decimal
+    has_substitutes: bool
+    breakdown: BreakdownSections
+    totals: CostTotals
 
 
 # ---------------------------------------------------------------------------
@@ -800,8 +872,11 @@ class CostCalculator:
         product_id: int,
         size_id: Optional[int] = None,
         store_id: Optional[int] = None,
-    ) -> Dict:
-        """Detailed, line-by-line cost breakdown (E4: no more empty TODO lists)."""
+    ) -> CostBreakdown:
+        """Detailed, line-by-line cost breakdown (E4: no more empty TODO lists).
+
+        Returns a :class:`CostBreakdown` — the typed contract shared by the
+        template and the JSON adapter (FRONTEND_AUDIT #6)."""
         product = self.db.query(Product).filter(Product.id == product_id).first()
         if not product:
             raise ValueError(f"Product {product_id} not found")
