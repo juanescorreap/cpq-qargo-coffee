@@ -23,3 +23,17 @@ def test_htmx_request_returns_bare_fragment(test_client, path):
     assert "<!DOCTYPE" not in html   # no document shell
     assert "<nav" not in html        # no duplicated navbar
     assert 'id="main-content"' not in html  # not the base wrapper
+
+
+# FRONTEND_AUDIT #3 — global HTMX error surfacing.
+
+def test_app_js_loaded_on_full_page(test_client):
+    html = test_client.get("/costs/calculator").text
+    assert "js/app.js" in html
+
+
+def test_app_js_has_error_handlers(test_client):
+    js = test_client.get("/static/js/app.js")
+    assert js.status_code == 200
+    assert "htmx:responseError" in js.text
+    assert "htmx:sendError" in js.text
