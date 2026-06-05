@@ -1,0 +1,8 @@
+{# Bare layout for HTMX fragment responses.
+
+   Renders ONLY the page's content (and any page-scoped scripts), with no
+   <head>/navbar/footer. Used when the request carries the HX-Request header so
+   an hx-get into #main-content swaps just the content instead of a whole
+   document. See _layout.html for the switch. #}
+{% block content %}{% endblock %}
+{% block extra_scripts %}{% endblock %}

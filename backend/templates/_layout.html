@@ -1,0 +1,9 @@
+{# Page layout switch (FRONTEND_AUDIT #1).
+
+   Direct load / non-HTMX  -> full document via base.html (head, navbar, footer).
+   HTMX navigation         -> _bare.html: only the content block, so an hx-get
+                              into #main-content injects the content alone instead
+                              of a nested full document (no duplicated navbar).
+
+   Pages extend THIS instead of base.html; routers need no changes. #}
+{% extends "base.html" if not request.headers.get("HX-Request") else "_bare.html" %}
