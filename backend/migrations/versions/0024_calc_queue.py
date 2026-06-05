@@ -216,7 +216,7 @@ BEGIN
   -- (b) Reaper: requeue stale 'running' with exponential backoff; dead-letter past max.
   PERFORM cron.schedule('calc_jobs_reaper', '*/5 * * * *', $job$
     UPDATE public.calc_jobs
-       SET status     = CASE WHEN attempts >= max_attempts THEN 'dead' ELSE 'pending' END,
+       SET status     = (CASE WHEN attempts >= max_attempts THEN 'dead' ELSE 'pending' END)::calc_job_status,
            not_before = now() + (interval '1 minute' * power(2, attempts)),
            locked_at  = NULL,
            locked_by  = NULL

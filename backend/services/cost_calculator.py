@@ -119,6 +119,7 @@ class Sourcing:
     manufacturer_id: Optional[int] = None
     distributor_id: Optional[int] = None
     price_valid_from: Optional[object] = None
+    fx_rate: Optional[Decimal] = None   # original currency -> COP rate used
 
 
 @dataclass(frozen=True)
@@ -389,7 +390,9 @@ def load_context(
                 "           COALESCE(s.price_valid_from, CURRENT_DATE)) AS unit_price_cop, "
                 "       s.price_currency, s.purchase_qty, s.recipe_qty, s.source, "
                 "       s.supply_route_id, s.manufacturer_id, s.distributor_id, "
-                "       s.price_valid_from "
+                "       s.price_valid_from, "
+                "       fn_convert_amount(1::numeric, s.price_currency, 'COP', "
+                "           COALESCE(s.price_valid_from, CURRENT_DATE)) AS fx_rate "
                 "FROM unnest(CAST(:ings AS bigint[]), CAST(:rus AS bigint[])) "
                 "         AS k(ingredient_id, recipe_unit_id) "
                 "CROSS JOIN LATERAL fn_resolve_ingredient_sourcing("
@@ -413,6 +416,7 @@ def load_context(
                 manufacturer_id=r.manufacturer_id,
                 distributor_id=r.distributor_id,
                 price_valid_from=r.price_valid_from,
+                fx_rate=Decimal(str(r.fx_rate)) if r.fx_rate is not None else None,
             )
     else:
         # No store -> catalogue price, no routing (mirrors legacy base-price path).
@@ -662,6 +666,7 @@ class _PureCalculator:
                 "distributor_id": src.distributor_id,
                 "source": src.source,
                 "currency": src.currency,
+                "fx_rate": d(src.fx_rate),
                 "price_valid_from": src.price_valid_from.isoformat() if src.price_valid_from else None,
                 "qty": d(qty),
                 "unit_price": d(src.unit_price / denom) if denom else None,

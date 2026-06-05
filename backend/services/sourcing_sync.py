@@ -25,6 +25,7 @@ def sync_store_supplier_history(
     as_of: Optional[date] = None,
     changed_by: Optional[str] = None,
     change_reason: Optional[str] = None,
+    commit: bool = True,
 ) -> int:
     """Reconcile store_supplier_history for one store against today's resolved
     routes. Returns the number of (ingredient) rows changed.
@@ -102,5 +103,6 @@ def sync_store_supplier_history(
         )
         changed += 1
 
-    db.commit()
+    if commit:
+        db.commit()
     return changed

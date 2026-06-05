@@ -146,6 +146,7 @@ class PricingEngine:
         markup_override: Optional[Decimal] = None,
         is_manual: bool = False,
         cost: Optional[Decimal] = None,
+        commit: bool = True,
     ) -> ProductPricing:
         """Save or update the price of a product in the database.
 
@@ -251,12 +252,18 @@ class PricingEngine:
             )
             self.db.add(history)
 
-        try:
-            self.db.commit()
-            self.db.refresh(existing)
-        except Exception:
-            self.db.rollback()
-            raise
+        if commit:
+            # Atomic per-row save (on-demand / default batch).
+            try:
+                self.db.commit()
+                self.db.refresh(existing)
+            except Exception:
+                self.db.rollback()
+                raise
+        else:
+            # Caller owns the transaction (worker: pricing + snapshots + job-done
+            # commit together, for an idempotent chunk).
+            self.db.flush()
         return existing
 
     def calculate_all_prices(
@@ -264,6 +271,8 @@ class PricingEngine:
         store_id: Optional[int] = None,
         save_to_db: bool = False,
         triggered_by: str = "batch",
+        product_ids: Optional[set] = None,
+        commit: bool = True,
     ) -> Dict:
         """Calculate (and optionally save) prices for all active products.
 
@@ -302,9 +311,10 @@ class PricingEngine:
                     'errors':            List[str],   # "<product> (<size>): <reason>"
                 }
         """
-        products = (
-            self.db.query(Product).filter(Product.is_active == True).all()
-        )
+        q = self.db.query(Product).filter(Product.is_active == True)
+        if product_ids is not None:
+            q = q.filter(Product.id.in_(product_ids))
+        products = q.all()
         product_ids = {p.id for p in products}
 
         total_sizes = 0
@@ -358,6 +368,7 @@ class PricingEngine:
                             rounded,
                             is_manual=False,
                             cost=cost,
+                            commit=commit,
                         )
                         # Immutable lineage snapshot. Requires a store (the table
                         # has store_id NOT NULL); global base runs skip it.
@@ -368,6 +379,15 @@ class PricingEngine:
                             detail, has_subs = pure.snapshot_lines(
                                 product.id, size.scale_factor, size.id
                             )
+                            # Top-level FX lineage from the first foreign-currency
+                            # line (per-line rates always live in snapshot_detail).
+                            fx_rate = None
+                            fx_rate_date = None
+                            for ln in detail["ingredients"]:
+                                if ln.get("currency") and ln["currency"] != "COP":
+                                    fx_rate = Decimal(ln["fx_rate"]) if ln.get("fx_rate") else None
+                                    fx_rate_date = ln.get("price_valid_from")
+                                    break
                             self.db.add(RecipeCostSnapshot(
                                 product_id=product.id,
                                 store_id=store_id,
@@ -380,6 +400,8 @@ class PricingEngine:
                                 formula_version=ctx.formula_version,
                                 batch_run_id=batch_run_id,
                                 triggered_by=triggered_by,
+                                fx_rate=fx_rate,
+                                fx_rate_date=fx_rate_date,
                             ))
                             snapshots_written += 1
 
@@ -393,8 +415,8 @@ class PricingEngine:
                     errors.append(error_msg)
                     logger.warning("  FAIL %s", error_msg)
 
-        if save_to_db and snapshots_written:
-            self.db.commit()  # flush the lineage snapshots (pricing already committed)
+        if save_to_db and commit:
+            self.db.commit()  # flush lineage snapshots (+ pricing if commit was deferred)
 
         logger.info(
             "Batch pricing finished — calculated=%d/%d  errors=%d",
