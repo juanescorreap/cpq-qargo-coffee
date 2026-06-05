@@ -13,3 +13,8 @@ build/
 data/raw/*.xlsx
 data/raw/*.csv
 .DS_Store
+
+# DB backups (data dumps — never commit)
+files/supabase_backup_*.sql
+# WSL/Windows zone metadata
+*:Zone.Identifier
