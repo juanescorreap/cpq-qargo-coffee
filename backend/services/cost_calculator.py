@@ -146,6 +146,8 @@ class CalcContext:
     unavailable: Set[int]
     store_id: Optional[int]
     formula_version: str = "v1"
+    # minor_unit of the accumulation currency (COP=0) for final quantize (E6)
+    currency_minor: int = 0
 
 
 @dataclass
@@ -429,6 +431,12 @@ def load_context(
                 source="catalog",
             )
 
+    # minor_unit of the accumulation currency (COP) for final quantize (E6).
+    currency_minor_row = db.execute(
+        text("SELECT minor_unit FROM currencies WHERE code = 'COP'")
+    ).scalar()
+    currency_minor = int(currency_minor_row) if currency_minor_row is not None else 0
+
     # Labor per product (unscaled), reusing the loaded Product rows.
     labor: Dict[int, Decimal] = {}
     for prod in db.query(Product).filter(Product.id.in_(closure)).all():
@@ -448,6 +456,7 @@ def load_context(
         unavailable=unavailable,
         store_id=store_id,
         formula_version=formula_version,
+        currency_minor=currency_minor,
     )
 
 
@@ -469,6 +478,10 @@ class _PureCalculator:
     def __init__(self, ctx: CalcContext, apply_substitutes: bool = True) -> None:
         self.ctx = ctx
         self.apply_substitutes = apply_substitutes
+
+    def _q(self, x: Decimal) -> Decimal:
+        """Quantize to the currency's minor_unit (E6). COP (minor=0) -> integer."""
+        return x.quantize(Decimal(10) ** -self.ctx.currency_minor)
 
     def _denominator(self, ing: _IngredientInfo, src: Sourcing) -> Optional[Decimal]:
         """Units-per-purchase-unit. SUPPLIER conversion wins when the price comes
@@ -560,11 +573,9 @@ class _PureCalculator:
 
         for sub in self.ctx.sub_recipes.get(product_id, []):
             sub_base = self.base_recipe_cost(sub.sub_id, memo, visiting)
-            # Legacy parity: each sub-recipe's unit cost is rounded to 2 decimals
-            # (every recursive calculate_product_cost return was rounded) before
-            # being multiplied by the consumed quantity.
-            unit = round(sub_base.at_unit, 2)
-            contribution = unit * sub.quantity
+            # E6: no intermediate rounding — keep full precision through the BOM;
+            # quantize only the final per-currency total in total_for_size.
+            contribution = sub_base.at_unit * sub.quantity
             if sub.scales_with_size:
                 scalable += contribution
             else:
@@ -601,9 +612,9 @@ class _PureCalculator:
         scale: Decimal,
         size_id: Optional[int],
     ) -> Decimal:
-        """Final cost for a product+size. Single rounding at the end (legacy)."""
+        """Final cost for a product+size. Single quantize per currency (E6)."""
         raw = base.fixed + base.scalable * scale + self.packaging_cost(size_id)
-        return round(raw, 2)
+        return self._q(raw)
 
     def _subtree_products(self, product_id: int) -> Set[int]:
         """Products reachable from product_id via sub-recipes (incl. itself)."""
@@ -680,7 +691,7 @@ class _PureCalculator:
         sub_recipes: List[Dict] = []
         memo: Dict[int, BaseCost] = {}
         for sub in self.ctx.sub_recipes.get(product_id, []):
-            unit = round(self.base_recipe_cost(sub.sub_id, memo, set()).at_unit, 2)
+            unit = self.base_recipe_cost(sub.sub_id, memo, set()).at_unit
             qty = sub.quantity * (scale if sub.scales_with_size else Decimal("1"))
             sub_recipes.append({
                 "sub_product_id": sub.sub_id,
@@ -853,7 +864,7 @@ class CostCalculator:
         sub_lines: List[Dict] = []
         sub_total = _ZERO
         for sub in ctx.sub_recipes.get(product_id, []):
-            unit = round(pure.base_recipe_cost(sub.sub_id, memo, set()).at_unit, 2)
+            unit = pure.base_recipe_cost(sub.sub_id, memo, set()).at_unit
             qty = sub.quantity * (scale if sub.scales_with_size else Decimal("1"))
             line_cost = unit * qty
             sub_total += line_cost
