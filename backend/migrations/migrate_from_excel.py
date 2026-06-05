@@ -17,7 +17,7 @@ from sqlalchemy import func
 
 import backend.models  # noqa: F401 — registers all models in Base.metadata
 from backend.database import SessionLocal
-from backend.migrations.utils import parse_quantity_with_unit, safe_decimal
+from backend.migrations.utils import safe_decimal
 from backend.models.ingredient import Ingredient
 from backend.models.product import Product, ProductSize, RecipeIngredient
 from backend.models.recipe_unit import IngredientRecipeUnitConversion, RecipeUnit
@@ -134,7 +134,8 @@ def migrate_ingredients() -> None:
 
     expected_cols = {
         "nombre", "categoria", "unidad_compra", "precio_compra",
-        "unidad_uso", "factor_conversion", "yield_%", "url_proveedor",
+        "unidad_uso", "factor_conversion", "yield_%", "canonical_unit",
+        "url_proveedor",
     }
     missing = expected_cols - set(df.columns)
     if missing:
@@ -180,6 +181,7 @@ def migrate_ingredients() -> None:
                 usage_unit=_clean_str(row.get("unidad_uso")),
                 conversion_factor=safe_decimal(row.get("factor_conversion")) or None,
                 yield_percentage=yield_pct,
+                canonical_unit=_clean_str(row.get("canonical_unit")),
                 source_url=_clean_str(row.get("url_proveedor")),
             )
             objects.append(ingredient)
@@ -249,6 +251,7 @@ def migrate_products() -> None:
     _COL_ALIASES: dict[str, str] = {
         "name":               "nombre",
         "category":           "categoria",
+        "category_slug":      "categoria",   # preferred header: value must be a categories.slug
         "base_size_oz":       "tamaño_base_oz",
         "prep_time_min":      "tiempo_prep_min",
         "labor_cost_per_min": "costo_labor_min",
@@ -647,20 +650,17 @@ def migrate_recipes() -> None:
     |--------------------|-------------------|--------|-------------------------------------------------|
     | nombre_producto    | product_name      | str    | Exact product name in DB. Required.             |
     | nombre_ingrediente | ingredient_name   | str    | Exact ingredient name in DB. Required.          |
-    | cantidad           | quantity          | str    | E.g.: "2 Standard Shot", "12 Oz", "4 Pump".    |
+    | cantidad           | quantity          | number | Plain number, e.g. 2, 240, 1.5. Required > 0.   |
+    | recipe_unit        | recipe_unit       | str    | Unit name (e.g. "shot", "pump"). Optional.      |
     | escala_con_tamaño  | scales_with_size  | bool   | "TRUE"/"FALSE". Default True.                   |
     | yield_proceso_%    | process_yield_%   | number | % process loss. Default 0.                      |
 
-    Quantity parsing
-    ----------------
-    Uses parse_quantity_with_unit() which extracts the number and the LAST
-    word as the unit. "2 Standard Shot" → (2.0, "shot"). If the quantity
-    cannot be parsed the row is skipped with a warning.
-
-    The recipe_unit is looked up by name (case-insensitive). If it does not
-    exist in DB a warning is issued but the line is inserted with
-    recipe_unit_id=None (quantity interpreted directly in the ingredient's
-    usage_unit).
+    Quantity + unit
+    ---------------
+    quantity is a plain number and the unit lives in its own ``recipe_unit``
+    column (no string parsing). If recipe_unit is empty, quantity is interpreted
+    directly in the ingredient's usage_unit. If recipe_unit is set but not found
+    in DB, a warning is issued and the line is inserted with recipe_unit_id=None.
 
     Prerequisites
     -------------
@@ -696,7 +696,7 @@ def migrate_recipes() -> None:
 
     expected_cols = {
         "nombre_producto", "nombre_ingrediente",
-        "cantidad", "escala_con_tamaño", "yield_proceso_%",
+        "cantidad", "recipe_unit", "escala_con_tamaño", "yield_proceso_%",
     }
     missing = expected_cols - set(df.columns)
     if missing:
@@ -773,20 +773,20 @@ def migrate_recipes() -> None:
                     skipped += 1
                     continue
 
-                # Parse quantity (number + optional unit)
-                raw_qty = _clean_str(row.get("cantidad")) or ""
-                quantity, unit_name = parse_quantity_with_unit(raw_qty)
-
-                if quantity is None:
+                # Quantity is a plain number; the unit lives in its own column
+                # (recipe_unit), so there is no fragile string parsing anymore.
+                quantity = safe_decimal(_clean_str(row.get("cantidad")))
+                if quantity is None or quantity <= 0:
                     print(
                         f"  ⚠️  Row {row_num} ('{nombre_producto}' / '{nombre_ingrediente}'): "
-                        f"quantity '{raw_qty}' could not be parsed — skipped."
+                        f"quantity '{row.get('cantidad')}' inválida — skipped."
                     )
                     skipped += 1
                     continue
 
-                # Look up recipe_unit only if a unit is present in the string
+                # recipe_unit optional: empty => quantity is in the ingredient's usage_unit
                 recipe_unit_id: int | None = None
+                unit_name = _clean_str(row.get("recipe_unit"))
                 if unit_name is not None:
                     recipe_unit_id = recipe_unit_map.get(unit_name.lower())
                     if recipe_unit_id is None:

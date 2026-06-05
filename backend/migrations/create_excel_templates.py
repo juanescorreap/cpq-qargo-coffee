@@ -1,12 +1,23 @@
 """
-Generate Excel templates for data migration into data/raw/.
-Run from the project root: python backend/migrations/create_excel_templates.py
+Generate clean Excel templates for the core data migration into data/raw/.
+
+Corrected column structure (aligned to the schema + migrate_from_excel loader):
+  * ingredients: adds `canonical_unit`.
+  * products:    `category` renamed to `category_slug` (value MUST be an existing
+                 categories.slug, e.g. "bebidas-calientes").
+  * recipes:     `quantity` is now a plain NUMBER and the unit lives in its own
+                 `recipe_unit` column — no more fragile "2 shots" string parsing.
+
+Each sheet ships ONE internally-consistent example row so the demo loads
+end-to-end. Replace the example rows with real data before loading.
+
+Run from the project root:
+    python backend/migrations/create_excel_templates.py
 """
 
 from pathlib import Path
 
 import pandas as pd
-
 
 OUTPUT_DIR = Path(__file__).resolve().parents[2] / "data" / "raw"
 
@@ -14,54 +25,37 @@ OUTPUT_DIR = Path(__file__).resolve().parents[2] / "data" / "raw"
 def create_ingredients_template(output_dir: Path) -> Path:
     data = [
         {
-            "name": "Whole milk Alpina",
-            "category": "Dairy",
+            "name": "Whole milk",
+            "category": "dairy",
             "purchase_unit": "Box 1L",
-            "purchase_price": 4500,
+            "purchase_price": 4200,        # REQUIRED: without a price the cost is 0
             "usage_unit": "ml",
-            "conversion_factor": 1000,
-            "yield_%": 95,
-            "supplier_url": "https://",
+            "conversion_factor": 1000,     # usage_units per purchase_unit (1 L = 1000 ml)
+            "yield_%": 0.98,               # fraction 0–1 (0.98 = 98 %)
+            "canonical_unit": "ml",
+            "supplier_url": "",
         },
         {
-            "name": "Espresso coffee",
-            "category": "Coffee",
-            "purchase_unit": "Bag 500g",
-            "purchase_price": 25000,
+            "name": "Espresso",
+            "category": "coffee",
+            "purchase_unit": "Bag 1kg",
+            "purchase_price": 52000,
             "usage_unit": "g",
-            "conversion_factor": 500,
-            "yield_%": 98,
-            "supplier_url": "https://",
-        },
-        {
-            "name": "Monin vanilla syrup",
-            "category": "Syrups",
-            "purchase_unit": "Bottle 750ml",
-            "purchase_price": 28000,
-            "usage_unit": "ml",
-            "conversion_factor": 750,
-            "yield_%": 98,
-            "supplier_url": "https://",
+            "conversion_factor": 1000,
+            "yield_%": 1.0,
+            "canonical_unit": "g",
+            "supplier_url": "",
         },
         {
             "name": "12oz paper cup",
-            "category": "Packaging",
+            "category": "packaging",
             "purchase_unit": "Pack 50 units",
             "purchase_price": 15000,
             "usage_unit": "unit",
             "conversion_factor": 50,
-            "yield_%": 100,
-            "supplier_url": "https://",
-        },
-        {
-            "name": "White sugar",
-            "category": "Sweeteners",
-            "purchase_unit": "Bag 1kg",
-            "purchase_price": 3500,
-            "usage_unit": "g",
-            "conversion_factor": 1000,
-            "yield_%": 100,
-            "supplier_url": "https://",
+            "yield_%": 1.0,
+            "canonical_unit": "unit",
+            "supplier_url": "",
         },
     ]
     path = output_dir / "ingredients.xlsx"
@@ -72,22 +66,10 @@ def create_ingredients_template(output_dir: Path) -> Path:
 def create_conversions_template(output_dir: Path) -> Path:
     data = [
         {
-            "ingredient_name": "Monin vanilla syrup",
-            "recipe_unit": "pump",
-            "equivalent_ml_or_g": 30,
-            "notes": "Standard Monin pump",
-        },
-        {
-            "ingredient_name": "Espresso coffee",
+            "ingredient_name": "Espresso",
             "recipe_unit": "shot",
-            "equivalent_ml_or_g": 30,
-            "notes": "Standard shot",
-        },
-        {
-            "ingredient_name": "White sugar",
-            "recipe_unit": "teaspoon",
-            "equivalent_ml_or_g": 5,
-            "notes": "Level teaspoon",
+            "equivalent_ml_or_g": 30,      # usage_unit per 1 recipe_unit (1 shot = 30 g)
+            "notes": "Standard extraction",
         },
     ]
     path = output_dir / "conversions.xlsx"
@@ -98,28 +80,12 @@ def create_conversions_template(output_dir: Path) -> Path:
 def create_products_template(output_dir: Path) -> Path:
     data = [
         {
-            "name": "Cappuccino",
-            "category": "hot_beverages",
+            "name": "Caffe Latte",
+            "category_slug": "bebidas-calientes",  # MUST exist in categories.slug
             "base_size_oz": 12,
-            "prep_time_min": 3,
-            "labor_cost_per_min": 200,
+            "prep_time_min": 2.5,
+            "labor_cost_per_min": 120,
             "is_sub_recipe": False,
-        },
-        {
-            "name": "Latte",
-            "category": "hot_beverages",
-            "base_size_oz": 12,
-            "prep_time_min": 3,
-            "labor_cost_per_min": 200,
-            "is_sub_recipe": False,
-        },
-        {
-            "name": "Homemade vanilla syrup",
-            "category": "other",
-            "base_size_oz": 0,
-            "prep_time_min": 0,
-            "labor_cost_per_min": 0,
-            "is_sub_recipe": True,
         },
     ]
     path = output_dir / "products.xlsx"
@@ -130,25 +96,11 @@ def create_products_template(output_dir: Path) -> Path:
 def create_sizes_template(output_dir: Path) -> Path:
     data = [
         {
-            "product_name": "Cappuccino",
-            "size": "small",
-            "volume_oz": 8,
-            "scale_factor": 0.67,
-            "is_default": False,
-        },
-        {
-            "product_name": "Cappuccino",
-            "size": "medium",
+            "product_name": "Caffe Latte",
+            "size": "Medium",
             "volume_oz": 12,
-            "scale_factor": 1.0,
-            "is_default": True,
-        },
-        {
-            "product_name": "Cappuccino",
-            "size": "large",
-            "volume_oz": 16,
-            "scale_factor": 1.33,
-            "is_default": False,
+            "scale_factor": 1.0,           # base size = 1.0
+            "is_default": True,            # exactly one default per product
         },
     ]
     path = output_dir / "sizes.xlsx"
@@ -159,23 +111,26 @@ def create_sizes_template(output_dir: Path) -> Path:
 def create_recipes_template(output_dir: Path) -> Path:
     data = [
         {
-            "product_name": "Cappuccino",
-            "ingredient_name": "Espresso coffee",
-            "quantity": "2 shots",
+            "product_name": "Caffe Latte",
+            "ingredient_name": "Whole milk",
+            "quantity": 240,               # NUMBER only
+            "recipe_unit": "",             # empty => quantity is in the ingredient usage_unit (ml)
+            "scales_with_size": True,
+            "process_yield_%": 0,
+        },
+        {
+            "product_name": "Caffe Latte",
+            "ingredient_name": "Espresso",
+            "quantity": 2,
+            "recipe_unit": "shot",         # needs a conversion row in conversions.xlsx
             "scales_with_size": False,
             "process_yield_%": 0,
         },
         {
-            "product_name": "Cappuccino",
-            "ingredient_name": "Whole milk Alpina",
-            "quantity": "240 ml",
-            "scales_with_size": True,
-            "process_yield_%": 5,
-        },
-        {
-            "product_name": "Cappuccino",
+            "product_name": "Caffe Latte",
             "ingredient_name": "12oz paper cup",
-            "quantity": "1",
+            "quantity": 1,
+            "recipe_unit": "",
             "scales_with_size": False,
             "process_yield_%": 0,
         },
