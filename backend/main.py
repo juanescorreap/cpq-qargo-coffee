@@ -27,6 +27,7 @@ from backend.routers import (
     supply_routes, supply_route_assignments, supply_route_prices,
     supply_chain, supply_chain_ui,
 )
+from backend.routers import calc_status
 
 
 BASE_DIR = Path(__file__).resolve().parent
@@ -72,6 +73,7 @@ app.include_router(recipes_ui.router)
 app.include_router(product_sizes.router)
 app.include_router(costs.router)
 app.include_router(costs_ui.router)
+app.include_router(calc_status.router)
 app.include_router(stores.router)
 app.include_router(stores_ui.router)
 app.include_router(recipe_units.router)

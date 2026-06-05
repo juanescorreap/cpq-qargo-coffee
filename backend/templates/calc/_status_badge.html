@@ -1,0 +1,21 @@
+{# Async recompute status badge (G2). Poll target: when in_flight>0 it keeps
+   polling; when done it stops and signals a refresh of dependent cost views. #}
+{% if status.in_flight > 0 %}
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium
+             bg-amber/10 text-amber-light border border-amber/30"
+      hx-get="{{ poll_url }}" hx-trigger="every 3s" hx-swap="outerHTML" hx-target="this">
+  <span class="w-1.5 h-1.5 rounded-full bg-amber animate-pulse"></span>
+  Recalculando… ({{ status.in_flight }})
+</span>
+{% elif status.dead > 0 %}
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium
+             bg-red-50 text-red-700 border border-red-200">
+  ⚠ Recálculo falló ({{ status.dead }})
+</span>
+{% else %}
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium
+             bg-emerald-50 text-emerald-700 border border-emerald-200"
+      hx-trigger="load" hx-on:load="htmx.trigger(document.body, 'costs-fresh')">
+  ✓ Costos al día
+</span>
+{% endif %}

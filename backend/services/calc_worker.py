@@ -76,6 +76,53 @@ def claim_job(db, worker_id: str):
     return db.execute(_CLAIM_SQL, {"worker": worker_id}).mappings().first()
 
 
+def job_queue_status(db, ingredient_id: int | None = None) -> dict:
+    """Snapshot of in-flight recompute work (G2 — lets the FE know when the async
+    recompute is done / failed). Optionally scoped to an ingredient (matches the
+    price_change/route_change jobs that carry it in payload)."""
+    sql = (
+        "SELECT status, count(*) AS n FROM public.calc_jobs "
+        "WHERE status IN ('pending','running','dead') "
+    )
+    params: dict = {}
+    if ingredient_id is not None:
+        sql += "AND (payload->>'ingredient_id')::bigint = :ing "
+        params["ing"] = ingredient_id
+    sql += "GROUP BY status"
+    counts = {r.status: r.n for r in db.execute(text(sql), params).all()}
+    pending = counts.get("pending", 0)
+    running = counts.get("running", 0)
+    dead = counts.get("dead", 0)
+    return {
+        "pending": pending,
+        "running": running,
+        "dead": dead,
+        "in_flight": pending + running,
+        "done": (pending + running) == 0,
+    }
+
+
+def reap_stale_jobs(db, stale_minutes: int = 15) -> int:
+    """Requeue jobs stuck in 'running' (worker crash / OOM) with exponential
+    backoff, dead-lettering past max_attempts. App-side mirror of the pg_cron
+    reaper (G1): pg_cron is unavailable on some hosts (e.g. Supabase), so the
+    queue's liveness must not depend on it. Returns rows reaped."""
+    n = db.execute(
+        text(
+            "UPDATE public.calc_jobs "
+            "SET status = (CASE WHEN attempts >= max_attempts THEN 'dead' "
+            "                   ELSE 'pending' END)::calc_job_status, "
+            "    not_before = now() + (interval '1 minute' * power(2, attempts)), "
+            "    locked_at = NULL, locked_by = NULL "
+            "WHERE status = 'running' "
+            "  AND locked_at < now() - make_interval(mins => :m)"
+        ),
+        {"m": stale_minutes},
+    ).rowcount
+    db.commit()
+    return n
+
+
 def _mark_done(db, job_id: int) -> None:
     db.execute(
         text(
@@ -163,6 +210,8 @@ def run_worker(db, worker_id: Optional[str] = None, max_jobs: Optional[int] = No
     process or a pg_cron-triggered tick.
     """
     worker_id = worker_id or f"{socket.gethostname()}:{id(object())}"
+    # App-side reaper (G1): don't rely on pg_cron for queue liveness.
+    reap_stale_jobs(db)
     processed = 0
     while max_jobs is None or processed < max_jobs:
         job = claim_job(db, worker_id)

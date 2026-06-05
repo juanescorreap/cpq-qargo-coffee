@@ -34,6 +34,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from backend.database import get_db
+from backend.services.supplier_pricing import save_route_price
 from backend.models.ingredient import Ingredient
 from backend.models.recipe_unit import RecipeUnit
 from backend.models.store import Store
@@ -463,41 +464,21 @@ def create_route_price_htmx(
     created_by: str = Form(...),
     db: Session = Depends(get_db),
 ):
+    # G3/G7: route the write through fn_ingest_route_price (advisory lock + outbox
+    # + lock_timeout/retry) instead of a manual close+insert that skipped both.
     try:
-        lp = Decimal(list_price.replace(",", "").strip())
-        qp = Decimal(qargo_price.replace(",", "").strip())
-        if lp <= 0 or qp <= 0:
-            raise ValueError("Prices must be greater than zero")
-        if qp > lp:
-            raise ValueError("Negotiated price cannot exceed list price")
-        currency = currency_code.strip().upper()
-        if len(currency) != 3 or not currency.isalpha():
-            raise ValueError("Invalid currency code (must be 3 letters, e.g. COP)")
-        if not created_by.strip():
-            raise ValueError("Created by is required")
-        # ValueError path above: no DB writes yet, no rollback needed.
-        active = (
-            db.query(SupplyRoutePrice)
-            .filter(SupplyRoutePrice.supply_route_id == route_id, SupplyRoutePrice.valid_until.is_(None))
-            .first()
+        save_route_price(
+            db, route_id=route_id,
+            list_price=list_price, qargo_price=qargo_price,
+            currency=currency_code, price_unit_id=None,
+            price_per_unit=price_per_unit, source=source, created_by=created_by,
         )
-        with db.begin_nested():
-            if active:
-                active.valid_until = date.today()
-            db.add(SupplyRoutePrice(
-                supply_route_id=route_id,
-                list_price=lp,
-                qargo_price=qp,
-                currency_code=currency,
-                price_per_unit=price_per_unit.strip(),
-                source=source.strip() or None,
-                created_by=created_by.strip(),
-            ))
-        db.commit()
-        return _render_prices(route_id, request, db)
+        resp = _render_prices(route_id, request, db)
+        resp.headers["HX-Trigger"] = "prices-changed"   # async recompute kicked off
+        return resp
     except (InvalidOperation, ValueError) as exc:
         return _render_prices(route_id, request, db, price_error=str(exc))
-    except Exception as exc:
+    except Exception as exc:  # noqa: BLE001 — EXCLUDE/db errors -> inline, no blank screen
         db.rollback()
         return _render_prices(route_id, request, db, price_error=str(exc))
 

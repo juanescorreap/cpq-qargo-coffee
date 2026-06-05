@@ -46,12 +46,41 @@ else:
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
+# ============================================
+# READ REPLICA (E2E_ARCHITECTURE_AUDIT G4)
+# ============================================
+# Context prefetch (load_context) is read-heavy; at scale it should hit a replica
+# while writes go to the primary. If DATABASE_URL_REPLICA is unset, transparently
+# fall back to the primary engine — zero behaviour change until a replica exists.
+
+_REPLICA_URL = os.getenv("DATABASE_URL_REPLICA", "").strip()
+if _REPLICA_URL:
+    if _REPLICA_URL.startswith("postgres://"):
+        _REPLICA_URL = _REPLICA_URL.replace("postgres://", "postgresql://", 1)
+    read_engine = create_engine(_REPLICA_URL, poolclass=NullPool, echo=False)
+    print("✅ Using read replica for context prefetch")
+else:
+    read_engine = engine  # fallback: same primary
+
+ReadSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=read_engine)
+
 Base = declarative_base()
 
 
 def get_db():
-    """Dependency to obtain a DB session."""
+    """Dependency to obtain a DB session (primary — reads + writes)."""
     db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+
+def get_read_db():
+    """Read-only session bound to the replica (or the primary as fallback).
+    Use for heavy prefetch where eventual consistency is acceptable; the snapshot
+    records price_valid_from so a slightly stale replica is still reproducible."""
+    db = ReadSessionLocal()
     try:
         yield db
     finally:
