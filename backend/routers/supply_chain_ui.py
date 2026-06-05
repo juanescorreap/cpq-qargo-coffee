@@ -30,6 +30,7 @@ from typing import Optional
 from fastapi import APIRouter, Depends, Form, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from backend.database import get_db
@@ -554,6 +555,102 @@ def create_route_ref_htmx(
     except Exception as exc:
         db.rollback()
         return _render_refs(route_id, request, db, ref_error=str(exc))
+
+
+# ── Unit conversions (supplier purchase unit -> recipe unit) ──────────────────
+
+def _render_conversions(
+    route_id: int, request: Request, db: Session,
+    conversion_error: Optional[str] = None,
+):
+    conversions = (
+        db.query(SupplierUnitConversion, IngredientSupplierRef, RecipeUnit)
+        .join(IngredientSupplierRef,
+              SupplierUnitConversion.ingredient_ref_id == IngredientSupplierRef.id)
+        .join(RecipeUnit, SupplierUnitConversion.recipe_unit_id == RecipeUnit.id)
+        .filter(IngredientSupplierRef.supply_route_id == route_id)
+        .all()
+    )
+    refs = (
+        db.query(IngredientSupplierRef)
+        .filter(IngredientSupplierRef.supply_route_id == route_id)
+        .all()
+    )
+    recipe_units = (
+        db.query(RecipeUnit)
+        .filter(RecipeUnit.is_active == True)
+        .order_by(RecipeUnit.name)
+        .all()
+    )
+    return templates.TemplateResponse("supply_chain/routes/_conversions.html", {
+        "request": request,
+        "route_id": route_id,
+        "conversions": conversions,
+        "refs": refs,
+        "recipe_units": recipe_units,
+        "conversion_error": conversion_error,
+    })
+
+
+@router.post("/routes/{route_id}/conversions/htmx", response_class=HTMLResponse)
+def create_conversion_htmx(
+    route_id: int,
+    request: Request,
+    ingredient_ref_id: int = Form(...),
+    recipe_unit_id: int = Form(...),
+    purchase_qty: str = Form("1"),
+    recipe_qty: str = Form(...),
+    db: Session = Depends(get_db),
+):
+    try:
+        pq = Decimal((purchase_qty or "1").strip() or "1")
+        rq = Decimal(recipe_qty.strip())
+        if pq <= 0 or rq <= 0:
+            raise ValueError("Quantities must be greater than zero")
+        ref = db.get(IngredientSupplierRef, ingredient_ref_id)
+        if not ref or ref.supply_route_id != route_id:
+            raise ValueError("Invalid supplier reference for this route")
+        with db.begin_nested():
+            db.add(SupplierUnitConversion(
+                ingredient_ref_id=ingredient_ref_id,
+                recipe_unit_id=recipe_unit_id,
+                purchase_qty=pq,
+                recipe_qty=rq,
+            ))
+        db.commit()
+        # Conversions feed fn_resolve_ingredient_sourcing -> costs are now stale.
+        resp = _render_conversions(route_id, request, db)
+        resp.headers["HX-Trigger"] = "prices-changed"
+        return resp
+    except (ValueError, InvalidOperation) as exc:
+        return _render_conversions(route_id, request, db, conversion_error=str(exc))
+    except IntegrityError:
+        # The begin_nested savepoint already rolled back this failed insert; the
+        # outer transaction (and any prior rows) stays intact — do NOT db.rollback().
+        return _render_conversions(
+            route_id, request, db,
+            conversion_error="A conversion already exists for that reference and recipe unit",
+        )
+    except Exception as exc:  # noqa: BLE001
+        db.rollback()
+        return _render_conversions(route_id, request, db, conversion_error=str(exc))
+
+
+@router.post("/routes/{route_id}/conversions/htmx/{conv_id}/delete",
+             response_class=HTMLResponse)
+def delete_conversion_htmx(
+    route_id: int, conv_id: int, request: Request,
+    db: Session = Depends(get_db),
+):
+    conv = db.get(SupplierUnitConversion, conv_id)
+    if conv:
+        ref = db.get(IngredientSupplierRef, conv.ingredient_ref_id)
+        if ref and ref.supply_route_id == route_id:
+            db.delete(conv)
+            db.commit()
+    resp = _render_conversions(route_id, request, db)
+    resp.headers["HX-Trigger"] = "prices-changed"
+    return resp
 
 
 # ===========================================================================

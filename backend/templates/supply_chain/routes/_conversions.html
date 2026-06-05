@@ -1,0 +1,173 @@
+{# Partial: unit-conversion tab content for route detail.
+   Maps a supplier purchase unit (e.g. box 10 kg) to a recipe unit (e.g. gram).
+   Mirrors the CHECK suc_quantities_positive (>0) in the client and re-validates
+   on the server. SUPPLIER_FRONTEND_DESIGN slice #1. #}
+<div id="route-conversions" x-data="{ showForm: false }">
+
+  {% if conversion_error %}
+  <div class="flex items-start gap-3 mb-4 bg-red-50 border border-red-200 rounded-xl p-3 text-sm text-red-700">
+    <svg class="w-4 h-4 shrink-0 mt-0.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+    </svg>
+    <span>{{ conversion_error }}</span>
+  </div>
+  {% endif %}
+
+  <p class="text-sm text-stone-500 mb-4">
+    How many recipe units correspond to one supplier purchase unit. The cost engine
+    uses this conversion when a price comes from this route.
+  </p>
+
+  {% if not refs %}
+  {# No supplier reference yet -> a conversion has nothing to attach to. #}
+  <div class="bg-amber/5 border border-amber/20 rounded-xl py-10 text-center">
+    <p class="text-3xl mb-2">⚖️</p>
+    <p class="text-sm font-medium text-stone-600">Add a supplier reference first</p>
+    <p class="text-xs text-stone-400 mt-1">Conversions are defined per supplier reference (the “Refs” tab).</p>
+  </div>
+  {% else %}
+
+  <div class="flex items-center justify-between mb-4">
+    <p class="text-sm font-semibold text-stone-600">
+      {{ conversions | length }} conversion{{ 's' if conversions | length != 1 else '' }}
+    </p>
+    <button @click="showForm = !showForm"
+            class="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold bg-espresso text-beige hover:bg-espresso-light transition-colors">
+      <svg class="w-4 h-4 transition-transform" :class="showForm ? 'rotate-45' : ''"
+           fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
+      </svg>
+      <span x-text="showForm ? 'Cancel' : 'Add conversion'"></span>
+    </button>
+  </div>
+
+  {# ── Add form with real-time validation (no 0 / negative factors) ──────── #}
+  <div x-show="showForm" x-cloak
+       x-data="conversionForm()"
+       x-transition:enter="transition ease-out duration-150"
+       x-transition:enter-start="opacity-0 -translate-y-1"
+       x-transition:enter-end="opacity-100 translate-y-0"
+       class="bg-amber/5 border border-amber/20 rounded-xl p-5 mb-5">
+    <p class="text-xs font-semibold text-stone-500 uppercase tracking-wider mb-4">New conversion</p>
+    <form hx-post="/supply-chain/routes/{{ route_id }}/conversions/htmx"
+          hx-target="#route-conversions"
+          hx-swap="outerHTML"
+          hx-indicator="#page-spinner"
+          class="grid grid-cols-1 sm:grid-cols-2 gap-3"
+          @htmx:after-request="if(!event.detail.failed) showForm = false">
+
+      <div class="sm:col-span-2">
+        <label class="block text-sm font-medium text-espresso mb-1.5">Supplier reference <span class="text-red-500">*</span></label>
+        <select name="ingredient_ref_id" required x-model.number="refId"
+                class="w-full px-3 py-2 text-sm border border-stone-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber/40 focus:border-amber">
+          <option value="">Select reference…</option>
+          {% for ref in refs %}
+          <option value="{{ ref.id }}">{{ ref.external_name }} ({{ ref.purchase_unit }})</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-espresso mb-1.5">Purchase quantity <span class="text-red-500">*</span></label>
+        <input type="number" name="purchase_qty" step="any" x-model.number="purchaseQty"
+               class="w-full px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber/40 focus:border-amber"
+               :class="purchaseQty !== '' && !(purchaseQty > 0) ? 'border-red-400 bg-red-50' : 'border-stone-200'">
+        <p class="text-xs text-stone-400 mt-1">Usually 1 (e.g. 1 box).</p>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-espresso mb-1.5">Recipe quantity <span class="text-red-500">*</span></label>
+        <input type="number" name="recipe_qty" step="any" x-model.number="recipeQty"
+               placeholder="e.g. 10000"
+               class="w-full px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber/40 focus:border-amber"
+               :class="recipeQty !== '' && !(recipeQty > 0) ? 'border-red-400 bg-red-50' : 'border-stone-200'">
+      </div>
+
+      <div class="sm:col-span-2">
+        <label class="block text-sm font-medium text-espresso mb-1.5">Recipe unit <span class="text-red-500">*</span></label>
+        <select name="recipe_unit_id" required x-model.number="recipeUnitId"
+                class="w-full px-3 py-2 text-sm border border-stone-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber/40 focus:border-amber">
+          <option value="">Select unit…</option>
+          {% for u in recipe_units %}
+          <option value="{{ u.id }}">{{ u.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="sm:col-span-2 flex items-center justify-between pt-1">
+        <span class="text-xs" :class="valid ? 'text-emerald-600' : 'text-red-600'"
+              x-text="valid ? '✓ ' + summary : error" x-cloak></span>
+        <button type="submit" :disabled="!valid"
+                class="px-5 py-2 text-sm font-semibold text-beige bg-espresso rounded-lg
+                       hover:bg-espresso-light transition-colors htmx-request:opacity-60
+                       disabled:opacity-40 disabled:cursor-not-allowed">
+          Save conversion
+        </button>
+      </div>
+    </form>
+  </div>
+
+  {% if conversions %}
+  <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+    <table class="min-w-full divide-y divide-stone-100 text-sm">
+      <thead class="bg-stone-50">
+        <tr class="text-xs text-stone-400 font-semibold uppercase tracking-wider">
+          <th class="px-5 py-3 text-left">Supplier reference</th>
+          <th class="px-5 py-3 text-left">Purchase unit</th>
+          <th class="px-5 py-3 text-left">Recipe unit</th>
+          <th class="px-5 py-3 text-left">Conversion</th>
+          <th class="px-5 py-3"></th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-stone-50">
+        {% for conv, ref, unit in conversions %}
+        <tr class="hover:bg-cream transition-colors">
+          <td class="px-5 py-3 font-medium text-stone-800">{{ ref.external_name }}</td>
+          <td class="px-5 py-3 text-stone-600">{{ ref.purchase_unit }}</td>
+          <td class="px-5 py-3 text-stone-600">{{ unit.name }}</td>
+          <td class="px-5 py-3 tabular-nums text-stone-700">
+            <span class="font-semibold">{{ conv.purchase_qty }}</span> purchase unit
+            = <span class="font-semibold">{{ conv.recipe_qty }}</span> {{ unit.name }}
+          </td>
+          <td class="px-5 py-3 text-right">
+            <button hx-post="/supply-chain/routes/{{ route_id }}/conversions/htmx/{{ conv.id }}/delete"
+                    hx-target="#route-conversions" hx-swap="outerHTML"
+                    hx-confirm="Delete this conversion?"
+                    class="text-xs text-red-500 hover:text-red-700 font-medium">
+              Delete
+            </button>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="bg-white rounded-xl border border-stone-100 py-14 text-center">
+    <p class="text-3xl mb-2">⚖️</p>
+    <p class="text-sm font-medium text-stone-500">No unit conversions yet</p>
+    <p class="text-xs text-stone-400 mt-1">Define how a purchase unit converts to a recipe unit.</p>
+  </div>
+  {% endif %}
+
+  {% endif %}{# /refs #}
+
+</div>
+
+<script>
+  function conversionForm() {
+    return {
+      refId: "", purchaseQty: 1, recipeQty: "", recipeUnitId: "", error: "",
+      get valid() {
+        if (!this.refId) { this.error = "Select a supplier reference"; return false; }
+        if (!(this.purchaseQty > 0)) { this.error = "Purchase quantity must be > 0"; return false; }
+        if (!(this.recipeQty > 0)) { this.error = "Recipe quantity must be > 0"; return false; }
+        if (!this.recipeUnitId) { this.error = "Select a recipe unit"; return false; }
+        this.error = ""; return true;
+      },
+      get summary() {
+        return this.purchaseQty + " purchase unit = " + this.recipeQty + " recipe units";
+      },
+    };
+  }
+</script>

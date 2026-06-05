@@ -97,45 +97,7 @@
 
   {# ── Conversions tab ─────────────────────────────────────────────────── #}
   <div x-show="tab === 'conversions'" x-cloak>
-    <div class="mb-4">
-      <p class="text-sm text-stone-500">
-        How many recipe units correspond to one supplier purchase unit.
-        Requires a supplier reference to exist first.
-      </p>
-    </div>
-    {% if conversions %}
-    <div class="bg-white rounded-xl shadow-sm overflow-hidden">
-      <table class="min-w-full divide-y divide-stone-100 text-sm">
-        <thead class="bg-stone-50">
-          <tr class="text-xs text-stone-400 font-semibold uppercase tracking-wider">
-            <th class="px-5 py-3 text-left">Supplier reference</th>
-            <th class="px-5 py-3 text-left">Purchase unit</th>
-            <th class="px-5 py-3 text-left">Recipe unit</th>
-            <th class="px-5 py-3 text-left">Conversion</th>
-          </tr>
-        </thead>
-        <tbody class="divide-y divide-stone-50">
-          {% for conv, ref, unit in conversions %}
-          <tr class="hover:bg-cream transition-colors">
-            <td class="px-5 py-3 font-medium text-stone-800">{{ ref.external_name }}</td>
-            <td class="px-5 py-3 text-stone-600">{{ ref.purchase_unit }}</td>
-            <td class="px-5 py-3 text-stone-600">{{ unit.name }}</td>
-            <td class="px-5 py-3 tabular-nums text-stone-700">
-              <span class="font-semibold">{{ conv.purchase_qty }}</span> purchase unit
-              = <span class="font-semibold">{{ conv.recipe_qty }}</span> {{ unit.name }}
-            </td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
-    {% else %}
-    <div class="bg-white rounded-xl border border-stone-100 py-14 text-center">
-      <p class="text-3xl mb-2">⚖️</p>
-      <p class="text-sm font-medium text-stone-500">No unit conversions yet</p>
-      <p class="text-xs text-stone-400 mt-1">Add supplier references first, then define how purchase units convert to recipe units.</p>
-    </div>
-    {% endif %}
+    {% include "supply_chain/routes/_conversions.html" %}
   </div>
 
 </div>
