@@ -6,7 +6,7 @@ from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
 from backend.database import get_db
-from backend.models.product import Product, ProductSize
+from backend.services import catalog_queries
 from backend.schemas.cost import (
     CostBreakdownResponse,
     CostCalculationRequest,
@@ -160,20 +160,10 @@ def calculate_all(
     calc = CostCalculator(db)
     results = []
 
-    products = (
-        db.query(Product)
-        .filter(Product.id.in_(body.product_ids), Product.is_active == True)
-        .order_by(Product.name)
-        .all()
-    )
+    products = catalog_queries.active_products_by_ids(db, body.product_ids)
 
     for product in products:
-        sizes = (
-            db.query(ProductSize)
-            .filter(ProductSize.product_id == product.id)
-            .order_by(ProductSize.scale_factor)
-            .all()
-        )
+        sizes = catalog_queries.product_sizes(db, product.id)
 
         size_costs = []
 

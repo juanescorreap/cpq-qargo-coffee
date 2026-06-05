@@ -7,8 +7,7 @@ from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 
 from backend.database import get_db
-from backend.models.product import Product, ProductSize
-from backend.models.store import Store
+from backend.services import catalog_queries
 from backend.services.cost_calculator import CostCalculator
 
 router = APIRouter(prefix="/costs", tags=["UI - Costos"])
@@ -29,18 +28,8 @@ async def cost_calculator(
     request: Request,
     db: Session = Depends(get_db),
 ) -> HTMLResponse:
-    products = (
-        db.query(Product)
-        .filter(Product.is_active == True)
-        .order_by(Product.name)
-        .all()
-    )
-    stores = (
-        db.query(Store)
-        .filter(Store.is_active == True)
-        .order_by(Store.name)
-        .all()
-    )
+    products = catalog_queries.active_products(db)
+    stores = catalog_queries.active_stores(db)
     return templates.TemplateResponse("costs/calculator.html", {
         "request":  request,
         "products": products,
@@ -54,14 +43,7 @@ async def load_sizes(
     product_id: Optional[int] = None,
     db: Session = Depends(get_db),
 ) -> HTMLResponse:
-    sizes = []
-    if product_id:
-        sizes = (
-            db.query(ProductSize)
-            .filter(ProductSize.product_id == product_id)
-            .order_by(ProductSize.scale_factor)
-            .all()
-        )
+    sizes = catalog_queries.product_sizes(db, product_id) if product_id else []
     return templates.TemplateResponse("costs/_sizes.html", {
         "request": request,
         "sizes":   sizes,
