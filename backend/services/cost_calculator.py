@@ -141,6 +141,8 @@ class CalcContext:
     labor: Dict[int, Decimal]               # product_id -> labor cost (unscaled)
     # active substitutes keyed by ORIGINAL ingredient_id (only when store given)
     substitutes: Dict[int, _Subst]
+    # ingredient ids unavailable at the store/region (only when store given)
+    unavailable: Set[int]
     store_id: Optional[int]
     formula_version: str = "v1"
 
@@ -251,6 +253,25 @@ def load_context(
                 recipe_unit_id=r.recipe_unit_id,
                 cost_impact_pct=Decimal(str(r.cost_impact_pct)) if r.cost_impact_pct is not None else None,
             )
+
+    # Ingredients currently unavailable at this store/region (for the
+    # unavailable_no_substitute lineage flag). Only meaningful with a store.
+    unavailable: Set[int] = set()
+    if line_ingredient_ids and store_id is not None:
+        ua_rows = db.execute(
+            text(
+                "SELECT DISTINCT ia.ingredient_id "
+                "FROM ingredient_availability ia "
+                "LEFT JOIN stores s ON s.id = :s "
+                "WHERE ia.ingredient_id = ANY(CAST(:ids AS bigint[])) "
+                "  AND ia.status IN ('shortage','discontinued','seasonal') "
+                "  AND ia.valid_from <= CURRENT_DATE "
+                "  AND (ia.valid_until IS NULL OR ia.valid_until >= CURRENT_DATE) "
+                "  AND (ia.region_id IS NULL OR ia.region_id = s.region_id)"
+            ),
+            {"s": store_id, "ids": list(line_ingredient_ids)},
+        ).all()
+        unavailable = {r.ingredient_id for r in ua_rows}
 
     # Effective (ingredient_id, recipe_unit_id) substitution keys per line, so the
     # substitute's price + conversion get loaded too.
@@ -420,6 +441,7 @@ def load_context(
         sourcing=sourcing,
         labor=labor,
         substitutes=substitutes,
+        unavailable=unavailable,
         store_id=store_id,
         formula_version=formula_version,
     )
@@ -440,8 +462,9 @@ class _PureCalculator:
     legacy engine exactly, including per-recipe-level rounding to 2 decimals.
     """
 
-    def __init__(self, ctx: CalcContext) -> None:
+    def __init__(self, ctx: CalcContext, apply_substitutes: bool = True) -> None:
         self.ctx = ctx
+        self.apply_substitutes = apply_substitutes
 
     def _denominator(self, ing: _IngredientInfo, src: Sourcing) -> Optional[Decimal]:
         """Units-per-purchase-unit. SUPPLIER conversion wins when the price comes
@@ -495,7 +518,7 @@ class _PureCalculator:
 
     # -- line cost at scale=1 (substitute swap applied; scale deferred) --
     def _line_base_cost(self, line: _RecipeLine) -> Decimal:
-        sub = self.ctx.substitutes.get(line.ingredient_id)
+        sub = self.ctx.substitutes.get(line.ingredient_id) if self.apply_substitutes else None
         if sub is not None:
             # Cost the SUBSTITUTE with quantity_ratio applied (1 level). Effective
             # unit = the substitute's declared unit, else the line's.
@@ -577,6 +600,121 @@ class _PureCalculator:
         """Final cost for a product+size. Single rounding at the end (legacy)."""
         raw = base.fixed + base.scalable * scale + self.packaging_cost(size_id)
         return round(raw, 2)
+
+    def _subtree_products(self, product_id: int) -> Set[int]:
+        """Products reachable from product_id via sub-recipes (incl. itself)."""
+        seen: Set[int] = set()
+        stack = [product_id]
+        while stack:
+            pid = stack.pop()
+            if pid in seen:
+                continue
+            seen.add(pid)
+            for sub in self.ctx.sub_recipes.get(pid, []):
+                stack.append(sub.sub_id)
+        return seen
+
+    def snapshot_lines(
+        self, product_id: int, scale: Decimal, size_id: Optional[int]
+    ) -> Tuple[Dict, bool]:
+        """Build JSON-serialisable lineage detail for a product+size from the
+        shared context (no DB reload). Decimals -> str, dates -> ISO."""
+
+        def d(x: Optional[Decimal]) -> Optional[str]:
+            return str(x) if x is not None else None
+
+        ingredients: List[Dict] = []
+        for line in self.ctx.recipe_lines.get(product_id, []):
+            sub = self.ctx.substitutes.get(line.ingredient_id)
+            if sub is not None:
+                eff_id = sub.sub_id
+                eff_unit = sub.recipe_unit_id if sub.recipe_unit_id is not None else line.recipe_unit_id
+                base_qty = line.quantity * sub.ratio
+            else:
+                eff_id = line.ingredient_id
+                eff_unit = line.recipe_unit_id
+                base_qty = line.quantity
+
+            ing = self.ctx.ingredients.get(eff_id)
+            if ing is None:
+                continue
+            src = self.ctx.sourcing.get((eff_id, eff_unit)) \
+                or Sourcing(_ZERO, "COP", None, None, "catalog")
+            denom = self._denominator(ing, src)
+            line_scale = scale if line.scales_with_size else Decimal("1")
+            line_cost = self._line_base_cost(line) * line_scale
+
+            qty = base_qty
+            if eff_unit is not None:
+                qty = qty * self.ctx.unit_conv.get((eff_id, eff_unit), _ZERO)
+            qty = qty * line_scale
+
+            fell_back = src.source == "route" and not (src.purchase_qty and src.recipe_qty)
+            unavail_no_sub = (sub is None) and (line.ingredient_id in self.ctx.unavailable)
+
+            ingredients.append({
+                "ingredient_id": eff_id,
+                "original_ingredient_id": line.ingredient_id if sub is not None else None,
+                "is_substitute": sub is not None,
+                "quantity_ratio": d(sub.ratio) if sub is not None else None,
+                "supply_route_id": src.supply_route_id,
+                "manufacturer_id": src.manufacturer_id,
+                "distributor_id": src.distributor_id,
+                "source": src.source,
+                "currency": src.currency,
+                "price_valid_from": src.price_valid_from.isoformat() if src.price_valid_from else None,
+                "qty": d(qty),
+                "unit_price": d(src.unit_price / denom) if denom else None,
+                "line_cost": d(line_cost),
+                "flags": {
+                    "unavailable_no_substitute": unavail_no_sub,
+                    "fell_back_to_catalog_conversion": fell_back,
+                },
+            })
+
+        sub_recipes: List[Dict] = []
+        memo: Dict[int, BaseCost] = {}
+        for sub in self.ctx.sub_recipes.get(product_id, []):
+            unit = round(self.base_recipe_cost(sub.sub_id, memo, set()).at_unit, 2)
+            qty = sub.quantity * (scale if sub.scales_with_size else Decimal("1"))
+            sub_recipes.append({
+                "sub_product_id": sub.sub_id,
+                "quantity": d(qty),
+                "unit_cost": d(unit),
+                "line_cost": d(unit * qty),
+            })
+
+        packaging: List[Dict] = []
+        for pkg in self.ctx.packaging.get(size_id, []) if size_id else []:
+            ing = self.ctx.ingredients.get(pkg.ingredient_id)
+            if ing is None:
+                continue
+            src = self.ctx.sourcing.get((pkg.ingredient_id, None)) \
+                or Sourcing(_ZERO, "COP", None, None, "catalog")
+            denom = self._denominator(ing, src)
+            if not denom:
+                continue
+            packaging.append({
+                "ingredient_id": pkg.ingredient_id,
+                "quantity": d(pkg.quantity),
+                "unit_price": d(src.unit_price / denom),
+                "line_cost": d((src.unit_price / denom) * pkg.quantity),
+                "source": src.source,
+            })
+
+        detail = {
+            "formula_version": self.ctx.formula_version,
+            "ingredients": ingredients,
+            "sub_recipes": sub_recipes,
+            "packaging": packaging,
+            "labor": d(self.ctx.labor.get(product_id, _ZERO)),
+        }
+        has_substitutes = any(
+            pid_line.ingredient_id in self.ctx.substitutes
+            for pid in self._subtree_products(product_id)
+            for pid_line in self.ctx.recipe_lines.get(pid, [])
+        )
+        return detail, has_substitutes
 
 
 # ---------------------------------------------------------------------------

@@ -10,6 +10,7 @@ Responsibilities:
 """
 
 import logging
+import uuid
 from datetime import date
 from decimal import Decimal
 from typing import Dict, List, Optional
@@ -23,6 +24,7 @@ from backend.models import (
     ProductPricing,
     ProductSize,
 )
+from backend.models.supply_chain import RecipeCostSnapshot
 from backend.services.cost_calculator import (
     BaseCost,
     CostCalculator,
@@ -261,6 +263,7 @@ class PricingEngine:
         self,
         store_id: Optional[int] = None,
         save_to_db: bool = False,
+        triggered_by: str = "batch",
     ) -> Dict:
         """Calculate (and optionally save) prices for all active products.
 
@@ -318,13 +321,18 @@ class PricingEngine:
         # Single bulk prefetch + shared memo for the whole batch (no N+1, each
         # sub-recipe valued once across all products).
         ctx = load_context(self.db, store_id, product_ids)
-        pure = _PureCalculator(ctx)
+        pure = _PureCalculator(ctx)                              # effective (subs on)
+        pure_base = _PureCalculator(ctx, apply_substitutes=False)  # base (subs off)
         memo: Dict[tuple, BaseCost] = {}
+        memo_base: Dict[tuple, BaseCost] = {}
         markups = self._bulk_markups(products, store_id)
+        batch_run_id = uuid.uuid4()
+        snapshots_written = 0
 
         for product in products:
             try:
                 base = pure.base_recipe_cost(product.id, memo, set())
+                base_nosub = pure_base.base_recipe_cost(product.id, memo_base, set())
             except Exception as exc:  # cycle / data error: skip whole product
                 errors.append(f"{product.name}: {exc}")
                 logger.warning("  FAIL %s: %s", product.name, exc)
@@ -351,6 +359,29 @@ class PricingEngine:
                             is_manual=False,
                             cost=cost,
                         )
+                        # Immutable lineage snapshot. Requires a store (the table
+                        # has store_id NOT NULL); global base runs skip it.
+                        if store_id is not None:
+                            base_cost = pure_base.total_for_size(
+                                base_nosub, size.scale_factor, size.id
+                            )
+                            detail, has_subs = pure.snapshot_lines(
+                                product.id, size.scale_factor, size.id
+                            )
+                            self.db.add(RecipeCostSnapshot(
+                                product_id=product.id,
+                                store_id=store_id,
+                                size_id=size.id,
+                                base_cost=base_cost,
+                                effective_cost=cost,
+                                currency_code="COP",
+                                has_substitutes=has_subs,
+                                snapshot_detail=detail,
+                                formula_version=ctx.formula_version,
+                                batch_run_id=batch_run_id,
+                                triggered_by=triggered_by,
+                            ))
+                            snapshots_written += 1
 
                     prices_calculated += 1
                     logger.debug(
@@ -361,6 +392,9 @@ class PricingEngine:
                     error_msg = f"{label}: {exc}"
                     errors.append(error_msg)
                     logger.warning("  FAIL %s", error_msg)
+
+        if save_to_db and snapshots_written:
+            self.db.commit()  # flush the lineage snapshots (pricing already committed)
 
         logger.info(
             "Batch pricing finished — calculated=%d/%d  errors=%d",
@@ -373,6 +407,7 @@ class PricingEngine:
             "total_products": len(products),
             "total_sizes": total_sizes,
             "prices_calculated": prices_calculated,
+            "snapshots_written": snapshots_written,
             "errors": errors,
         }
 

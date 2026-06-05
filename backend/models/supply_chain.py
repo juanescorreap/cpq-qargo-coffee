@@ -13,7 +13,7 @@ from sqlalchemy import (
     Text,
     UniqueConstraint,
 )
-from sqlalchemy.dialects.postgresql import JSONB
+from sqlalchemy.dialects.postgresql import JSONB, UUID
 from sqlalchemy.sql import func
 
 from backend.database import Base
@@ -375,6 +375,15 @@ class RecipeCostSnapshot(Base):
     has_substitutes: bool = Column(Boolean, nullable=False, default=False)
     snapshot_detail: object = Column(JSONB, nullable=False)
     triggered_by: str | None = Column(String(120))
+    # Lineage columns (migration 0021): per-size cost, formula version, the batch
+    # run that produced it, and the FX rate used to normalise foreign prices.
+    size_id: int | None = Column(
+        BigInteger, ForeignKey("product_sizes.id", ondelete="RESTRICT")
+    )
+    formula_version: str = Column(String(40), nullable=False, server_default="v1")
+    batch_run_id: object | None = Column(UUID(as_uuid=True))
+    fx_rate: object | None = Column(Numeric(18, 8))
+    fx_rate_date: object | None = Column(Date)
     calculated_at: object = Column(
         DateTime(timezone=True), server_default=func.now(), primary_key=True
     )
