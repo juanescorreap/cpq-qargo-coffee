@@ -66,9 +66,15 @@ from starlette.responses import PlainTextResponse
 from backend.config import settings as _settings
 
 
+# Paths served without auth: static assets must load for the page to render
+# styles, and /health must stay reachable for the Railway healthcheck.
+_AUTH_PUBLIC_PREFIXES = ("/static/", "/health", "/favicon.ico")
+
+
 @app.middleware("http")
 async def _basic_auth(request: Request, call_next):
-    if _settings.auth_enabled and request.method != "OPTIONS":
+    _is_public = request.url.path.startswith(_AUTH_PUBLIC_PREFIXES)
+    if _settings.auth_enabled and not _is_public and request.method != "OPTIONS":
         header = request.headers.get("Authorization", "")
         ok = False
         if header.startswith("Basic "):
