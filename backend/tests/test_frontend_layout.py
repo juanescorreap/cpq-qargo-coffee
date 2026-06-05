@@ -52,3 +52,23 @@ def test_compiled_tailwind_has_custom_palette(test_client):
     assert css.status_code == 200
     assert ".bg-espresso{" in css.text         # custom theme color purged-in
     assert ".border-l-4{" in css.text          # utility used in dashboard cards
+
+
+# FRONTEND_AUDIT #4 — self-hosted vendor JS, no 3rd-party CDN.
+
+def test_vendor_js_self_hosted(test_client):
+    html = test_client.get("/costs/calculator").text
+    assert "js/vendor/htmx.min.js" in html
+    assert "js/vendor/alpine.min.js" in html
+    assert "unpkg" not in html and "jsdelivr" not in html
+    assert test_client.get("/static/js/vendor/htmx.min.js").status_code == 200
+    assert test_client.get("/static/js/vendor/alpine.min.js").status_code == 200
+
+
+# FRONTEND_AUDIT #7 — a11y + correct document language.
+
+def test_a11y_lang_and_dropdown(test_client):
+    html = test_client.get("/costs/calculator").text
+    assert 'lang="es"' in html
+    assert "aria-haspopup" in html
+    assert "keydown.escape" in html

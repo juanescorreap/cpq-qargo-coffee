@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 
 <head>
   <meta charset="UTF-8" />
@@ -17,13 +17,11 @@
          -i static/css/tailwind.input.css -o static/css/tailwind.css --minify -->
   <link rel="stylesheet" href="{{ url_for('static', path='css/tailwind.css') }}" />
 
-  <!-- HTMX 2.0.4 -->
-  <script src="https://unpkg.com/htmx.org@2.0.4"
-          integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+"
-          crossorigin="anonymous"></script>
+  <!-- HTMX 2.0.4 (self-hosted — FRONTEND_AUDIT #4: no 3rd-party CDN) -->
+  <script src="{{ url_for('static', path='js/vendor/htmx.min.js') }}"></script>
 
-  <!-- Alpine.js 3.14.9 — defer required, after its script -->
-  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.9/dist/cdn.min.js"></script>
+  <!-- Alpine.js 3.14.9 (self-hosted) — defer required -->
+  <script defer src="{{ url_for('static', path='js/vendor/alpine.min.js') }}"></script>
 
   <!-- Google Fonts: Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -78,8 +76,12 @@
           {% endfor %}
 
           <!-- Supply Chain dropdown -->
-          <div x-data="{ scOpen: false }" class="relative" @click.away="scOpen = false">
+          <div x-data="{ scOpen: false }" class="relative"
+               @click.away="scOpen = false"
+               @keydown.escape.window="scOpen = false">
             <button @click="scOpen = !scOpen"
+                    aria-haspopup="true"
+                    :aria-expanded="scOpen.toString()"
                     class="px-3 py-2 rounded-md text-sm font-medium text-beige
                            hover:bg-espresso-light hover:text-amber
                            transition-colors duration-150 flex items-center gap-1"
