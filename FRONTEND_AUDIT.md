@@ -190,3 +190,20 @@ Con #1+#2+#3 (todas bajo esfuerzo) salta de "renderiza" a "rápido y robusto".
 
 **Quick wins recomendados primero:** #1 (fachada `_layout.html`) + #3 (errores HTMX)
 — mejor ratio impacto/esfuerzo y bajo riesgo.
+
+---
+
+## Estado de implementación (todas completadas)
+
+| # | Iniciativa | Commit |
+|---|---|---|
+| 1 | Fragmento vs página por `HX-Request` (`_layout.html`/`_bare.html`) | `9cccddc` |
+| 2 | Tailwind CDN → CSS compilado/purgado | `e6a2ec1` |
+| 3 | Errores HTMX globales (toasts en `app.js`) | `2b8e1f2` |
+| 4 | Self-host HTMX/Alpine (sin CDN externo) | `3cfe36c` |
+| 5 | Repository compartido `catalog_queries` (UI↔API) | `2f91799` |
+| 6 | Contrato tipado `CostBreakdown` (TypedDict) | `b6a5adb` |
+| 7 | A11y dropdown (ARIA/Escape) + `lang="es"` | `3cfe36c` |
+
+Verificado con `backend/tests/test_frontend_layout.py` + `test_cost_breakdown_contract.py`.
+Rebuild de Tailwind: `npx tailwindcss@3 -c tailwind.config.js -i static/css/tailwind.input.css -o static/css/tailwind.css --minify`.
