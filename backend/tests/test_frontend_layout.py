@@ -37,3 +37,18 @@ def test_app_js_has_error_handlers(test_client):
     assert js.status_code == 200
     assert "htmx:responseError" in js.text
     assert "htmx:sendError" in js.text
+
+
+# FRONTEND_AUDIT #2 — compiled Tailwind, no runtime CDN.
+
+def test_no_runtime_tailwind_cdn(test_client):
+    html = test_client.get("/costs/calculator").text
+    assert "css/tailwind.css" in html          # compiled stylesheet linked
+    assert "<script src=\"https://cdn.tailwindcss.com" not in html  # no runtime CDN
+
+
+def test_compiled_tailwind_has_custom_palette(test_client):
+    css = test_client.get("/static/css/tailwind.css")
+    assert css.status_code == 200
+    assert ".bg-espresso{" in css.text         # custom theme color purged-in
+    assert ".border-l-4{" in css.text          # utility used in dashboard cards

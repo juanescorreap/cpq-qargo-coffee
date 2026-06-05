@@ -11,28 +11,11 @@
   <!-- Prevents flash of x-cloak elements before Alpine initializes -->
   <style>[x-cloak] { display: none !important; }</style>
 
-  <!-- Tailwind CSS CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            espresso:         "#3E2723",
-            "espresso-light": "#5D4037",
-            beige:            "#D7CCC8",
-            "beige-dark":     "#BCAAA4",
-            amber:            "#FF6F00",
-            "amber-light":    "#FFA000",
-            cream:            "#FFF8F0",
-          },
-          fontFamily: {
-            sans: ["Inter", "system-ui", "sans-serif"],
-          },
-        },
-      },
-    };
-  </script>
+  <!-- Tailwind CSS — compiled & purged at build time (see tailwind.config.js).
+       Replaces the runtime Tailwind CDN (FRONTEND_AUDIT #2). Rebuild with:
+       npx tailwindcss@3 -c tailwind.config.js
+         -i static/css/tailwind.input.css -o static/css/tailwind.css --minify -->
+  <link rel="stylesheet" href="{{ url_for('static', path='css/tailwind.css') }}" />
 
   <!-- HTMX 2.0.4 -->
   <script src="https://unpkg.com/htmx.org@2.0.4"
