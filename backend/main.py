@@ -4,7 +4,7 @@ from pathlib import Path
 import uvicorn
 from fastapi import Depends, FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from sqlalchemy import func
@@ -166,6 +166,12 @@ def root() -> dict:
         "scraping_ui": "/scraping",
         "database": "Supabase",
     }
+
+
+@app.get("/favicon.ico", include_in_schema=False)
+def favicon() -> Response:
+    """No favicon asset; return 204 so browsers stop logging 404s."""
+    return Response(status_code=204)
 
 
 @app.get("/health", tags=["General"])
