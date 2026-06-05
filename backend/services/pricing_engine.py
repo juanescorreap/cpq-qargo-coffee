@@ -23,7 +23,12 @@ from backend.models import (
     ProductPricing,
     ProductSize,
 )
-from backend.services.cost_calculator import CostCalculator
+from backend.services.cost_calculator import (
+    BaseCost,
+    CostCalculator,
+    _PureCalculator,
+    load_context,
+)
 
 logger = logging.getLogger("pricing_engine")
 
@@ -138,6 +143,7 @@ class PricingEngine:
         final_price: Decimal,
         markup_override: Optional[Decimal] = None,
         is_manual: bool = False,
+        cost: Optional[Decimal] = None,
     ) -> ProductPricing:
         """Save or update the price of a product in the database.
 
@@ -179,9 +185,12 @@ class PricingEngine:
                 ``markup_override`` is provided (the markup reverse-engineering
                 requires dividing by the cost).
         """
-        cost = self.cost_calculator.calculate_product_cost(
-            product_id, size_id, store_id
-        )
+        # Batch callers pass a precomputed cost to avoid recomputing (and
+        # re-loading a context) per row; on-demand callers omit it.
+        if cost is None:
+            cost = self.cost_calculator.calculate_product_cost(
+                product_id, size_id, store_id
+            )
 
         if markup_override is not None:
             markup_used = markup_override
@@ -293,6 +302,7 @@ class PricingEngine:
         products = (
             self.db.query(Product).filter(Product.is_active == True).all()
         )
+        product_ids = {p.id for p in products}
 
         total_sizes = 0
         prices_calculated = 0
@@ -305,40 +315,48 @@ class PricingEngine:
             save_to_db,
         )
 
-        for product in products:
-            sizes = (
-                self.db.query(ProductSize)
-                .filter(ProductSize.product_id == product.id)
-                .all()
-            )
+        # Single bulk prefetch + shared memo for the whole batch (no N+1, each
+        # sub-recipe valued once across all products).
+        ctx = load_context(self.db, store_id, product_ids)
+        pure = _PureCalculator(ctx)
+        memo: Dict[tuple, BaseCost] = {}
+        markups = self._bulk_markups(products, store_id)
 
-            for size in sizes:
+        for product in products:
+            try:
+                base = pure.base_recipe_cost(product.id, memo, set())
+            except Exception as exc:  # cycle / data error: skip whole product
+                errors.append(f"{product.name}: {exc}")
+                logger.warning("  FAIL %s: %s", product.name, exc)
+                continue
+
+            for size in ctx.sizes.get(product.id, []):
                 total_sizes += 1
                 label = f"{product.name} ({size.size_name})"
 
                 try:
-                    price_data = self.calculate_price(
-                        product.id, size.id, store_id
+                    cost = pure.total_for_size(base, size.scale_factor, size.id)
+                    markup = markups.get(
+                        (product.id, size.id), _DEFAULT_MARKUP
                     )
+                    suggested = cost * (Decimal("1") + markup / Decimal("100"))
+                    rounded = Decimal(round(suggested / Decimal("100")) * 100)
 
                     if save_to_db:
                         self.save_pricing(
                             product.id,
                             size.id,
                             store_id,
-                            price_data["rounded_price"],
+                            rounded,
                             is_manual=False,
+                            cost=cost,
                         )
 
                     prices_calculated += 1
                     logger.debug(
                         "  OK %-40s cost=%10s  markup=%5.1f%%  price=%10s",
-                        label,
-                        price_data["cost"],
-                        price_data["markup_percentage"],
-                        price_data["rounded_price"],
+                        label, cost, markup, rounded,
                     )
-
                 except Exception as exc:
                     error_msg = f"{label}: {exc}"
                     errors.append(error_msg)
@@ -357,6 +375,61 @@ class PricingEngine:
             "prices_calculated": prices_calculated,
             "errors": errors,
         }
+
+    def _bulk_markups(
+        self, products: List[Product], store_id: Optional[int]
+    ) -> Dict[tuple, Decimal]:
+        """Resolve markups for all (product, size) up front — kills the N+1 in
+        the batch loop. Same hierarchy as :meth:`_resolve_markup` minus the
+        explicit override arg: ProductPricing.markup_override -> CategoryMargin
+        -> default.
+        """
+        product_ids = [p.id for p in products]
+        category_by_product = {p.id: p.category for p in products}
+
+        # Per-(product,size) override saved in ProductPricing for this store.
+        overrides: Dict[tuple, Decimal] = {}
+        if product_ids:
+            q = (
+                self.db.query(ProductPricing)
+                .filter(
+                    ProductPricing.product_id.in_(product_ids),
+                    ProductPricing.store_id == store_id,
+                )
+                .order_by(ProductPricing.effective_date.asc())
+            )
+            for row in q:  # ascending -> last write wins (most recent)
+                if row.markup_override is not None:
+                    overrides[(row.product_id, row.size_id)] = Decimal(
+                        str(row.markup_override)
+                    )
+
+        # Category margins.
+        cat_margins: Dict[str, Decimal] = {
+            cm.category: Decimal(str(cm.markup_percentage))
+            for cm in self.db.query(CategoryMargin).all()
+        }
+
+        # Sizes per product.
+        result: Dict[tuple, Decimal] = {}
+        size_rows = (
+            self.db.query(ProductSize.id, ProductSize.product_id)
+            .filter(ProductSize.product_id.in_(product_ids))
+            .all()
+            if product_ids
+            else []
+        )
+        for size_id, pid in size_rows:
+            key = (pid, size_id)
+            if key in overrides:
+                result[key] = overrides[key]
+                continue
+            cat = category_by_product.get(pid)
+            if cat and cat in cat_margins:
+                result[key] = cat_margins[cat]
+            else:
+                result[key] = _DEFAULT_MARKUP
+        return result
 
     # ------------------------------------------------------------------
     # Private helpers
