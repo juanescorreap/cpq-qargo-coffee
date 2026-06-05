@@ -91,6 +91,27 @@ class _IngredientInfo:
 
 
 @dataclass(frozen=True)
+class Sourcing:
+    """Resolved sourcing for one (ingredient, recipe_unit) at a store/date.
+
+    ``unit_price`` is the purchase-unit price already normalised to the engine's
+    accumulation currency (COP). When ``source == 'route'`` and the supplier
+    pack->recipe conversion is known, ``purchase_qty``/``recipe_qty`` give the
+    SUPPLIER conversion that must override ``ingredient.conversion_factor``.
+    """
+
+    unit_price: Decimal
+    currency: str                       # original supplier/catalogue currency
+    purchase_qty: Optional[Decimal]     # supplier conversion (None => use catalogue)
+    recipe_qty: Optional[Decimal]
+    source: str                         # 'local' | 'route' | 'catalog'
+    supply_route_id: Optional[int] = None
+    manufacturer_id: Optional[int] = None
+    distributor_id: Optional[int] = None
+    price_valid_from: Optional[object] = None
+
+
+@dataclass(frozen=True)
 class CalcContext:
     """Immutable snapshot of everything needed to cost a set of products.
 
@@ -104,7 +125,9 @@ class CalcContext:
     packaging: Dict[int, List[_PkgLine]]
     ingredients: Dict[int, _IngredientInfo]
     unit_conv: Dict[Tuple[int, int], Decimal]
-    unit_price: Dict[int, Decimal]          # ingredient_id -> purchase-unit price
+    # sourcing keyed by (ingredient_id, recipe_unit_id|None): price + provenance
+    # + supplier conversion. Packaging uses the (id, None) key.
+    sourcing: Dict[Tuple[int, Optional[int]], Sourcing]
     labor: Dict[int, Decimal]               # product_id -> labor cost (unscaled)
     store_id: Optional[int]
     formula_version: str = "v1"
@@ -267,23 +290,69 @@ def load_context(
         ):
             unit_conv[(c.ingredient_id, c.recipe_unit_id)] = Decimal(str(c.usage_unit_quantity))
 
-    # Price map: set-based resolution (no per-ingredient round-trip).
-    unit_price: Dict[int, Decimal] = {}
-    if ingredient_ids and store_id is not None:
+    # Sourcing map: set-based resolution over (ingredient, recipe_unit) pairs.
+    # Each entry carries price (normalised to COP), provenance and the supplier
+    # pack->recipe conversion. No per-ingredient round-trip.
+    #
+    # Keys needed: every (ingredient_id, recipe_unit_id) used by a recipe line,
+    # plus (packaging_ingredient_id, None).
+    needed_keys: Set[Tuple[int, Optional[int]]] = {
+        (l.ingredient_id, l.recipe_unit_id)
+        for lines in recipe_lines.values()
+        for l in lines
+    }
+    needed_keys |= {
+        (p.ingredient_id, None)
+        for lines in packaging.values()
+        for p in lines
+    }
+
+    sourcing: Dict[Tuple[int, Optional[int]], Sourcing] = {}
+    if needed_keys and store_id is not None:
+        ings = [k[0] for k in needed_keys]
+        rus = [k[1] for k in needed_keys]
         rows = db.execute(
             text(
-                "SELECT i AS ingredient_id, "
-                "fn_ingredient_unit_cost(i, :s, CURRENT_DATE) AS price "
-                "FROM unnest(CAST(:ids AS bigint[])) AS i"
+                "SELECT k.ingredient_id, k.recipe_unit_id, "
+                "       fn_convert_amount(s.unit_price, s.price_currency, 'COP', "
+                "           COALESCE(s.price_valid_from, CURRENT_DATE)) AS unit_price_cop, "
+                "       s.price_currency, s.purchase_qty, s.recipe_qty, s.source, "
+                "       s.supply_route_id, s.manufacturer_id, s.distributor_id, "
+                "       s.price_valid_from "
+                "FROM unnest(CAST(:ings AS bigint[]), CAST(:rus AS bigint[])) "
+                "         AS k(ingredient_id, recipe_unit_id) "
+                "CROSS JOIN LATERAL fn_resolve_ingredient_sourcing("
+                "    k.ingredient_id, :s, k.recipe_unit_id, CURRENT_DATE) AS s"
             ),
-            {"s": store_id, "ids": list(ingredient_ids)},
+            {"s": store_id, "ings": ings, "rus": rus},
         ).all()
         for r in rows:
-            unit_price[r.ingredient_id] = (
-                Decimal(str(r.price)) if r.price is not None else price_fallback.get(r.ingredient_id, _ZERO)
+            price = (
+                Decimal(str(r.unit_price_cop))
+                if r.unit_price_cop is not None
+                else price_fallback.get(r.ingredient_id, _ZERO)
+            )
+            sourcing[(r.ingredient_id, r.recipe_unit_id)] = Sourcing(
+                unit_price=price,
+                currency=r.price_currency or "COP",
+                purchase_qty=Decimal(str(r.purchase_qty)) if r.purchase_qty is not None else None,
+                recipe_qty=Decimal(str(r.recipe_qty)) if r.recipe_qty is not None else None,
+                source=r.source or "catalog",
+                supply_route_id=r.supply_route_id,
+                manufacturer_id=r.manufacturer_id,
+                distributor_id=r.distributor_id,
+                price_valid_from=r.price_valid_from,
             )
     else:
-        unit_price = dict(price_fallback)
+        # No store -> catalogue price, no routing (mirrors legacy base-price path).
+        for (ing_id, ru_id) in needed_keys:
+            sourcing[(ing_id, ru_id)] = Sourcing(
+                unit_price=price_fallback.get(ing_id, _ZERO),
+                currency="COP",
+                purchase_qty=None,
+                recipe_qty=None,
+                source="catalog",
+            )
 
     # Labor per product (unscaled), reusing the loaded Product rows.
     labor: Dict[int, Decimal] = {}
@@ -298,7 +367,7 @@ def load_context(
         packaging=packaging,
         ingredients=ingredients,
         unit_conv=unit_conv,
-        unit_price=unit_price,
+        sourcing=sourcing,
         labor=labor,
         store_id=store_id,
         formula_version=formula_version,
@@ -323,10 +392,26 @@ class _PureCalculator:
     def __init__(self, ctx: CalcContext) -> None:
         self.ctx = ctx
 
+    def _denominator(self, ing: _IngredientInfo, src: Sourcing) -> Optional[Decimal]:
+        """Units-per-purchase-unit. SUPPLIER conversion wins when the price comes
+        from a route and the supplier pack->recipe conversion is known; otherwise
+        the catalogue ``conversion_factor`` (Phase-2 / V2 §6 decision)."""
+        if src.source == "route" and src.purchase_qty and src.recipe_qty:
+            return src.recipe_qty / src.purchase_qty
+        return ing.conversion_factor
+
     # -- line cost at scale=1 (yield/process/conversion applied; scale deferred) --
     def _line_base_cost(self, line: _RecipeLine) -> Decimal:
         ing = self.ctx.ingredients.get(line.ingredient_id)
-        if ing is None or not ing.conversion_factor:
+        if ing is None:
+            return _ZERO
+
+        src = self.ctx.sourcing.get(
+            (line.ingredient_id, line.recipe_unit_id)
+        ) or Sourcing(_ZERO, "COP", None, None, "catalog")
+
+        denom = self._denominator(ing, src)
+        if not denom:
             return _ZERO
 
         qty = line.quantity
@@ -347,7 +432,7 @@ class _PureCalculator:
         if _ZERO < line.process_yield_loss < _HUNDRED:
             qty = qty / (line.process_yield_loss / _HUNDRED)
 
-        unit_cost = self.ctx.unit_price.get(line.ingredient_id, _ZERO) / ing.conversion_factor
+        unit_cost = src.unit_price / denom
         return unit_cost * qty
 
     def base_recipe_cost(
@@ -399,9 +484,15 @@ class _PureCalculator:
         total = _ZERO
         for pkg in self.ctx.packaging.get(size_id, []):
             ing = self.ctx.ingredients.get(pkg.ingredient_id)
-            if ing is None or not ing.conversion_factor:
+            if ing is None:
                 continue
-            unit_cost = self.ctx.unit_price.get(pkg.ingredient_id, _ZERO) / ing.conversion_factor
+            src = self.ctx.sourcing.get(
+                (pkg.ingredient_id, None)
+            ) or Sourcing(_ZERO, "COP", None, None, "catalog")
+            denom = self._denominator(ing, src)
+            if not denom:
+                continue
+            unit_cost = src.unit_price / denom
             total += unit_cost * pkg.quantity
         return total
 
@@ -498,14 +589,17 @@ class CostCalculator:
         scale = size.scale_factor if size else Decimal("1.0")
         resolved_size_id = size.id if size else None
 
-        price_source = "store" if store_id is not None else "base"
-
         # Direct ingredients (valued at the selected size).
         ingredient_lines: List[Dict] = []
         ingredients_total = _ZERO
         for line in ctx.recipe_lines.get(product_id, []):
             ing = ctx.ingredients.get(line.ingredient_id)
-            if ing is None or not ing.conversion_factor:
+            if ing is None:
+                continue
+            src = ctx.sourcing.get((line.ingredient_id, line.recipe_unit_id)) \
+                or Sourcing(_ZERO, "COP", None, None, "catalog")
+            denom = pure._denominator(ing, src)
+            if not denom:
                 continue
             line_scale = scale if line.scales_with_size else Decimal("1")
             cost = pure._line_base_cost(line) * line_scale
@@ -514,7 +608,7 @@ class CostCalculator:
             if line.recipe_unit_id is not None:
                 qty = qty * ctx.unit_conv.get((line.ingredient_id, line.recipe_unit_id), _ZERO)
             qty = qty * line_scale
-            unit_cost = ctx.unit_price.get(line.ingredient_id, _ZERO) / ing.conversion_factor
+            unit_cost = src.unit_price / denom
             ingredient_lines.append({
                 "ingredient_id": ing.id,
                 "name": ing.name,
@@ -522,7 +616,10 @@ class CostCalculator:
                 "unit": ing.usage_unit,
                 "unit_cost": unit_cost,
                 "line_cost": cost,
-                "price_source": price_source,
+                "price_source": src.source,
+                "supply_route_id": src.supply_route_id,
+                "manufacturer_id": src.manufacturer_id,
+                "distributor_id": src.distributor_id,
             })
 
         # Sub-recipes (unit cost each, legacy per-sub rounding).
@@ -547,9 +644,14 @@ class CostCalculator:
         packaging_total = _ZERO
         for pkg in ctx.packaging.get(resolved_size_id, []) if resolved_size_id else []:
             ing = ctx.ingredients.get(pkg.ingredient_id)
-            if ing is None or not ing.conversion_factor:
+            if ing is None:
                 continue
-            unit_cost = ctx.unit_price.get(pkg.ingredient_id, _ZERO) / ing.conversion_factor
+            src = ctx.sourcing.get((pkg.ingredient_id, None)) \
+                or Sourcing(_ZERO, "COP", None, None, "catalog")
+            denom = pure._denominator(ing, src)
+            if not denom:
+                continue
+            unit_cost = src.unit_price / denom
             cost = unit_cost * pkg.quantity
             packaging_total += cost
             packaging_lines.append({
@@ -558,7 +660,7 @@ class CostCalculator:
                 "quantity": pkg.quantity,
                 "unit_cost": unit_cost,
                 "line_cost": cost,
-                "price_source": price_source,
+                "price_source": src.source,
             })
 
         labor_total = ctx.labor.get(product_id, _ZERO)
