@@ -1,0 +1,4 @@
+scope_type,scope_code,ingredient_name,manufacturer_name,distributor_name,priority,valid_from,assigned_by,change_reason
+region,BOG,Whole milk,Alpina Productos Alimenticios,Distribuidora Andina SAS,1,2026-06-01,jcorrea,contrato
+region,BOG,Whole milk,Colanta,,2,2026-06-01,jcorrea,alternativa
+store,MED-EL-POB,Whole milk,Colanta,,1,2026-06-01,jcorrea,logistica

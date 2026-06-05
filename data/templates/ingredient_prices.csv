@@ -1,0 +1,4 @@
+ingredient_name,purchase_price,currency_code,source,effective_date
+Whole milk,4200.0000,COP,cotizacion_alpina,2026-06-01
+Amaretto syrup,68000.0000,COP,contrato_monin_2026,2026-06-01
+Espresso,52000.0000,COP,contrato_nutresa_2026,2026-06-01

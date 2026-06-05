@@ -1,0 +1,4 @@
+ingredient_name,manufacturer_name,distributor_name,is_direct,is_active
+Whole milk,Alpina Productos Alimenticios,Distribuidora Andina SAS,false,true
+Whole milk,Colanta,,true,true
+Amaretto syrup,Monin,Distribuidora Andina SAS,false,true

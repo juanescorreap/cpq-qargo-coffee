@@ -20,3 +20,6 @@ files/supabase_backup_*.sql
 *:Zone.Identifier
 # Runtime logs
 logs/*.log
+
+# Pre-flight dead-letter output
+data/_rejects/

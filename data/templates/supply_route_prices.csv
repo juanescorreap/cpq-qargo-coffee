@@ -1,0 +1,4 @@
+ingredient_name,manufacturer_name,distributor_name,list_price,qargo_price,currency_code,price_unit,valid_from,source,created_by
+Whole milk,Alpina Productos Alimenticios,Distribuidora Andina SAS,4500.0000,4200.0000,COP,ml,2026-06-01,contrato_2026,jcorrea
+Whole milk,Colanta,,4300.0000,4100.0000,COP,ml,2026-06-01,contrato_2026,jcorrea
+Amaretto syrup,Monin,Distribuidora Andina SAS,72000.0000,68000.0000,COP,ml,2026-06-01,contrato_monin_2026,jcorrea
