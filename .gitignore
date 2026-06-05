@@ -18,3 +18,5 @@ data/raw/*.csv
 files/supabase_backup_*.sql
 # WSL/Windows zone metadata
 *:Zone.Identifier
+# Runtime logs
+logs/*.log
