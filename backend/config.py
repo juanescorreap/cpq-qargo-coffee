@@ -50,6 +50,16 @@ class Settings(BaseSettings):
     SECRET_KEY: str
     ENVIRONMENT: str = "production"  # "development" | "production"
 
+    # ── Auth (HTTP Basic gate) ─────────────────────────────────────────────
+    # Enabled only when BOTH are set (set them in the deploy env). When unset,
+    # auth is disabled so local dev / tests run without credentials.
+    BASIC_AUTH_USER: Optional[str] = None
+    BASIC_AUTH_PASSWORD: Optional[str] = None
+
+    @property
+    def auth_enabled(self) -> bool:
+        return bool(self.BASIC_AUTH_USER and self.BASIC_AUTH_PASSWORD)
+
     # ── CORS ───────────────────────────────────────────────────────────────
     # In production this is automatically overridden with _PRODUCTION_ORIGINS
     # if not explicitly defined in the environment.

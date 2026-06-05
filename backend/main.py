@@ -54,6 +54,40 @@ app.add_middleware(
 )
 
 # ============================================
+# AUTH — HTTP Basic gate (whole app)
+# ============================================
+# Enabled only when BASIC_AUTH_USER + BASIC_AUTH_PASSWORD are set in the env
+# (do this in the deploy platform). Disabled in local/test so nothing breaks.
+import base64
+import secrets
+
+from starlette.responses import PlainTextResponse
+
+from backend.config import settings as _settings
+
+
+@app.middleware("http")
+async def _basic_auth(request: Request, call_next):
+    if _settings.auth_enabled and request.method != "OPTIONS":
+        header = request.headers.get("Authorization", "")
+        ok = False
+        if header.startswith("Basic "):
+            try:
+                user, _, pwd = base64.b64decode(header[6:]).decode("utf-8").partition(":")
+                ok = (
+                    secrets.compare_digest(user, _settings.BASIC_AUTH_USER)
+                    and secrets.compare_digest(pwd, _settings.BASIC_AUTH_PASSWORD)
+                )
+            except Exception:  # noqa: BLE001 — malformed header => unauthorized
+                ok = False
+        if not ok:
+            return PlainTextResponse(
+                "Unauthorized", status_code=401,
+                headers={"WWW-Authenticate": 'Basic realm="CPQ Qargo Coffee"'},
+            )
+    return await call_next(request)
+
+# ============================================
 # STATIC FILES AND TEMPLATES
 # ============================================
 app.mount("/static", StaticFiles(directory=PROJECT_ROOT / "static"), name="static")
