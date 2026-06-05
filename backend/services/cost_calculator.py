@@ -91,6 +91,16 @@ class _IngredientInfo:
 
 
 @dataclass(frozen=True)
+class _Subst:
+    """Active substitute for an ingredient at a store/date (1 level)."""
+
+    sub_id: int
+    ratio: Decimal
+    recipe_unit_id: Optional[int]       # unit the ratio is expressed in (None=line's)
+    cost_impact_pct: Optional[Decimal]  # informational; real cost uses the price
+
+
+@dataclass(frozen=True)
 class Sourcing:
     """Resolved sourcing for one (ingredient, recipe_unit) at a store/date.
 
@@ -129,6 +139,8 @@ class CalcContext:
     # + supplier conversion. Packaging uses the (id, None) key.
     sourcing: Dict[Tuple[int, Optional[int]], Sourcing]
     labor: Dict[int, Decimal]               # product_id -> labor cost (unscaled)
+    # active substitutes keyed by ORIGINAL ingredient_id (only when store given)
+    substitutes: Dict[int, _Subst]
     store_id: Optional[int]
     formula_version: str = "v1"
 
@@ -215,6 +227,41 @@ def load_context(
             )
         )
 
+    # Active substitutes (only with a store: availability is per region/route).
+    # Keyed by ORIGINAL ingredient_id. Set-based: one LATERAL over fn_active_substitute.
+    substitutes: Dict[int, _Subst] = {}
+    line_ingredient_ids = {
+        l.ingredient_id for lines in recipe_lines.values() for l in lines
+    }
+    if line_ingredient_ids and store_id is not None:
+        sub_rows = db.execute(
+            text(
+                "SELECT k.ingredient_id, s.substitute_ingredient_id, "
+                "       s.quantity_ratio, s.recipe_unit_id, s.cost_impact_pct "
+                "FROM unnest(CAST(:ids AS bigint[])) AS k(ingredient_id) "
+                "CROSS JOIN LATERAL fn_active_substitute("
+                "    k.ingredient_id, :s, CURRENT_DATE) AS s"
+            ),
+            {"ids": list(line_ingredient_ids), "s": store_id},
+        ).all()
+        for r in sub_rows:
+            substitutes[r.ingredient_id] = _Subst(
+                sub_id=r.substitute_ingredient_id,
+                ratio=Decimal(str(r.quantity_ratio)),
+                recipe_unit_id=r.recipe_unit_id,
+                cost_impact_pct=Decimal(str(r.cost_impact_pct)) if r.cost_impact_pct is not None else None,
+            )
+
+    # Effective (ingredient_id, recipe_unit_id) substitution keys per line, so the
+    # substitute's price + conversion get loaded too.
+    subst_keys: Set[Tuple[int, Optional[int]]] = set()
+    for lines in recipe_lines.values():
+        for l in lines:
+            sub = substitutes.get(l.ingredient_id)
+            if sub is not None:
+                eff_unit = sub.recipe_unit_id if sub.recipe_unit_id is not None else l.recipe_unit_id
+                subst_keys.add((sub.sub_id, eff_unit))
+
     # Sizes for the top-level products being priced.
     sizes: Dict[int, List[_SizeInfo]] = {}
     size_rows = (
@@ -251,9 +298,10 @@ def load_context(
             )
         )
 
-    # All ingredient ids referenced (recipe + packaging).
+    # All ingredient ids referenced (recipe + packaging + substitute targets).
     ingredient_ids: Set[int] = {l.ingredient_id for lines in recipe_lines.values() for l in lines}
     ingredient_ids |= {p.ingredient_id for lines in packaging.values() for p in lines}
+    ingredient_ids |= {sub_id for (sub_id, _) in subst_keys}
 
     ingredients: Dict[int, _IngredientInfo] = {}
     price_fallback: Dict[int, Decimal] = {}
@@ -277,6 +325,7 @@ def load_context(
         for l in lines
         if l.recipe_unit_id is not None
     }
+    conv_pairs |= {(sub_id, ru) for (sub_id, ru) in subst_keys if ru is not None}
     if conv_pairs:
         ru_ids = {ru for (_, ru) in conv_pairs}
         ing_ids = {ing for (ing, _) in conv_pairs}
@@ -306,6 +355,7 @@ def load_context(
         for lines in packaging.values()
         for p in lines
     }
+    needed_keys |= subst_keys
 
     sourcing: Dict[Tuple[int, Optional[int]], Sourcing] = {}
     if needed_keys and store_id is not None:
@@ -369,6 +419,7 @@ def load_context(
         unit_conv=unit_conv,
         sourcing=sourcing,
         labor=labor,
+        substitutes=substitutes,
         store_id=store_id,
         formula_version=formula_version,
     )
@@ -400,40 +451,61 @@ class _PureCalculator:
             return src.recipe_qty / src.purchase_qty
         return ing.conversion_factor
 
-    # -- line cost at scale=1 (yield/process/conversion applied; scale deferred) --
-    def _line_base_cost(self, line: _RecipeLine) -> Decimal:
-        ing = self.ctx.ingredients.get(line.ingredient_id)
+    def _cost_of(
+        self,
+        ingredient_id: int,
+        recipe_unit_id: Optional[int],
+        quantity: Decimal,
+        process_yield_loss: Decimal,
+    ) -> Decimal:
+        """Cost of ``quantity`` of an ingredient at scale=1 (yield/process/recipe
+        conversion applied; size scale deferred). Used for both the original and
+        the substitute ingredient."""
+        ing = self.ctx.ingredients.get(ingredient_id)
         if ing is None:
             return _ZERO
 
         src = self.ctx.sourcing.get(
-            (line.ingredient_id, line.recipe_unit_id)
+            (ingredient_id, recipe_unit_id)
         ) or Sourcing(_ZERO, "COP", None, None, "catalog")
 
         denom = self._denominator(ing, src)
         if not denom:
             return _ZERO
 
-        qty = line.quantity
-        if line.recipe_unit_id is not None:
-            conv = self.ctx.unit_conv.get((line.ingredient_id, line.recipe_unit_id))
+        qty = quantity
+        if recipe_unit_id is not None:
+            conv = self.ctx.unit_conv.get((ingredient_id, recipe_unit_id))
             if conv is None:
                 # Mirror the legacy on-demand behaviour: a missing recipe-unit
                 # conversion is a data error that must surface, not silently 0.
                 raise ValueError(
-                    f"Missing conversion for ingredient {line.ingredient_id} "
-                    f"in recipe unit {line.recipe_unit_id}."
+                    f"Missing conversion for ingredient {ingredient_id} "
+                    f"in recipe unit {recipe_unit_id}."
                 )
             qty = qty * conv
 
         if ing.yield_percentage and ing.yield_percentage > 0:
             qty = qty / ing.yield_percentage
 
-        if _ZERO < line.process_yield_loss < _HUNDRED:
-            qty = qty / (line.process_yield_loss / _HUNDRED)
+        if _ZERO < process_yield_loss < _HUNDRED:
+            qty = qty / (process_yield_loss / _HUNDRED)
 
-        unit_cost = src.unit_price / denom
-        return unit_cost * qty
+        return (src.unit_price / denom) * qty
+
+    # -- line cost at scale=1 (substitute swap applied; scale deferred) --
+    def _line_base_cost(self, line: _RecipeLine) -> Decimal:
+        sub = self.ctx.substitutes.get(line.ingredient_id)
+        if sub is not None:
+            # Cost the SUBSTITUTE with quantity_ratio applied (1 level). Effective
+            # unit = the substitute's declared unit, else the line's.
+            eff_unit = sub.recipe_unit_id if sub.recipe_unit_id is not None else line.recipe_unit_id
+            return self._cost_of(
+                sub.sub_id, eff_unit, line.quantity * sub.ratio, line.process_yield_loss
+            )
+        return self._cost_of(
+            line.ingredient_id, line.recipe_unit_id, line.quantity, line.process_yield_loss
+        )
 
     def base_recipe_cost(
         self,
@@ -589,14 +661,24 @@ class CostCalculator:
         scale = size.scale_factor if size else Decimal("1.0")
         resolved_size_id = size.id if size else None
 
-        # Direct ingredients (valued at the selected size).
+        # Direct ingredients (valued at the selected size), with substitute swap.
         ingredient_lines: List[Dict] = []
         ingredients_total = _ZERO
         for line in ctx.recipe_lines.get(product_id, []):
-            ing = ctx.ingredients.get(line.ingredient_id)
+            sub = ctx.substitutes.get(line.ingredient_id)
+            if sub is not None:
+                eff_id = sub.sub_id
+                eff_unit = sub.recipe_unit_id if sub.recipe_unit_id is not None else line.recipe_unit_id
+                base_qty = line.quantity * sub.ratio
+            else:
+                eff_id = line.ingredient_id
+                eff_unit = line.recipe_unit_id
+                base_qty = line.quantity
+
+            ing = ctx.ingredients.get(eff_id)
             if ing is None:
                 continue
-            src = ctx.sourcing.get((line.ingredient_id, line.recipe_unit_id)) \
+            src = ctx.sourcing.get((eff_id, eff_unit)) \
                 or Sourcing(_ZERO, "COP", None, None, "catalog")
             denom = pure._denominator(ing, src)
             if not denom:
@@ -604,13 +686,13 @@ class CostCalculator:
             line_scale = scale if line.scales_with_size else Decimal("1")
             cost = pure._line_base_cost(line) * line_scale
             ingredients_total += cost
-            qty = line.quantity
-            if line.recipe_unit_id is not None:
-                qty = qty * ctx.unit_conv.get((line.ingredient_id, line.recipe_unit_id), _ZERO)
+            qty = base_qty
+            if eff_unit is not None:
+                qty = qty * ctx.unit_conv.get((eff_id, eff_unit), _ZERO)
             qty = qty * line_scale
             unit_cost = src.unit_price / denom
             ingredient_lines.append({
-                "ingredient_id": ing.id,
+                "ingredient_id": eff_id,
                 "name": ing.name,
                 "quantity": qty,
                 "unit": ing.usage_unit,
@@ -620,6 +702,8 @@ class CostCalculator:
                 "supply_route_id": src.supply_route_id,
                 "manufacturer_id": src.manufacturer_id,
                 "distributor_id": src.distributor_id,
+                "is_substitute": sub is not None,
+                "original_ingredient_id": line.ingredient_id if sub is not None else None,
             })
 
         # Sub-recipes (unit cost each, legacy per-sub rounding).
@@ -666,6 +750,11 @@ class CostCalculator:
         labor_total = ctx.labor.get(product_id, _ZERO)
         total_cost = pure.total_for_size(base, scale, resolved_size_id)
         store = self.db.query(Store).filter(Store.id == store_id).first() if store_id else None
+        has_substitutes = any(
+            l.ingredient_id in ctx.substitutes
+            for lines in ctx.recipe_lines.values()
+            for l in lines
+        )
 
         return {
             "product_id": product_id,
@@ -675,6 +764,7 @@ class CostCalculator:
             "store_id": store_id,
             "store_name": store.name if store else None,
             "total_cost": total_cost,
+            "has_substitutes": has_substitutes,
             "breakdown": {
                 "ingredients": ingredient_lines,
                 "sub_recipes": sub_lines,
