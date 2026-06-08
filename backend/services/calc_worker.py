@@ -177,20 +177,23 @@ def _enqueue_batch_chunk(db, store_id: Optional[int], product_ids: set) -> None:
         )
 
 
-def process_job(db, job, worker_id: str = "worker") -> None:
+def process_job(db, job, worker_id: str = "worker", read_db=None) -> None:
     """Dispatch + persist + mark done atomically. On failure the job's work is
     rolled back to a savepoint (the claimed job row survives) and the job is
     requeued / dead-lettered.
 
     The savepoint makes this correct under both real separate-transaction usage
     and a single wrapping test transaction.
+
+    ``read_db`` (N3): optional read-only/replica session used only for the heavy
+    batch prefetch; writes always go to ``db`` (primary). Defaults to ``db``.
     """
     sp = db.begin_nested()
     try:
         jtype = job["job_type"]
         if jtype == "batch_chunk":
             pids = set(job["product_ids"] or []) or None
-            PricingEngine(db).calculate_all_prices(
+            PricingEngine(db, read_db=read_db).calculate_all_prices(
                 store_id=job["store_id"], save_to_db=True,
                 triggered_by="batch_chunk", product_ids=pids, commit=False,
             )
@@ -216,11 +219,19 @@ def process_job(db, job, worker_id: str = "worker") -> None:
         db.commit()
 
 
-def run_worker(db, worker_id: Optional[str] = None, max_jobs: Optional[int] = None) -> int:
+def run_worker(
+    db,
+    worker_id: Optional[str] = None,
+    max_jobs: Optional[int] = None,
+    read_db=None,
+) -> int:
     """Process pending jobs until the queue is empty (or max_jobs reached).
 
     Returns the number of jobs processed. Intended to be invoked by a long-lived
     process or a pg_cron-triggered tick.
+
+    ``read_db`` (N3): optional replica session for batch prefetch; writes stay on
+    ``db``. Rolled back between jobs so each job's prefetch sees a fresh snapshot.
     """
     worker_id = worker_id or f"{socket.gethostname()}:{id(object())}"
     # App-side reaper (G1): don't rely on pg_cron for queue liveness.
@@ -230,6 +241,9 @@ def run_worker(db, worker_id: Optional[str] = None, max_jobs: Optional[int] = No
         job = claim_job(db, worker_id)
         if job is None:
             break
-        process_job(db, job, worker_id)
+        process_job(db, job, worker_id, read_db=read_db)
+        # Release the replica snapshot so the next job prefetches fresh data.
+        if read_db is not None and read_db is not db:
+            read_db.rollback()
         processed += 1
     return processed

@@ -15,6 +15,7 @@ from datetime import date
 from decimal import Decimal
 from typing import Dict, List, Optional
 
+from sqlalchemy import text
 from sqlalchemy.orm import Session
 
 from backend.models import (
@@ -56,14 +57,23 @@ class PricingEngine:
             built internally with the same session.
     """
 
-    def __init__(self, db: Session) -> None:
+    def __init__(self, db: Session, read_db: Optional[Session] = None) -> None:
         """Initialise the engine with a database session.
 
         Args:
             db: Active SQLAlchemy session (e.g. ``next(get_db())`` in FastAPI,
                 or directly ``SessionLocal()`` in scripts and batch tasks).
+                All writes (pricing, history, snapshots) go here — the PRIMARY.
+            read_db: Optional read-only session for the heavy batch prefetch
+                (``load_context``). When a replica is configured the worker
+                passes one here so context reads hit the replica while writes
+                stay on the primary (N3, E2E_ARCHITECTURE_AUDIT_V2). Defaults to
+                ``db`` — zero behaviour change for on-demand callers and tests.
+                Only used by :meth:`calculate_all_prices`; on-demand reads stay on
+                the primary to avoid read-after-write staleness.
         """
         self.db = db
+        self.read_db = read_db or db
         self.cost_calculator = CostCalculator(db)
 
     # ------------------------------------------------------------------
@@ -208,6 +218,21 @@ class PricingEngine:
         # The dated trail lives in product_price_history. So upsert on that key
         # and refresh effective_date, instead of inserting one row per day.
         currency_code = "COP"
+
+        # N4 (E2E_ARCHITECTURE_AUDIT_V2): this is a read-modify-write on a row
+        # guarded by a unique index. Parallel workers processing overlapping
+        # batch_chunks for the same (product,size,store,currency) would otherwise
+        # race -> 23505 -> wasteful requeue. Serialise on the exact uniqueness key
+        # with a per-tx advisory lock so concurrent writers queue instead of
+        # colliding. Released at tx end (same scope the caller commits in).
+        # Callers acquire these in a deterministic (product_id, size_id) order
+        # (see calculate_all_prices) so overlapping chunks can't deadlock.
+        self.db.execute(
+            text("SELECT pg_advisory_xact_lock(hashtextextended(:k, 0))"),
+            {"k": f"pp:{product_id}:{size_id}:"
+                  f"{store_id if store_id is not None else -1}:{currency_code}"},
+        )
+
         existing = (
             self.db.query(ProductPricing)
             .filter(
@@ -314,7 +339,9 @@ class PricingEngine:
         q = self.db.query(Product).filter(Product.is_active == True)
         if product_ids is not None:
             q = q.filter(Product.id.in_(product_ids))
-        products = q.all()
+        # Deterministic order so parallel workers acquire the N4 pricing advisory
+        # locks in the same sequence across overlapping chunks -> no deadlock.
+        products = q.order_by(Product.id).all()
         product_ids = {p.id for p in products}
 
         total_sizes = 0
@@ -329,8 +356,11 @@ class PricingEngine:
         )
 
         # Single bulk prefetch + shared memo for the whole batch (no N+1, each
-        # sub-recipe valued once across all products).
-        ctx = load_context(self.db, store_id, product_ids)
+        # sub-recipe valued once across all products). Read-heavy -> routed to the
+        # replica session when one is configured (N3); writes below stay on the
+        # primary (self.db). CalcContext holds no session, so a slightly stale
+        # replica snapshot is safe and reproducible (records price_valid_from).
+        ctx = load_context(self.read_db, store_id, product_ids)
         pure = _PureCalculator(ctx)                              # effective (subs on)
         pure_base = _PureCalculator(ctx, apply_substitutes=False)  # base (subs off)
         memo: Dict[tuple, BaseCost] = {}
@@ -348,7 +378,7 @@ class PricingEngine:
                 logger.warning("  FAIL %s: %s", product.name, exc)
                 continue
 
-            for size in ctx.sizes.get(product.id, []):
+            for size in sorted(ctx.sizes.get(product.id, []), key=lambda s: s.id):
                 total_sizes += 1
                 label = f"{product.name} ({size.size_name})"
 

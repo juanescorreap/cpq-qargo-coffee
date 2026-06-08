@@ -201,9 +201,9 @@ Leyenda estado: ✅ verificado-implementado · ⚠️ verificado-INCOMPLETO · �
 |---|---|---|---|---|---|
 | **N1** | `batch_chunk` = catálogo COMPLETO en memoria + todos los snapshots antes de un commit → OOM dead-letterea la tienda entera; "chunk" es misnomer | Compute+DB+FE | 🔴 Crítica | Chunking real por tamaño (≤200 prod/job); seed nocturno trocea `product_ids` | 🆕 |
 | **N2** | Amplificación de recálculo: ingest masivo → 1 job `route_change`→`batch_chunk` por fila, sin coalescing → thundering herd + colisiones | DB+Compute | 🔴 Crítica | Coalescing key `(job_type,store_id,coalesce_key)` con UPSERT `ON CONFLICT DO NOTHING` mientras `pending` | 🆕 |
-| **N3** | Réplica de lectura: `read_engine`/`get_read_db` definidos pero **sin un solo caller** → todo prefetch al primary | Compute+DB | 🟠 Mayor | Inyectar `get_read_db` SOLO en batch async; nunca en lectura post-mutación | 🆕 (corrige G4) |
-| **N4** | `product_pricing` UPSERT (read-modify-write) sin lock vs workers paralelos → carrera `23505`, retries en cascada | Compute+DB | 🟠 Mayor | Advisory lock por `(product,size,store)` en `save_pricing`, o `INSERT … ON CONFLICT DO UPDATE` atómico | 🆕 |
-| **N5** | Acoplamiento por string: `_bulk_markups`/`_resolve_markup` unen `CategoryMargin.category` ↔ `product.category` por VARCHAR (el FK `category_id` de la Fase 6 nunca llegó al motor) → margen "fantasma" por typo | Compute+DB | 🟡 Menor | Migrar el join del motor a `category_id`; el plan ya lo previó | 🆕 |
+| **N3** | Réplica de lectura: `read_engine`/`get_read_db` definidos pero **sin un solo caller** → todo prefetch al primary | Compute+DB | 🟠 Mayor | `PricingEngine(db, read_db)` + worker pasa `ReadSessionLocal`; prefetch batch a réplica, writes a primary. NUNCA on-demand post-mutación | ✅ (corrige G4) |
+| **N4** | `product_pricing` UPSERT (read-modify-write) sin lock vs workers paralelos → carrera `23505`, retries en cascada | Compute+DB | 🟠 Mayor | `pg_advisory_xact_lock` por `(product,size,store,ccy)` en `save_pricing` + orden determinista de iteración (anti-deadlock entre chunks solapados) | ✅ |
+| ~~**N5**~~ | ~~Acoplamiento por string en el join de categoría~~ → **REVISADO: falso positivo.** `products.category` y `category_margins.category` son **ambos FK a `categories.slug`** (`fk_products_category`, CASCADE). El "margen fantasma por typo" es imposible: la FK lo previene. El equipo resolvió la Fase 6 con slug-FK, no con `category_id` | — | — | Sin cambio. El diseño slug-FK ya cumple el objetivo | ❎ no-bug |
 | G1 | Liveness de cola dependía de pg_cron (ausente en Supabase) | DB+Compute+FE | 🔴 Crítica | Reaper app-side (`reap_stale_jobs`) | ✅ |
 | G2 | FE no sabía cuándo terminó el recálculo | FE+API+DB | 🔴 Crítica | `/calc/status` + polling badge | ✅ |
 | G3 | UI de precios hacía close+insert manual sin lock ni outbox | FE+DB | 🟠 Mayor | `fn_ingest_route_price` (`supply_chain_ui.py:467`) | ✅ |
@@ -285,6 +285,16 @@ vivos son de **granularidad y amplificación**, no de transporte:
 - **N2** — sin coalescing, un ingest masivo genera un thundering herd de recálculos que
   colisionan en `product_pricing` (**N4**).
 
-Más tres correcciones: **N3** (réplica es plumbing muerto, no "implementado"), **N4** (UPSERT
-sin lock), **N5** (el FK de categoría de la Fase 6 nunca llegó al motor). Resolver N1+N2 antes
-que cualquier diferido G5-G9.
+Más correcciones: **N3** (réplica es plumbing muerto, no "implementado") y **N4** (UPSERT sin
+lock). **N5 resultó falso positivo:** el join de categoría ya está protegido por FK a
+`categories.slug` en ambos lados — el equipo resolvió la Fase 6 con slug-FK en vez del
+`category_id` del plan original.
+
+### Estado de ejecución (2026-06-08)
+- **N1, N2** — implementados (migración 0025 + chunking en `calc_worker`). Commit `5627e88`.
+- **N3** — implementado: `PricingEngine(db, read_db)`, worker pasa `ReadSessionLocal`
+  (fallback transparente a primary si no hay `DATABASE_URL_REPLICA`). Solo batch async.
+- **N4** — implementado: advisory xact lock por clave de unicidad en `save_pricing` + orden
+  determinista `(product_id, size_id)` para evitar deadlock entre chunks solapados.
+- **N5** — descartado (no-bug). Sin cambio de código.
+- **G5/G6/G8/G9** — siguen diferidos (requieren carga real / migración invasiva).

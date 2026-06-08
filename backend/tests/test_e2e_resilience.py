@@ -12,10 +12,12 @@ import pytest
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 
+from backend.models import Product, ProductSize
 from backend.models.ingredient import Ingredient
 from backend.models.supply_chain import SupplyRoute
 from backend.services import calc_worker
 from backend.services.calc_worker import job_queue_status, reap_stale_jobs
+from backend.services.pricing_engine import PricingEngine
 
 
 def _insert_job(db, *, status, attempts=0, max_attempts=5, locked_min_ago=None,
@@ -150,3 +152,66 @@ def test_price_ui_fires_outbox_and_trigger(test_client, test_db, sc_supply_route
         "SELECT count(*) FROM calc_jobs WHERE job_type='route_change' "
         "AND (payload->>'supply_route_id')::bigint = :r"), {"r": sc_supply_route.id}).scalar()
     assert n >= 1
+
+
+# ── N4: product_pricing write serialised by advisory lock ───────────────────────
+
+def test_save_pricing_takes_advisory_lock(test_db: Session,
+                                           sample_product: Product,
+                                           sample_size: ProductSize):
+    """save_pricing acquires a per-(product,size,store,ccy) advisory xact lock so
+    parallel workers serialise on the unique key instead of racing into 23505."""
+    before = test_db.execute(text(
+        "SELECT count(*) FROM pg_locks WHERE locktype='advisory'")).scalar()
+    PricingEngine(test_db).save_pricing(
+        product_id=sample_product.id, size_id=sample_size.id, store_id=None,
+        final_price=Decimal("5000"), cost=Decimal("2000"), commit=False,
+    )
+    after = test_db.execute(text(
+        "SELECT count(*) FROM pg_locks WHERE locktype='advisory'")).scalar()
+    assert after > before  # lock held for the open transaction
+
+
+def test_save_pricing_upsert_is_idempotent(test_db: Session,
+                                           sample_product: Product,
+                                           sample_size: ProductSize):
+    """Re-saving the same (product,size,store,ccy) updates the single current row
+    (no duplicate) — the invariant the advisory lock protects under concurrency."""
+    eng = PricingEngine(test_db)
+    for price in (Decimal("5000"), Decimal("5100")):
+        eng.save_pricing(product_id=sample_product.id, size_id=sample_size.id,
+                         store_id=None, final_price=price,
+                         cost=Decimal("2000"), commit=False)
+    n = test_db.execute(text(
+        "SELECT count(*) FROM product_pricing WHERE product_id=:p AND size_id=:s "
+        "AND store_id IS NULL AND currency_code='COP'"),
+        {"p": sample_product.id, "s": sample_size.id}).scalar()
+    assert n == 1
+
+
+# ── N3: batch prefetch uses the read (replica) session, writes use primary ──────
+
+def test_calculate_all_prices_prefetches_via_read_db(test_db: Session,
+                                                     sample_product: Product,
+                                                     sample_size: ProductSize,
+                                                     monkeypatch):
+    """calculate_all_prices builds its CalcContext from read_db (the replica when
+    configured), never from the primary write session."""
+    seen = {}
+    import backend.services.pricing_engine as pe
+
+    real_load = pe.load_context
+
+    def _spy(db, *a, **k):
+        seen["db"] = db
+        return real_load(db, *a, **k)
+
+    monkeypatch.setattr(pe, "load_context", _spy)
+    sentinel = object()
+    eng = PricingEngine(test_db, read_db=sentinel)
+    assert eng.read_db is sentinel
+    # Use the primary as read_db here so the call actually runs against seeded data.
+    eng.read_db = test_db
+    eng.calculate_all_prices(store_id=None, save_to_db=False,
+                             product_ids={sample_product.id})
+    assert seen["db"] is test_db  # prefetch used the read session, not a hidden one

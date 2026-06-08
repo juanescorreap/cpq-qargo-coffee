@@ -11,7 +11,7 @@ stateless and claims are mutually exclusive.
 import logging
 import time
 
-from backend.database import SessionLocal
+from backend.database import ReadSessionLocal, SessionLocal
 from backend.services.calc_worker import run_worker
 
 logging.basicConfig(
@@ -27,14 +27,18 @@ def main() -> None:
     log.info("calc worker started")
     while True:
         db = SessionLocal()
+        # N3: read-heavy batch prefetch goes to the replica (or the primary as a
+        # transparent fallback when DATABASE_URL_REPLICA is unset). Writes use db.
+        read_db = ReadSessionLocal()
         try:
-            processed = run_worker(db)
+            processed = run_worker(db, read_db=read_db)
             if processed == 0:
                 time.sleep(IDLE_SLEEP_SECONDS)
         except Exception:  # noqa: BLE001 — keep the loop alive
             log.exception("worker loop error")
             time.sleep(IDLE_SLEEP_SECONDS)
         finally:
+            read_db.close()
             db.close()
 
 
