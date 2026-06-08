@@ -12,7 +12,9 @@ import pytest
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 
+from backend.models.ingredient import Ingredient
 from backend.models.supply_chain import SupplyRoute
+from backend.services import calc_worker
 from backend.services.calc_worker import job_queue_status, reap_stale_jobs
 
 
@@ -75,6 +77,66 @@ def test_status_badge_shows_recalculating(test_client, test_db):
 
 
 # ── G3 ────────────────────────────────────────────────────────────────────────
+
+# ── N2: outbox job coalescing (E2E_ARCHITECTURE_AUDIT_V2) ───────────────────────
+
+def test_outbox_coalesces_price_burst(test_db: Session, sample_ingredient: Ingredient):
+    """A burst of price changes for the SAME ingredient collapses to ONE pending
+    recompute job (partial-unique coalesce index) instead of N — no thundering herd."""
+    for price in ("100", "110", "120", "130", "140"):
+        test_db.execute(text(
+            "INSERT INTO ingredient_price_history (ingredient_id, price, source) "
+            "VALUES (:i, :p, 'manual')"
+        ), {"i": sample_ingredient.id, "p": price})
+    test_db.flush()
+    n = test_db.execute(text(
+        "SELECT count(*) FROM calc_jobs WHERE job_type='price_change' "
+        "AND status='pending' AND coalesce_key = :k"
+    ), {"k": f"price:{sample_ingredient.id}"}).scalar()
+    assert n == 1
+
+
+def test_outbox_distinct_ingredients_not_coalesced(test_db: Session, sample_ingredient: Ingredient):
+    """Different ingredients keep separate jobs (coalescing is per natural key)."""
+    other = Ingredient(
+        name="coalesce-other", category="otros",
+        purchase_unit="g", purchase_price=Decimal("5"), usage_unit="g",
+        conversion_factor=Decimal("1"),
+    )
+    test_db.add(other)
+    test_db.flush()
+    for ing in (sample_ingredient.id, other.id):
+        test_db.execute(text(
+            "INSERT INTO ingredient_price_history (ingredient_id, price, source) "
+            "VALUES (:i, 100, 'manual')"
+        ), {"i": ing})
+    test_db.flush()
+    n = test_db.execute(text(
+        "SELECT count(DISTINCT coalesce_key) FROM calc_jobs "
+        "WHERE job_type='price_change' AND status='pending' "
+        "AND coalesce_key IN (:a, :b)"
+    ), {"a": f"price:{sample_ingredient.id}", "b": f"price:{other.id}"}).scalar()
+    assert n == 2
+
+
+# ── N1: bounded batch chunks (E2E_ARCHITECTURE_AUDIT_V2) ────────────────────────
+
+def test_enqueue_batch_chunk_splits(test_db: Session):
+    """_enqueue_batch_chunk emits jobs of at most CHUNK_SIZE products so one job
+    can never be the whole catalogue (the OOM/dead-letter footgun)."""
+    n = calc_worker.CHUNK_SIZE * 2 + 5
+    calc_worker._enqueue_batch_chunk(test_db, None, set(range(1, n + 1)))
+    test_db.flush()
+    sizes = [
+        r.sz for r in test_db.execute(text(
+            "SELECT cardinality(product_ids) AS sz FROM calc_jobs "
+            "WHERE job_type='batch_chunk' AND store_id IS NULL "
+            "ORDER BY id DESC LIMIT 3"
+        )).all()
+    ]
+    assert max(sizes) <= calc_worker.CHUNK_SIZE
+    assert sum(sizes) == n
+
 
 def test_price_ui_fires_outbox_and_trigger(test_client, test_db, sc_supply_route: SupplyRoute):
     r = test_client.post(f"/supply-chain/routes/{sc_supply_route.id}/prices/htmx", data={

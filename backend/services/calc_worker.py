@@ -31,6 +31,12 @@ from backend.services.sourcing_sync import sync_store_supplier_history
 
 logger = logging.getLogger("calc_worker")
 
+# Max products per batch_chunk job (N1, E2E_ARCHITECTURE_AUDIT_V2). Bounds a
+# worker's peak memory (one CalcContext + its pending snapshots) so a large
+# catalogue degrades into many small jobs instead of OOM-ing and dead-lettering
+# a whole store. Keep in sync with migration 0025 CHUNK_SIZE (nightly seed).
+CHUNK_SIZE = 200
+
 _CLAIM_SQL = text(
     """
     WITH j AS (
@@ -153,15 +159,22 @@ def _requeue(db, job, error: str) -> None:
 
 
 def _enqueue_batch_chunk(db, store_id: Optional[int], product_ids: set) -> None:
+    """Enqueue BOUNDED batch_chunk jobs (N1). Splits product_ids into chunks of
+    at most CHUNK_SIZE so each job's CalcContext + pending snapshots stay within a
+    worker's memory budget; a large reverse-BOM fan-out becomes many small jobs
+    instead of one OOM-prone giant."""
     if not product_ids:
         return
-    db.execute(
-        text(
-            "INSERT INTO public.calc_jobs (job_type, store_id, product_ids, priority) "
-            "VALUES ('batch_chunk', :s, CAST(:pids AS bigint[]), 80)"
-        ),
-        {"s": store_id, "pids": list(product_ids)},
-    )
+    ids = sorted(product_ids)
+    for i in range(0, len(ids), CHUNK_SIZE):
+        chunk = ids[i:i + CHUNK_SIZE]
+        db.execute(
+            text(
+                "INSERT INTO public.calc_jobs (job_type, store_id, product_ids, priority) "
+                "VALUES ('batch_chunk', :s, CAST(:pids AS bigint[]), 80)"
+            ),
+            {"s": store_id, "pids": chunk},
+        )
 
 
 def process_job(db, job, worker_id: str = "worker") -> None:
