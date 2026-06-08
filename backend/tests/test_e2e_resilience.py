@@ -215,3 +215,39 @@ def test_calculate_all_prices_prefetches_via_read_db(test_db: Session,
     eng.calculate_all_prices(store_id=None, save_to_db=False,
                              product_ids={sample_product.id})
     assert seen["db"] is test_db  # prefetch used the read session, not a hidden one
+
+
+# ── N6: app-side nightly full-recompute seed (single source of truth) ───────────
+
+def test_nightly_seed_creates_chunks_and_is_idempotent(test_db: Session,
+                                                       sample_product: Product):
+    """fn_seed_nightly_recompute seeds bounded batch_chunk jobs for the active
+    catalogue and is exactly-once per business day (claim via calc_seed_runs)."""
+    from backend.services.calc_worker import seed_nightly_recompute
+
+    seeded = seed_nightly_recompute(test_db, by="test")
+    assert seeded >= 1  # at least the global base chunk for the active product
+    jobs = test_db.execute(text(
+        "SELECT count(*) FROM calc_jobs WHERE job_type='batch_chunk'")).scalar()
+    assert jobs >= 1
+    # marker row claimed for today's business date
+    marker = test_db.execute(text(
+        "SELECT count(*) FROM calc_seed_runs "
+        "WHERE seed_date = (now() AT TIME ZONE 'America/Bogota')::date")).scalar()
+    assert marker == 1
+
+    # Second call the same day must no-op (claim already taken).
+    again = seed_nightly_recompute(test_db, by="test")
+    assert again == 0
+
+
+def test_seed_due_gates_on_hour_and_date():
+    from datetime import datetime
+
+    from backend.services.calc_worker import _SEED_TZ, seed_due
+
+    at_3am = datetime(2026, 6, 8, 3, 0, tzinfo=_SEED_TZ)
+    assert seed_due(at_3am, None) is True                 # due: past hour, not done
+    assert seed_due(at_3am, at_3am.date()) is False       # already attempted today
+    before_3am = datetime(2026, 6, 8, 1, 0, tzinfo=_SEED_TZ)
+    assert seed_due(before_3am, None) is False            # too early in the day

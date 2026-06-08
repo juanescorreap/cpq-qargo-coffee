@@ -22,12 +22,20 @@ from __future__ import annotations
 
 import logging
 import socket
+from datetime import date, datetime
 from typing import Optional
+from zoneinfo import ZoneInfo
 
 from sqlalchemy import text
 
 from backend.services.pricing_engine import PricingEngine
 from backend.services.sourcing_sync import sync_store_supplier_history
+
+# Seed the nightly full recompute on/after this hour, in business TZ, to land in
+# the low-traffic window (mirrors the pg_cron '0 3 * * *' slot). The DB function
+# self-guards exactly-once-per-day, so this is only a preference, not correctness.
+_SEED_TZ = ZoneInfo("America/Bogota")
+_SEED_MIN_HOUR = 3
 
 logger = logging.getLogger("calc_worker")
 
@@ -127,6 +135,26 @@ def reap_stale_jobs(db, stale_minutes: int = 15) -> int:
     ).rowcount
     db.commit()
     return n
+
+
+def seed_due(now: datetime, last_seed_date: Optional[date]) -> bool:
+    """Whether the worker should attempt the nightly seed now: on/after the seed
+    hour (business TZ) and not already attempted for today's business date.
+    The DB function is the real exactly-once guard; this only avoids per-tick
+    writes and keeps the seed in the low-traffic window."""
+    return now.hour >= _SEED_MIN_HOUR and last_seed_date != now.date()
+
+
+def seed_nightly_recompute(db, by: str = "worker") -> int:
+    """Seed the nightly full recompute via the single-source-of-truth DB function
+    (N6). Exactly-once-per-business-day is enforced in-DB by calc_seed_runs, so
+    calling this from every worker is safe — only the first of the day seeds.
+    Returns the number of jobs seeded (0 = already done today)."""
+    n = db.execute(
+        text("SELECT public.fn_seed_nightly_recompute(:by)"), {"by": by}
+    ).scalar()
+    db.commit()
+    return int(n or 0)
 
 
 def _mark_done(db, job_id: int) -> None:
