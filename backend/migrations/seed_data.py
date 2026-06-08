@@ -6,6 +6,7 @@ Run with:
 
 import backend.models  # noqa: F401 — registers all models in Base.metadata
 from backend.database import SessionLocal
+from backend.models.category import Category
 from backend.models.competitor import Competitor
 from backend.models.pricing import CategoryMargin
 from backend.models.recipe_unit import RecipeUnit
@@ -58,6 +59,33 @@ def seed_recipe_units(db) -> None:
             created += 1
     db.commit()
     print(f"✅ Recipe units created ({created} new, {len(_RECIPE_UNITS) - created} already existed)")
+
+
+# ---------------------------------------------------------------------------
+# Categories (canonical taxonomy)
+# ---------------------------------------------------------------------------
+# products.category and category_margins.category are BOTH FKs to
+# categories.slug, so these rows MUST exist before either is loaded. The
+# canonical convention is underscore slugs (see migration 0004 + CLAUDE.md);
+# the Excel loader normalises hyphen/space variants to this form.
+
+_CATEGORIES = [
+    {"slug": "bebidas_calientes", "display_name": "Bebidas Calientes"},
+    {"slug": "bebidas_frias",     "display_name": "Bebidas Frías"},
+    {"slug": "alimentos",         "display_name": "Alimentos"},
+    {"slug": "otros",             "display_name": "Otros"},
+]
+
+
+def seed_categories(db) -> None:
+    created = 0
+    for data in _CATEGORIES:
+        exists = db.query(Category).filter(Category.slug == data["slug"]).first()
+        if not exists:
+            db.add(Category(**data))
+            created += 1
+    db.commit()
+    print(f"✅ Categories created ({created} new, {len(_CATEGORIES) - created} already existed)")
 
 
 # ---------------------------------------------------------------------------
@@ -131,6 +159,7 @@ def main() -> None:
     db = SessionLocal()
     try:
         seed_recipe_units(db)
+        seed_categories(db)        # before margins: category_margins.category FKs here
         seed_category_margins(db)
         seed_stores(db)
     finally:

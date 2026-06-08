@@ -8,6 +8,7 @@ into the database using the SQLAlchemy session. Row-level errors are reported
 as warnings so that a badly formatted row does not interrupt the full load.
 """
 
+import re
 import sys
 from decimal import Decimal
 from pathlib import Path
@@ -18,6 +19,7 @@ from sqlalchemy import func
 import backend.models  # noqa: F401 — registers all models in Base.metadata
 from backend.database import SessionLocal
 from backend.migrations.utils import safe_decimal
+from backend.models.category import Category
 from backend.models.ingredient import Ingredient
 from backend.models.product import Product, ProductSize, RecipeIngredient
 from backend.models.recipe_unit import IngredientRecipeUnitConversion, RecipeUnit
@@ -61,6 +63,18 @@ def _to_bool(value: object, default: bool = False) -> bool:
     if _is_empty(value):
         return default
     return str(value).strip().lower() in {"true", "1", "yes", "sí", "si"}
+
+
+def _norm_slug(value: object) -> str | None:
+    """Normalise a category value to the canonical slug convention: lower-case,
+    trimmed, internal whitespace/hyphens collapsed to single underscores. So
+    ``"Bebidas Calientes"`` / ``"bebidas-calientes"`` → ``"bebidas_calientes"``.
+    Returns None for empties. Matches seed_data._CATEGORIES + category_margins so
+    products FK-resolve AND markup resolution finds the category."""
+    s = _clean_str(value)
+    if s is None:
+        return None
+    return re.sub(r"[\s\-]+", "_", s.strip().lower()) or None
 
 
 # ---------------------------------------------------------------------------
@@ -269,37 +283,53 @@ def migrate_products() -> None:
     objects: list[Product] = []
     skipped = 0
 
-    for idx, row in df.iterrows():
-        row_num = idx + 2
-
-        try:
-            nombre = _clean_str(row.get("nombre"))
-            if not nombre:
-                print(f"  ⚠️  Row {row_num}: 'nombre' is empty — skipped.")
-                skipped += 1
-                continue
-
-            objects.append(
-                Product(
-                    name=nombre,
-                    category=_clean_str(row.get("categoria")),
-                    base_size_oz=safe_decimal(row.get("tamaño_base_oz")) or None,
-                    prep_time_minutes=safe_decimal(row.get("tiempo_prep_min")) or None,
-                    labor_cost_per_minute=safe_decimal(row.get("costo_labor_min")),
-                    is_sub_recipe=_to_bool(row.get("es_sub_receta")),
-                )
-            )
-
-        except Exception as exc:
-            print(f"  ⚠️  Row {row_num}: unexpected error ({exc}) — skipped.")
-            skipped += 1
-
-    if not objects:
-        print(f"⚠️  No valid rows to insert ({skipped} skipped out of {total_rows}).")
-        return
-
     db = SessionLocal()
     try:
+        # products.category is an FK to categories.slug. Resolve each row's
+        # category against the seeded taxonomy (normalised to the canonical slug).
+        # An unknown category does NOT abort the whole bulk insert (which is
+        # all-or-nothing): the product loads with category=NULL + a warning, so a
+        # single stray value can't zero out the entire catalogue. Run seed_data
+        # (seed_categories) first so the canonical slugs exist.
+        known_slugs: set[str] = {s for (s,) in db.query(Category.slug).all()}
+
+        for idx, row in df.iterrows():
+            row_num = idx + 2
+
+            try:
+                nombre = _clean_str(row.get("nombre"))
+                if not nombre:
+                    print(f"  ⚠️  Row {row_num}: 'nombre' is empty — skipped.")
+                    skipped += 1
+                    continue
+
+                slug = _norm_slug(row.get("categoria"))
+                if slug is not None and slug not in known_slugs:
+                    print(
+                        f"  ⚠️  Row {row_num} ({nombre!r}): category '{slug}' not in "
+                        f"categories — loading with category=NULL."
+                    )
+                    slug = None
+
+                objects.append(
+                    Product(
+                        name=nombre,
+                        category=slug,
+                        base_size_oz=safe_decimal(row.get("tamaño_base_oz")) or None,
+                        prep_time_minutes=safe_decimal(row.get("tiempo_prep_min")) or None,
+                        labor_cost_per_minute=safe_decimal(row.get("costo_labor_min")),
+                        is_sub_recipe=_to_bool(row.get("es_sub_receta")),
+                    )
+                )
+
+            except Exception as exc:
+                print(f"  ⚠️  Row {row_num}: unexpected error ({exc}) — skipped.")
+                skipped += 1
+
+        if not objects:
+            print(f"⚠️  No valid rows to insert ({skipped} skipped out of {total_rows}).")
+            return
+
         db.bulk_save_objects(objects)
         db.commit()
         print(f"✅ Migrated {len(objects)} products ({skipped} skipped out of {total_rows} rows)")
