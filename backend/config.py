@@ -71,6 +71,14 @@ class Settings(BaseSettings):
     SCRAPING_USER_AGENT: str
     SCRAPING_DELAY_MS: int = 1000
 
+    # ── Partition maintenance (0027 / #4) ──────────────────────────────────
+    # Drive fn_run_partition_maintenance from the worker (app-side mirror of the
+    # pg_cron partition_maintenance job). Months of recipe_cost_snapshots monthly
+    # partitions to pre-create ahead of now, and how many months of snapshots to
+    # retain before the maintenance run drops the older monthly partitions.
+    PARTITION_AHEAD_MONTHS: int = 3
+    SNAPSHOT_RETENTION_MONTHS: int = 18
+
     model_config = SettingsConfigDict(
         env_file=Path(__file__).resolve().parent.parent / ".env",
         env_file_encoding="utf-8",

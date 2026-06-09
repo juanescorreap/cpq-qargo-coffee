@@ -15,6 +15,8 @@ from datetime import datetime
 from backend.database import ReadSessionLocal, SessionLocal
 from backend.services.calc_worker import (
     _SEED_TZ,
+    maintenance_due,
+    run_partition_maintenance,
     run_worker,
     seed_due,
     seed_nightly_recompute,
@@ -35,6 +37,8 @@ def main() -> None:
     # day per worker (the DB function dedups across workers); avoids a write every
     # tick. None until the first attempt of the process's current business day.
     last_seed_date = None
+    # Same in-process guard for daily partition maintenance (0027 / #4).
+    last_maint_date = None
     while True:
         db = SessionLocal()
         # N3: read-heavy batch prefetch goes to the replica (or the primary as a
@@ -52,6 +56,22 @@ def main() -> None:
                     last_seed_date = now.date()
                 except Exception:  # noqa: BLE001 — seed failure must not kill the loop
                     log.exception("nightly seed failed; will retry next tick")
+                    db.rollback()
+
+            # 0027/#4: app-side partition maintenance (roll monthly snapshot
+            # partitions forward + retention). Belt-and-suspenders next to the
+            # pg_cron partition_maintenance job; exactly-once/day enforced in-DB.
+            if maintenance_due(now, last_maint_date):
+                try:
+                    created, dropped = run_partition_maintenance(db, by="worker")
+                    if created or dropped:
+                        log.info(
+                            "partition maintenance: +%d partitions, -%d partitions",
+                            created, dropped,
+                        )
+                    last_maint_date = now.date()
+                except Exception:  # noqa: BLE001 — must not kill the loop
+                    log.exception("partition maintenance failed; will retry next tick")
                     db.rollback()
 
             processed = run_worker(db, read_db=read_db)

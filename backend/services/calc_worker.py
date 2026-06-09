@@ -157,6 +157,37 @@ def seed_nightly_recompute(db, by: str = "worker") -> int:
     return int(n or 0)
 
 
+def maintenance_due(now: datetime, last_run_date: Optional[date]) -> bool:
+    """Whether the worker should attempt partition maintenance now: on/after the
+    seed hour (business TZ) and not already attempted today. Mirrors seed_due —
+    the DB function (maintenance_runs) is the real exactly-once guard; this only
+    avoids a per-tick write and keeps the work in the low-traffic window."""
+    return now.hour >= _SEED_MIN_HOUR and last_run_date != now.date()
+
+
+def run_partition_maintenance(db, by: str = "worker") -> tuple[int, int]:
+    """Roll partitions forward + apply retention via the single-source-of-truth DB
+    function (0027 / #4). App-side mirror of the pg_cron partition_maintenance job:
+    exactly-once-per-business-day is enforced in-DB by maintenance_runs, so calling
+    it from every worker is safe — only the first of the day does work. Returns
+    (created, dropped) partition counts ((0, 0) = already ran today)."""
+    from backend.config import settings
+
+    row = db.execute(
+        text(
+            "SELECT created, dropped FROM public.fn_run_partition_maintenance("
+            ":by, :ahead, :retention)"
+        ),
+        {
+            "by": by,
+            "ahead": settings.PARTITION_AHEAD_MONTHS,
+            "retention": settings.SNAPSHOT_RETENTION_MONTHS,
+        },
+    ).first()
+    db.commit()
+    return (int(row.created), int(row.dropped)) if row else (0, 0)
+
+
 def _mark_done(db, job_id: int) -> None:
     db.execute(
         text(
