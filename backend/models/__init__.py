@@ -25,9 +25,10 @@ Module structure:
                   Monitored competitors, products scraped from their menus,
                   and manual matches against own products.
 
-    modifier    — Modifier, ProductModifierCost
-                  Recipe modifications (substitutions, additions) and their
-                  pre-calculated cost impact per product.
+    modifier    — Modifier
+                  Recipe modifications (substitutions, additions). Their cost
+                  impact lives in the mv_product_modifier_cost materialized view
+                  (the ProductModifierCost table was removed in migration 0011).
 
 All models inherit from `backend.database.Base`. Importing this package
 is sufficient for `Base.metadata` to contain all tables before calling

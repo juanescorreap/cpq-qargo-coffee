@@ -1,4 +1,6 @@
+import logging
 import os
+from contextlib import asynccontextmanager
 from pathlib import Path
 
 import uvicorn
@@ -7,11 +9,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse, Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from sqlalchemy import func
+from sqlalchemy import func, text
 from sqlalchemy.orm import Session
 
 import backend.models  # noqa: F401 — registers all models in Base.metadata
-from backend.database import get_db, init_db, test_connection
+from backend.config import settings
+from backend.database import get_db, test_connection
 from backend.models.ingredient import Ingredient
 from backend.models.product import Product
 from backend.models.store import Store
@@ -33,22 +36,59 @@ from backend.routers import calc_status
 BASE_DIR = Path(__file__).resolve().parent
 PROJECT_ROOT = BASE_DIR.parent
 
+log = logging.getLogger("cpq.startup")
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Application lifespan (replaces the deprecated on_event handlers).
+
+    On boot: verify DB connectivity (non-fatal — a down DB still serves /health),
+    then, when RUN_MIGRATIONS=true (set this only on the web service, once), bring
+    the schema to head via Alembic. The schema is owned exclusively by Alembic —
+    Base.metadata.create_all() is intentionally NOT called here. A migration
+    failure is allowed to propagate so the deploy fails loudly instead of serving
+    a half-migrated schema.
+    """
+    log.info("Starting application...")
+    if test_connection():
+        log.info("Supabase connection OK")
+    else:
+        log.warning("Could not connect to Supabase at startup")
+
+    if os.getenv("RUN_MIGRATIONS") == "true":
+        log.info("RUN_MIGRATIONS=true -> applying Alembic migrations...")
+        from backend.scripts.init_production import init_database
+
+        init_database()  # raises on failure -> boot aborts, deploy surfaces it
+        log.info("Migrations applied")
+
+    yield
+    # No shutdown work required.
+
+
 app = FastAPI(
     title="CPQ Qargo Coffee",
     description="Configure-Price-Quote System with Scraping",
     version="1.0.0",
+    lifespan=lifespan,
 )
 
 # ============================================
 # CORS
 # ============================================
-_raw_origins = os.getenv("ALLOWED_ORIGINS", "*")
-ALLOWED_ORIGINS = _raw_origins.split(",") if _raw_origins != "*" else ["*"]
+# Origins come from Settings, which in production replaces the "*" default with
+# the explicit _PRODUCTION_ORIGINS allow-list. Credentials cannot be combined
+# with a "*" origin per the CORS spec, so they are only enabled for an explicit
+# allow-list. (Auth is HTTP Basic via header, so cross-origin cookies are not
+# required for the app to function.)
+ALLOWED_ORIGINS = settings.ALLOWED_ORIGINS
+_cors_allow_credentials = ALLOWED_ORIGINS != ["*"]
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=ALLOWED_ORIGINS,
-    allow_credentials=True,
+    allow_credentials=_cors_allow_credentials,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -63,8 +103,6 @@ import secrets
 
 from starlette.responses import PlainTextResponse
 
-from backend.config import settings as _settings
-
 
 # Paths served without auth: static assets must load for the page to render
 # styles, and /health must stay reachable for the Railway healthcheck.
@@ -74,15 +112,15 @@ _AUTH_PUBLIC_PREFIXES = ("/static/", "/health", "/favicon.ico")
 @app.middleware("http")
 async def _basic_auth(request: Request, call_next):
     _is_public = request.url.path.startswith(_AUTH_PUBLIC_PREFIXES)
-    if _settings.auth_enabled and not _is_public and request.method != "OPTIONS":
+    if settings.auth_enabled and not _is_public and request.method != "OPTIONS":
         header = request.headers.get("Authorization", "")
         ok = False
         if header.startswith("Basic "):
             try:
                 user, _, pwd = base64.b64decode(header[6:]).decode("utf-8").partition(":")
                 ok = (
-                    secrets.compare_digest(user, _settings.BASIC_AUTH_USER)
-                    and secrets.compare_digest(pwd, _settings.BASIC_AUTH_PASSWORD)
+                    secrets.compare_digest(user, settings.BASIC_AUTH_USER)
+                    and secrets.compare_digest(pwd, settings.BASIC_AUTH_PASSWORD)
                 )
             except Exception:  # noqa: BLE001 — malformed header => unauthorized
                 ok = False
@@ -139,27 +177,6 @@ app.include_router(supply_chain_ui.router)
 # ============================================
 # STARTUP
 # ============================================
-@app.on_event("startup")
-async def startup_event():
-    """Run when the application starts."""
-    print("🚀 Starting application...")
-
-    if test_connection():
-        init_db()
-        print("✅ Supabase connection OK")
-    else:
-        print("⚠️  Warning: Could not connect to Supabase")
-
-    if os.getenv("RUN_MIGRATIONS") == "true":
-        print("🔄 Running migrations...")
-        try:
-            from backend.scripts.init_production import init_database
-            init_database()
-            print("✅ Migrations completed")
-        except Exception as e:
-            print(f"❌ Error in migrations: {e}")
-
-
 # ============================================
 # MAIN ENDPOINTS
 # ============================================
@@ -181,9 +198,15 @@ def favicon() -> Response:
 
 
 @app.get("/health", tags=["General"])
-def health_check() -> dict:
-    """Health check endpoint for Railway."""
-    db_status = "healthy" if test_connection() else "unhealthy"
+def health_check(db: Session = Depends(get_db)) -> dict:
+    """Health check endpoint for Railway. Reuses the request-scoped session and
+    runs a minimal `SELECT 1` (quiet — no logging) to avoid connection churn and
+    log spam under the platform's frequent polling."""
+    try:
+        db.execute(text("SELECT 1"))
+        db_status = "healthy"
+    except Exception:  # noqa: BLE001 — report unhealthy without crashing the probe
+        db_status = "unhealthy"
     return {
         "status": "healthy",
         "service": "cpq-cafeterias",

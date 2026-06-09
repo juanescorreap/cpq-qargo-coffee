@@ -251,13 +251,11 @@ def test_client(test_db: Session):
     def _override_get_db():
         yield test_db
 
-    # The app's startup event runs init_db() (Base.metadata.create_all) and
-    # test_connection() on every TestClient context-enter. Against the remote
-    # Supabase pooler that reflects ~49 tables per test (~10s each), which blows
-    # the suite's time budget. The schema is owned by Alembic, so skip both in
-    # tests — patch the names main.py imported into its own namespace.
+    # The app's lifespan runs test_connection() on every TestClient context-enter
+    # (and would apply Alembic migrations if RUN_MIGRATIONS were set). The schema
+    # is owned by Alembic and provisioned out-of-band for the test DB, so stub the
+    # connection check to keep the suite fast and offline-safe.
     monkeypatch = pytest.MonkeyPatch()
-    monkeypatch.setattr(main, "init_db", lambda: None)
     monkeypatch.setattr(main, "test_connection", lambda: True)
 
     app.dependency_overrides[get_db] = _override_get_db

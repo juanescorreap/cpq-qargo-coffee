@@ -175,7 +175,9 @@ class TestLifecycle:
             playwright.chromium.launch.return_value = browser
 
             scraper.setup()
-            playwright.chromium.launch.assert_called_once_with(headless=True)
+            # Outside Railway _extra_browser_args is empty; the container args
+            # are only added when the RAILWAY env is detected (see scraper_adapter).
+            playwright.chromium.launch.assert_called_once_with(headless=True, args=[])
             scraper.teardown()
 
     def test_context_manager_calls_setup_and_teardown(self, scraper):
