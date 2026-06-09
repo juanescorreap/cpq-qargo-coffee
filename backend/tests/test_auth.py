@@ -1,7 +1,8 @@
 """HTTP Basic auth gate (production readiness #1).
 
 Disabled when BASIC_AUTH_USER/PASSWORD are unset (local/test); enforced for the
-whole app when both are set. Uses a static asset so the check needs no DB.
+whole app when both are set. Hits the root endpoint (no DB, and not in
+_AUTH_PUBLIC_PREFIXES, so the gate actually applies — static assets are public).
 """
 
 import base64
@@ -12,7 +13,7 @@ from fastapi.testclient import TestClient
 from backend.config import settings
 from backend.main import app
 
-_PATH = "/static/js/app.js"
+_PATH = "/"  # gated route (root handler touches no DB)
 
 
 def test_auth_disabled_by_default():
