@@ -175,17 +175,17 @@ def migrate_ingredients() -> None:
 
             raw_yield = row.get("yield_%")
             yield_pct: Decimal = (
-                Decimal("100")
+                Decimal("1")
                 if _is_empty(raw_yield)
                 else safe_decimal(raw_yield)
             )
-            # Guard: yield out of reasonable range
-            if not (Decimal("0") < yield_pct <= Decimal("100")):
+            # Guard: yield must be a fraction in (0, 1] — 1.0 = no waste.
+            if not (Decimal("0") < yield_pct <= Decimal("1")):
                 print(
                     f"  ⚠️  Row {row_num} ({nombre!r}): "
-                    f"invalid yield_% ({yield_pct}), using 100."
+                    f"invalid yield_% ({yield_pct}), using 1.0."
                 )
-                yield_pct = Decimal("100")
+                yield_pct = Decimal("1")
 
             ingredient = Ingredient(
                 name=nombre,

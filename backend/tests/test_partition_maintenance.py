@@ -75,6 +75,14 @@ def test_maintenance_creates_partitions_ahead(test_db: Session):
     target = _add_months(today.replace(day=1), 3)
     name = _part_name(target)
 
+    # Clear today's claim (may exist in prod from the real worker) within this
+    # transaction so the function can run; the outer rollback restores it.
+    test_db.execute(text(
+        "DELETE FROM public.maintenance_runs "
+        "WHERE run_kind='partitions' "
+        "AND run_date=(now() AT TIME ZONE 'America/Bogota')::date"
+    ))
+
     # The migration already created the +3 window; drop one to force recreation.
     test_db.execute(text(f"DROP TABLE IF EXISTS public.{name}"))
     assert test_db.execute(text(
@@ -87,6 +95,14 @@ def test_maintenance_creates_partitions_ahead(test_db: Session):
 
 
 def test_maintenance_retention_drops_old_months(test_db: Session):
+    # Clear today's claim (may exist in prod from the real worker) within this
+    # transaction so the function can run; the outer rollback restores it.
+    test_db.execute(text(
+        "DELETE FROM public.maintenance_runs "
+        "WHERE run_kind='partitions' "
+        "AND run_date=(now() AT TIME ZONE 'America/Bogota')::date"
+    ))
+
     # A partition far outside the retention window.
     test_db.execute(text(
         "CREATE TABLE IF NOT EXISTS public.recipe_cost_snapshots_2000_01 "

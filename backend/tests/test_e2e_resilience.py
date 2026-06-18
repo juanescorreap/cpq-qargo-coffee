@@ -225,6 +225,13 @@ def test_nightly_seed_creates_chunks_and_is_idempotent(test_db: Session,
     catalogue and is exactly-once per business day (claim via calc_seed_runs)."""
     from backend.services.calc_worker import seed_nightly_recompute
 
+    # Prod Supabase may already have today's claim from the real worker.
+    # Delete it within this transaction so the function can run; rollback restores it.
+    test_db.execute(text(
+        "DELETE FROM public.calc_seed_runs "
+        "WHERE seed_kind='nightly_full' "
+        "AND seed_date=(now() AT TIME ZONE 'America/Bogota')::date"
+    ))
     seeded = seed_nightly_recompute(test_db, by="test")
     assert seeded >= 1  # at least the global base chunk for the active product
     jobs = test_db.execute(text(
