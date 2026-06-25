@@ -503,9 +503,19 @@ def load_context(
                 source="catalog",
             )
 
-    # minor_unit of the accumulation currency (COP) for final quantize (E6).
+    # minor_unit of the store's currency for final quantize (E6).
+    # Use the store's default_currency_code so USD stores round to $0.01, not to $1.
+    if store_id is not None:
+        _store_cur = (
+            db.query(Store.default_currency_code)
+            .filter(Store.id == store_id)
+            .scalar()
+        ) or "COP"
+    else:
+        _store_cur = "COP"
     currency_minor_row = db.execute(
-        text("SELECT minor_unit FROM currencies WHERE code = 'COP'")
+        text("SELECT minor_unit FROM currencies WHERE code = :code"),
+        {"code": _store_cur},
     ).scalar()
     currency_minor = int(currency_minor_row) if currency_minor_row is not None else 0
 

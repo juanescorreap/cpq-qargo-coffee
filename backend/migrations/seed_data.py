@@ -70,10 +70,23 @@ def seed_recipe_units(db) -> None:
 # the Excel loader normalises hyphen/space variants to this form.
 
 _CATEGORIES = [
-    {"slug": "bebidas_calientes", "display_name": "Bebidas Calientes"},
-    {"slug": "bebidas_frias",     "display_name": "Bebidas Frías"},
-    {"slug": "alimentos",         "display_name": "Alimentos"},
-    {"slug": "otros",             "display_name": "Otros"},
+    {"slug": "hot_classics",     "display_name": "Hot Classics"},
+    {"slug": "iced_classics",    "display_name": "Iced Classics"},
+    {"slug": "cold_brew",        "display_name": "Cold Brew"},
+    {"slug": "boba_tea",         "display_name": "Boba Tea"},
+    {"slug": "tea",              "display_name": "Tea"},
+    {"slug": "energy_fresh",     "display_name": "Energy Fresh"},
+    {"slug": "energy_smoothies", "display_name": "Energy Smoothies"},
+    {"slug": "fresh_and_cool",   "display_name": "Fresh and Cool"},
+    {"slug": "gelato",           "display_name": "Gelato"},
+    {"slug": "bakery",           "display_name": "Bakery"},
+    {"slug": "sweet_treats",     "display_name": "Sweet Treats"},
+    {"slug": "taste_of_italy",   "display_name": "Taste of Italy"},
+    {"slug": "breakfast",        "display_name": "Breakfast"},
+    {"slug": "lunch",            "display_name": "Lunch"},
+    {"slug": "bottled_drinks",   "display_name": "Bottled Drinks"},
+    {"slug": "sub_recipe",       "display_name": "Sub-recipe"},
+    {"slug": "beverages",        "display_name": "Beverages"},
 ]
 
 
@@ -93,10 +106,27 @@ def seed_categories(db) -> None:
 # ---------------------------------------------------------------------------
 
 _CATEGORY_MARGINS = [
-    {"category": "bebidas_calientes", "markup_percentage": 65.0},
-    {"category": "bebidas_frias",     "markup_percentage": 70.0},
-    {"category": "alimentos",         "markup_percentage": 60.0},
-    {"category": "otros",             "markup_percentage": 50.0},
+    # Beverages — benchmark: US specialty café COGS 25-33% → markup 200-300%
+    {"category": "hot_classics",     "markup_percentage": 250.0},  # lattes/caps: ~$2 cost → ~$7 retail
+    {"category": "iced_classics",    "markup_percentage": 220.0},  # iced drinks: ~$3 cost → ~$9.6 retail
+    {"category": "cold_brew",        "markup_percentage": 200.0},  # ~$2 cost → $6 retail
+    {"category": "boba_tea",         "markup_percentage": 200.0},  # ~$3 cost → $9 retail
+    {"category": "tea",              "markup_percentage": 210.0},  # $1.53 cost → $4.74 (from data)
+    {"category": "energy_fresh",     "markup_percentage": 150.0},  # COGS ~40%
+    {"category": "energy_smoothies", "markup_percentage": 150.0},  # COGS ~40%
+    {"category": "fresh_and_cool",   "markup_percentage": 200.0},  # similar to cold bevs
+    {"category": "gelato",           "markup_percentage": 300.0},  # very low COGS, premium pricing
+    {"category": "beverages",        "markup_percentage": 150.0},  # generic fallback
+    # Food — from actual cost data + retail benchmarks
+    {"category": "bakery",           "markup_percentage": 200.0},  # $1.60 cost → $4.80 (from data)
+    {"category": "sweet_treats",     "markup_percentage": 170.0},  # $2.12 cost → $5.72 (from data)
+    {"category": "taste_of_italy",   "markup_percentage": 80.0},   # $3.59 cost → $6.46 (from data)
+    {"category": "breakfast",        "markup_percentage": 150.0},  # COGS ~40%
+    {"category": "lunch",            "markup_percentage": 120.0},  # COGS ~45%
+    # Retail / pass-through
+    {"category": "bottled_drinks",   "markup_percentage": 120.0},  # $2.05 cost → $4.51 (from data)
+    # Internal
+    {"category": "sub_recipe",       "markup_percentage": 0.0},    # not sold directly
 ]
 
 
@@ -120,23 +150,23 @@ def seed_category_margins(db) -> None:
 # ---------------------------------------------------------------------------
 
 _STORES = [
-    {"code": "BOG-ZONA-T",  "name": "Bogotá Zona T",              "city": "Bogotá"},
-    {"code": "BOG-USAQUEN", "name": "Bogotá Usaquén",             "city": "Bogotá"},
-    {"code": "BOG-CENTR",   "name": "Bogotá Centro Andino",       "city": "Bogotá"},
-    {"code": "BOG-GRAN-E",  "name": "Bogotá Gran Estación",       "city": "Bogotá"},
-    {"code": "BOG-EL-RET",  "name": "Bogotá El Retiro",           "city": "Bogotá"},
-    {"code": "MED-EL-POB",  "name": "Medellín El Poblado",        "city": "Medellín"},
-    {"code": "MED-LAUREL",  "name": "Medellín Laureles",          "city": "Medellín"},
-    {"code": "MED-CENTRO",  "name": "Medellín Centro",            "city": "Medellín"},
-    {"code": "CAL-CHIPIC",  "name": "Cali Chipichape",            "city": "Cali"},
-    {"code": "CAL-JARD",    "name": "Cali Jardín Plaza",          "city": "Cali"},
-    {"code": "BAQ-BUANA",   "name": "Barranquilla Buenavista",    "city": "Barranquilla"},
-    {"code": "BAQ-MET",     "name": "Barranquilla Metrocentro",   "city": "Barranquilla"},
-    {"code": "CTG-BOCAG",   "name": "Cartagena Bocagrande",       "city": "Cartagena"},
-    {"code": "CTG-CABRE",   "name": "Cartagena Cabrero",          "city": "Cartagena"},
-    {"code": "BUC-CABEC",   "name": "Bucaramanga Cabecera",       "city": "Bucaramanga"},
-    {"code": "PEI-CIRCUN",  "name": "Pereira Circunvalar",        "city": "Pereira"},
-    {"code": "MAN-CABLE",   "name": "Manizales Cable Plaza",      "city": "Manizales"},
+    {"code": "1-FV-CA",  "name": "Fountain Valley",   "city": "Fountain Valley",  "default_currency_code": "USD"},
+    {"code": "2-LB-CA",  "name": "Long Beach",        "city": "Long Beach",       "default_currency_code": "USD"},
+    {"code": "3-TM-FL",  "name": "Tampa",             "city": "Tampa",            "default_currency_code": "USD"},
+    {"code": "4-WC-DC",  "name": "Washington",        "city": "Washington",       "default_currency_code": "USD"},
+    {"code": "5-BK-CA",  "name": "Berkeley",          "city": "Berkeley",         "default_currency_code": "USD"},
+    {"code": "6-DT-MI",  "name": "Detroit",           "city": "Detroit",          "default_currency_code": "USD"},
+    {"code": "7-ED-TX",  "name": "Edinburg",          "city": "Edinburg",         "default_currency_code": "USD"},
+    {"code": "8-WV-OH",  "name": "Westerville",       "city": "Westerville",      "default_currency_code": "USD"},
+    {"code": "10-BL-IL", "name": "Bolingbrook Boughton", "city": "Bolingbrook",  "default_currency_code": "USD"},
+    {"code": "11-SA-TX", "name": "San Antonio",       "city": "San Antonio",      "default_currency_code": "USD"},
+    {"code": "12-DB-MI", "name": "Dearborn",          "city": "Dearborn",         "default_currency_code": "USD"},
+    {"code": "13-BL-IL", "name": "Bolingbrook Weber", "city": "Bolingbrook",      "default_currency_code": "USD"},
+    {"code": "14-SC-IL", "name": "Saint Charles",     "city": "Saint Charles",    "default_currency_code": "USD"},
+    {"code": "15-OP-IL", "name": "Orland Park",       "city": "Orland Park",      "default_currency_code": "USD"},
+    {"code": "16-GP-TX", "name": "Grand Prairie",     "city": "Grand Prairie",    "default_currency_code": "USD"},
+    {"code": "17-VG-NV", "name": "Las Vegas",         "city": "Las Vegas",        "default_currency_code": "USD"},
+    {"code": "18-CN-MI", "name": "Canton",            "city": "Canton",           "default_currency_code": "USD"},
 ]
 
 

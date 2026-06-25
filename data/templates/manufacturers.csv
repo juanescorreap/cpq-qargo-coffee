@@ -1,4 +1,6 @@
 name,country_code,tax_id,website,is_active
-Alpina Productos Alimenticios,CO,860025900-1,https://www.alpina.com,true
-Monin,FR,,https://www.monin.com,true
-Colanta,CO,890900943-1,https://www.colanta.com,true
+Bridor,FR,,,true
+Bindi,IT,,,true
+Kimbo,IT,,,true
+PreGel,IT,,,true
+Golden Waffles,US,,,true

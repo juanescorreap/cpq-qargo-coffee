@@ -1,5 +1,9 @@
 name,code,country_code,is_active
-Bogota,BOG,CO,true
-Medellin,MED,CO,true
-Cali,CAL,CO,true
-Costa Caribe,CAR,CO,true
+California,CA,US,true
+Florida,FL,US,true
+Washington D.C.,DC,US,true
+Michigan,MI,US,true
+Texas,TX,US,true
+Ohio,OH,US,true
+Illinois,IL,US,true
+Nevada,NV,US,true

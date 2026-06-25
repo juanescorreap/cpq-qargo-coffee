@@ -204,8 +204,9 @@ def _v_prices(row, cat):
         pass
     if _norm(row.get("currency_code")) not in cat.currencies:
         e.append(f"currency_code '{_norm(row.get('currency_code'))}' no existe en currencies")
-    if _norm(row.get("price_unit")).lower() not in cat.recipe_units:
-        e.append(f"price_unit '{_norm(row.get('price_unit'))}' no existe en recipe_units")
+    # price_unit_id is nullable — free-text descriptions like "per case" are valid
+    if not _norm(row.get("price_unit")):
+        e.append("'price_unit' requerido (texto libre, ej: 'per case', 'per unit')")
     if not _norm(row.get("created_by")):
         e.append("'created_by' requerido")
     return e

@@ -1,4 +1,135 @@
 ingredient_name,manufacturer_name,distributor_name,list_price,qargo_price,currency_code,price_unit,valid_from,source,created_by
-Whole milk,Alpina Productos Alimenticios,Distribuidora Andina SAS,4500.0000,4200.0000,COP,ml,2026-06-01,contrato_2026,jcorrea
-Whole milk,Colanta,,4300.0000,4100.0000,COP,ml,2026-06-01,contrato_2026,jcorrea
-Amaretto syrup,Monin,Distribuidora Andina SAS,72000.0000,68000.0000,COP,ml,2026-06-01,contrato_monin_2026,jcorrea
+Strawberry Cheesecake,Bindi,,39.34,39.34,USD,per case,2026-01-02,bindi_products_db_2026,etl_migration_2026
+Strawberry Cheesecake,Bindi,Food Related,37.44,37.44,USD,per case,2026-01-03,bindi_products_db_2026,etl_migration_2026
+Strawberry Cheesecake,Bindi,French Bakery,39.0,39.0,USD,per case,2026-01-05,bindi_products_db_2026,etl_migration_2026
+Strawberry Cheesecake,Bindi,Greco & Sons,38.99,38.99,USD,per case,2026-01-06,bindi_products_db_2026,etl_migration_2026
+Strawberry Cheesecake,Bindi,Pointe Dairy,39.34,39.34,USD,per case,2026-01-07,bindi_products_db_2026,etl_migration_2026
+Strawberry Cheesecake,Bindi,Primizie,39.34,39.34,USD,per case,2026-01-08,bindi_products_db_2026,etl_migration_2026
+Strawberry Cheesecake,Bindi,IGF,39.34,39.34,USD,per case,2026-01-09,bindi_products_db_2026,etl_migration_2026
+Traditional Cheesecake,Bindi,Pointe Dairy,32.21,32.21,USD,per case,2026-01-10,bindi_products_db_2026,etl_migration_2026
+Chocolate Fondant Cake,Bindi,French Bakery,50.12,48.97,USD,per case,2026-01-11,bindi_products_db_2026,etl_migration_2026
+Chocolate Fondant Cake,Bindi,Primizie,48.97,48.97,USD,per case,2026-01-12,bindi_products_db_2026,etl_migration_2026
+Chocolate Fondant Cake,Bindi,,48.97,48.97,USD,per case,2026-01-13,bindi_products_db_2026,etl_migration_2026
+Chocolate Ganache Cheesecake,Bindi,Food Related,42.22,42.22,USD,per case,2026-01-21,bindi_products_db_2026,etl_migration_2026
+Chocolate Ganache Cheesecake,Bindi,French Bakery,39.0,39.0,USD,per case,2026-01-22,bindi_products_db_2026,etl_migration_2026
+Chocolate Ganache Cheesecake,Bindi,Primizie,42.22,42.22,USD,per case,2026-01-23,bindi_products_db_2026,etl_migration_2026
+Chocolate Ganache Cheesecake,Bindi,,42.22,42.22,USD,per case,2026-01-24,bindi_products_db_2026,etl_migration_2026
+Chocolate Temptation Cake,Bindi,,44.8,44.8,USD,per case,2026-01-25,bindi_products_db_2026,etl_migration_2026
+Chocolate Temptation Cake,Bindi,Food Related,42.26,42.26,USD,per case,2026-01-26,bindi_products_db_2026,etl_migration_2026
+Chocolate Temptation Cake,Bindi,French Bakery,40.95,40.95,USD,per case,2026-01-27,bindi_products_db_2026,etl_migration_2026
+Chocolate Temptation Cake,Bindi,Greco & Sons,42.99,42.99,USD,per case,2026-01-28,bindi_products_db_2026,etl_migration_2026
+Chocolate Temptation Cake,Bindi,Pointe Dairy,44.8,44.8,USD,per case,2026-01-29,bindi_products_db_2026,etl_migration_2026
+Chocolate Temptation Cake,Bindi,Primizie,44.8,44.8,USD,per case,2026-01-30,bindi_products_db_2026,etl_migration_2026
+Ricotta and Pistachio Cake,Bindi,,40.93,40.93,USD,per case,2026-02-02,bindi_products_db_2026,etl_migration_2026
+Ricotta and Pistachio Cake,Bindi,Food Related,41.51,40.93,USD,per case,2026-02-03,bindi_products_db_2026,etl_migration_2026
+Ricotta and Pistachio Cake,Bindi,French Bakery,40.95,40.93,USD,per case,2026-02-04,bindi_products_db_2026,etl_migration_2026
+Chocolate Croissant,Bindi,Food Related,54.22,54.22,USD,per case,2026-03-04,bindi_products_db_2026,etl_migration_2026
+Chocolate Croissant,Bindi,French Bakery,79.8,79.8,USD,per case,2026-02-09,bindi_products_db_2026,etl_migration_2026
+Chocolate Croissant,Bindi,Greco & Sons,56.05,56.05,USD,per case,2026-03-05,bindi_products_db_2026,etl_migration_2026
+Raspberry Passion Fruit Cake,Bindi,,41.75,41.75,USD,per case,2026-02-14,bindi_products_db_2026,etl_migration_2026
+Sicilian Cannoli,Bindi,Food Related,34.55,34.55,USD,per case,2026-02-16,bindi_products_db_2026,etl_migration_2026
+Sicilian Cannoli,Bindi,Primizie,36.31,36.31,USD,per case,2026-02-17,bindi_products_db_2026,etl_migration_2026
+Vegan Croissant,Bindi,Greco & Sons,51.99,51.99,USD,per case,2026-02-21,bindi_products_db_2026,etl_migration_2026
+All Butter Croissant,Bindi,,53.93,53.93,USD,per case,2026-02-23,bindi_products_db_2026,etl_migration_2026
+All Butter Croissant,Bindi,Food Related,50.87,50.87,USD,per case,2026-02-24,bindi_products_db_2026,etl_migration_2026
+All Butter Croissant,Bindi,French Bakery,53.0,53.0,USD,per case,2026-02-25,bindi_products_db_2026,etl_migration_2026
+All Butter Croissant,Bindi,Greco & Sons,49.14,49.14,USD,per case,2026-02-26,bindi_products_db_2026,etl_migration_2026
+All Butter Croissant,Bindi,Pointe Dairy,53.93,53.93,USD,per case,2026-02-27,bindi_products_db_2026,etl_migration_2026
+All Butter Croissant,Bindi,Primizie,53.93,53.93,USD,per case,2026-02-28,bindi_products_db_2026,etl_migration_2026
+All Butter Croissant,Bindi,IGF,53.93,53.93,USD,per case,2026-03-02,bindi_products_db_2026,etl_migration_2026
+Chocolate Croissant,Bindi,,61.51,61.51,USD,per case,2026-03-03,bindi_products_db_2026,etl_migration_2026
+Chocolate Croissant,Bindi,Pointe Dairy,61.51,61.51,USD,per case,2026-03-06,bindi_products_db_2026,etl_migration_2026
+Chocolate Croissant,Bindi,Primizie,61.51,61.51,USD,per case,2026-03-07,bindi_products_db_2026,etl_migration_2026
+Chocolate Croissant,Bindi,IGF,61.51,61.51,USD,per case,2026-03-08,bindi_products_db_2026,etl_migration_2026
+Tiramisu,Bindi,Greco & Sons,40.99,40.99,USD,per case,2026-03-11,bindi_products_db_2026,etl_migration_2026
+Tiramisu,Bindi,Pointe Dairy,42.64,42.64,USD,per case,2026-03-12,bindi_products_db_2026,etl_migration_2026
+Tiramisu,Bindi,Primizie,42.64,42.64,USD,per case,2026-03-13,bindi_products_db_2026,etl_migration_2026
+Pistachio Profiteroles,Bindi,French Bakery,40.0,39.53,USD,per case,2026-03-14,bindi_products_db_2026,etl_migration_2026
+Blueberry and Chocolate Chips Vegan Croissant,Bindi,,67.44,67.44,USD,per case,2026-03-15,bindi_products_db_2026,etl_migration_2026
+Pineapple Syrup,Bindi,Primizie,52.3,52.3,USD,per case,2026-03-17,bindi_products_db_2026,etl_migration_2026
+Coconut Syrup,Bindi,Primizie,47.27,47.27,USD,per case,2026-03-19,bindi_products_db_2026,etl_migration_2026
+Tiramisu,Bindi,,24.38,24.38,USD,per case,2026-06-22,bindi_products_db_2026,etl_migration_2026
+Cake Torta Nocciola,Bindi,,39.77,39.77,USD,per case,2026-03-21,bindi_products_db_2026,etl_migration_2026
+Cake Torta Nocciola,Bindi,French Bakery,35.5,35.5,USD,per case,2026-03-22,bindi_products_db_2026,etl_migration_2026
+Cake Torta Nocciola,Bindi,Greco & Sons,39.99,39.77,USD,per case,2026-03-23,bindi_products_db_2026,etl_migration_2026
+Cake Torta Nocciola,Bindi,Pointe Dairy,39.77,39.77,USD,per case,2026-03-24,bindi_products_db_2026,etl_migration_2026
+Cake Torta Nocciola,Bindi,Food Related,39.09,39.09,USD,per case,2026-03-25,bindi_products_db_2026,etl_migration_2026
+Tiramisu Toasted Almond,Bindi,Food Related,36.17,36.17,USD,per case,2026-03-26,bindi_products_db_2026,etl_migration_2026
+Tiramisu With Ladyfingers,Bindi,Food Related,40.66,40.66,USD,per case,2026-04-01,bindi_products_db_2026,etl_migration_2026
+Tiramisu,Bindi,Food Related,39.84,34.27,USD,per case,2026-04-04,bindi_products_db_2026,etl_migration_2026
+Tiramisu With Ladyfingers,Bindi,,46.13,46.13,USD,per case,2026-04-07,bindi_products_db_2026,etl_migration_2026
+Tiramisu With Ladyfingers,Bindi,French Bakery,48.75,46.13,USD,per case,2026-04-08,bindi_products_db_2026,etl_migration_2026
+Tiramisu With Ladyfingers,Bindi,Pointe Dairy,40.66,40.66,USD,per case,2026-04-09,bindi_products_db_2026,etl_migration_2026
+Pinsa Margherita,Bindi,Food Related,64.24,64.24,USD,per case,2026-04-12,bindi_products_db_2026,etl_migration_2026
+Pinsa Margherita,Bindi,,64.2,64.2,USD,per case,2026-04-13,bindi_products_db_2026,etl_migration_2026
+Truffle Royale Cake,Bindi,Pointe Dairy,44.5,40.73,USD,per case,2026-04-14,bindi_products_db_2026,etl_migration_2026
+Chocolate Truffle Cake,Bindi,Pointe Dairy,107.52,40.73,USD,per case,2026-04-15,bindi_products_db_2026,etl_migration_2026
+Muffin Classico,Bindi,Food Related,33.73,33.73,USD,per case,2026-04-27,bindi_products_db_2026,etl_migration_2026
+Multigrain Muffin,Bindi,Pointe Dairy,33.73,33.73,USD,per case,2026-04-28,bindi_products_db_2026,etl_migration_2026
+Chocolate Mousse Glass,Bindi,Pointe Dairy,53.66,53.66,USD,per case,2026-05-03,bindi_products_db_2026,etl_migration_2026
+Tiramisu,Bindi,French Bakery,40.95,40.95,USD,per case,2026-05-04,bindi_products_db_2026,etl_migration_2026
+Tiramisu,Bindi,IGF,41.06,41.06,USD,per case,2026-05-05,bindi_products_db_2026,etl_migration_2026
+Cappuccino Cake,Bindi,,42.42,42.42,USD,per case,2026-05-06,bindi_products_db_2026,etl_migration_2026
+Cappuccino Cake,Bindi,French Bakery,40.95,40.95,USD,per case,2026-05-07,bindi_products_db_2026,etl_migration_2026
+Cappuccino Cake,Bindi,Primizie,42.42,42.42,USD,per case,2026-05-08,bindi_products_db_2026,etl_migration_2026
+Cappuccino Cake,Bindi,Food Related,48.98,42.42,USD,per case,2026-05-09,bindi_products_db_2026,etl_migration_2026
+All Butter Curved Mini Croissant,Bindi,French Bakery,71.76,71.76,USD,per case,2026-05-14,bindi_products_db_2026,etl_migration_2026
+All Butter Curved Mini Croissant,Bindi,Food Related,77.59,77.59,USD,per case,2026-05-15,bindi_products_db_2026,etl_migration_2026
+Brownie Cheesecake,Bindi,French Bakery,54.6,53.4,USD,per case,2026-05-18,bindi_products_db_2026,etl_migration_2026
+Brownie Cheesecake,Bindi,Pointe Dairy,53.4,53.4,USD,per case,2026-05-19,bindi_products_db_2026,etl_migration_2026
+Red Velvet Cake,Bindi,Food Related,37.42,37.42,USD,per case,2026-06-10,bindi_products_db_2026,etl_migration_2026
+Avocado Cheesecake,Bindi,Food Related,39.95,33.75,USD,per case,2026-05-22,bindi_products_db_2026,etl_migration_2026
+Lemon Blueberry Crumb Cheesecake,Bindi,Pointe Dairy,41.38,41.38,USD,per case,2026-05-23,bindi_products_db_2026,etl_migration_2026
+Dulce de Leche Cheesecake,Bindi,Food Related,39.38,39.38,USD,per case,2026-05-24,bindi_products_db_2026,etl_migration_2026
+Dulce de Leche Cheesecake,Bindi,French Bakery,40.95,40.95,USD,per case,2026-05-25,bindi_products_db_2026,etl_migration_2026
+Dulce de Leche Cheesecake,Bindi,Greco & Sons,39.99,39.99,USD,per case,2026-05-26,bindi_products_db_2026,etl_migration_2026
+Dulce de Leche Cheesecake,Bindi,Primizie,41.38,41.38,USD,per case,2026-05-27,bindi_products_db_2026,etl_migration_2026
+Tres Leches Cake,Bindi,Pointe Dairy,33.34,33.34,USD,per case,2026-05-31,bindi_products_db_2026,etl_migration_2026
+Pistachio Cheesecake,Bindi,,42.16,42.16,USD,per case,2026-06-01,bindi_products_db_2026,etl_migration_2026
+Pistachio Cheesecake,Bindi,Food Related,40.12,40.12,USD,per case,2026-06-02,bindi_products_db_2026,etl_migration_2026
+Pistachio Cheesecake,Bindi,Greco & Sons,40.99,40.99,USD,per case,2026-06-04,bindi_products_db_2026,etl_migration_2026
+Pistachio Cheesecake,Bindi,Primizie,42.16,42.16,USD,per case,2026-06-05,bindi_products_db_2026,etl_migration_2026
+Pistachio Cheesecake,Bindi,IGF,42.16,42.16,USD,per case,2026-06-07,bindi_products_db_2026,etl_migration_2026
+Red Velvet Cake,Bindi,,39.32,39.32,USD,per case,2026-06-09,bindi_products_db_2026,etl_migration_2026
+Red Velvet Cake,Bindi,French Bakery,39.0,39.0,USD,per case,2026-06-11,bindi_products_db_2026,etl_migration_2026
+Red Velvet Cake,Bindi,Greco & Sons,37.99,37.99,USD,per case,2026-06-12,bindi_products_db_2026,etl_migration_2026
+Red Velvet Cake,Bindi,Pointe Dairy,39.32,39.32,USD,per case,2026-06-13,bindi_products_db_2026,etl_migration_2026
+Red Velvet Cake,Bindi,Primizie,35.55,35.55,USD,per case,2026-06-14,bindi_products_db_2026,etl_migration_2026
+Red Velvet Cake,Bindi,IGF,39.32,39.32,USD,per case,2026-06-16,bindi_products_db_2026,etl_migration_2026
+Chocolate Eclair,Bindi,Food Related,25.11,25.11,USD,per case,2026-06-18,bindi_products_db_2026,etl_migration_2026
+Chocolate Eclair,Bindi,French Bakery,39.2,28.49,USD,per case,2026-06-19,bindi_products_db_2026,etl_migration_2026
+Chocolate Eclair,Bindi,Greco & Sons,29.99,28.49,USD,per case,2026-06-20,bindi_products_db_2026,etl_migration_2026
+Chocolate Eclair,Bindi,Primizie,28.49,28.49,USD,per case,2026-06-21,bindi_products_db_2026,etl_migration_2026
+Chocolate Eclair,Bindi,IGF,28.49,28.49,USD,per case,2026-06-22,bindi_products_db_2026,etl_migration_2026
+Chocolate Eclair,Bindi,,28.49,28.49,USD,per case,2026-06-25,bindi_products_db_2026,etl_migration_2026
+Vanilla Eclair,Bindi,Food Related,25.11,25.11,USD,per case,2026-06-26,bindi_products_db_2026,etl_migration_2026
+Vanilla Eclair,Bindi,French Bakery,39.2,28.49,USD,per case,2026-06-27,bindi_products_db_2026,etl_migration_2026
+Vanilla Eclair,Bindi,Greco & Sons,29.49,28.49,USD,per case,2026-06-28,bindi_products_db_2026,etl_migration_2026
+Vanilla Eclair,Bindi,Primizie,28.49,28.49,USD,per case,2026-06-29,bindi_products_db_2026,etl_migration_2026
+Vanilla Eclair,Bindi,,28.49,28.49,USD,per case,2026-07-02,bindi_products_db_2026,etl_migration_2026
+Macarons French,Bindi,Food Related,153.5,153.5,USD,per case,2026-07-07,bindi_products_db_2026,etl_migration_2026
+Macarons French,Bindi,French Bakery,157.5,157.5,USD,per case,2026-07-08,bindi_products_db_2026,etl_migration_2026
+Macarons French,Bindi,Greco & Sons,136.99,136.99,USD,per case,2026-07-09,bindi_products_db_2026,etl_migration_2026
+Macarons French,Bindi,Primizie,161.27,161.27,USD,per case,2026-07-10,bindi_products_db_2026,etl_migration_2026
+Muffin Classico,Bindi,Greco & Sons,32.99,32.99,USD,per case,2026-07-12,bindi_products_db_2026,etl_migration_2026
+Focaccia,Bindi,Greco & Sons,44.99,44.99,USD,per case,2026-07-16,bindi_products_db_2026,etl_migration_2026
+All Butter Curved Mini Croissant,Bindi,,77.59,77.59,USD,per case,2026-07-17,bindi_products_db_2026,etl_migration_2026
+Pinsa Margherita,Bindi,Greco & Sons,60.6,60.6,USD,per case,2026-04-13,bindi_products_db_2026,etl_migration_2026
+Chocolate Ganache Cheesecake,Bindi,Greco & Sons,39.99,39.99,USD,per case,2026-04-14,bindi_products_db_2026,etl_migration_2026
+Chocolate Fondant Cake,Bindi,Greco & Sons,45.99,45.99,USD,per case,2026-04-17,bindi_products_db_2026,etl_migration_2026
+All Butter Curved Mini Croissant,Bindi,Greco & Sons,77.59,77.59,USD,per case,2026-04-16,bindi_products_db_2026,etl_migration_2026
+Lemon Blueberry Crumb Cheesecake,Bindi,Greco & Sons,39.99,39.99,USD,per case,2026-04-18,bindi_products_db_2026,etl_migration_2026
+Cappuccino Cake,Bindi,Greco & Sons,40.99,40.99,USD,per case,2026-04-19,bindi_products_db_2026,etl_migration_2026
+Leek and Parmesan Danish,Bridor,Greco & Sons,68.99,68.99,USD,per case,2025-10-01,bridor_q4_2025,etl_migration_2026
+Cinnamon Roll,Bridor,Greco & Sons,48.99,48.99,USD,per case,2025-10-01,bridor_q4_2025,etl_migration_2026
+Blueberry Cheesecake Danish,Bridor,Greco & Sons,101.99,101.99,USD,per case,2025-10-01,bridor_q4_2025,etl_migration_2026
+Cherry Greek Yogurt Danish,Bridor,Greco & Sons,79.99,79.99,USD,per case,2025-10-01,bridor_q4_2025,etl_migration_2026
+Lemon Danish,Bridor,Greco & Sons,90.99,90.99,USD,per case,2025-10-01,bridor_q4_2025,etl_migration_2026
+Maple Pecan Danish,Bridor,Greco & Sons,59.99,59.99,USD,per case,2025-10-01,bridor_q4_2025,etl_migration_2026
+Cheese Danish,Bridor,Greco & Sons,85.99,85.99,USD,per case,2025-10-01,bridor_q4_2025,etl_migration_2026
+Focaccia,Bridor,Greco & Sons,59.99,59.99,USD,per case,2025-10-01,bridor_q4_2025,etl_migration_2026
+Chocolate Sprint,PreGel,,204.155,204.155,USD,per case,2026-01-01,pregel_2026,etl_migration_2026
+Vanilla Syrup,PreGel,,222.965,222.965,USD,per case,2026-01-02,pregel_2026,etl_migration_2026
+White Base Sprint,PreGel,,180.405,180.405,USD,per case,2026-01-04,pregel_2026,etl_migration_2026
+Strawberry Sprint,PreGel,,203.91,203.91,USD,per case,2026-01-06,pregel_2026,etl_migration_2026
+Cinnamon Roll,Golden Waffles,,5.0,5.0,USD,per case,2026-01-09,golden_waffles_2026,etl_migration_2026

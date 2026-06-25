@@ -151,13 +151,23 @@ class Maps:
             ).all()
         }
         # supplier ref by (ingredient_id, route_id) -> ref_id
+        # Note: one entry per (ing, route) pair; used by resolvers.py for SUC lookup.
+        # Multiple refs per (ing, route) (different SKUs) collapse to the last loaded —
+        # acceptable for the resolver because SUC links all conversions to that ref_id.
+        _isr_rows = db.query(
+            IngredientSupplierRef.id,
+            IngredientSupplierRef.ingredient_id,
+            IngredientSupplierRef.supply_route_id,
+            IngredientSupplierRef.external_code,
+        ).all()
         self.ref: dict[tuple, int] = {
             (s.ingredient_id, s.supply_route_id): s.id
-            for s in db.query(
-                IngredientSupplierRef.id,
-                IngredientSupplierRef.ingredient_id,
-                IngredientSupplierRef.supply_route_id,
-            ).all()
+            for s in _isr_rows
+        }
+        # Exact dedup key for _h_isr: (route_id, external_code).
+        # Prevents incorrectly skipping additional SKUs for the same route.
+        self.isr_exist: set[tuple] = {
+            (s.supply_route_id, s.external_code) for s in _isr_rows
         }
 
     @staticmethod
@@ -344,7 +354,8 @@ def _h_supply_routes(row, m: Maps):
 def _h_isr(row, m: Maps):
     ing_id = m.ing(row.get("ingredient_name"))
     rid = m.route_id(row)
-    if (ing_id, rid) in m.ref:
+    ext_code = _norm(row.get("external_code")) or None
+    if (rid, ext_code) in m.isr_exist:
         return "skip"
     ext = _norm(row.get("external_name"))
     pu = _norm(row.get("purchase_unit"))
@@ -358,11 +369,24 @@ def _h_isr(row, m: Maps):
 
 
 def _h_suc(row, m: Maps):
-    ing_id = m.ing(row.get("ingredient_name"))
-    rid = m.route_id(row)
-    ref_id = m.ref.get((ing_id, rid))
-    if ref_id is None:
-        raise RowError("ingredient_supplier_ref no existe (cargar refs primero)")
+    from backend.migrations.resolvers import ResolveStatus, resolve_supplier_ref
+
+    result = resolve_supplier_ref(
+        m,
+        row.get("ingredient_name"),
+        row.get("manufacturer_name"),
+        row.get("distributor_name"),
+    )
+    if result.status == ResolveStatus.NOT_FOUND:
+        raise RowError(result.reason)
+    if result.status == ResolveStatus.AMBIGUOUS:
+        raise RowError(
+            f"ambiguo: '{row.get('ingredient_name')}' resuelve a "
+            f"{len(result.candidates)} refs posibles (IDs: {result.candidates}) — "
+            f"especificar fabricante o distribuidor en CSV para desambiguar"
+        )
+    ref_id = result.ingredient_ref_id
+
     ru_id = m.ru(row.get("recipe_unit"))
     pq, rq = safe_decimal(row.get("purchase_qty")), safe_decimal(row.get("recipe_qty"))
     if not pq or pq <= 0 or not rq or rq <= 0:
@@ -385,7 +409,11 @@ def _h_route_prices(row, m: Maps):
     if not lp or lp <= 0 or not qp or qp <= 0:
         raise RowError("list_price y qargo_price deben ser > 0")
     ccy = _norm(row.get("currency_code"))
-    puid = m.ru(row.get("price_unit"))
+    # price_unit_id is nullable — free text (e.g. "per case") is valid; only try FK lookup
+    pu_text = _norm(row.get("price_unit"))
+    if not pu_text:
+        raise RowError("price_unit requerido (texto libre, ej: 'per case', 'per unit')")
+    puid = m.recipe_unit.get(pu_text.lower())  # None if free text — that's OK
     by = _norm(row.get("created_by"))
     if not by:
         raise RowError("created_by requerido")

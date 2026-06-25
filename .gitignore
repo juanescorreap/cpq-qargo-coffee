@@ -23,3 +23,6 @@ logs/*.log
 
 # Pre-flight dead-letter output
 data/_rejects/
+
+# Archived source documents and dead scripts (large binaries, not for VCS)
+data/_archive/

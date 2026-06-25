@@ -1,4 +1,186 @@
 ingredient_name,purchase_price,currency_code,source,effective_date
-Whole milk,4200.0000,COP,cotizacion_alpina,2026-06-01
-Amaretto syrup,68000.0000,COP,contrato_monin_2026,2026-06-01
-Espresso,52000.0000,COP,contrato_nutresa_2026,2026-06-01
+Milk,4.8744,USD,raw_ingredients_v1,2026-06-22
+Almond Milk,36.8567,USD,raw_ingredients_v1,2026-06-22
+Coconut Milk,40.6922,USD,raw_ingredients_v1,2026-06-22
+Cream Cheese,47.5289,USD,raw_ingredients_v1,2026-06-22
+Cheese Cheddar Sliced,0.1935,USD,raw_ingredients_v1,2026-06-22
+Cheese Mozzarella Sliced,0.1737,USD,raw_ingredients_v1,2026-06-22
+Crumbled Blue Cheese,22.5,USD,raw_ingredients_v1,2026-06-22
+Greek Yogurt,5.5302,USD,raw_ingredients_v1,2026-06-22
+Vanilla Gelato,0.5416,USD,raw_ingredients_v1,2026-06-22
+Chocolate Gelato,0.5416,USD,raw_ingredients_v1,2026-06-22
+Coconut Flakes,8.39,USD,raw_ingredients_v1,2026-06-22
+Cold Brew,32.8,USD,raw_ingredients_v1,2026-06-22
+Brewed Coffee,7.93,USD,raw_ingredients_v1,2026-06-22
+Nitro Cold Brew,36.0,USD,raw_ingredients_v1,2026-06-22
+Chai Tea Concentrate,13.99,USD,raw_ingredients_v1,2026-06-22
+Tea Bag,0.2446,USD,raw_ingredients_v1,2026-06-22
+Green Tea,2.397,USD,raw_ingredients_v1,2026-06-22
+Matcha,102.0,USD,raw_ingredients_v1,2026-06-22
+Vanilla Syrup,11.99,USD,raw_ingredients_v1,2026-06-22
+Rose Syrup,11.99,USD,raw_ingredients_v1,2026-06-22
+Coconut Syrup,3.9392,USD,bindi_2026,2026-03-19
+Hazelnut Syrup,11.99,USD,raw_ingredients_v1,2026-06-22
+Dragon Fruit Syrup,11.99,USD,raw_ingredients_v1,2026-06-22
+White Lotus,31.95,USD,raw_ingredients_v1,2026-06-22
+Strawberry Fruit Fusion,19.0,USD,raw_ingredients_v1,2026-06-22
+Blue Raspberry Fruit Fusion,19.0,USD,raw_ingredients_v1,2026-06-22
+Mango Passion Fruit Fusion,19.0,USD,raw_ingredients_v1,2026-06-22
+Pina Colada Fruit Fusion,19.0,USD,raw_ingredients_v1,2026-06-22
+Watermelon Fruit Fusion,19.0,USD,raw_ingredients_v1,2026-06-22
+Orange Creamsicle Fruit Fusion,19.0,USD,raw_ingredients_v1,2026-06-22
+Cream Base,19.99,USD,raw_ingredients_v1,2026-06-22
+Strawberry Fruit Puree,17.49,USD,raw_ingredients_v1,2026-06-22
+Chocolate Sauce,23.49,USD,raw_ingredients_v1,2026-06-22
+Pesto,85.0,USD,raw_ingredients_v1,2026-06-22
+Mustard,29.0,USD,raw_ingredients_v1,2026-06-22
+Mayonnaise,58.0,USD,raw_ingredients_v1,2026-06-22
+Balsamic Vinegar,21.1412,USD,raw_ingredients_v1,2026-06-22
+Lemon Juice,32.25,USD,raw_ingredients_v1,2026-06-22
+Olive Oil,108.49,USD,raw_ingredients_v1,2026-06-22
+Vanilla Powder,26.99,USD,raw_ingredients_v1,2026-06-22
+Chocolate Powder,22.99,USD,raw_ingredients_v1,2026-06-22
+Taro Powder,18.49,USD,raw_ingredients_v1,2026-06-22
+Icing Sugar,22.49,USD,raw_ingredients_v1,2026-06-22
+Whey Protein,64.99,USD,raw_ingredients_v1,2026-06-22
+Tapioca Pearls,14.99,USD,raw_ingredients_v1,2026-06-22
+Crushed Oreo,6.99,USD,raw_ingredients_v1,2026-06-22
+Honey Oat Granola,19.49,USD,raw_ingredients_v1,2026-06-22
+Chia Seeds,37.49,USD,raw_ingredients_v1,2026-06-22
+Cooking Spray,5.79,USD,raw_ingredients_v1,2026-06-22
+Orange Food Coloring,69.95,USD,raw_ingredients_v1,2026-06-22
+Seasoning Mix,3.5163,USD,raw_ingredients_v1,2026-06-22
+Water,0.01,USD,raw_ingredients_v1,2026-06-22
+Club Soda,1.082,USD,raw_ingredients_v1,2026-06-22
+Arugula,19.18,USD,raw_ingredients_v1,2026-06-22
+Sliced Tomato,1.3,USD,raw_ingredients_v1,2026-06-22
+Basil,2.98,USD,raw_ingredients_v1,2026-06-22
+Avocado,4.99,USD,raw_ingredients_v1,2026-06-22
+Dried Oregano,11.49,USD,raw_ingredients_v1,2026-06-22
+Capers,18.99,USD,raw_ingredients_v1,2026-06-22
+Sliced Pickles,8.95,USD,raw_ingredients_v1,2026-06-22
+Scrambled Egg Patty,0.346,USD,raw_ingredients_v1,2026-06-22
+Turkey Bacon,0.196,USD,raw_ingredients_v1,2026-06-22
+Turkey Sausage Patty,0.48,USD,raw_ingredients_v1,2026-06-22
+Smoked Salmon,66.5,USD,raw_ingredients_v1,2026-06-22
+Chicken Breast Grilled,16.0,USD,raw_ingredients_v1,2026-06-22
+Proscuitto,1.1726,USD,raw_ingredients_v1,2026-06-22
+Bread,1.0049,USD,raw_ingredients_v1,2026-06-22
+Focaccia,8.998,USD,bindi_2026,2026-07-16
+Pinsa,12.99,USD,raw_ingredients_v1,2026-06-22
+Pinsa Margherita,6.42,USD,bindi_2026,2026-04-13
+Plain Bagel,0.6444,USD,raw_ingredients_v1,2026-06-22
+Everything Bagel,0.6644,USD,raw_ingredients_v1,2026-06-22
+Cinnamon Raisin Bagel,0.9069,USD,raw_ingredients_v1,2026-06-22
+Chocolate Croissant,0.55,USD,raw_ingredients_v1,2026-06-22
+All Butter Croissant,1.0786,USD,bindi_2026,2026-03-02
+Almond Croissant,1.2991,USD,raw_ingredients_v1,2026-06-22
+Pistachio Croissant,1.2991,USD,raw_ingredients_v1,2026-06-22
+Glazed Apricot Croissant,1.2991,USD,raw_ingredients_v1,2026-06-22
+Spinach Kale and Cheese Croissant,1.2991,USD,raw_ingredients_v1,2026-06-22
+Doughnut Croissant,1.2991,USD,raw_ingredients_v1,2026-06-22
+Spinach and Feta Danish,1.0049,USD,raw_ingredients_v1,2026-06-22
+Cheese Danish,1.0049,USD,raw_ingredients_v1,2026-06-22
+Maple Pecan Danish,1.0049,USD,raw_ingredients_v1,2026-06-22
+Apple Butter Danish,1.0049,USD,raw_ingredients_v1,2026-06-22
+Spinach Ricotta Danish,1.0049,USD,raw_ingredients_v1,2026-06-22
+Cherry Greek Yogurt Danish,1.0049,USD,raw_ingredients_v1,2026-06-22
+Blueberry Cheesecake Danish,1.0049,USD,raw_ingredients_v1,2026-06-22
+Leek and Parmesan Danish,1.0049,USD,raw_ingredients_v1,2026-06-22
+Lemon Danish,1.0049,USD,raw_ingredients_v1,2026-06-22
+Guava Danish,1.0049,USD,raw_ingredients_v1,2026-06-22
+Apple Square Danish,1.0049,USD,raw_ingredients_v1,2026-06-22
+Tomato and Olive Danish,1.0049,USD,raw_ingredients_v1,2026-06-22
+Strawberry Danish,1.0049,USD,raw_ingredients_v1,2026-06-22
+Berries and Cream Twist Danish,1.0049,USD,raw_ingredients_v1,2026-06-22
+Raspberry Cream Cheese Danish,1.0049,USD,raw_ingredients_v1,2026-06-22
+Cheese Square Danish,1.0049,USD,raw_ingredients_v1,2026-06-22
+Cinnamon Roll,0.25,USD,golden_waffles_2026,2026-01-09
+Blueberry Scone,1.94,USD,raw_ingredients_v1,2026-06-22
+Chocolate Chip Cookie,129.99,USD,raw_ingredients_v1,2026-06-22
+Chocolate Chip Muffin,129.99,USD,raw_ingredients_v1,2026-06-22
+Pistachio Muffin,129.99,USD,raw_ingredients_v1,2026-06-22
+Banana Nut Muffin,129.99,USD,raw_ingredients_v1,2026-06-22
+Cacao Muffin,129.99,USD,raw_ingredients_v1,2026-06-22
+Chocolate Eclair,2.0472,USD,bindi_2026,2026-06-25
+Vanilla Eclair,2.035,USD,bindi_2026,2026-07-02
+Coffee Eclair,42.54,USD,raw_ingredients_v1,2026-06-22
+Tart Mixed Berry,2.67,USD,raw_ingredients_v1,2026-06-22
+Macarons French,1.0799,USD,bindi_2026,2026-07-10
+Tiramisu,2.69,USD,raw_ingredients_v1,2026-06-22
+Tiramisu With Ladyfingers,2.69,USD,raw_ingredients_v1,2026-06-22
+Stroopwafel,1.25,USD,raw_ingredients_v1,2026-06-22
+Waffles Birthday Cake,1.2,USD,raw_ingredients_v1,2026-06-22
+Red Velvet Cake,2.8086,USD,bindi_2026,2026-06-17
+Chocolate Temptation Cake,3.7333,USD,bindi_2026,2026-02-01
+Carrot Cake,46.69,USD,raw_ingredients_v1,2026-06-22
+Cappuccino Cake,3.535,USD,bindi_2026,2026-05-10
+Cake Torta Nocciola,3.977,USD,bindi_2026,2026-03-25
+Chocolate Fondant Cake,3.0606,USD,bindi_2026,2026-04-17
+Tres Leches Cake,2.2227,USD,bindi_2026,2026-05-31
+Red Velvet Mini Gluten Free Cake,36.99,USD,raw_ingredients_v1,2026-06-22
+Ricotta and Pistachio Cake,2.9969,USD,bindi_2026,2026-02-06
+Pistachio Cheesecake,2.635,USD,bindi_2026,2026-06-08
+Dulce de Leche Cheesecake,2.5863,USD,bindi_2026,2026-05-30
+Strawberry Cheesecake,2.81,USD,bindi_2026,2026-02-15
+Chocolate Ganache Cheesecake,2.6387,USD,bindi_2026,2026-04-14
+Brownie Cheesecake,2.25,USD,bindi_2026,2026-05-19
+Acqua Panna,1.75,USD,raw_ingredients_v1,2026-06-22
+San Pellegrino,2.0,USD,raw_ingredients_v1,2026-06-22
+San Pellegrino Aranciata,0.99,USD,raw_ingredients_v1,2026-06-22
+San Pellegrino Ciao Lime,0.99,USD,raw_ingredients_v1,2026-06-22
+San Pellegrino Limonata,0.99,USD,raw_ingredients_v1,2026-06-22
+A Siciliana Aranciata,2.5,USD,raw_ingredients_v1,2026-06-22
+A Siciliana Limonata,2.5,USD,raw_ingredients_v1,2026-06-22
+A Siciliana Mandarino,2.5,USD,raw_ingredients_v1,2026-06-22
+A Siciliana Melograno,2.5,USD,raw_ingredients_v1,2026-06-22
+Bundaberg Ginger Beer,1.5,USD,raw_ingredients_v1,2026-06-22
+Apple Juice,3.0,USD,raw_ingredients_v1,2026-06-22
+Black River Pear Juice,2.5,USD,raw_ingredients_v1,2026-06-22
+Five Star Apple Juice,3.0,USD,raw_ingredients_v1,2026-06-22
+Five Star Cranberry Juice,3.0,USD,raw_ingredients_v1,2026-06-22
+Five Star Orange Juice,3.0,USD,raw_ingredients_v1,2026-06-22
+Five Star Pineapple Juice,3.0,USD,raw_ingredients_v1,2026-06-22
+Orange Tropicana Juice,5.5,USD,raw_ingredients_v1,2026-06-22
+Apple Tropicana Juice,5.5,USD,raw_ingredients_v1,2026-06-22
+Simply Orange Juice,5.5,USD,raw_ingredients_v1,2026-06-22
+Natalie's Pineapple Cucumber and Celery,5.0,USD,raw_ingredients_v1,2026-06-22
+Energy Drink Celsius Orange,1.2,USD,raw_ingredients_v1,2026-06-22
+Energy Drink Celsius Watermelon,1.2,USD,raw_ingredients_v1,2026-06-22
+Energy Drink Celsius Mango Lemonade,1.2,USD,raw_ingredients_v1,2026-06-22
+Energy Drink Celsius Peach Vibe,1.2,USD,raw_ingredients_v1,2026-06-22
+Energy Drink Celsius Tropical Vibe,1.2,USD,raw_ingredients_v1,2026-06-22
+Energy Drink Celsius Wildberry,1.2,USD,raw_ingredients_v1,2026-06-22
+Energy Drink Celsius Artic Vibe,1.2,USD,raw_ingredients_v1,2026-06-22
+Energy Drink Celsius Kiwi Giava,1.2,USD,raw_ingredients_v1,2026-06-22
+Energy Drink Celsuis Strawberry Lemonade,1.2,USD,raw_ingredients_v1,2026-06-22
+Water Bottle Smart,0.95,USD,raw_ingredients_v1,2026-06-22
+Flavored Water Mango Pineapple Splash,1.5,USD,raw_ingredients_v1,2026-06-22
+Espresso,75.0,USD,raw_ingredients_v1,2026-06-22
+Ice Cubes,0.01,USD,raw_ingredients_v1,2026-06-22
+Whipped Cream,9.5,USD,raw_ingredients_v1,2026-06-22
+Pepper,25.0,USD,raw_ingredients_v1,2026-06-22
+Salt,15.0,USD,raw_ingredients_v1,2026-06-22
+Brewed Tea,0.245,USD,raw_ingredients_v1,2026-06-22
+Cappuccino Foam,4.87,USD,raw_ingredients_v1,2026-06-22
+Cold Foam Coconut,40.69,USD,raw_ingredients_v1,2026-06-22
+Tiramisu Toasted Almond,2.05,USD,raw_ingredients_v1,2026-06-22
+All Butter Curved Croissant,0.53,USD,raw_ingredients_v1,2026-06-22
+All Butter Curved Mini Croissant,0.5173,USD,bindi_2026,2026-07-17
+Vegan Croissant,1.08,USD,raw_ingredients_v1,2026-06-22
+Multigrain Muffin,1.6865,USD,bindi_2026,2026-04-28
+Strawberry Sprint,25.4887,USD,pregel_2026,2026-01-06
+White Base Sprint,15.03,USD,raw_ingredients_v1,2026-06-22
+Pineapple Syrup,4.3583,USD,bindi_2026,2026-03-18
+Avocado Cheesecake,4.99,USD,raw_ingredients_v1,2026-06-22
+Chocolate Mousse Glass,4.47,USD,raw_ingredients_v1,2026-06-22
+Chocolate Truffle Cake,8.96,USD,raw_ingredients_v1,2026-06-22
+Blueberry and Chocolate Chips Vegan Croissant,1.405,USD,bindi_2026,2026-03-15
+Raspberry Passion Fruit Cake,3.4792,USD,bindi_2026,2026-02-14
+Sicilian Cannoli,3.63,USD,raw_ingredients_v1,2026-06-22
+Pistachio Profiteroles,5.0,USD,raw_ingredients_v1,2026-06-22
+Traditional Cheesecake,2.3,USD,raw_ingredients_v1,2026-06-22
+Truffle Royale Cake,3.1786,USD,bindi_2026,2026-04-14
+Muffin Classico,1.668,USD,bindi_2026,2026-07-12
+Chocolate Sprint,17.01,USD,raw_ingredients_v1,2026-06-22
+Lemon Blueberry Crumb Cheesecake,2.5,USD,raw_ingredients_v1,2026-06-22

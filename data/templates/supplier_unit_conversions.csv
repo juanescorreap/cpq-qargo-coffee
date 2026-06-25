@@ -1,4 +1,274 @@
-ingredient_name,manufacturer_name,distributor_name,recipe_unit,purchase_qty,recipe_qty
-Whole milk,Alpina Productos Alimenticios,Distribuidora Andina SAS,ml,1,1000
-Whole milk,Colanta,,ml,1,1000
-Amaretto syrup,Monin,Distribuidora Andina SAS,ml,1,750
+ingredient_name,manufacturer_name,distributor_name,recipe_unit,purchase_qty,recipe_qty,notes
+Cold Brew,Bindi,,ml,1.0,3785.41,1.0 units/case = 1.0gal
+Cold Brew,Bindi,,g,12.0,6480.0,12.0 units/case = 6.48kg
+Nitro Cold Brew,Bindi,,g,12.0,5620.0,12.0 units/case = 5.62kg
+Chocolate Sprint,PreGel,,unit,12.0,12.0,unit only
+Vanilla Syrup,PreGel,,unit,12.0,12.0,unit only
+White Base Sprint,PreGel,,unit,12.0,12.0,unit only
+Strawberry Sprint,PreGel,,unit,8.0,8.0,unit only
+Cinnamon Roll,Golden Waffles,,unit,30.0,30.0,unit only
+Milk,,,L,1,3.78,1 1 gal = 3.78 L (from raw/ingredients.xlsx)
+Almond Milk,,,L,1,11.3562,1 Case 12 × 32 oz = 11.3562 L (from raw/ingredients.xlsx)
+Coconut Milk,,,L,1,11.3562,1 Case 12 × 32 oz = 11.3562 L (from raw/ingredients.xlsx)
+Cream Cheese,,,unit,1,100.0,1 100 units = 100.0 unit (from raw/ingredients.xlsx)
+Cheese Cheddar Sliced,,,unit,1,1.0,1 unit = 1.0 unit (from raw/ingredients.xlsx)
+Cheese Mozzarella Sliced,,,unit,1,1.0,1 unit = 1.0 unit (from raw/ingredients.xlsx)
+Crumbled Blue Cheese,,,g,1,2267.0,1 Container 5 lb = 2267.0 g (from raw/ingredients.xlsx)
+Greek Yogurt,,,oz,1,32.0,1 Container 32 oz = 32.0 oz (from raw/ingredients.xlsx)
+Vanilla Gelato,,,unit,1,1.0,1 unit = 1.0 unit (from raw/ingredients.xlsx)
+Chocolate Gelato,,,unit,1,1.0,1 unit = 1.0 unit (from raw/ingredients.xlsx)
+Coconut Flakes,,,g,1,283.0,1 Bag 10 oz = 283.0 g (from raw/ingredients.xlsx)
+Cold Brew,,,oz,1,128.0,1 1 gal = 128.0 oz (from raw/ingredients.xlsx)
+Brewed Coffee,,,L,1,5.6781,1 1.5 gal = 5.6781 L (from raw/ingredients.xlsx)
+Nitro Cold Brew,,,oz,1,128.0,1 1 gal = 128.0 oz (from raw/ingredients.xlsx)
+Chai Tea Concentrate,,,ml,1,1000.0,1 1 L = 1000.0 ml (from raw/ingredients.xlsx)
+Tea Bag,,,gallon,1,3.0,1 3 gal = 3.0 gallon (from raw/ingredients.xlsx)
+Green Tea,,,oz,1,10.0,1 10 oz = 10.0 oz (from raw/ingredients.xlsx)
+Matcha,,,g,1,1000.0,1 Bag 1 kg = 1000.0 g (from raw/ingredients.xlsx)
+Vanilla Syrup,,,ml,1,1000.0,1 1 L = 1000.0 ml (from raw/ingredients.xlsx)
+Rose Syrup,,,ml,1,1000.0,1 1 L = 1000.0 ml (from raw/ingredients.xlsx)
+Coconut Syrup,,,ml,1,1000.0,1 1 L = 1000.0 ml (from raw/ingredients.xlsx)
+Hazelnut Syrup,,,ml,1,1000.0,1 1 L = 1000.0 ml (from raw/ingredients.xlsx)
+Dragon Fruit Syrup,,,ml,1,1000.0,1 1 L = 1000.0 ml (from raw/ingredients.xlsx)
+White Lotus,,,L,1,1.89,1 0.5 gal = 1.89 L (from raw/ingredients.xlsx)
+Strawberry Fruit Fusion,,,L,1,1.89,1 0.5 gal = 1.89 L (from raw/ingredients.xlsx)
+Blue Raspberry Fruit Fusion,,,L,1,1.89,1 0.5 gal = 1.89 L (from raw/ingredients.xlsx)
+Mango Passion Fruit Fusion,,,L,1,1.89,1 0.5 gal = 1.89 L (from raw/ingredients.xlsx)
+Pina Colada Fruit Fusion,,,L,1,1.89,1 0.5 gal = 1.89 L (from raw/ingredients.xlsx)
+Watermelon Fruit Fusion,,,L,1,1.89,1 0.5 gal = 1.89 L (from raw/ingredients.xlsx)
+Orange Creamsicle Fruit Fusion,,,L,1,1.89,1 0.5 gal = 1.89 L (from raw/ingredients.xlsx)
+Cream Base,,,L,1,1.89,1 0.5 gal = 1.89 L (from raw/ingredients.xlsx)
+Strawberry Fruit Puree,,,ml,1,1000.0,1 1 L = 1000.0 ml (from raw/ingredients.xlsx)
+Chocolate Sauce,,,oz,1,64.0,1 Bottle 64 oz = 64.0 oz (from raw/ingredients.xlsx)
+Pesto,,,oz,1,608.0,1 Canister 38 lb = 608.0 oz (from raw/ingredients.xlsx)
+Mustard,,,oz,1,420.0,1 Case 420 oz = 420.0 oz (from raw/ingredients.xlsx)
+Mayonnaise,,,oz,1,2048.0,1 Case 4 × 4 gal = 2048.0 oz (from raw/ingredients.xlsx)
+Balsamic Vinegar,,,L,1,5.0,1 5 L = 5.0 L (from raw/ingredients.xlsx)
+Lemon Juice,,,ml,1,5678.0,1 1.5 gal = 5678.0 ml (from raw/ingredients.xlsx)
+Olive Oil,,,ml,1,12000.0,1 Case 4 X 3 L = 12000.0 ml (from raw/ingredients.xlsx)
+Vanilla Powder,,,lb,1,3.0,1 Canister 3 lb = 3.0 lb (from raw/ingredients.xlsx)
+Chocolate Powder,,,lb,1,3.0,1 Canister 3 lb = 3.0 lb (from raw/ingredients.xlsx)
+Taro Powder,,,g,1,1000.0,1 Bag 2.2 lb = 1000.0 g (from raw/ingredients.xlsx)
+Icing Sugar,,,lb,1,10.0,1 Box 10 lb = 10.0 lb (from raw/ingredients.xlsx)
+Whey Protein,,,g,1,2267.0,1 Container 5 lb = 2267.0 g (from raw/ingredients.xlsx)
+Tapioca Pearls,,,oz,1,48.0,1 Case 3 lb = 48.0 oz (from raw/ingredients.xlsx)
+Crushed Oreo,,,g,1,454.0,1 1 lb = 454.0 g (from raw/ingredients.xlsx)
+Honey Oat Granola,,,oz,1,48.0,1 Case 4 × 12 oz = 48.0 oz (from raw/ingredients.xlsx)
+Chia Seeds,,,lb,1,5.0,1 Bag 5 lb = 5.0 lb (from raw/ingredients.xlsx)
+Cooking Spray,,,g,1,482.0,1 Can 17 oz = 482.0 g (from raw/ingredients.xlsx)
+Orange Food Coloring,,,ml,1,236.0,1 Bottle 8 oz = 236.0 ml (from raw/ingredients.xlsx)
+Seasoning Mix,,,g,1,283.0,1 Bag 10 oz = 283.0 g (from raw/ingredients.xlsx)
+Water,,,L,1,3.78,1 1 gal = 3.78 L (from raw/ingredients.xlsx)
+Club Soda,,,ml,1,1000.0,1 1 L = 1000.0 ml (from raw/ingredients.xlsx)
+Arugula,,,lb,1,4.0,1 Bag 4 lb = 4.0 lb (from raw/ingredients.xlsx)
+Sliced Tomato,,,g,1,454.0,1 lb = 454.0 g (from raw/ingredients.xlsx)
+Basil,,,oz,1,16.0,1 Container 1 lb = 16.0 oz (from raw/ingredients.xlsx)
+Avocado,,,unit,1,1.0,1 unit = 1.0 unit (from raw/ingredients.xlsx)
+Dried Oregano,,,oz,1,24.0,1 Case 1.5 lb = 24.0 oz (from raw/ingredients.xlsx)
+Capers,,,g,1,907.0,1 Package 2 lb = 907.0 g (from raw/ingredients.xlsx)
+Sliced Pickles,,,unit,1,400.0,1 1 gal = 400.0 unit (from raw/ingredients.xlsx)
+Scrambled Egg Patty,,,unit,1,1.0,1 unit = 1.0 unit (from raw/ingredients.xlsx)
+Turkey Bacon,,,unit,1,1.0,1 unit = 1.0 unit (from raw/ingredients.xlsx)
+Turkey Sausage Patty,,,unit,1,1.0,1 unit = 1.0 unit (from raw/ingredients.xlsx)
+Smoked Salmon,,,lb,1,1.0,1 lb = 1.0 lb (from raw/ingredients.xlsx)
+Chicken Breast Grilled,,,lb,1,1.0,1 lb = 1.0 lb (from raw/ingredients.xlsx)
+Proscuitto,,,unit,1,1.0,1 unit = 1.0 unit (from raw/ingredients.xlsx)
+Bread,,,unit,1,1.0,1 unit = 1.0 unit (from raw/ingredients.xlsx)
+Focaccia,Bindi,Greco & Sons,unit,1,5.0,1 case/pack = 5.0 units — all refs same conversion; specific mfr/dist added to resolve ISR ambiguity
+Focaccia,Bridor,Greco & Sons,unit,1,5.0,1 case/pack = 5.0 units — all refs same conversion; specific mfr/dist added to resolve ISR ambiguity
+Focaccia,Bridor,Pointe Dairy,unit,1,5.0,1 case/pack = 5.0 units — all refs same conversion; specific mfr/dist added to resolve ISR ambiguity
+Focaccia,Bridor,Food Related,unit,1,5.0,1 case/pack = 5.0 units — all refs same conversion; specific mfr/dist added to resolve ISR ambiguity
+Focaccia,Bridor,TCW,unit,1,5.0,1 case/pack = 5.0 units — all refs same conversion; specific mfr/dist added to resolve ISR ambiguity
+Focaccia,Bridor,French Bakery,unit,1,5.0,1 case/pack = 5.0 units — all refs same conversion; specific mfr/dist added to resolve ISR ambiguity
+Pinsa,,,unit,1,22.0,1 unit = 22.0 unit (from raw/ingredients.xlsx)
+Pinsa Margherita,Bindi,Food Related,unit,1,22.0,1 unit = 22.0 units — all refs same conversion; specific mfr/dist added to resolve ISR ambiguity
+Pinsa Margherita,Bindi,,unit,1,22.0,1 unit = 22.0 units — all refs same conversion; specific mfr/dist added to resolve ISR ambiguity
+Pinsa Margherita,Bindi,Greco & Sons,unit,1,22.0,1 unit = 22.0 units — all refs same conversion; specific mfr/dist added to resolve ISR ambiguity
+Plain Bagel,,,unit,1,1.0,1 unit = 1.0 unit (from raw/ingredients.xlsx)
+Everything Bagel,,,unit,1,1.0,1 unit = 1.0 unit (from raw/ingredients.xlsx)
+Cinnamon Raisin Bagel,,,unit,1,1.0,1 unit = 1.0 unit (from raw/ingredients.xlsx)
+Chocolate Croissant,,,unit,1,1.0,1 unit = 1.0 unit (from raw/ingredients.xlsx)
+All Butter Croissant,,,unit,1,1.0,1 unit = 1.0 unit (from raw/ingredients.xlsx)
+Almond Croissant,,,unit,1,1.0,1 unit = 1.0 unit (from raw/ingredients.xlsx)
+Pistachio Croissant,,,unit,1,1.0,1 unit = 1.0 unit (from raw/ingredients.xlsx)
+Glazed Apricot Croissant,,,unit,1,1.0,1 unit = 1.0 unit (from raw/ingredients.xlsx)
+Spinach Kale and Cheese Croissant,,,unit,1,1.0,1 unit = 1.0 unit (from raw/ingredients.xlsx)
+Doughnut Croissant,,,unit,1,1.0,1 unit = 1.0 unit (from raw/ingredients.xlsx)
+Spinach and Feta Danish,,,unit,1,1.0,1 unit = 1.0 unit (from raw/ingredients.xlsx)
+Cheese Danish,,,unit,1,1.0,1 unit = 1.0 unit (from raw/ingredients.xlsx)
+Maple Pecan Danish,,,unit,1,1.0,1 unit = 1.0 unit (from raw/ingredients.xlsx)
+Apple Butter Danish,,,unit,1,1.0,1 unit = 1.0 unit (from raw/ingredients.xlsx)
+Spinach Ricotta Danish,,,unit,1,1.0,1 unit = 1.0 unit (from raw/ingredients.xlsx)
+Cherry Greek Yogurt Danish,,,unit,1,1.0,1 unit = 1.0 unit (from raw/ingredients.xlsx)
+Blueberry Cheesecake Danish,,,unit,1,1.0,1 unit = 1.0 unit (from raw/ingredients.xlsx)
+Leek and Parmesan Danish,,,unit,1,1.0,1 unit = 1.0 unit (from raw/ingredients.xlsx)
+Lemon Danish,,,unit,1,1.0,1 unit = 1.0 unit (from raw/ingredients.xlsx)
+Guava Danish,,,unit,1,1.0,1 unit = 1.0 unit (from raw/ingredients.xlsx)
+Apple Square Danish,,,unit,1,1.0,1 unit = 1.0 unit (from raw/ingredients.xlsx)
+Tomato and Olive Danish,,,unit,1,1.0,1 unit = 1.0 unit (from raw/ingredients.xlsx)
+Strawberry Danish,,,unit,1,1.0,1 unit = 1.0 unit (from raw/ingredients.xlsx)
+Berries and Cream Twist Danish,,,unit,1,1.0,1 unit = 1.0 unit (from raw/ingredients.xlsx)
+Raspberry Cream Cheese Danish,,,unit,1,1.0,1 unit = 1.0 unit (from raw/ingredients.xlsx)
+Cheese Square Danish,,,unit,1,1.0,1 unit = 1.0 unit (from raw/ingredients.xlsx)
+Cinnamon Roll,,,unit,1,1.0,1 unit = 1.0 unit (from raw/ingredients.xlsx)
+Blueberry Scone,,,unit,1,1.0,1 unit = 1.0 unit (from raw/ingredients.xlsx)
+Chocolate Chip Cookie,,,g,1,11339.8,1 Package 25 lb = 11339.8 g (from raw/ingredients.xlsx)
+Chocolate Chip Muffin,,,g,1,11339.8,1 Package 25 lb = 11339.8 g (from raw/ingredients.xlsx)
+Pistachio Muffin,,,g,1,11339.8,1 Package 25 lb = 11339.8 g (from raw/ingredients.xlsx)
+Banana Nut Muffin,,,g,1,11339.8,1 Package 25 lb = 11339.8 g (from raw/ingredients.xlsx)
+Cacao Muffin,,,g,1,11339.8,1 Package 25 lb = 11339.8 g (from raw/ingredients.xlsx)
+Chocolate Eclair,,,lb,1,2.64,1 Bag 2.64 lb = 2.64 lb (from raw/ingredients.xlsx)
+Vanilla Eclair,,,unit,1,72.0,1 Case x 72 = 72.0 unit (from raw/ingredients.xlsx)
+Coffee Eclair,,,unit,1,72.0,1 Case x 72 = 72.0 unit (from raw/ingredients.xlsx)
+Tart Mixed Berry,,,unit,1,1.0,1 unit = 1.0 unit (from raw/ingredients.xlsx)
+Macarons French,,,unit,1,1.0,1 unit = 1.0 unit (from raw/ingredients.xlsx)
+Tiramisu,,,unit,1,1.0,1 unit = 1.0 unit (from raw/ingredients.xlsx)
+Tiramisu With Ladyfingers,,,unit,1,1.0,1 unit = 1.0 unit (from raw/ingredients.xlsx)
+Stroopwafel,,,unit,1,1.0,1 unit = 1.0 unit (from raw/ingredients.xlsx)
+Waffles Birthday Cake,,,unit,1,1.0,1 unit = 1.0 unit (from raw/ingredients.xlsx)
+Red Velvet Cake,,,unit,1,1.0,1 unit = 1.0 unit (from raw/ingredients.xlsx)
+Chocolate Temptation Cake,,,unit,1,1.0,1 unit = 1.0 unit (from raw/ingredients.xlsx)
+Carrot Cake,,,unit,1,1.0,1 unit = 1.0 unit (from raw/ingredients.xlsx)
+Cappuccino Cake,,,unit,1,1.0,1 unit = 1.0 unit (from raw/ingredients.xlsx)
+Cake Torta Nocciola,,,unit,1,1.0,1 unit = 1.0 unit (from raw/ingredients.xlsx)
+Chocolate Fondant Cake,,,unit,1,1.0,1 unit = 1.0 unit (from raw/ingredients.xlsx)
+Tres Leches Cake,,,unit,1,1.0,1 unit = 1.0 unit (from raw/ingredients.xlsx)
+Red Velvet Mini Gluten Free Cake,,,unit,1,1.0,1 unit = 1.0 unit (from raw/ingredients.xlsx)
+Ricotta and Pistachio Cake,,,unit,1,1.0,1 unit = 1.0 unit (from raw/ingredients.xlsx)
+Pistachio Cheesecake,,,unit,1,1.0,1 unit = 1.0 unit (from raw/ingredients.xlsx)
+Dulce de Leche Cheesecake,,,unit,1,1.0,1 unit = 1.0 unit (from raw/ingredients.xlsx)
+Strawberry Cheesecake,,,unit,1,1.0,1 unit = 1.0 unit (from raw/ingredients.xlsx)
+Chocolate Ganache Cheesecake,,,unit,1,1.0,1 unit = 1.0 unit (from raw/ingredients.xlsx)
+Brownie Cheesecake,,,unit,1,1.0,1 unit = 1.0 unit (from raw/ingredients.xlsx)
+Acqua Panna,,,unit,1,1.0,1 unit = 1.0 unit (from raw/ingredients.xlsx)
+San Pellegrino,,,unit,1,1.0,1 unit = 1.0 unit (from raw/ingredients.xlsx)
+San Pellegrino Aranciata,,,unit,1,1.0,1 unit = 1.0 unit (from raw/ingredients.xlsx)
+San Pellegrino Ciao Lime,,,unit,1,1.0,1 unit = 1.0 unit (from raw/ingredients.xlsx)
+San Pellegrino Limonata,,,unit,1,1.0,1 unit = 1.0 unit (from raw/ingredients.xlsx)
+A Siciliana Aranciata,,,unit,1,1.0,1 unit = 1.0 unit (from raw/ingredients.xlsx)
+A Siciliana Limonata,,,unit,1,1.0,1 unit = 1.0 unit (from raw/ingredients.xlsx)
+A Siciliana Mandarino,,,unit,1,1.0,1 unit = 1.0 unit (from raw/ingredients.xlsx)
+A Siciliana Melograno,,,unit,1,1.0,1 unit = 1.0 unit (from raw/ingredients.xlsx)
+Bundaberg Ginger Beer,,,unit,1,1.0,1 unit = 1.0 unit (from raw/ingredients.xlsx)
+Apple Juice,,,unit,1,1.0,1 unit = 1.0 unit (from raw/ingredients.xlsx)
+Black River Pear Juice,,,unit,1,1.0,1 unit = 1.0 unit (from raw/ingredients.xlsx)
+Five Star Apple Juice,,,unit,1,1.0,1 unit = 1.0 unit (from raw/ingredients.xlsx)
+Five Star Cranberry Juice,,,unit,1,1.0,1 unit = 1.0 unit (from raw/ingredients.xlsx)
+Five Star Orange Juice,,,unit,1,1.0,1 unit = 1.0 unit (from raw/ingredients.xlsx)
+Five Star Pineapple Juice,,,unit,1,1.0,1 unit = 1.0 unit (from raw/ingredients.xlsx)
+Orange Tropicana Juice,,,unit,1,1.0,1 unit = 1.0 unit (from raw/ingredients.xlsx)
+Apple Tropicana Juice,,,unit,1,1.0,1 unit = 1.0 unit (from raw/ingredients.xlsx)
+Simply Orange Juice,,,unit,1,1.0,1 unit = 1.0 unit (from raw/ingredients.xlsx)
+Natalie's Pineapple Cucumber and Celery,,,unit,1,1.0,1 unit = 1.0 unit (from raw/ingredients.xlsx)
+Energy Drink Celsius Orange,,,unit,1,1.0,1 unit = 1.0 unit (from raw/ingredients.xlsx)
+Energy Drink Celsius Watermelon,,,unit,1,1.0,1 unit = 1.0 unit (from raw/ingredients.xlsx)
+Energy Drink Celsius Mango Lemonade,,,unit,1,1.0,1 unit = 1.0 unit (from raw/ingredients.xlsx)
+Energy Drink Celsius Peach Vibe,,,unit,1,1.0,1 unit = 1.0 unit (from raw/ingredients.xlsx)
+Energy Drink Celsius Tropical Vibe,,,unit,1,1.0,1 unit = 1.0 unit (from raw/ingredients.xlsx)
+Energy Drink Celsius Wildberry,,,unit,1,1.0,1 unit = 1.0 unit (from raw/ingredients.xlsx)
+Energy Drink Celsius Artic Vibe,,,unit,1,1.0,1 unit = 1.0 unit (from raw/ingredients.xlsx)
+Energy Drink Celsius Kiwi Giava,,,unit,1,1.0,1 unit = 1.0 unit (from raw/ingredients.xlsx)
+Energy Drink Celsuis Strawberry Lemonade,,,unit,1,1.0,1 unit = 1.0 unit (from raw/ingredients.xlsx)
+Water Bottle Smart,,,unit,1,1.0,1 unit = 1.0 unit (from raw/ingredients.xlsx)
+Flavored Water Mango Pineapple Splash,,,unit,1,1.0,1 unit = 1.0 unit (from raw/ingredients.xlsx)
+Espresso,,,g,1,2268.0,1 Bag 5 lb = 2268.0 g (from raw/ingredients.xlsx)
+Ice Cubes,,,g,1,3785.0,1 1 gal = 3785.0 g (from raw/ingredients.xlsx)
+Whipped Cream,,,g,1,397.0,1 Can 14 oz = 397.0 g (from raw/ingredients.xlsx)
+Pepper,,,oz,1,80.0,1 Bag 5 lb = 80.0 oz (from raw/ingredients.xlsx)
+Salt,,,oz,1,400.0,1 Case 25 lb = 400.0 oz (from raw/ingredients.xlsx)
+Brewed Tea,,,ml,1,11356.0,1 3 gal = 11356.0 ml (from raw/ingredients.xlsx)
+Cappuccino Foam,,,ml,1,3785.0,1 1 gal = 3785.0 ml (from raw/ingredients.xlsx)
+Cold Foam Coconut,,,ml,1,11356.0,1 Case 12 × 32 oz = 11356.0 ml (from raw/ingredients.xlsx)
+Tiramisu Toasted Almond,,,unit,1,1.0,1 Case 20 units = 1.0 unit (from raw/ingredients.xlsx)
+All Butter Curved Croissant,,,unit,1,1.0,1 unit = 1.0 unit (from raw/ingredients.xlsx)
+All Butter Curved Mini Croissant,,,unit,1,1.0,1 Case 150 units = 1.0 unit (from raw/ingredients.xlsx)
+Vegan Croissant,,,unit,1,1.0,1 Case 48 units = 1.0 unit (from raw/ingredients.xlsx)
+Multigrain Muffin,,,unit,1,1.0,1 Case 20 units = 1.0 unit (from raw/ingredients.xlsx)
+Strawberry Sprint,,,g,1,1000.0,1 Case 8 units = 1000.0 g (from raw/ingredients.xlsx)
+White Base Sprint,,,g,1,1000.0,1 Case 12 units = 1000.0 g (from raw/ingredients.xlsx)
+Pineapple Syrup,,,ml,1,1000.0,1 Case 12 units = 1000.0 ml (from raw/ingredients.xlsx)
+Avocado Cheesecake,,,unit,1,1.0,1 Case 8 units = 1.0 unit (from raw/ingredients.xlsx)
+Chocolate Mousse Glass,,,unit,1,1.0,1 Case 12 units = 1.0 unit (from raw/ingredients.xlsx)
+Chocolate Truffle Cake,,,unit,1,1.0,1 Case 12 units = 1.0 unit (from raw/ingredients.xlsx)
+Blueberry and Chocolate Chips Vegan Croissant,,,unit,1,1.0,1 Case 48 units = 1.0 unit (from raw/ingredients.xlsx)
+Raspberry Passion Fruit Cake,,,unit,1,1.0,1 Case 12 units = 1.0 unit (from raw/ingredients.xlsx)
+Sicilian Cannoli,,,unit,1,1.0,1 Case 10 units = 1.0 unit (from raw/ingredients.xlsx)
+Pistachio Profiteroles,,,unit,1,1.0,1 Case 8 units = 1.0 unit (from raw/ingredients.xlsx)
+Traditional Cheesecake,,,unit,1,1.0,1 Case 14 units = 1.0 unit (from raw/ingredients.xlsx)
+Truffle Royale Cake,,,unit,1,1.0,1 Case 14 units = 1.0 unit (from raw/ingredients.xlsx)
+Muffin Classico,,,unit,1,1.0,1 Case 20 units = 1.0 unit (from raw/ingredients.xlsx)
+Chocolate Sprint,,,unit,1,1.0,1 Case 12 units = 1.0 unit (from raw/ingredients.xlsx)
+Lemon Blueberry Crumb Cheesecake,,,unit,1,1.0,1 Case 16 units = 1.0 unit (from raw/ingredients.xlsx)
+Espresso,,,shot,1,7.0,7g ground coffee per espresso shot (standard barista dose)
+Almond Milk,,,oz,1,29.57,fl oz → ml
+Brewed Coffee,,,oz,1,29.57,fl oz → ml
+Brewed Tea,,,oz,1,29.57,fl oz → ml
+Club Soda,,,oz,1,29.57,fl oz → ml
+Coconut Milk,,,oz,1,29.57,fl oz → ml
+Coconut Syrup,,,oz,1,29.57,fl oz → ml
+Cold Foam Coconut,,,oz,1,29.57,fl oz → ml
+Milk,,,oz,1,29.57,fl oz → ml
+Water,,,oz,1,29.57,fl oz → ml
+Batter,,,oz,1,28.35,oz → g
+Cappuccino Foam,,,oz,1,28.35,oz → g
+Chocolate Gelato,,,oz,1,0.3333,oz → g
+Gelato,,,oz,1,28.35,oz → g
+Ice Cubes,,,oz,1,28.35,oz → g
+Vanilla Gelato,,,oz,1,0.3333,oz → g
+Blue Raspberry Fruit Fusion,,,pump,1,28.0,Lotus pump = 28g
+Cream Base,,,pump,1,28.0,Lotus pump = 28g
+Mango Passion Fruit Fusion,,,pump,1,28.0,Lotus pump = 28g
+Orange Creamsicle Fruit Fusion,,,pump,1,28.0,Lotus pump = 28g
+Pina Colada Fruit Fusion,,,pump,1,28.0,Lotus pump = 28g
+Strawberry Fruit Fusion,,,pump,1,28.0,Lotus pump = 28g
+Watermelon Fruit Fusion,,,pump,1,28.0,Lotus pump = 28g
+White Lotus,,,pump,1,28.0,Lotus pump = 28g
+Chocolate Sauce,,,pump,1,14.0,Sauce pump = 14g
+Sauce,,,pump,1,14.0,Sauce pump = 14g
+Coconut Syrup,,,pump,1,7.0,Monin pump = 7g
+Dragon Fruit Syrup,,,pump,1,7.0,Monin pump = 7g
+Hazelnut Syrup,,,pump,1,7.0,Monin pump = 7g
+Rose Syrup,,,pump,1,7.0,Monin pump = 7g
+Syrup,,,pump,1,7.0,Monin pump = 7g
+Coconut Syrup,,,pump,1,7.0,Monin pump = 7g
+Vanilla Syrup,,,pump,1,7.0,Monin pump = 7g
+Chai Tea Concentrate,,,pump,1,7.0,Chai pump = 7g
+Strawberry Fruit Puree,,,pump,1,7.0,Puree pump = 7g
+Cooking Spray,,,pump,1,1.0,1-sec aerosol spray; 482g can ÷ ~500 sprays ≈ 1g
+Vanilla Powder,,,scoop,1,14.0,Vanilla Powder Scoop = 14g (DB)
+Chocolate Powder,,,scoop,1,12.0,Chocolate Powder Scoop = 12g (DB)
+Taro Powder,,,scoop,1,14.0,Taro Scoop = 14g (DB)
+Greek Yogurt,,,scoop,1,28.0,Greek Yogurt Scoop = 28g (DB)
+Tapioca Pearls,,,scoop,1,42.0,Tapioca Pearls Scoop = 42g (DB)
+Whey Protein,,,scoop,1,14.0,Protein Scoop = 14g (DB)
+Honey Oat Granola,,,scoop,1,28.0,Topping scoop ~60ml × 0.45g/ml = 28g (Fermi)
+Crushed Oreo,,,scoop,1,14.0,Topping scoop ~30ml × 0.5g/ml = 14g (Fermi)
+Cheese Cheddar Sliced,,,slice,1,17.0,Cheese slice = 17g (DB)
+Cheese Mozzarella Sliced,,,slice,1,17.0,Cheese slice = 17g (DB)
+Mozzarella,,,slice,1,17.0,Cheese slice = 17g (DB)
+Sliced Pickles,,,slice,1,5.0,Pickles slice: 28g/6 = 4.67g ≈ 5g (DB)
+Sliced Tomato,,,slice,1,14.0,Tomato slice: 28g/2 = 14g (DB)
+Proscuitto,,,slice,1,20.0,Slice generic = 20g (DB)
+Turkey Bacon,,,slice,1,20.0,Slice generic = 20g (DB)
+Smoked Salmon,,,slice,1,30.0,Premium lox slice: 2 slices/portion ≈ 60g → 30g (Fermi)
+Chicken Breast Grilled,,,slice,1,45.0,Grilled breast 140g ÷ 3 slices ≈ 45g (Fermi)
+Avocado,,,table spoon,1,14.0,Tablespoon = 14g (DB)
+Capers,,,table spoon,1,14.0,Tablespoon = 14g (DB)
+Crumbled Blue Cheese,,,table spoon,1,14.0,Tablespoon = 14g (DB)
+Chia Seeds,,,table spoon,1,14.0,Tablespoon = 14g (DB)
+Cream Cheese,,,table spoon,1,14.0,Tablespoon = 14g (DB)
+Matcha,,,table spoon,1,14.0,Tablespoon = 14g (DB)
+Mayonnaise,,,table spoon,1,14.0,Tablespoon = 14g (DB)
+Mustard,,,table spoon,1,14.0,Tablespoon = 14g (DB)
+Pesto,,,table spoon,1,14.0,Tablespoon = 14g (DB)
+Dried Oregano,,,sprinkle,1,3.0,Sprinkle = 3g (DB)
+Coconut Flakes,,,sprinkle,1,3.0,Sprinkle = 3g (DB)
+Icing Sugar,,,sprinkle,1,3.0,Sprinkle = 3g (DB)
+Seasoning Mix,,,sprinkle,1,3.0,Sprinkle = 3g (DB)
+Balsamic Vinegar,,,drizzle,1,14.0,Drizzle = 14g (DB)
+Lemon Juice,,,drizzle,1,14.0,Drizzle = 14g (DB)
+Olive Oil,,,drizzle,1,14.0,Drizzle = 14g (DB)
+Basil,,,leaf,1,0.5,Basil leaf = 0.5g (DB)
+Arugula,,,hanful,1,30.0,Handful arugula ≈ 30g (Fermi); note: typo in recipes
+Orange Food Coloring,,,drop,1,0.045,Drop = 0.045g (DB)
+Whipped Cream,,,rosette,1,28.0,Rosette = 28g (DB); note: ingredient deleted from list

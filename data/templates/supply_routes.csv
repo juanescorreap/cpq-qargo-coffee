@@ -1,4 +1,159 @@
 ingredient_name,manufacturer_name,distributor_name,is_direct,is_active
-Whole milk,Alpina Productos Alimenticios,Distribuidora Andina SAS,false,true
-Whole milk,Colanta,,true,true
-Amaretto syrup,Monin,Distribuidora Andina SAS,false,true
+Strawberry Cheesecake,Bindi,,true,true
+Strawberry Cheesecake,Bindi,Food Related,false,true
+Strawberry Cheesecake,Bindi,French Bakery,false,true
+Strawberry Cheesecake,Bindi,Greco & Sons,false,true
+Strawberry Cheesecake,Bindi,Pointe Dairy,false,true
+Strawberry Cheesecake,Bindi,Primizie,false,true
+Strawberry Cheesecake,Bindi,IGF,false,true
+Traditional Cheesecake,Bindi,Pointe Dairy,false,true
+Chocolate Fondant Cake,Bindi,French Bakery,false,true
+Chocolate Fondant Cake,Bindi,Primizie,false,true
+Chocolate Fondant Cake,Bindi,,true,true
+Chocolate Ganache Cheesecake,Bindi,Food Related,false,true
+Chocolate Ganache Cheesecake,Bindi,French Bakery,false,true
+Chocolate Ganache Cheesecake,Bindi,Primizie,false,true
+Chocolate Ganache Cheesecake,Bindi,,true,true
+Chocolate Temptation Cake,Bindi,,true,true
+Chocolate Temptation Cake,Bindi,Food Related,false,true
+Chocolate Temptation Cake,Bindi,French Bakery,false,true
+Chocolate Temptation Cake,Bindi,Greco & Sons,false,true
+Chocolate Temptation Cake,Bindi,Pointe Dairy,false,true
+Chocolate Temptation Cake,Bindi,Primizie,false,true
+Ricotta and Pistachio Cake,Bindi,,true,true
+Ricotta and Pistachio Cake,Bindi,Food Related,false,true
+Ricotta and Pistachio Cake,Bindi,French Bakery,false,true
+Chocolate Croissant,Bindi,Food Related,false,true
+Chocolate Croissant,Bindi,French Bakery,false,true
+Chocolate Croissant,Bindi,Greco & Sons,false,true
+Raspberry Passion Fruit Cake,Bindi,,true,true
+Sicilian Cannoli,Bindi,Food Related,false,true
+Sicilian Cannoli,Bindi,Primizie,false,true
+Vegan Croissant,Bindi,Greco & Sons,false,true
+All Butter Croissant,Bindi,,true,true
+All Butter Croissant,Bindi,Food Related,false,true
+All Butter Croissant,Bindi,French Bakery,false,true
+All Butter Croissant,Bindi,Greco & Sons,false,true
+All Butter Croissant,Bindi,Pointe Dairy,false,true
+All Butter Croissant,Bindi,Primizie,false,true
+All Butter Croissant,Bindi,Soft Stuff Distributors,false,true
+All Butter Croissant,Bindi,IGF,false,true
+Chocolate Croissant,Bindi,,true,true
+Chocolate Croissant,Bindi,Pointe Dairy,false,true
+Chocolate Croissant,Bindi,Primizie,false,true
+Chocolate Croissant,Bindi,IGF,false,true
+Tiramisu,Bindi,Greco & Sons,false,true
+Tiramisu,Bindi,Pointe Dairy,false,true
+Tiramisu,Bindi,Primizie,false,true
+Pistachio Profiteroles,Bindi,French Bakery,false,true
+Blueberry and Chocolate Chips Vegan Croissant,Bindi,,true,true
+Pineapple Syrup,Bindi,Primizie,false,true
+Coconut Syrup,Bindi,Primizie,false,true
+Tiramisu,Bindi,,true,true
+Cake Torta Nocciola,Bindi,,true,true
+Cake Torta Nocciola,Bindi,French Bakery,false,true
+Cake Torta Nocciola,Bindi,Greco & Sons,false,true
+Cake Torta Nocciola,Bindi,Pointe Dairy,false,true
+Cake Torta Nocciola,Bindi,Food Related,false,true
+Tiramisu Toasted Almond,Bindi,Food Related,false,true
+Tiramisu With Ladyfingers,Bindi,Food Related,false,true
+Tiramisu,Bindi,Food Related,false,true
+Tiramisu With Ladyfingers,Bindi,,true,true
+Tiramisu With Ladyfingers,Bindi,French Bakery,false,true
+Tiramisu With Ladyfingers,Bindi,Pointe Dairy,false,true
+Pinsa Margherita,Bindi,Food Related,false,true
+Pinsa Margherita,Bindi,,true,true
+Truffle Royale Cake,Bindi,Pointe Dairy,false,true
+Chocolate Truffle Cake,Bindi,Pointe Dairy,false,true
+Muffin Classico,Bindi,Food Related,false,true
+Multigrain Muffin,Bindi,Pointe Dairy,false,true
+Chocolate Mousse Glass,Bindi,Pointe Dairy,false,true
+Tiramisu,Bindi,French Bakery,false,true
+Tiramisu,Bindi,IGF,false,true
+Cappuccino Cake,Bindi,,true,true
+Cappuccino Cake,Bindi,French Bakery,false,true
+Cappuccino Cake,Bindi,Primizie,false,true
+Cappuccino Cake,Bindi,Food Related,false,true
+All Butter Curved Mini Croissant,Bindi,French Bakery,false,true
+All Butter Curved Mini Croissant,Bindi,Food Related,false,true
+Brownie Cheesecake,Bindi,French Bakery,false,true
+Brownie Cheesecake,Bindi,Pointe Dairy,false,true
+Red Velvet Cake,Bindi,Food Related,false,true
+Avocado Cheesecake,Bindi,Food Related,false,true
+Lemon Blueberry Crumb Cheesecake,Bindi,Pointe Dairy,false,true
+Dulce de Leche Cheesecake,Bindi,Food Related,false,true
+Dulce de Leche Cheesecake,Bindi,French Bakery,false,true
+Dulce de Leche Cheesecake,Bindi,Greco & Sons,false,true
+Dulce de Leche Cheesecake,Bindi,Primizie,false,true
+Tres Leches Cake,Bindi,Pointe Dairy,false,true
+Pistachio Cheesecake,Bindi,,true,true
+Pistachio Cheesecake,Bindi,Food Related,false,true
+Pistachio Cheesecake,Bindi,French Bakery,false,true
+Pistachio Cheesecake,Bindi,Greco & Sons,false,true
+Pistachio Cheesecake,Bindi,Primizie,false,true
+Pistachio Cheesecake,Bindi,IGF,false,true
+Red Velvet Cake,Bindi,,true,true
+Red Velvet Cake,Bindi,French Bakery,false,true
+Red Velvet Cake,Bindi,Greco & Sons,false,true
+Red Velvet Cake,Bindi,Pointe Dairy,false,true
+Red Velvet Cake,Bindi,Primizie,false,true
+Red Velvet Cake,Bindi,IGF,false,true
+Chocolate Eclair,Bindi,Food Related,false,true
+Chocolate Eclair,Bindi,French Bakery,false,true
+Chocolate Eclair,Bindi,Greco & Sons,false,true
+Chocolate Eclair,Bindi,Primizie,false,true
+Chocolate Eclair,Bindi,IGF,false,true
+Chocolate Eclair,Bindi,,true,true
+Vanilla Eclair,Bindi,Food Related,false,true
+Vanilla Eclair,Bindi,French Bakery,false,true
+Vanilla Eclair,Bindi,Greco & Sons,false,true
+Vanilla Eclair,Bindi,Primizie,false,true
+Vanilla Eclair,Bindi,,true,true
+Macarons French,Bindi,Food Related,false,true
+Macarons French,Bindi,French Bakery,false,true
+Macarons French,Bindi,Greco & Sons,false,true
+Macarons French,Bindi,Primizie,false,true
+Muffin Classico,Bindi,Greco & Sons,false,true
+Focaccia,Bindi,Greco & Sons,false,true
+All Butter Curved Mini Croissant,Bindi,,true,true
+Pinsa Margherita,Bindi,Greco & Sons,false,true
+Chocolate Ganache Cheesecake,Bindi,Greco & Sons,false,true
+Chocolate Fondant Cake,Bindi,Greco & Sons,false,true
+All Butter Curved Mini Croissant,Bindi,Greco & Sons,false,true
+Lemon Blueberry Crumb Cheesecake,Bindi,Greco & Sons,false,true
+Cappuccino Cake,Bindi,Greco & Sons,false,true
+Leek and Parmesan Danish,Bridor,Greco & Sons,false,true
+Cinnamon Roll,Bridor,Greco & Sons,false,true
+Blueberry Cheesecake Danish,Bridor,Greco & Sons,false,true
+Cherry Greek Yogurt Danish,Bridor,Greco & Sons,false,true
+Lemon Danish,Bridor,Greco & Sons,false,true
+Maple Pecan Danish,Bridor,Greco & Sons,false,true
+Cheese Danish,Bridor,Greco & Sons,false,true
+Focaccia,Bridor,Greco & Sons,false,true
+Cheese Danish,Bridor,Pointe Dairy,false,true
+Cinnamon Roll,Bridor,Pointe Dairy,false,true
+Maple Pecan Danish,Bridor,Pointe Dairy,false,true
+Focaccia,Bridor,Pointe Dairy,false,true
+Strawberry Danish,Bridor,Pointe Dairy,false,true
+Leek and Parmesan Danish,Bridor,Pointe Dairy,false,true
+Cherry Greek Yogurt Danish,Bridor,Pointe Dairy,false,true
+Raspberry Cream Cheese Danish,Bridor,Pointe Dairy,false,true
+Focaccia,Bridor,Food Related,false,true
+Cherry Greek Yogurt Danish,Bridor,Food Related,false,true
+Maple Pecan Danish,Bridor,Food Related,false,true
+Strawberry Danish,Bridor,Food Related,false,true
+Focaccia,Bridor,TCW,false,true
+Lemon Danish,Bridor,TCW,false,true
+Strawberry Danish,Bridor,TCW,false,true
+Leek and Parmesan Danish,Bridor,TCW,false,true
+All Butter Curved Croissant,Bridor,TCW,false,true
+Focaccia,Bridor,French Bakery,false,true
+Strawberry Danish,Bridor,French Bakery,false,true
+Cheese Danish,Bridor,French Bakery,false,true
+Lemon Danish,Bridor,French Bakery,false,true
+Chocolate Croissant,Bridor,French Bakery,false,true
+Chocolate Sprint,PreGel,,false,true
+Vanilla Syrup,PreGel,,false,true
+White Base Sprint,PreGel,,false,true
+Strawberry Sprint,PreGel,,false,true
+Cinnamon Roll,Golden Waffles,,false,true

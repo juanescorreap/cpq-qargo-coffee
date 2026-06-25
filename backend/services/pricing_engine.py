@@ -24,6 +24,7 @@ from backend.models import (
     ProductPriceHistory,
     ProductPricing,
     ProductSize,
+    Store,
 )
 from backend.models.supply_chain import RecipeCostSnapshot
 from backend.services.cost_calculator import (
@@ -38,12 +39,33 @@ logger = logging.getLogger("pricing_engine")
 _DEFAULT_MARKUP = Decimal("50.0")
 
 
+def _store_currency(db: Session, store_id: Optional[int]) -> str:
+    """Return default_currency_code for a store, or 'COP' for global (no store) prices."""
+    if store_id is None:
+        return "COP"
+    row = db.query(Store.default_currency_code).filter(Store.id == store_id).first()
+    return row[0] if row else "COP"
+
+
+def _round_price(amount: Decimal, currency_code: str) -> Decimal:
+    """Round a suggested price to the standard increment for the given currency.
+
+    - USD: nearest $0.05  (e.g. 6.87 → 6.85, 6.88 → 6.90)
+    - COP (default): nearest 100  (e.g. 14 650 → 14 700)
+    """
+    if currency_code == "USD":
+        step = Decimal("0.05")
+        return (amount / step).to_integral_value() * step
+    return Decimal(round(amount / Decimal("100")) * 100)
+
+
 class PricingEngine:
     """Price calculation engine with margins for coffee-shop products.
 
     Encapsulates the logic for:
     - Markup resolution according to the priority hierarchy.
-    - Suggested price calculation rounded to the nearest 100 COP.
+    - Suggested price calculation rounded to the store's currency increment
+      (USD → nearest $0.05; COP → nearest 100).
     - Upsert persistence in ``ProductPricing`` with automatic history.
     - Batch recalculation of all active products.
 
@@ -121,7 +143,7 @@ class PricingEngine:
                     'cost':              Decimal,   # production cost
                     'markup_percentage': Decimal,   # applied markup (%)
                     'suggested_price':   Decimal,   # cost × (1 + markup/100)
-                    'rounded_price':     Decimal,   # rounded to 100 COP
+                    'rounded_price':     Decimal,   # rounded to currency increment
                 }
 
         Raises:
@@ -135,7 +157,8 @@ class PricingEngine:
         markup = self._resolve_markup(product_id, size_id, store_id, markup_override)
 
         suggested_price = cost * (Decimal("1") + markup / Decimal("100"))
-        rounded_price = Decimal(round(suggested_price / Decimal("100")) * 100)
+        currency = _store_currency(self.db, store_id)
+        rounded_price = _round_price(suggested_price, currency)
 
         return {
             "product_id": product_id,
@@ -366,6 +389,7 @@ class PricingEngine:
         memo: Dict[tuple, BaseCost] = {}
         memo_base: Dict[tuple, BaseCost] = {}
         markups = self._bulk_markups(products, store_id)
+        store_currency = _store_currency(self.db, store_id)
         batch_run_id = uuid.uuid4()
         snapshots_written = 0
 
@@ -388,7 +412,7 @@ class PricingEngine:
                         (product.id, size.id), _DEFAULT_MARKUP
                     )
                     suggested = cost * (Decimal("1") + markup / Decimal("100"))
-                    rounded = Decimal(round(suggested / Decimal("100")) * 100)
+                    rounded = _round_price(suggested, store_currency)
 
                     if save_to_db:
                         self.save_pricing(
@@ -424,7 +448,7 @@ class PricingEngine:
                                 size_id=size.id,
                                 base_cost=base_cost,
                                 effective_cost=cost,
-                                currency_code="COP",
+                                currency_code=store_currency,
                                 has_substitutes=has_subs,
                                 snapshot_detail=detail,
                                 formula_version=ctx.formula_version,

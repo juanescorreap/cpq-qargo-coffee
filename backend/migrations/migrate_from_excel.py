@@ -8,6 +8,7 @@ into the database using the SQLAlchemy session. Row-level errors are reported
 as warnings so that a badly formatted row does not interrupt the full load.
 """
 
+import csv
 import re
 import sys
 from decimal import Decimal
@@ -21,12 +22,18 @@ from backend.database import SessionLocal
 from backend.migrations.utils import safe_decimal
 from backend.models.category import Category
 from backend.models.ingredient import Ingredient
-from backend.models.product import Product, ProductSize, RecipeIngredient
+from backend.models.product import (
+    Product,
+    ProductSize,
+    RecipeIngredient,
+    RecipeSubRecipe,
+)
 from backend.models.recipe_unit import IngredientRecipeUnitConversion, RecipeUnit
 
 # Project root (two levels above this file)
 _PROJECT_ROOT = Path(__file__).resolve().parents[2]
 _RAW_DIR = _PROJECT_ROOT / "data" / "raw"
+_TEMPLATES_DIR = _PROJECT_ROOT / "data" / "templates"
 
 # ---------------------------------------------------------------------------
 # Internal helpers
@@ -880,6 +887,154 @@ def migrate_recipes() -> None:
 
 
 # ---------------------------------------------------------------------------
+# migrate_recipe_sub_recipes
+# ---------------------------------------------------------------------------
+
+def migrate_recipe_sub_recipes() -> None:
+    """Loads sub-recipe references from 'data/templates/recipe_sub_recipes.csv'.
+
+    Expected CSV format
+    -------------------
+    | Column              | Type   | Description                                          |
+    |---------------------|--------|------------------------------------------------------|
+    | parent_product_name | str    | Exact product name in DB (parent recipe). Required.  |
+    | sub_recipe_name     | str    | Exact name of a product flagged is_sub_recipe=True.  |
+    | quantity            | number | Quantity of sub-recipe used. Required > 0.           |
+    | recipe_unit         | str    | Unit label (informational; not stored in DB).        |
+    | scales_with_size    | bool   | "true"/"1"/"yes" → True, else False.                 |
+
+    Both parent and sub-recipe are rows in the ``products`` table — sub-recipes
+    are products with ``is_sub_recipe=True``. The name lookup is case-insensitive
+    and shared between parent and sub resolution.
+
+    Prerequisites
+    -------------
+    Products must exist in DB (migrate_products()).
+    """
+    csv_path = _TEMPLATES_DIR / "recipe_sub_recipes.csv"
+    if not csv_path.exists():
+        print(f"❌ File not found: {csv_path}")
+        return
+
+    try:
+        with open(csv_path, newline="", encoding="utf-8") as fh:
+            rows = list(csv.DictReader(fh))
+    except Exception as exc:
+        print(f"❌ Could not read '{csv_path.name}': {exc}")
+        return
+
+    total_rows = len(rows)
+
+    db = SessionLocal()
+    try:
+        # Pre-load product lookup (case-insensitive) -> (id, is_sub_recipe).
+        # Sub-recipes are also products, so a single map serves both lookups.
+        product_map: dict[str, tuple[int, bool]] = {
+            name_lower: (prod_id, bool(is_sub))
+            for prod_id, name_lower, is_sub in db.query(
+                Product.id,
+                func.lower(Product.name).label("name_lower"),
+                Product.is_sub_recipe,
+            ).all()
+        }
+        # Existing (parent_product_id, sub_recipe_id) pairs to avoid duplicates.
+        existing_pairs: set[tuple[int, int]] = {
+            (rsr.parent_product_id, rsr.sub_recipe_id)
+            for rsr in db.query(
+                RecipeSubRecipe.parent_product_id,
+                RecipeSubRecipe.sub_recipe_id,
+            ).all()
+        }
+
+        objects: list[RecipeSubRecipe] = []
+        skipped = 0
+
+        for idx, row in enumerate(rows):
+            row_num = idx + 2  # +1 header, +1 1-based
+
+            try:
+                parent_name = _clean_str(row.get("parent_product_name"))
+                sub_name = _clean_str(row.get("sub_recipe_name"))
+
+                if not parent_name:
+                    print(f"  ⚠️  Row {row_num}: 'parent_product_name' is empty — skipped.")
+                    skipped += 1
+                    continue
+                if not sub_name:
+                    print(f"  ⚠️  Row {row_num}: 'sub_recipe_name' is empty — skipped.")
+                    skipped += 1
+                    continue
+
+                parent_entry = product_map.get(parent_name.lower())
+                if parent_entry is None:
+                    print(f"  ⚠️  Row {row_num}: parent product '{parent_name}' not found in DB — skipped.")
+                    skipped += 1
+                    continue
+                parent_product_id = parent_entry[0]
+
+                sub_entry = product_map.get(sub_name.lower())
+                if sub_entry is None:
+                    print(f"  ⚠️  Row {row_num}: sub-recipe '{sub_name}' not found in DB — skipped.")
+                    skipped += 1
+                    continue
+                sub_recipe_id, sub_is_sub = sub_entry
+                if not sub_is_sub:
+                    print(
+                        f"  ⚠️  Row {row_num}: '{sub_name}' exists but is_sub_recipe=False "
+                        f"— loaded anyway."
+                    )
+
+                quantity = safe_decimal(_clean_str(row.get("quantity")))
+                if quantity is None or quantity <= 0:
+                    print(
+                        f"  ⚠️  Row {row_num} ('{parent_name}' / '{sub_name}'): "
+                        f"quantity '{row.get('quantity')}' inválida — skipped."
+                    )
+                    skipped += 1
+                    continue
+
+                pair = (parent_product_id, sub_recipe_id)
+                if pair in existing_pairs:
+                    print(
+                        f"  ⚠️  Row {row_num}: pair ('{parent_name}' / '{sub_name}') "
+                        f"already exists in DB — skipped."
+                    )
+                    skipped += 1
+                    continue
+
+                objects.append(
+                    RecipeSubRecipe(
+                        parent_product_id=parent_product_id,
+                        sub_recipe_id=sub_recipe_id,
+                        quantity=quantity,
+                        scales_with_size=_to_bool(row.get("scales_with_size")),
+                    )
+                )
+                existing_pairs.add(pair)
+
+            except Exception as exc:
+                print(f"  ⚠️  Row {row_num}: unexpected error ({exc}) — skipped.")
+                skipped += 1
+
+        if not objects:
+            print(f"⚠️  No valid rows to insert ({skipped} skipped out of {total_rows}).")
+            return
+
+        db.bulk_save_objects(objects)
+        db.commit()
+        parts = [f"✅ Migrated {len(objects)} recipe sub-recipes"]
+        if skipped:
+            parts.append(f"{skipped} skipped out of {total_rows} rows")
+        print(", ".join(parts))
+
+    except Exception as exc:
+        db.rollback()
+        print(f"❌ Commit error: {exc}")
+    finally:
+        db.close()
+
+
+# ---------------------------------------------------------------------------
 # Entry point
 # ---------------------------------------------------------------------------
 
@@ -891,6 +1046,7 @@ def main() -> None:
         migrate_products()
         migrate_product_sizes()
         migrate_recipes()
+        migrate_recipe_sub_recipes()
     except Exception as exc:
         print(f"❌ Fatal error during migration: {exc}", file=sys.stderr)
         sys.exit(1)

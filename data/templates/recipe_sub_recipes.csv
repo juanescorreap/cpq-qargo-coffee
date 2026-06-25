@@ -1,0 +1,3 @@
+parent_product_name,sub_recipe_name,quantity,recipe_unit,scales_with_size
+Waffles Belgian,Batter,8,oz,false
+Mini Dutch Pancakes,Batter,5,oz,false
