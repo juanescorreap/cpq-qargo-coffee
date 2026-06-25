@@ -240,7 +240,7 @@ class PricingEngine:
         # (product_id, size_id, COALESCE(store_id, 0), currency_code) — NOT dated.
         # The dated trail lives in product_price_history. So upsert on that key
         # and refresh effective_date, instead of inserting one row per day.
-        currency_code = "COP"
+        currency_code = _store_currency(self.db, store_id)
 
         # N4 (E2E_ARCHITECTURE_AUDIT_V2): this is a read-modify-write on a row
         # guarded by a unique index. Parallel workers processing overlapping
@@ -297,6 +297,7 @@ class PricingEngine:
                 cost=cost,
                 price=final_price,
                 markup_used=markup_used,
+                currency_code=currency_code,
             )
             self.db.add(history)
 
