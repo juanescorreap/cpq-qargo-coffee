@@ -1,0 +1,49 @@
+{# Section 4 — catalog-created ingredients grouped by review state.
+   Context: pending (list), processed (list), counts (dict). #}
+{% if not pending and not processed %}
+<div class="bg-white rounded-xl shadow-sm px-4 py-10 text-center text-sm text-stone-400">
+  No ingredients pending review.
+</div>
+{% else %}
+
+{# ── Pending review ─────────────────────────────────────────────────────── #}
+<div class="mb-6">
+  <h3 class="text-sm font-semibold text-espresso uppercase tracking-wide mb-3">
+    Pending review ({{ pending|length }})
+  </h3>
+  {% if pending %}
+  <div class="space-y-3">
+    {% for c in pending %}
+      {% with card = c, status = 'pending', searching = False, error = None %}
+        {% include 'admin/catalog_sync/_ingredient_card.html' %}
+      {% endwith %}
+    {% endfor %}
+  </div>
+  {% else %}
+  <p class="text-sm text-stone-400">Nothing left to review. 🎉</p>
+  {% endif %}
+</div>
+
+{# ── Already processed (collapsed) ──────────────────────────────────────── #}
+{% if processed %}
+<div x-data="{ open: false }">
+  <button type="button" @click="open = !open"
+          class="w-full flex items-center justify-between text-sm font-semibold text-stone-500
+                 uppercase tracking-wide mb-3 hover:text-espresso">
+    <span>Already processed ({{ processed|length }})</span>
+    <span class="text-xs normal-case font-normal text-stone-400">
+      Mapped ({{ counts.mapped }}) · Confirmed new ({{ counts.confirmed_new }}) · Deactivated ({{ counts.deactivated }})
+      <span x-text="open ? '▲' : '▼'" class="ml-1"></span>
+    </span>
+  </button>
+  <div x-show="open" x-cloak class="space-y-3">
+    {% for c in processed %}
+      {% with card = c, status = c.status, searching = False, error = None %}
+        {% include 'admin/catalog_sync/_ingredient_card.html' %}
+      {% endwith %}
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+
+{% endif %}

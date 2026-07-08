@@ -57,9 +57,15 @@ async def pricing_manager(
         for p in products
     ])
 
+    stores_json = json.dumps([
+        {"id": s.id, "currency": s.default_currency_code or "COP"}
+        for s in stores
+    ])
+
     return templates.TemplateResponse("pricing/manager.html", {
         "request":       request,
         "products":      products,
         "stores":        stores,
         "products_json": products_json,
+        "stores_json":   stores_json,
     })

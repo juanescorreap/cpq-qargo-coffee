@@ -1,0 +1,93 @@
+{# Summary + controls + table for one store. Swapped into #pov-body. #}
+
+{# ── Summary panel (lazy-loaded) ─────────────────────────────────────── #}
+<div id="pov-summary"
+     hx-get="/pricing/overview/summary?store_id={{ store_id }}"
+     hx-trigger="load"
+     hx-indicator="#page-spinner"
+     class="mb-6">
+  <div class="h-20 bg-white rounded-xl shadow-sm animate-pulse"></div>
+</div>
+
+{# ── Controls bar ────────────────────────────────────────────────────── #}
+<div class="bg-white rounded-xl shadow-sm p-4 mb-6">
+  <form id="pov-controls"
+        hx-get="/pricing/overview/table"
+        hx-target="#pov-table"
+        hx-swap="innerHTML"
+        hx-trigger="input from:#pov-search delay:300ms, change from:#pov-category, refresh-table"
+        hx-indicator="#page-spinner"
+        class="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
+
+    <input type="hidden" name="store_id" value="{{ store_id }}">
+    <input type="hidden" name="alerts_only" id="pov-alerts-only" value="false">
+    <input type="hidden" name="sort" id="pov-sort" value="product">
+    <input type="hidden" name="direction" id="pov-direction" value="asc">
+
+    <div class="relative flex-1">
+      <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400"
+           fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round"
+              d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 104.65 16.65 7.5 7.5 0 0016.65 16.65z"/>
+      </svg>
+      <input type="text" name="search" id="pov-search" placeholder="Search products..."
+             class="w-full pl-9 pr-4 py-2 text-sm border border-stone-200 rounded-lg
+                    focus:outline-none focus:ring-2 focus:ring-amber/40 focus:border-amber">
+    </div>
+
+    <select name="category" id="pov-category" multiple size="1"
+            class="py-2 px-3 text-sm border border-stone-200 rounded-lg bg-white text-espresso
+                   min-w-[12rem] focus:outline-none focus:ring-2 focus:ring-amber/40 focus:border-amber">
+      {% for cat in categories %}
+      <option value="{{ cat }}">{{ cat }}</option>
+      {% endfor %}
+    </select>
+
+    <a href="/pricing/overview/export?store_id={{ store_id }}"
+       id="pov-export"
+       class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-espresso text-beige
+              text-sm font-semibold hover:bg-espresso-light transition-colors shrink-0 sm:ml-auto">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round"
+              d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5 5-5M12 15V3"/>
+      </svg>
+      Export CSV
+    </a>
+  </form>
+</div>
+
+{# ── Table (lazy-loaded) ─────────────────────────────────────────────── #}
+<div id="pov-table"
+     hx-get="/pricing/overview/table?store_id={{ store_id }}"
+     hx-trigger="load"
+     hx-indicator="#page-spinner">
+  <div class="h-64 bg-white rounded-xl shadow-sm animate-pulse"></div>
+</div>
+
+<script>
+  (function () {
+    // Keep the CSV export link in sync with the active filters.
+    function syncExport() {
+      var form = document.getElementById('pov-controls');
+      if (!form) return;
+      var params = new URLSearchParams();
+      params.set('store_id', form.querySelector('[name=store_id]').value);
+      var search = document.getElementById('pov-search').value.trim();
+      if (search) params.set('search', search);
+      var alertsOnly = document.getElementById('pov-alerts-only').value;
+      if (alertsOnly === 'true') params.set('alerts_only', 'true');
+      Array.from(document.getElementById('pov-category').selectedOptions)
+        .forEach(function (o) { params.append('category', o.value); });
+      document.getElementById('pov-export').href =
+        '/pricing/overview/export?' + params.toString();
+    }
+    document.body.addEventListener('input', syncExport);
+    document.body.addEventListener('change', syncExport);
+    // Sort headers / alert toggle dispatch this to re-run the table request.
+    window.povRefreshTable = function () {
+      htmx.trigger(document.getElementById('pov-controls'), 'refresh-table');
+      syncExport();
+    };
+    syncExport();
+  })();
+</script>

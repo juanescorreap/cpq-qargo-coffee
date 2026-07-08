@@ -15,18 +15,36 @@ router = APIRouter(prefix="/api/pricing", tags=["pricing"])
 
 class PriceCalculationRequest(BaseModel):
     product_id: int
-    size_id: int
+    size_id: Optional[int] = None
     store_id: Optional[int] = None
     markup_override: Optional[Decimal] = None
 
 
 class SetPriceRequest(BaseModel):
     product_id: int
-    size_id: int
+    size_id: Optional[int] = None
     store_id: Optional[int] = None
-    final_price: Decimal = Field(gt=0, description="Final price in COP (must be positive)")
+    final_price: Decimal = Field(gt=0, description="Final price (must be positive)")
     markup_override: Optional[Decimal] = None
     is_manual: bool = True
+
+
+def _resolve_size(product_id: int, size_id: Optional[int], db: Session) -> int:
+    """Return size_id as-is, or fall back to the first size for the product."""
+    if size_id is not None:
+        return size_id
+    first = (
+        db.query(ProductSize.id)
+        .filter(ProductSize.product_id == product_id)
+        .order_by(ProductSize.id)
+        .first()
+    )
+    if first is None:
+        raise HTTPException(
+            status_code=422,
+            detail=f"Product {product_id} has no sizes configured.",
+        )
+    return first[0]
 
 
 @router.post("/calculate")
@@ -35,10 +53,11 @@ def calculate_price(
     db: Session = Depends(get_db),
 ):
     """Calculates suggested price based on cost + markup."""
+    size_id = _resolve_size(request.product_id, request.size_id, db)
     engine = PricingEngine(db)
     return engine.calculate_price(
         request.product_id,
-        request.size_id,
+        size_id,
         request.store_id,
         request.markup_override,
     )
@@ -50,10 +69,11 @@ def set_price(
     db: Session = Depends(get_db),
 ):
     """Sets the final price for a product."""
+    size_id = _resolve_size(request.product_id, request.size_id, db)
     engine = PricingEngine(db)
     pricing = engine.save_pricing(
         request.product_id,
-        request.size_id,
+        size_id,
         request.store_id,
         request.final_price,
         request.markup_override,
@@ -136,6 +156,7 @@ def get_pricing_table(
         cost = float(pricing.calculated_cost)
         price = float(pricing.final_price)
         margin = (price / cost - 1) * 100 if cost else 0
+        gross_margin = (price - cost) / price * 100 if price else 0
 
         result.append({
             "id":           pricing.id,
@@ -147,6 +168,7 @@ def get_pricing_table(
             "cost":         cost,
             "price":        price,
             "margin":       round(margin, 2),
+            "gross_margin": round(gross_margin, 2),
             "updated":      pricing.effective_date.isoformat() if pricing.effective_date else None,
             "is_manual":    pricing.is_manual_price,
         })

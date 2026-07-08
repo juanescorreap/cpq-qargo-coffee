@@ -167,8 +167,10 @@
             <td class="px-6 py-2.5 text-right font-mono tabular-nums">${{ "%.6f"|format(item.unit_cost|float) }}</td>
             <td class="px-6 py-2.5 text-right font-mono tabular-nums font-medium">${{ "%.4f"|format(item.line_cost|float) }}</td>
             <td class="px-6 py-2.5 text-center">
-              {% if item.price_source == 'store' %}
+              {% if item.price_source == 'store' or item.price_source == 'local' %}
               <span class="px-1.5 py-0.5 rounded text-xs bg-blue-50 text-blue-600">Store</span>
+              {% elif item.supply_route_id is none %}
+              <span class="px-1.5 py-0.5 rounded text-xs bg-amber-50 text-amber-600">No supplier</span>
               {% else %}
               <span class="px-1.5 py-0.5 rounded text-xs bg-stone-100 text-stone-400">Base</span>
               {% endif %}

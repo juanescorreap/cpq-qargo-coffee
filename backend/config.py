@@ -71,6 +71,24 @@ class Settings(BaseSettings):
     SCRAPING_USER_AGENT: str
     SCRAPING_DELAY_MS: int = 1000
 
+    # ── Catalog API integration ────────────────────────────────────────────
+    # External Qargo catalog API (JWT auth). Credentials live only in .env /
+    # the deploy environment — never committed, never written to disk or DB.
+    CATALOG_API_BASE_URL: Optional[str] = None
+    CATALOG_API_EMAIL: Optional[str] = None
+    CATALOG_API_PASSWORD: Optional[str] = None
+    # Weekly cron for the automatic sync. Format: "day_of_week hour" (default
+    # Monday 6am). Parsed by the scheduler wiring.
+    CATALOG_SYNC_SCHEDULE: str = "mon 6"
+
+    @property
+    def catalog_api_enabled(self) -> bool:
+        return bool(
+            self.CATALOG_API_BASE_URL
+            and self.CATALOG_API_EMAIL
+            and self.CATALOG_API_PASSWORD
+        )
+
     # ── Partition maintenance (0027 / #4) ──────────────────────────────────
     # Drive fn_run_partition_maintenance from the worker (app-side mirror of the
     # pg_cron partition_maintenance job). Months of recipe_cost_snapshots monthly

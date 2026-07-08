@@ -1,0 +1,55 @@
+{% extends "_layout.html" %}
+
+{% block title %}Price Review — CPQ Qargo Coffee{% endblock %}
+
+{% block content %}
+
+<div class="mb-6">
+  <h1 class="text-3xl font-bold text-espresso">
+    Price Review — {{ store_name }}
+  </h1>
+  <p class="mt-1 text-sm text-stone-500">
+    {{ progress.total }} ingredient{{ 's' if progress.total != 1 else '' }}
+    with fallback (Excel-import) pricing. Correct the price + unit, then confirm.
+  </p>
+  {% include 'admin/price_review/_progress.html' %}
+</div>
+
+{# ── Filters ──────────────────────────────────────────────────────────────── #}
+<form id="pr-filters"
+      hx-get="/admin/price-review/{{ store_id }}/table"
+      hx-target="#pr-table"
+      hx-swap="innerHTML"
+      hx-trigger="change"
+      hx-indicator="#page-spinner"
+      class="flex flex-wrap items-center gap-3 mb-4">
+  <label class="text-sm text-stone-500">
+    Category
+    <select name="category"
+            class="ml-1 py-1.5 px-2 text-sm border border-stone-200 rounded-lg bg-white
+                   focus:outline-none focus:ring-2 focus:ring-amber/40 focus:border-amber">
+      <option value="all">All</option>
+      {% for c in categories %}
+      <option value="{{ c.slug }}">{{ c.name }}</option>
+      {% endfor %}
+    </select>
+  </label>
+  <label class="text-sm text-stone-500">
+    Show
+    <select name="status"
+            class="ml-1 py-1.5 px-2 text-sm border border-stone-200 rounded-lg bg-white
+                   focus:outline-none focus:ring-2 focus:ring-amber/40 focus:border-amber">
+      <option value="all">All</option>
+      <option value="pending">Pending</option>
+      <option value="reviewed">Reviewed</option>
+      <option value="skipped">Skipped</option>
+    </select>
+  </label>
+</form>
+
+{# ── Table ────────────────────────────────────────────────────────────────── #}
+<div id="pr-table">
+  {% include 'admin/price_review/_table.html' %}
+</div>
+
+{% endblock %}

@@ -1,0 +1,42 @@
+{# catalog_match_log detail for one sync (criterion 13 audit view). #}
+<div class="bg-stone-50 border-t border-stone-200 px-4 py-3">
+  <div class="text-xs text-stone-500 mb-2">{{ rows|length }} item{{ 's' if rows|length != 1 else '' }} in sync #{{ sync_id }}</div>
+  <div class="overflow-x-auto">
+    <table class="min-w-full text-xs">
+      <thead>
+        <tr class="text-stone-400 uppercase tracking-wide">
+          <th class="px-2 py-1 text-left">Item</th>
+          <th class="px-2 py-1 text-left">SKU</th>
+          <th class="px-2 py-1 text-left">Catalog name</th>
+          <th class="px-2 py-1 text-left">Match</th>
+          <th class="px-2 py-1 text-right">Score</th>
+          <th class="px-2 py-1 text-left">Action</th>
+          <th class="px-2 py-1 text-right">Old→New</th>
+          <th class="px-2 py-1 text-left">Notes</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-stone-100">
+        {% for r in rows %}
+        <tr>
+          <td class="px-2 py-1 font-mono text-stone-500">{{ r.catalog_item_id }}</td>
+          <td class="px-2 py-1 font-mono text-stone-500">{{ r.catalog_sku or '—' }}</td>
+          <td class="px-2 py-1 text-espresso">{{ r.catalog_name }}</td>
+          <td class="px-2 py-1">
+            {% if r.match_type == 'sku_exact' %}<span class="text-green-700">sku_exact</span>
+            {% elif r.match_type == 'fuzzy_name' %}<span class="text-blue-700">fuzzy_name</span>
+            {% elif r.match_type == 'new' %}<span class="text-amber-700">new</span>
+            {% elif r.match_type == 'error' %}<span class="text-red-600">error</span>
+            {% else %}<span class="text-stone-400">{{ r.match_type }}</span>{% endif %}
+          </td>
+          <td class="px-2 py-1 text-right font-mono tabular-nums">{{ '%.0f'|format(r.fuzzy_score) if r.fuzzy_score is not none else '' }}</td>
+          <td class="px-2 py-1 text-stone-600">{{ r.action_taken or '' }}</td>
+          <td class="px-2 py-1 text-right font-mono tabular-nums text-stone-500">
+            {% if r.new_price is not none %}{{ (r.old_price|string) + '→' if r.old_price is not none else '' }}{{ r.new_price }}{% endif %}
+          </td>
+          <td class="px-2 py-1 text-stone-400">{{ r.notes or '' }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>

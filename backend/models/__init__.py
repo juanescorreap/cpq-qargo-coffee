@@ -59,6 +59,11 @@ from backend.models.product import (
     SizePackaging,
     StoreProduct,
 )
+from backend.models.catalog_sync import (
+    CatalogMatchLog,
+    CatalogSyncLog,
+    StoreCatalogMapping,
+)
 from backend.models.recipe_unit import IngredientRecipeUnitConversion, RecipeUnit
 from backend.models.store import Store, StoreIngredientPrice
 from backend.models.supply_chain import (
@@ -77,6 +82,8 @@ from backend.models.supply_chain import (
 )
 
 __all__ = [
+    "CatalogMatchLog",
+    "CatalogSyncLog",
     "Category",
     "CategoryMargin",
     "Competitor",
@@ -107,6 +114,7 @@ __all__ = [
     "Region",
     "SizePackaging",
     "Store",
+    "StoreCatalogMapping",
     "StoreIngredientPrice",
     "StoreProduct",
     "StoreSupplierHistory",

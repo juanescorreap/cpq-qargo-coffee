@@ -1,0 +1,50 @@
+{# 4-metric summary row. The "below threshold" tile is clickable → filters table. #}
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+
+  <div class="bg-white rounded-xl shadow-sm p-4">
+    <p class="text-xs font-medium text-stone-400 uppercase tracking-wide">Products</p>
+    <p class="mt-1 text-2xl font-bold text-espresso tabular-nums">{{ count }}</p>
+    <p class="text-xs text-stone-400">product × size combos</p>
+  </div>
+
+  <div class="bg-white rounded-xl shadow-sm p-4">
+    <p class="text-xs font-medium text-stone-400 uppercase tracking-wide">Avg markup</p>
+    <p class="mt-1 text-2xl font-bold text-espresso tabular-nums">
+      {% if avg_markup is not none %}{{ "%.1f"|format(avg_markup) }}%{% else %}—{% endif %}
+    </p>
+  </div>
+
+  <div class="bg-white rounded-xl shadow-sm p-4">
+    <p class="text-xs font-medium text-stone-400 uppercase tracking-wide">Avg GM</p>
+    <p class="mt-1 text-2xl font-bold text-espresso tabular-nums">
+      {% if avg_gm is not none %}{{ "%.1f"|format(avg_gm) }}%{% else %}—{% endif %}
+    </p>
+  </div>
+
+  <button type="button"
+          onclick="povToggleAlerts(this)"
+          data-active="false"
+          class="text-left bg-white rounded-xl shadow-sm p-4 border-2 border-transparent
+                 hover:border-amber/50 transition-colors
+                 {% if below_threshold %}ring-1 ring-amber/30{% endif %}">
+    <p class="text-xs font-medium text-amber-600 uppercase tracking-wide">⚠ Below threshold</p>
+    <p class="mt-1 text-2xl font-bold {% if below_threshold %}text-amber-600{% else %}text-espresso{% endif %} tabular-nums">
+      {{ below_threshold }}
+    </p>
+    <p class="text-xs text-stone-400">markup &lt; 40% — click to filter</p>
+  </button>
+</div>
+
+<script>
+  // Toggle the alerts-only filter from the summary tile.
+  window.povToggleAlerts = function (el) {
+    var active = el.getAttribute('data-active') === 'true';
+    active = !active;
+    el.setAttribute('data-active', active ? 'true' : 'false');
+    el.classList.toggle('border-amber', active);
+    el.classList.toggle('bg-amber-50', active);
+    var input = document.getElementById('pov-alerts-only');
+    if (input) input.value = active ? 'true' : 'false';
+    window.povRefreshTable && window.povRefreshTable();
+  };
+</script>

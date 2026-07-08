@@ -1,0 +1,56 @@
+{% extends "_layout.html" %}
+
+{% block title %}Catalog Sync — CPQ Qargo Coffee{% endblock %}
+
+{% block content %}
+
+<div class="mb-8">
+  <h1 class="text-3xl font-bold text-espresso">Catalog Sync</h1>
+  <p class="mt-1 text-sm text-stone-500">
+    Sync ingredient prices from the external Qargo catalog API into the CPQ.
+  </p>
+</div>
+
+{# ── Section 1 — Store mapping ─────────────────────────────────────────── #}
+<section class="mb-10">
+  <h2 class="text-lg font-semibold text-espresso mb-1">1 · Store mapping</h2>
+  <p class="text-sm text-stone-500 mb-4">
+    Map each CPQ store to its catalog <code>store_id</code>. A store without a
+    mapping cannot be synced.
+  </p>
+  <div id="mapping-table">
+    {% include 'admin/catalog_sync/_mapping_table.html' %}
+  </div>
+</section>
+
+{# ── Section 2 — Sync status & control (step 5) ────────────────────────── #}
+<section class="mb-10">
+  <h2 class="text-lg font-semibold text-espresso mb-4">2 · Sync status</h2>
+  <div id="sync-status"
+       hx-get="/admin/catalog-sync/status" hx-trigger="load"
+       hx-indicator="#page-spinner">
+    <div class="h-24 bg-white rounded-xl shadow-sm animate-pulse"></div>
+  </div>
+</section>
+
+{# ── Section 3 — Recent sync log (step 5) ──────────────────────────────── #}
+<section class="mb-10">
+  <h2 class="text-lg font-semibold text-espresso mb-4">3 · Recent syncs</h2>
+  <div id="sync-log"
+       hx-get="/admin/catalog-sync/log" hx-trigger="load"
+       hx-indicator="#page-spinner">
+    <div class="h-24 bg-white rounded-xl shadow-sm animate-pulse"></div>
+  </div>
+</section>
+
+{# ── Section 4 — New ingredient review (step 5) ────────────────────────── #}
+<section class="mb-10">
+  <h2 class="text-lg font-semibold text-espresso mb-4">4 · New ingredients — review</h2>
+  <div id="new-ingredients"
+       hx-get="/admin/catalog-sync/new-ingredients" hx-trigger="load"
+       hx-indicator="#page-spinner">
+    <div class="h-24 bg-white rounded-xl shadow-sm animate-pulse"></div>
+  </div>
+</section>
+
+{% endblock %}

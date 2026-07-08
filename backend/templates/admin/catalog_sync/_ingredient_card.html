@@ -1,0 +1,85 @@
+{# Pending-review card — one catalog-created ingredient.
+   Context: card (dict), status in {pending,mapped,confirmed_new,deactivated},
+            error (optional str), searching (bool → show map search state).
+   HTMX outerHTML swap target: #pending-card-{id}. #}
+{% set cur = card.currency_code or 'USD' %}
+{% set price = card.purchase_price if card.purchase_price is not none else card.new_price %}
+
+<div id="pending-card-{{ card.id }}" x-data="{ confirmDel: false }"
+     class="bg-white rounded-xl shadow-sm border border-stone-100 px-4 py-4">
+
+  {# ── Status badge ─────────────────────────────────────────────────────── #}
+  <div class="mb-2">
+    {% if status == 'mapped' %}
+      <span class="px-2 py-0.5 rounded-full text-xs font-semibold bg-green-50 text-green-700 border border-green-200">MAPPED</span>
+    {% elif status == 'confirmed_new' %}
+      <span class="px-2 py-0.5 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200">CONFIRMED NEW</span>
+    {% elif status == 'deactivated' %}
+      <span class="px-2 py-0.5 rounded-full text-xs font-semibold bg-stone-200 text-stone-600 border border-stone-300">DEACTIVATED</span>
+    {% else %}
+      <span class="px-2 py-0.5 rounded-full text-xs font-semibold bg-stone-100 text-stone-500 border border-stone-200">PENDING</span>
+    {% endif %}
+  </div>
+
+  {# ── Identity ─────────────────────────────────────────────────────────── #}
+  <p class="font-semibold text-espresso">{{ card.catalog_name or card.name }}</p>
+  <p class="mt-0.5 text-sm text-stone-500">
+    SKU: {{ card.catalog_sku or '—' }}
+    · {% if price is not none %}{{ '%.2f'|format(price) }} {{ cur }}{% else %}—{% endif %}
+      / {{ card.purchase_unit or 'unit' }}
+  </p>
+  {% if card.store_name or card.sync_date %}
+  <p class="mt-0.5 text-xs text-stone-400">
+    Synced from store: {{ card.store_name or '—' }}
+    {% if card.sync_date %} · {{ card.sync_date.strftime('%Y-%m-%d') }}{% endif %}
+  </p>
+  {% endif %}
+  {% if status == 'mapped' and card.mapped_to %}
+  <p class="mt-1 text-sm text-green-700">→ Mapped to <span class="font-medium">{{ card.mapped_to }}</span></p>
+  {% endif %}
+
+  {# ── Inline error ─────────────────────────────────────────────────────── #}
+  {% if error %}
+  <p class="mt-2 text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">{{ error }}</p>
+  {% endif %}
+
+  {# ── Body: search state, action buttons, or nothing (processed) ───────── #}
+  {% if status == 'pending' %}
+    {% if searching %}
+      {% include 'admin/catalog_sync/_ingredient_search_form.html' %}
+    {% else %}
+      {# Deactivate confirmation (Alpine, prevents accidental clicks) #}
+      <div x-show="confirmDel" x-cloak
+           class="mt-3 rounded-lg bg-red-50 border border-red-200 px-3 py-3">
+        <p class="text-sm font-medium text-red-700">⚠ Deactivate this ingredient?</p>
+        <p class="text-xs text-red-600 mt-0.5">
+          It will be marked inactive and removed from all views. This cannot be undone from this screen.
+        </p>
+        <div class="mt-2 flex justify-end gap-2">
+          <button type="button" @click="confirmDel = false"
+                  class="px-3 py-1.5 rounded-lg border border-stone-200 text-sm font-medium text-stone-600 hover:bg-stone-50">Cancel</button>
+          <button hx-post="/admin/catalog-sync/deactivate-ingredient"
+                  hx-vals='{"pending_ingredient_id": {{ card.id }}}'
+                  hx-target="#pending-card-{{ card.id }}" hx-swap="outerHTML"
+                  hx-indicator="#page-spinner"
+                  class="px-3 py-1.5 rounded-lg text-sm font-medium text-white bg-red-600 hover:bg-red-700">Yes, deactivate</button>
+        </div>
+      </div>
+
+      {# Action buttons #}
+      <div x-show="!confirmDel" class="mt-3 flex flex-wrap gap-2">
+        <button hx-get="/admin/catalog-sync/review-ingredient/{{ card.id }}"
+                hx-target="#pending-card-{{ card.id }}" hx-swap="outerHTML"
+                hx-indicator="#page-spinner"
+                class="px-3 py-1.5 rounded-lg text-sm font-medium text-white bg-amber hover:opacity-90">Map to existing</button>
+        <button hx-post="/admin/catalog-sync/confirm-new"
+                hx-vals='{"pending_ingredient_id": {{ card.id }}}'
+                hx-target="#pending-card-{{ card.id }}" hx-swap="outerHTML"
+                hx-indicator="#page-spinner"
+                class="px-3 py-1.5 rounded-lg border border-stone-200 text-sm font-medium text-espresso hover:bg-stone-50">Keep as new</button>
+        <button type="button" @click="confirmDel = true"
+                class="px-3 py-1.5 rounded-lg border border-red-200 text-sm font-medium text-red-600 hover:bg-red-50">Deactivate</button>
+      </div>
+    {% endif %}
+  {% endif %}
+</div>

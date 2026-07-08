@@ -22,7 +22,7 @@ from backend.routers import (
     competitors, competitors_ui, costs, costs_ui, ingredients, ingredients_ui,
     pricing, pricing_ui, product_sizes, products, products_ui, recipe_units,
     recipes, recipes_ui, reports, reports_ui, scraping, scraping_ui, stores,
-    stores_ui,
+    stores_ui, pricing_overview_ui, catalog_sync_ui, price_review_ui,
 )
 from backend.routers import (
     currencies,
@@ -63,8 +63,16 @@ async def lifespan(app: FastAPI):
         init_database()  # raises on failure -> boot aborts, deploy surfaces it
         log.info("Migrations applied")
 
+    # Weekly catalog sync (only starts when the catalog API is configured).
+    from backend.services.catalog_scheduler import start_catalog_scheduler
+
+    app.state.catalog_scheduler = start_catalog_scheduler()
+
     yield
-    # No shutdown work required.
+    # Shutdown: stop the scheduler if it was started.
+    sched = getattr(app.state, "catalog_scheduler", None)
+    if sched is not None:
+        sched.shutdown(wait=False)
 
 
 app = FastAPI(
@@ -159,6 +167,9 @@ app.include_router(competitors.router)
 app.include_router(competitors_ui.router)
 app.include_router(pricing.router)
 app.include_router(pricing_ui.router)
+app.include_router(pricing_overview_ui.router)
+app.include_router(catalog_sync_ui.router)
+app.include_router(price_review_ui.router)
 app.include_router(reports.router)
 app.include_router(reports_ui.router)
 app.include_router(scraping.router)

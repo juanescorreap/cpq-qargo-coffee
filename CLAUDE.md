@@ -379,32 +379,29 @@ CREATE TABLE public.supply_route_assignments (
     CONSTRAINT sra_priority_positive CHECK (priority >= 1),
 
     -- ── EXCLUSION CONSTRAINTS (previenen solapamiento de vigencias) ─
-
-    -- Para asignaciones de tienda: no puede haber dos con la misma prioridad
-    -- para el mismo scope en el mismo período
-    EXCLUDE USING gist (
-        store_id WITH =,
-        priority WITH =,
-        daterange(valid_from, COALESCE(valid_until, '9999-12-31'::date), '[)') WITH &&
-    ) WHERE (store_id IS NOT NULL),
-
-    -- Para asignaciones regionales: igual
-    EXCLUDE USING gist (
-        region_id WITH =,
-        priority  WITH =,
-        daterange(valid_from, COALESCE(valid_until, '9999-12-31'::date), '[)') WITH &&
-    ) WHERE (region_id IS NOT NULL)
+    --
+    -- NOTA DE IMPLEMENTACIÓN (migración 0029 → 0032, auditoría 2026-06-26):
+    -- Los EXCLUDE constraints reales en producción incluyen supply_route_id:
+    --   EXCLUDE(store_id, supply_route_id, priority, daterange)
+    -- Esto previene que la MISMA ruta aparezca dos veces en el mismo scope+priority+período.
+    -- El invariante más fuerte (ninguna ruta del mismo ingrediente puede coexistir en
+    -- el mismo scope+priority+período) NO es expresable con EXCLUDE porque ingredient_id
+    -- vive en supply_routes, no aquí. En su lugar se usa el trigger:
+    --   trg_sra_no_duplicate_ingredient_priority → fn_check_sra_no_duplicate_ingredient_priority()
+    -- El diseño original (abajo) es el modelo conceptual correcto. El trigger lo implementa.
 );
 
 COMMENT ON TABLE public.supply_route_assignments IS
     'Asigna una supply_route a una región o tienda con prioridad y vigencia temporal. '
     'Una tienda puede tener override (store_id) que tiene precedencia sobre la asignación regional. '
-    'NUNCA se actualiza supply_route_id en una fila existente — se cierra con valid_until y se inserta nueva.';
+    'NUNCA se actualiza supply_route_id en una fila existente — se cierra con valid_until y se inserta nueva. '
+    'El invariante "un ingrediente, un scope, una prioridad, un período" está garantizado por '
+    'el trigger trg_sra_no_duplicate_ingredient_priority (migración 0032).';
 
 COMMENT ON COLUMN public.supply_route_assignments.priority IS
     '1 = ruta primaria (default). 2 = alternativa (entra si primaria falla). '
     'Solo una ruta por prioridad puede estar vigente en el mismo scope al mismo tiempo '
-    '(garantizado por EXCLUDE constraint).';
+    '(garantizado por trigger trg_sra_no_duplicate_ingredient_priority).';
 
 COMMENT ON COLUMN public.supply_route_assignments.valid_until IS
     'NULL significa vigente actualmente. Para cambiar la ruta: '

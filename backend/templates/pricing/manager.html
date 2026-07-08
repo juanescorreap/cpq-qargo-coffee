@@ -8,6 +8,8 @@
 
 {# Product+size data injected as JSON so Alpine can consume it without extra HTMX #}
 <script id="products-data" type="application/json">{{ products_json }}</script>
+{# Store currency map so formatCurrency() can format per-store #}
+<script id="stores-data" type="application/json">{{ stores_json }}</script>
 {% endblock %}
 
 
@@ -155,8 +157,8 @@
           </label>
           <div class="flex items-center justify-between py-2.5 px-3
                       bg-stone-50 border border-stone-200 rounded-lg">
-            <span class="text-sm font-mono font-bold text-espresso" x-text="formatCOP(cost)"></span>
-            <span class="text-xs text-stone-400">COP / serving</span>
+            <span class="text-sm font-mono font-bold text-espresso" x-text="formatCurrency(cost, priceCurrency)"></span>
+            <span class="text-xs text-stone-400" x-text="priceCurrency + ' / serving'"></span>
           </div>
         </div>
 
@@ -195,8 +197,9 @@
           <div class="flex items-center justify-between py-2.5 px-3
                       bg-blue-50 border border-blue-200 rounded-lg">
             <span class="text-sm font-mono font-bold text-blue-700"
-                  x-text="formatCOP(suggestedPrice)"></span>
-            <span class="text-xs text-blue-400">≈ $100 COP</span>
+                  x-text="formatCurrency(suggestedPrice, priceCurrency)"></span>
+            <span class="text-xs text-blue-400"
+                  x-text="priceCurrency === 'USD' ? 'nearest .49 or .99' : '≈ $100 COP'"></span>
           </div>
         </div>
 
@@ -217,17 +220,23 @@
           </div>
         </div>
 
-        {# Effective margin indicator #}
-        <div class="mb-5 h-5">
+        {# Effective margin indicators #}
+        <div class="mb-5 space-y-0.5">
           <template x-if="finalPrice > 0 && cost > 0">
-            <p class="text-xs font-medium flex items-center gap-1"
-               :class="effectiveMargin >= 40 ? 'text-green-600'
-                      : effectiveMargin >= 20 ? 'text-amber'
-                      : 'text-red-500'">
-              <span x-text="effectiveMargin >= 40 ? '✓' : effectiveMargin >= 20 ? '⚠' : '↓'"></span>
-              Effective margin:
-              <span class="font-bold" x-text="effectiveMargin.toFixed(1) + '%'"></span>
-            </p>
+            <div class="space-y-0.5">
+              <p class="text-xs font-medium flex items-center gap-1"
+                 :class="effectiveMargin >= 40 ? 'text-green-600'
+                        : effectiveMargin >= 20 ? 'text-amber'
+                        : 'text-red-500'">
+                <span x-text="effectiveMargin >= 40 ? '✓' : effectiveMargin >= 20 ? '⚠' : '↓'"></span>
+                Markup:
+                <span class="font-bold" x-text="effectiveMargin.toFixed(1) + '%'"></span>
+              </p>
+              <p class="text-xs text-stone-400 flex items-center gap-1 pl-3">
+                Gross margin:
+                <span class="font-medium" x-text="effectiveGrossMargin.toFixed(1) + '%'"></span>
+              </p>
+            </div>
           </template>
         </div>
 
@@ -369,7 +378,7 @@
             <th class="px-6 py-3 text-left">Size</th>
             <th class="px-6 py-3 text-right">Cost</th>
             <th class="px-6 py-3 text-right">Price</th>
-            <th class="px-6 py-3 text-right">Margin&nbsp;%</th>
+            <th class="px-6 py-3 text-right">Markup&nbsp;/ GM</th>
             <th class="px-6 py-3 text-left">Last updated</th>
             <th class="px-6 py-3 text-center">Type</th>
           </tr>
@@ -390,17 +399,21 @@
               </td>
 
               <td class="px-6 py-3.5 text-right font-mono tabular-nums text-stone-500 text-xs"
-                  x-text="formatCOP(row.cost)"></td>
+                  x-text="formatCurrency(row.cost, storeCurrencies[String(row.store_id)] || 'COP')"></td>
 
               <td class="px-6 py-3.5 text-right font-mono tabular-nums font-bold text-espresso"
-                  x-text="formatCOP(row.price)"></td>
+                  x-text="formatCurrency(row.price, storeCurrencies[String(row.store_id)] || 'COP')"></td>
 
               <td class="px-6 py-3.5 text-right">
-                <span class="px-2 py-0.5 rounded-full text-xs font-semibold"
-                      :class="row.margin >= 40 ? 'bg-green-100 text-green-700'
-                             : row.margin >= 20 ? 'bg-amber/10 text-amber'
-                             : 'bg-red-100 text-red-600'"
-                      x-text="row.margin.toFixed(1) + '%'"></span>
+                <div class="flex flex-col items-end gap-0.5">
+                  <span class="px-2 py-0.5 rounded-full text-xs font-semibold"
+                        :class="row.margin >= 40 ? 'bg-green-100 text-green-700'
+                               : row.margin >= 20 ? 'bg-amber/10 text-amber'
+                               : 'bg-red-100 text-red-600'"
+                        x-text="row.margin.toFixed(1) + '%'"></span>
+                  <span class="text-xs text-stone-400 tabular-nums"
+                        x-text="'GM ' + (row.gross_margin ?? 0).toFixed(1) + '%'"></span>
+                </div>
               </td>
 
               <td class="px-6 py-3.5 text-stone-400 text-xs" x-text="row.updated"></td>
@@ -600,7 +613,8 @@
 function pricingManager() {
   return {
     // ── Base data (injected from the server) ──────────────────────────
-    allProducts: [],   // [{id, name, sizes:[{id, name, volume}]}]
+    allProducts:    [],   // [{id, name, sizes:[{id, name, volume}]}]
+    storeCurrencies: {}, // {store_id_str: 'COP'|'USD'|...}
 
     // ── Selector state ────────────────────────────────────────────────
     productId:  '',
@@ -612,6 +626,7 @@ function pricingManager() {
     markup:         50,
     suggestedPrice: null,
     finalPrice:     null,
+    priceCurrency:  'COP',   // currency of suggested/final price (from API response)
     calculating:    false,
     calcError:      '',
     saving:         false,
@@ -659,12 +674,25 @@ function pricingManager() {
       return (this.finalPrice / this.cost - 1) * 100;
     },
 
+    get effectiveGrossMargin() {
+      if (!this.finalPrice || this.finalPrice === 0) return 0;
+      return (this.finalPrice - this.cost) / this.finalPrice * 100;
+    },
+
     // ── Lifecycle ──────────────────────────────────────────────────────
     init() {
       // Load products+sizes from the script tag injected by Jinja2
       const raw = document.getElementById('products-data');
       if (raw) {
         try { this.allProducts = JSON.parse(raw.textContent); } catch {}
+      }
+      // Build store→currency lookup
+      const storesRaw = document.getElementById('stores-data');
+      if (storesRaw) {
+        try {
+          const arr = JSON.parse(storesRaw.textContent);
+          this.storeCurrencies = Object.fromEntries(arr.map(s => [String(s.id), s.currency]));
+        } catch {}
       }
       this.loadTable();
     },
@@ -679,6 +707,7 @@ function pricingManager() {
       this.cost           = null;
       this.suggestedPrice = null;
       this.finalPrice     = null;
+      this.priceCurrency  = 'COP';
       this.calcError      = '';
       this.saveMessage    = '';
       this.historyData    = [];
@@ -714,6 +743,7 @@ function pricingManager() {
         this.markup         = parseFloat(data.markup_percentage);
         this.suggestedPrice = parseFloat(data.rounded_price);
         this.finalPrice     = parseFloat(data.rounded_price);
+        this.priceCurrency  = data.currency_code || 'COP';
 
         await this.loadHistory();
 
@@ -726,8 +756,16 @@ function pricingManager() {
 
     recalcSuggested() {
       if (this.cost === null) return;
-      const raw     = this.cost * (1 + this.markup / 100);
-      const rounded = Math.round(raw / 100) * 100;
+      const raw = this.cost * (1 + this.markup / 100);
+      let rounded;
+      if (this.priceCurrency === 'USD') {
+        // Nearest psychological price ending in .49 or .99
+        // Grid: 0.49, 0.99, 1.49, 1.99, … (step 0.50)
+        const k = Math.round((raw - 0.49) / 0.50);
+        rounded = parseFloat((0.49 + k * 0.50).toFixed(2));
+      } else {
+        rounded = Math.round(raw / 100) * 100;
+      }
       this.suggestedPrice = rounded;
       this.finalPrice     = rounded;
     },
@@ -781,6 +819,7 @@ function pricingManager() {
       this.markup         = parseFloat(row.margin);
       this.suggestedPrice = parseFloat(row.price);
       this.finalPrice     = parseFloat(row.price);
+      this.priceCurrency  = (row.store_id && this.storeCurrencies[String(row.store_id)]) || 'COP';
       this.calcError      = '';
       this.saveMessage    = '';
 
@@ -955,13 +994,16 @@ function pricingManager() {
     },
 
     // ── Utilities ─────────────────────────────────────────────────────────
-    formatCOP(value) {
+    formatCurrency(value, cur) {
       if (value === null || value === undefined || value === '') return '—';
       const n = parseFloat(value);
       if (isNaN(n)) return '—';
-      return '$' + n.toLocaleString('es-CO', {
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 0,
+      const c       = cur || 'COP';
+      const decimals = (c === 'COP') ? 0 : 2;
+      const locale   = (c === 'COP') ? 'es-CO' : 'en-US';
+      return '$' + n.toLocaleString(locale, {
+        minimumFractionDigits: decimals,
+        maximumFractionDigits: decimals,
       });
     },
   };

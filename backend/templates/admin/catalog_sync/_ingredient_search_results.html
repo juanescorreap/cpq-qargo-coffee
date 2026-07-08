@@ -1,0 +1,24 @@
+{# Live search results for the mapping flow. Swapped into #search-results-{id}.
+   Context: results (list of dicts: id,name,category,purchase_unit,price), q.
+   Alpine scope (selectedId) is inherited from the parent search form. #}
+{% if not q %}
+{# Empty query — no results shown by design. #}
+{% elif not results %}
+<p class="text-sm text-stone-400 px-1 py-2">No ingredients found. Try a different search term.</p>
+{% else %}
+<ul class="divide-y divide-stone-100 border border-stone-100 rounded-lg overflow-hidden">
+  {% for r in results %}
+  <li>
+    <button type="button" @click="selectedId = {{ r.id }}"
+            :class="selectedId === {{ r.id }} ? 'bg-amber/10' : 'hover:bg-stone-50'"
+            class="w-full text-left px-3 py-2 transition-colors">
+      <span class="block text-sm font-medium text-espresso">{{ r.name }}</span>
+      <span class="block text-xs text-stone-500">
+        {{ r.category or 'Uncategorized' }}
+        {% if r.price is not none %} · {{ '%.2f'|format(r.price) }} / {{ r.purchase_unit or 'unit' }}{% endif %}
+      </span>
+    </button>
+  </li>
+  {% endfor %}
+</ul>
+{% endif %}

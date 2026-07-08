@@ -37,7 +37,10 @@ async def reports_dashboard(
         .all()
     )
 
-    stores_json = json.dumps([{"id": s.id, "name": s.name} for s in stores])
+    stores_json = json.dumps([
+        {"id": s.id, "name": s.name, "currency": s.default_currency_code or "COP"}
+        for s in stores
+    ])
     ingredients_json = json.dumps([{"id": i.id, "name": i.name} for i in ingredients])
 
     return templates.TemplateResponse("reports/dashboard.html", {

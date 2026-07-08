@@ -220,6 +220,8 @@ class CalcContext:
     formula_version: str = "v1"
     # minor_unit of the accumulation currency (COP=0) for final quantize (E6)
     currency_minor: int = 0
+    # ISO 4217 code of the store's currency; used for fallback Sourcing objects
+    store_currency: str = "COP"
 
 
 @dataclass
@@ -539,6 +541,7 @@ def load_context(
         store_id=store_id,
         formula_version=formula_version,
         currency_minor=currency_minor,
+        store_currency=_store_cur,
     )
 
 
@@ -589,7 +592,7 @@ class _PureCalculator:
 
         src = self.ctx.sourcing.get(
             (ingredient_id, recipe_unit_id)
-        ) or Sourcing(_ZERO, "COP", None, None, "catalog")
+        ) or Sourcing(_ZERO, self.ctx.store_currency, None, None, "catalog")
 
         denom = self._denominator(ing, src)
         if not denom:
@@ -680,7 +683,7 @@ class _PureCalculator:
                 continue
             src = self.ctx.sourcing.get(
                 (pkg.ingredient_id, None)
-            ) or Sourcing(_ZERO, "COP", None, None, "catalog")
+            ) or Sourcing(_ZERO, self.ctx.store_currency, None, None, "catalog")
             denom = self._denominator(ing, src)
             if not denom:
                 continue
@@ -736,7 +739,7 @@ class _PureCalculator:
             if ing is None:
                 continue
             src = self.ctx.sourcing.get((eff_id, eff_unit)) \
-                or Sourcing(_ZERO, "COP", None, None, "catalog")
+                or Sourcing(_ZERO, self.ctx.store_currency, None, None, "catalog")
             denom = self._denominator(ing, src)
             line_scale = scale if line.scales_with_size else Decimal("1")
             line_cost = self._line_base_cost(line) * line_scale
@@ -788,7 +791,7 @@ class _PureCalculator:
             if ing is None:
                 continue
             src = self.ctx.sourcing.get((pkg.ingredient_id, None)) \
-                or Sourcing(_ZERO, "COP", None, None, "catalog")
+                or Sourcing(_ZERO, self.ctx.store_currency, None, None, "catalog")
             denom = self._denominator(ing, src)
             if not denom:
                 continue
@@ -918,7 +921,7 @@ class CostCalculator:
             if ing is None:
                 continue
             src = ctx.sourcing.get((eff_id, eff_unit)) \
-                or Sourcing(_ZERO, "COP", None, None, "catalog")
+                or Sourcing(_ZERO, ctx.store_currency, None, None, "catalog")
             denom = pure._denominator(ing, src)
             if not denom:
                 continue
@@ -970,7 +973,7 @@ class CostCalculator:
             if ing is None:
                 continue
             src = ctx.sourcing.get((pkg.ingredient_id, None)) \
-                or Sourcing(_ZERO, "COP", None, None, "catalog")
+                or Sourcing(_ZERO, ctx.store_currency, None, None, "catalog")
             denom = pure._denominator(ing, src)
             if not denom:
                 continue

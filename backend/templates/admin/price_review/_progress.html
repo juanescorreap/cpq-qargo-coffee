@@ -1,0 +1,15 @@
+{# Progress bar. Included inline in overview; returned with hx-swap-oob after
+   an update/skip/filter so the header counter stays in sync. #}
+<div id="pr-progress"{% if oob_progress %} hx-swap-oob="true"{% endif %}
+     class="mt-4 max-w-xl">
+  <div class="flex items-center justify-between text-sm mb-1">
+    <span class="font-medium text-espresso">Progress</span>
+    <span class="font-mono tabular-nums text-stone-600">
+      {{ progress.reviewed }} / {{ progress.total }} reviewed
+    </span>
+  </div>
+  <div class="h-3 w-full rounded-full bg-stone-200 overflow-hidden">
+    <div class="h-full rounded-full bg-amber transition-all duration-300"
+         style="width: {{ progress.pct }}%"></div>
+  </div>
+</div>

@@ -1,0 +1,123 @@
+{% extends "_layout.html" %}
+{% block title %}Ingredient Substitutes{% endblock %}
+{% block content %}
+
+<div class="mb-6 flex items-start justify-between gap-4 flex-wrap">
+  <div>
+    <h1 class="text-3xl font-bold text-espresso">Ingredient Substitutes</h1>
+    <p class="mt-1 text-sm text-stone-500">
+      Corporate-approved substitutions. Only corporate can add or modify substitutes.
+    </p>
+  </div>
+  <div class="flex gap-2 shrink-0">
+    <a href="/supply-chain/routes"
+       hx-get="/supply-chain/routes" hx-target="#main-content" hx-push-url="true" hx-indicator="#page-spinner"
+       class="px-3 py-1.5 text-sm rounded-lg bg-white border border-stone-200 text-stone-600 hover:text-espresso hover:border-stone-300 transition-colors">
+      🔗 Routes
+    </a>
+    <a href="/supply-chain/assignments"
+       hx-get="/supply-chain/assignments" hx-target="#main-content" hx-push-url="true" hx-indicator="#page-spinner"
+       class="px-3 py-1.5 text-sm rounded-lg bg-white border border-stone-200 text-stone-600 hover:text-espresso hover:border-stone-300 transition-colors">
+      📋 Assignments
+    </a>
+  </div>
+</div>
+
+{# Info banner #}
+<div class="flex items-start gap-3 mb-6 bg-amber/10 border border-amber/30 rounded-xl p-4 text-sm text-amber-800">
+  <svg class="w-5 h-5 shrink-0 mt-0.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+  </svg>
+  <span>
+    Substitutes are activated automatically when the original ingredient has a
+    <strong>shortage</strong> or is <strong>unavailable</strong> in a region —
+    depending on the <em>activation condition</em> set by corporate.
+    The <em>quantity ratio</em> adjusts the recipe quantity when the substitute is used.
+  </span>
+</div>
+
+{% if substitutes %}
+<div class="bg-white rounded-xl shadow-sm overflow-hidden">
+  <table class="min-w-full divide-y divide-stone-100 text-sm">
+    <thead class="bg-stone-50">
+      <tr class="text-xs text-stone-400 font-semibold uppercase tracking-wider">
+        <th class="px-6 py-3 text-left">Original ingredient</th>
+        <th class="px-6 py-3 text-left">Substitute</th>
+        <th class="px-6 py-3 text-left">Activates on</th>
+        <th class="px-6 py-3 text-right">Qty ratio</th>
+        <th class="px-6 py-3 text-right">Cost impact</th>
+        <th class="px-6 py-3 text-left">Approved by</th>
+        <th class="px-6 py-3 text-left">Approval date</th>
+        <th class="px-6 py-3 text-left">Valid from</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-stone-50">
+      {% for s in substitutes %}
+      <tr class="hover:bg-cream transition-colors">
+        <td class="px-6 py-4">
+          <p class="font-semibold text-espresso">{{ s.original_name }}</p>
+        </td>
+        <td class="px-6 py-4">
+          <div class="flex items-center gap-1.5">
+            <svg class="w-3.5 h-3.5 text-stone-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+            </svg>
+            <span class="text-stone-700">{{ s.substitute_name }}</span>
+          </div>
+        </td>
+        <td class="px-6 py-4">
+          {% if s.activation_condition == 'shortage' %}
+          <span class="px-2 py-0.5 rounded-full text-xs font-medium bg-amber/10 text-amber border border-amber/20">
+            Shortage
+          </span>
+          {% elif s.activation_condition == 'unavailable' %}
+          <span class="px-2 py-0.5 rounded-full text-xs font-medium bg-red-50 text-red-600 border border-red-200">
+            Unavailable
+          </span>
+          {% else %}
+          <span class="px-2 py-0.5 rounded-full text-xs font-medium bg-stone-100 text-stone-500">
+            Always
+          </span>
+          {% endif %}
+        </td>
+        <td class="px-6 py-4 text-right font-mono tabular-nums">
+          {{ "%.2f"|format(s.quantity_ratio) }}×
+        </td>
+        <td class="px-6 py-4 text-right tabular-nums">
+          {% if s.cost_impact_pct is not none %}
+            {% if s.cost_impact_pct > 0 %}
+            <span class="text-red-600">+{{ "%.1f"|format(s.cost_impact_pct) }}%</span>
+            {% elif s.cost_impact_pct < 0 %}
+            <span class="text-green-600">{{ "%.1f"|format(s.cost_impact_pct) }}%</span>
+            {% else %}
+            <span class="text-stone-400">0%</span>
+            {% endif %}
+          {% else %}
+          <span class="text-stone-300">—</span>
+          {% endif %}
+        </td>
+        <td class="px-6 py-4 text-stone-600 text-xs">{{ s.approved_by }}</td>
+        <td class="px-6 py-4 text-stone-500 tabular-nums text-xs">
+          {{ s.approval_date.strftime('%d %b %Y') if s.approval_date else '—' }}
+        </td>
+        <td class="px-6 py-4 text-stone-500 tabular-nums text-xs">
+          {{ s.valid_from.strftime('%d %b %Y') if s.valid_from else '—' }}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% else %}
+<div class="bg-white rounded-xl shadow-sm py-24 text-center">
+  <p class="text-5xl mb-4">🔄</p>
+  <p class="text-base font-semibold text-stone-500">No substitutes registered</p>
+  <p class="text-sm text-stone-400 mt-1 max-w-sm mx-auto">
+    When corporate approves a substitute for an ingredient, it will appear here.
+    Substitutes activate automatically based on ingredient availability events.
+  </p>
+</div>
+{% endif %}
+
+{% endblock %}

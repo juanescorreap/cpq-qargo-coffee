@@ -74,7 +74,7 @@
       <div class="flex items-center gap-3">
         <label class="text-sm font-medium text-stone-600 shrink-0">Store</label>
         <select x-model="costsStoreId"
-                @change="costsLoaded = false; loadCosts()"
+                @change="costsStoreCurrency = costsStoreId ? (storeCurrencies[String(costsStoreId)] || 'USD') : 'USD'; costsLoaded = false; loadCosts()"
                 class="rounded-lg border border-stone-200 bg-white px-3 py-2
                        text-sm text-espresso focus:outline-none focus:ring-2
                        focus:ring-amber/40 focus:border-amber transition-colors">
@@ -738,6 +738,8 @@ function reportsDashboard() {
 
     // ── Tab 1: Costs ──────────────────────────────────────────────────
     costsStoreId: '',
+    costsStoreCurrency: 'USD', // follows selected store; 'USD' for global (all stores are USD)
+    storeCurrencies: {},       // {store_id_str: 'USD'|'COP'|...}
     costsData:    null,
     costsLoading: false,
     costsLoaded:  false,
@@ -772,7 +774,12 @@ function reportsDashboard() {
     init() {
       const storesEl = document.getElementById('stores-data');
       if (storesEl) {
-        try { this.stores = JSON.parse(storesEl.textContent); } catch {}
+        try {
+          this.stores = JSON.parse(storesEl.textContent);
+          this.storeCurrencies = Object.fromEntries(
+            this.stores.map(s => [String(s.id), s.currency || 'COP'])
+          );
+        } catch {}
       }
       const ingsEl = document.getElementById('ingredients-data');
       if (ingsEl) {
@@ -906,7 +913,12 @@ function reportsDashboard() {
             legend: { display: false },
             tooltip: {
               callbacks: {
-                label: ctx => ` $${ctx.raw.toLocaleString('es-CO', { maximumFractionDigits: 0 })} COP`,
+                label: ctx => {
+                  const cur = this.costsStoreCurrency || 'USD';
+                  const decimals = cur === 'COP' ? 0 : 2;
+                  const locale   = cur === 'COP' ? 'es-CO' : 'en-US';
+                  return ` $${ctx.raw.toLocaleString(locale, { maximumFractionDigits: decimals })} ${cur}`;
+                },
               },
             },
           },
@@ -914,8 +926,12 @@ function reportsDashboard() {
             x: {
               grid: { color: 'rgba(0,0,0,0.04)' },
               ticks: {
-                callback: v =>
-                  '$' + Number(v).toLocaleString('es-CO', { maximumFractionDigits: 0 }),
+                callback: v => {
+                  const cur = this.costsStoreCurrency || 'USD';
+                  const locale = cur === 'COP' ? 'es-CO' : 'en-US';
+                  const decimals = cur === 'COP' ? 0 : 2;
+                  return '$' + Number(v).toLocaleString(locale, { maximumFractionDigits: decimals });
+                },
                 font: { size: 11 },
               },
             },
@@ -929,8 +945,11 @@ function reportsDashboard() {
 
     // ── Utilities ─────────────────────────────────────────────────────
     formatCOP(val) {
-      const n = parseFloat(val) || 0;
-      return '$' + n.toLocaleString('es-CO', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+      const cur      = this.costsStoreCurrency || 'USD';
+      const n        = parseFloat(val) || 0;
+      const decimals = cur === 'COP' ? 0 : 2;
+      const locale   = cur === 'COP' ? 'es-CO' : 'en-US';
+      return '$' + n.toLocaleString(locale, { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
     },
   };
 }

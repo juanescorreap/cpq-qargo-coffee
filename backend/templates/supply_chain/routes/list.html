@@ -245,4 +245,48 @@
 </div>
 {% endif %}
 
+{# ── Pagination ──────────────────────────────────────────────────────────── #}
+{% if total_pages > 1 %}
+<div class="mt-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-sm text-stone-600">
+  <span class="text-xs text-stone-400">
+    Page {{ page }} of {{ total_pages }} &nbsp;·&nbsp; {{ total }} route{{ 's' if total != 1 else '' }}
+  </span>
+  <nav class="flex items-center gap-1">
+    {% if page > 1 %}
+    <button hx-get="/supply-chain/routes?page={{ page - 1 }}{% if ingredient_filter %}&ingredient_id={{ ingredient_filter }}{% endif %}"
+            hx-target="#main-content" hx-push-url="true" hx-indicator="#page-spinner"
+            class="px-3 py-1.5 rounded-lg border border-stone-200 hover:bg-stone-50 hover:border-stone-300 transition-colors">
+      ← Previous
+    </button>
+    {% else %}
+    <span class="px-3 py-1.5 rounded-lg border border-stone-100 text-stone-300 cursor-not-allowed">← Previous</span>
+    {% endif %}
+
+    {% for p in range(1, total_pages + 1) %}
+      {% if p == page %}
+      <span class="px-3 py-1.5 rounded-lg bg-espresso text-beige font-semibold text-xs">{{ p }}</span>
+      {% elif p == 1 or p == total_pages or (p >= page - 2 and p <= page + 2) %}
+      <button hx-get="/supply-chain/routes?page={{ p }}{% if ingredient_filter %}&ingredient_id={{ ingredient_filter }}{% endif %}"
+              hx-target="#main-content" hx-push-url="true" hx-indicator="#page-spinner"
+              class="px-3 py-1.5 rounded-lg border border-stone-200 hover:bg-stone-50 hover:border-amber hover:text-amber transition-colors text-xs">
+        {{ p }}
+      </button>
+      {% elif p == page - 3 or p == page + 3 %}
+      <span class="px-1 text-stone-300">…</span>
+      {% endif %}
+    {% endfor %}
+
+    {% if page < total_pages %}
+    <button hx-get="/supply-chain/routes?page={{ page + 1 }}{% if ingredient_filter %}&ingredient_id={{ ingredient_filter }}{% endif %}"
+            hx-target="#main-content" hx-push-url="true" hx-indicator="#page-spinner"
+            class="px-3 py-1.5 rounded-lg border border-stone-200 hover:bg-stone-50 hover:border-stone-300 transition-colors">
+      Next →
+    </button>
+    {% else %}
+    <span class="px-3 py-1.5 rounded-lg border border-stone-100 text-stone-300 cursor-not-allowed">Next →</span>
+    {% endif %}
+  </nav>
+</div>
+{% endif %}
+
 {% endblock %}

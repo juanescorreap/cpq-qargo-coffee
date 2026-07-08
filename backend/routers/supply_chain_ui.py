@@ -24,6 +24,7 @@ HTMX partials (no extienden base.html, reemplazan secciones específicas):
 
 from datetime import date
 from decimal import Decimal, InvalidOperation
+from math import ceil
 from pathlib import Path
 from typing import Optional
 
@@ -40,6 +41,7 @@ from backend.models.recipe_unit import RecipeUnit
 from backend.models.store import Store
 from backend.models.supply_chain import (
     Distributor,
+    IngredientSubstitute,
     IngredientSupplierRef,
     Manufacturer,
     Region,
@@ -50,6 +52,7 @@ from backend.models.supply_chain import (
 )
 
 _TEMPLATES_DIR = Path(__file__).resolve().parent.parent / "templates"
+_PAGE_SIZE = 25
 router = APIRouter(prefix="/supply-chain", tags=["supply-chain-ui"])
 templates = Jinja2Templates(directory=str(_TEMPLATES_DIR))
 
@@ -312,17 +315,28 @@ def deactivate_distributor_htmx(
 # Supply Routes
 # ===========================================================================
 
-def _routes_context(db: Session, ingredient_filter: Optional[int] = None) -> dict:
+def _routes_context(
+    db: Session,
+    ingredient_filter: Optional[int] = None,
+    page: int = 1,
+) -> dict:
     q = db.query(SupplyRoute)
     if ingredient_filter:
         q = q.filter(SupplyRoute.ingredient_id == ingredient_filter)
-    routes = q.order_by(SupplyRoute.ingredient_id, SupplyRoute.id).all()
+    q = q.order_by(SupplyRoute.ingredient_id, SupplyRoute.id)
+    total = q.count()
+    total_pages = max(1, ceil(total / _PAGE_SIZE))
+    page = max(1, min(page, total_pages))
+    routes = q.offset((page - 1) * _PAGE_SIZE).limit(_PAGE_SIZE).all()
     return {
         "routes": [_route_with_joins(r, db) for r in routes],
         "ingredients": db.query(Ingredient).filter(Ingredient.is_active == True).order_by(Ingredient.name).all(),
         "manufacturers": _all_manufacturers(db),
         "distributors": _all_distributors(db),
         "ingredient_filter": ingredient_filter,
+        "page": page,
+        "total": total,
+        "total_pages": total_pages,
     }
 
 
@@ -330,9 +344,10 @@ def _routes_context(db: Session, ingredient_filter: Optional[int] = None) -> dic
 def routes_page(
     request: Request,
     ingredient_id: Optional[int] = None,
+    page: int = 1,
     db: Session = Depends(get_db),
 ):
-    ctx = _routes_context(db, ingredient_id)
+    ctx = _routes_context(db, ingredient_id, page)
     ctx.update({"request": request, "error": None})
     return templates.TemplateResponse("supply_chain/routes/list.html", ctx)
 
@@ -638,15 +653,23 @@ def delete_conversion_htmx(
 # Assignments
 # ===========================================================================
 
-def _assignments_context(db: Session, show_closed: bool = False) -> dict:
+def _assignments_context(
+    db: Session,
+    show_closed: bool = False,
+    page: int = 1,
+) -> dict:
     q = db.query(SupplyRouteAssignment)
     if not show_closed:
         q = q.filter(SupplyRouteAssignment.valid_until.is_(None))
-    assignments_raw = q.order_by(
+    q = q.order_by(
         SupplyRouteAssignment.region_id.nulls_last(),
         SupplyRouteAssignment.store_id.nulls_last(),
         SupplyRouteAssignment.priority,
-    ).all()
+    )
+    total = q.count()
+    total_pages = max(1, ceil(total / _PAGE_SIZE))
+    page = max(1, min(page, total_pages))
+    assignments_raw = q.offset((page - 1) * _PAGE_SIZE).limit(_PAGE_SIZE).all()
     return {
         "assignments": [_assignment_with_joins(a, db) for a in assignments_raw],
         "routes": [_route_with_joins(r, db) for r in
@@ -654,6 +677,9 @@ def _assignments_context(db: Session, show_closed: bool = False) -> dict:
         "regions": _all_regions(db),
         "stores": db.query(Store).filter(Store.is_active == True).order_by(Store.name).all(),
         "show_closed": show_closed,
+        "page": page,
+        "total": total,
+        "total_pages": total_pages,
     }
 
 
@@ -661,9 +687,10 @@ def _assignments_context(db: Session, show_closed: bool = False) -> dict:
 def assignments_page(
     request: Request,
     show_closed: bool = False,
+    page: int = 1,
     db: Session = Depends(get_db),
 ):
-    ctx = _assignments_context(db, show_closed)
+    ctx = _assignments_context(db, show_closed, page)
     ctx.update({"request": request, "error": None})
     return templates.TemplateResponse("supply_chain/assignments/list.html", ctx)
 
@@ -749,3 +776,46 @@ def close_assignment_htmx(
     ctx = _assignments_context(db)
     ctx.update({"request": request, "error": error})
     return templates.TemplateResponse("supply_chain/assignments/_content.html", ctx)
+
+
+# ===========================================================================
+# Ingredient Substitutes (read-only)
+# ===========================================================================
+
+@router.get("/substitutes", response_class=HTMLResponse)
+def substitutes_page(request: Request, db: Session = Depends(get_db)):
+    subs_raw = (
+        db.query(IngredientSubstitute)
+        .filter(IngredientSubstitute.valid_until.is_(None))
+        .order_by(IngredientSubstitute.original_ingredient_id, IngredientSubstitute.id)
+        .all()
+    )
+    ing_ids = list(
+        {s.original_ingredient_id for s in subs_raw}
+        | {s.substitute_ingredient_id for s in subs_raw}
+    )
+    from backend.models.ingredient import Ingredient as _Ing
+    ingredients_by_id: dict = {}
+    if ing_ids:
+        ingredients_by_id = {
+            i.id: i.name for i in db.query(_Ing).filter(_Ing.id.in_(ing_ids)).all()
+        }
+    substitutes = [
+        {
+            "id": s.id,
+            "original_name": ingredients_by_id.get(s.original_ingredient_id, f"#{s.original_ingredient_id}"),
+            "substitute_name": ingredients_by_id.get(s.substitute_ingredient_id, f"#{s.substitute_ingredient_id}"),
+            "approved_by": s.approved_by,
+            "approval_date": s.approval_date,
+            "activation_condition": s.activation_condition,
+            "quantity_ratio": float(s.quantity_ratio),
+            "cost_impact_pct": float(s.cost_impact_pct) if s.cost_impact_pct is not None else None,
+            "valid_from": s.valid_from,
+            "notes": s.notes,
+        }
+        for s in subs_raw
+    ]
+    return templates.TemplateResponse("supply_chain/substitutes/list.html", {
+        "request": request,
+        "substitutes": substitutes,
+    })

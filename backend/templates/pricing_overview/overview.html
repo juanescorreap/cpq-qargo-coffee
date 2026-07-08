@@ -1,0 +1,57 @@
+{% extends "_layout.html" %}
+
+{% block title %}Pricing Overview — CPQ Qargo Coffee{% endblock %}
+
+{% block content %}
+
+{# ── Header ─────────────────────────────────────────────────────────── #}
+<div class="mb-8">
+  <h1 class="text-3xl font-bold text-espresso">Pricing Overview</h1>
+  <p class="mt-1 text-sm text-stone-500">
+    Read-only cost &amp; price view for a store. To edit prices use the
+    <a href="/pricing/manager" hx-get="/pricing/manager" hx-target="#main-content"
+       hx-push-url="true" class="text-amber hover:underline">Pricing Manager</a>.
+  </p>
+</div>
+
+{# ── Store selector ─────────────────────────────────────────────────── #}
+<div class="bg-white rounded-xl shadow-sm p-4 mb-6 flex flex-wrap items-center gap-3">
+  <label class="text-sm font-medium text-espresso">Store</label>
+  {% if locked and store %}
+    <span class="px-3 py-2 text-sm rounded-lg bg-stone-100 text-espresso font-medium">
+      {{ store.code }} — {{ store.name }}
+    </span>
+  {% else %}
+    <select
+      id="pov-store"
+      name="store_id"
+      hx-get="/pricing/overview/store-changed"
+      hx-target="#pov-body"
+      hx-swap="innerHTML"
+      hx-indicator="#page-spinner"
+      class="py-2 px-3 text-sm border border-stone-200 rounded-lg bg-white text-espresso min-w-[16rem]
+             focus:outline-none focus:ring-2 focus:ring-amber/40 focus:border-amber">
+      <option value="">Select a store…</option>
+      {% for s in stores %}
+      <option value="{{ s.id }}" {% if store and s.id == store.id %}selected{% endif %}>
+        {{ s.code }} — {{ s.name }}
+      </option>
+      {% endfor %}
+    </select>
+  {% endif %}
+</div>
+
+{# ── Body: summary + controls + table (swapped when store changes) ───── #}
+<div id="pov-body">
+  {% if store %}
+    {% include 'pricing_overview/_body.html' %}
+  {% else %}
+    <div class="bg-white rounded-xl shadow-sm py-20 text-center">
+      <p class="text-5xl mb-4">📊</p>
+      <p class="text-lg font-semibold text-espresso">Select a store to begin</p>
+      <p class="text-sm text-stone-400 mt-1">Choose one of the {{ stores|length }} active stores above.</p>
+    </div>
+  {% endif %}
+</div>
+
+{% endblock %}

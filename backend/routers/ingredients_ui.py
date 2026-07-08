@@ -4,6 +4,7 @@ from pathlib import Path
 from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
+from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
 from backend.database import get_db
@@ -126,18 +127,49 @@ async def edit_form(
 # ---------------------------------------------------------------------------
 
 def _parse_form(form) -> dict:
-    """Extracts and coerces the ingredient form fields."""
+    """Extracts and coerces the ingredient form fields. Raises ValueError on bad input."""
+    name = (form.get("name") or "").strip()
+    if not name:
+        raise ValueError("Name is required")
+
+    try:
+        purchase_price = float(form["purchase_price"]) if form.get("purchase_price") else None
+    except ValueError:
+        raise ValueError("Purchase price must be a valid number")
+
+    try:
+        conversion_factor = float(form["conversion_factor"]) if form.get("conversion_factor") else None
+    except ValueError:
+        raise ValueError("Conversion factor must be a valid number")
+
     raw_yield = form.get("yield_percentage")
+    try:
+        yield_pct = float(raw_yield) / 100 if raw_yield else 1.0
+    except ValueError:
+        raise ValueError("Yield percentage must be a valid number")
+
     return {
-        "name":              form["name"],
+        "name":              name,
         "category":          form.get("category") or None,
-        "purchase_price":    float(form["purchase_price"]) if form.get("purchase_price") else None,
+        "purchase_price":    purchase_price,
         "purchase_unit":     form.get("purchase_unit") or None,
         "usage_unit":        form.get("usage_unit") or None,
-        "conversion_factor": float(form["conversion_factor"]) if form.get("conversion_factor") else None,
-        "yield_percentage":  float(raw_yield) / 100 if raw_yield else 1.0,
+        "conversion_factor": conversion_factor,
+        "yield_percentage":  yield_pct,
         "source_url":        form.get("source_url") or None,
     }
+
+
+def _form_error(message: str) -> HTMLResponse:
+    """Returns an error banner targeted at #form-error inside the open modal."""
+    html = (
+        f'<div class="text-sm text-red-600 bg-red-50 border border-red-200 '
+        f'rounded-lg px-3 py-2">{message}</div>'
+    )
+    resp = HTMLResponse(html)
+    resp.headers["HX-Retarget"] = "#form-error"
+    resp.headers["HX-Reswap"] = "innerHTML"
+    return resp
 
 
 def _table_response(request: Request, db: Session) -> HTMLResponse:
@@ -151,10 +183,18 @@ def _table_response(request: Request, db: Session) -> HTMLResponse:
 @router.post("", response_class=HTMLResponse)
 async def create(request: Request, db: Session = Depends(get_db)) -> HTMLResponse:
     form = await request.form()
-    ingredient = Ingredient(**_parse_form(form))
-    db.add(ingredient)
-    db.commit()
-    db.refresh(ingredient)
+    try:
+        data = _parse_form(form)
+        with db.begin_nested():
+            ingredient = Ingredient(**data)
+            db.add(ingredient)
+        db.commit()
+        db.refresh(ingredient)
+    except ValueError as exc:
+        return _form_error(str(exc))
+    except SQLAlchemyError:
+        db.rollback()
+        return _form_error("Could not save ingredient. Please check your data and try again.")
     return _table_response(request, db)
 
 
@@ -167,10 +207,18 @@ async def update(
         raise HTTPException(status_code=404, detail="Ingredient not found")
 
     form = await request.form()
-    for field, value in _parse_form(form).items():
-        setattr(ingredient, field, value)
-    db.commit()
-    db.refresh(ingredient)
+    try:
+        data = _parse_form(form)
+        with db.begin_nested():
+            for field, value in data.items():
+                setattr(ingredient, field, value)
+        db.commit()
+        db.refresh(ingredient)
+    except ValueError as exc:
+        return _form_error(str(exc))
+    except SQLAlchemyError:
+        db.rollback()
+        return _form_error("Could not save ingredient. Please check your data and try again.")
     return _table_response(request, db)
 
 

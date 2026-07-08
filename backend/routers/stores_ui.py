@@ -3,7 +3,7 @@ from pathlib import Path
 from typing import Optional
 
 from fastapi import APIRouter, Depends, Request
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy import and_, text
 from sqlalchemy.orm import Session
@@ -24,6 +24,12 @@ router = APIRouter(prefix="/stores", tags=["UI - Stores"])
 templates = Jinja2Templates(
     directory=Path(__file__).resolve().parent.parent / "templates"
 )
+
+
+@router.get("/{store_id}/pricing-overview")
+def store_pricing_overview(store_id: int):
+    """Entry point 2: deep-link to the Pricing Overview preselected on this store."""
+    return RedirectResponse(url=f"/pricing/overview?store_id={store_id}", status_code=303)
 
 
 # ---------------------------------------------------------------------------
@@ -93,11 +99,11 @@ def _regions_for_select(db: Session) -> list:
 
 
 def _resolve_active_routes(store_id: int, db: Session) -> list[dict]:
-    """Call fn_resolve_supply_route for each ingredient in the store's active menu.
+    """Return resolved supply routes for every ingredient in the store's active menu.
 
-    Only considers ingredients from products that the store has explicitly set as
-    available in store_products. A new store with no configured products returns [].
-    Sorted: unresolved rows first (base price), then alphabetically by ingredient.
+    Uses a single LATERAL SQL call to invoke fn_resolve_supply_route for all
+    ingredients at once, then bulk-loads supporting entities — down from 5×N
+    queries to 6 total regardless of N.
     """
     ingredient_ids = (
         db.query(RecipeIngredient.ingredient_id)
@@ -115,31 +121,72 @@ def _resolve_active_routes(store_id: int, db: Session) -> list[dict]:
         .all()
     )
 
-    results = []
-    for (iid,) in ingredient_ids:
-        row = db.execute(
-            text(
-                "SELECT supply_route_id, scope, priority, "
-                "manufacturer_id, distributor_id, is_direct "
-                "FROM public.fn_resolve_supply_route(:iid, :sid)"
-            ),
-            {"iid": iid, "sid": store_id},
-        ).fetchone()
+    if not ingredient_ids:
+        return []
 
-        ingredient = db.get(Ingredient, iid)
+    iid_list = [iid for (iid,) in ingredient_ids]
+
+    # Single LATERAL call — fn_resolve_supply_route invoked once per row via unnest.
+    # iid_list contains integer PKs from the DB; no injection risk.
+    iid_literals = ",".join(str(i) for i in iid_list)
+    route_rows = db.execute(
+        text(
+            f"SELECT t.ing_id, r.assignment_id, r.supply_route_id, r.scope, r.priority, "
+            f"r.manufacturer_id, r.distributor_id, r.is_direct "
+            f"FROM unnest(ARRAY[{iid_literals}]::int[]) AS t(ing_id) "
+            f"LEFT JOIN LATERAL public.fn_resolve_supply_route(t.ing_id, :sid) AS r ON true"
+        ),
+        {"sid": store_id},
+    ).fetchall()
+
+    # Bulk load ingredients
+    ingredients_by_id = {
+        i.id: i
+        for i in db.query(Ingredient).filter(Ingredient.id.in_(iid_list)).all()
+    }
+
+    # Bulk load manufacturers
+    mfr_ids = list({r.manufacturer_id for r in route_rows if r.manufacturer_id})
+    manufacturers_by_id: dict = {}
+    if mfr_ids:
+        manufacturers_by_id = {
+            m.id: m
+            for m in db.query(Manufacturer).filter(Manufacturer.id.in_(mfr_ids)).all()
+        }
+
+    # Bulk load distributors
+    dst_ids = list({r.distributor_id for r in route_rows if r.distributor_id})
+    distributors_by_id: dict = {}
+    if dst_ids:
+        distributors_by_id = {
+            d.id: d
+            for d in db.query(Distributor).filter(Distributor.id.in_(dst_ids)).all()
+        }
+
+    # Bulk load active prices for all resolved routes
+    route_ids = list({r.supply_route_id for r in route_rows if r.supply_route_id})
+    prices_by_route: dict = {}
+    if route_ids:
+        prices_by_route = {
+            p.supply_route_id: p
+            for p in db.query(SupplyRoutePrice)
+            .filter(
+                SupplyRoutePrice.supply_route_id.in_(route_ids),
+                SupplyRoutePrice.valid_until.is_(None),
+            )
+            .all()
+        }
+
+    results = []
+    for row in route_rows:
+        iid = row.ing_id
+        ingredient = ingredients_by_id.get(iid)
         ing_name = ingredient.name if ingredient else f"Ingredient #{iid}"
 
-        if row:
-            mfr = db.get(Manufacturer, row.manufacturer_id) if row.manufacturer_id else None
-            dst = db.get(Distributor, row.distributor_id) if row.distributor_id else None
-            price = (
-                db.query(SupplyRoutePrice)
-                .filter(
-                    SupplyRoutePrice.supply_route_id == row.supply_route_id,
-                    SupplyRoutePrice.valid_until.is_(None),
-                )
-                .first()
-            )
+        if row.supply_route_id is not None:
+            mfr = manufacturers_by_id.get(row.manufacturer_id)
+            dst = distributors_by_id.get(row.distributor_id)
+            price = prices_by_route.get(row.supply_route_id)
             results.append({
                 "ingredient_name": ing_name,
                 "ingredient_id": iid,

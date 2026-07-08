@@ -168,6 +168,7 @@ class PricingEngine:
             "markup_percentage": markup,
             "suggested_price": suggested_price,
             "rounded_price": rounded_price,
+            "currency_code": currency,
         }
 
     def save_pricing(
@@ -439,8 +440,8 @@ class PricingEngine:
                             fx_rate = None
                             fx_rate_date = None
                             for ln in detail["ingredients"]:
-                                if ln.get("currency") and ln["currency"] != "COP":
-                                    fx_rate = Decimal(ln["fx_rate"]) if ln.get("fx_rate") else None
+                                if ln.get("currency") and ln["currency"] != "COP" and ln.get("fx_rate"):
+                                    fx_rate = Decimal(ln["fx_rate"])
                                     fx_rate_date = ln.get("price_valid_from")
                                     break
                             self.db.add(RecipeCostSnapshot(
