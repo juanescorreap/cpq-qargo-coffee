@@ -4,6 +4,7 @@ from pathlib import Path
 from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
+from sqlalchemy import text
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
@@ -160,6 +161,35 @@ def _parse_form(form) -> dict:
     }
 
 
+def _parse_current_price(form) -> float | None:
+    """The engine price. Never set directly on ingredients.current_price — it is
+    synced from an INSERT into ingredient_price_history (trigger). Returns the
+    submitted value, or None when the field is blank."""
+    raw = form.get("current_price")
+    if raw is None or str(raw).strip() == "":
+        return None
+    try:
+        return float(raw)
+    except ValueError:
+        raise ValueError("Current price must be a valid number")
+
+
+def _record_current_price(db: Session, ingredient_id: int, new_price: float | None, old_price) -> None:
+    """Insert a history row when the engine price changed, so the trigger syncs
+    ingredients.current_price. No-op when unchanged or not provided."""
+    if new_price is None:
+        return
+    if old_price is not None and float(old_price) == new_price:
+        return
+    db.execute(
+        text(
+            "INSERT INTO ingredient_price_history (ingredient_id, price, source) "
+            "VALUES (:i, :p, 'manual')"
+        ),
+        {"i": ingredient_id, "p": new_price},
+    )
+
+
 def _form_error(message: str) -> HTMLResponse:
     """Returns an error banner targeted at #form-error inside the open modal."""
     html = (
@@ -185,9 +215,12 @@ async def create(request: Request, db: Session = Depends(get_db)) -> HTMLRespons
     form = await request.form()
     try:
         data = _parse_form(form)
+        new_current = _parse_current_price(form)
         with db.begin_nested():
             ingredient = Ingredient(**data)
             db.add(ingredient)
+        # current_price is set only via history (trigger), never by setattr.
+        _record_current_price(db, ingredient.id, new_current, None)
         db.commit()
         db.refresh(ingredient)
     except ValueError as exc:
@@ -209,9 +242,13 @@ async def update(
     form = await request.form()
     try:
         data = _parse_form(form)
+        new_current = _parse_current_price(form)
+        old_current = ingredient.current_price
         with db.begin_nested():
             for field, value in data.items():
                 setattr(ingredient, field, value)
+        # current_price is updated only via history (trigger), never by setattr.
+        _record_current_price(db, ingredient_id, new_current, old_current)
         db.commit()
         db.refresh(ingredient)
     except ValueError as exc:

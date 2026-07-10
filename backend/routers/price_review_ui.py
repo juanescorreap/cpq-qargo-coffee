@@ -308,6 +308,18 @@ def price_review_update(
         )
         resp.status_code = 400
         return resp
+    # The cost engine reads ingredients.current_price, which is synced ONLY from
+    # an INSERT into ingredient_price_history (trigger trg_iph_sync_current_price).
+    # A plain UPDATE of purchase_price would never reach the engine. So record the
+    # reviewed price on the history (drives current_price) AND mirror it onto
+    # purchase_price + unit for visual consistency in the UI.
+    db.execute(
+        text(
+            "INSERT INTO ingredient_price_history (ingredient_id, price, source) "
+            "VALUES (:i, :p, 'manual')"
+        ),
+        {"i": ingredient_id, "p": purchase_price},
+    )
     db.execute(
         text(
             "UPDATE ingredients "
@@ -319,6 +331,39 @@ def price_review_update(
     _upsert_status(db, ingredient_id, store_id, "reviewed", "admin")
     db.commit()
     return _row_with_progress(request, db, store_id, ingredient_id)
+
+
+@router.post("/sync-current-prices")
+def sync_current_prices(store_id: int = DEFAULT_STORE_ID, db: Session = Depends(get_db)):
+    """One-shot backfill: for every ingredient already reviewed in this store whose
+    purchase_price never reached current_price (reviews saved before the history
+    fix), insert a history row so the trigger syncs current_price. Idempotent —
+    only touches rows where current_price differs from purchase_price."""
+    rows = db.execute(
+        text(
+            """
+            SELECT i.id, i.purchase_price
+            FROM ingredients i
+            JOIN price_review_status prs ON prs.ingredient_id = i.id
+            WHERE prs.store_id = :s
+              AND prs.status = 'reviewed'
+              AND i.is_active = true
+              AND i.purchase_price IS NOT NULL
+              AND i.current_price IS DISTINCT FROM i.purchase_price
+            """
+        ),
+        {"s": store_id},
+    ).all()
+    for r in rows:
+        db.execute(
+            text(
+                "INSERT INTO ingredient_price_history (ingredient_id, price, source) "
+                "VALUES (:i, :p, 'manual_price_review_backfill')"
+            ),
+            {"i": r.id, "p": r.purchase_price},
+        )
+    db.commit()
+    return {"store_id": store_id, "synced": len(rows)}
 
 
 @router.post("/skip", response_class=HTMLResponse)
