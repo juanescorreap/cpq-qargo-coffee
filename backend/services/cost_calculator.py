@@ -455,6 +455,20 @@ def load_context(
     }
     needed_keys |= subst_keys
 
+    # Accumulation currency = the store's OWN currency, resolved once here and
+    # reused for the final-quantize minor_unit below. A USD store therefore keeps
+    # route prices in USD instead of forcing a USD->COP conversion that has no FX
+    # rate and would silently fall back to current_price. COP stores convert to
+    # COP exactly as before (COP->COP is identity for COP-priced routes).
+    if store_id is not None:
+        _store_cur = (
+            db.query(Store.default_currency_code)
+            .filter(Store.id == store_id)
+            .scalar()
+        ) or "COP"
+    else:
+        _store_cur = "COP"
+
     sourcing: Dict[Tuple[int, Optional[int]], Sourcing] = {}
     if needed_keys and store_id is not None:
         ings = [k[0] for k in needed_keys]
@@ -462,19 +476,19 @@ def load_context(
         rows = db.execute(
             text(
                 "SELECT k.ingredient_id, k.recipe_unit_id, "
-                "       fn_convert_amount(s.unit_price, s.price_currency, 'COP', "
+                "       fn_convert_amount(s.unit_price, s.price_currency, :acc_cur, "
                 "           COALESCE(s.price_valid_from, CURRENT_DATE)) AS unit_price_cop, "
                 "       s.price_currency, s.purchase_qty, s.recipe_qty, s.source, "
                 "       s.supply_route_id, s.manufacturer_id, s.distributor_id, "
                 "       s.price_valid_from, "
-                "       fn_convert_amount(1::numeric, s.price_currency, 'COP', "
+                "       fn_convert_amount(1::numeric, s.price_currency, :acc_cur, "
                 "           COALESCE(s.price_valid_from, CURRENT_DATE)) AS fx_rate "
                 "FROM unnest(CAST(:ings AS bigint[]), CAST(:rus AS bigint[])) "
                 "         AS k(ingredient_id, recipe_unit_id) "
                 "CROSS JOIN LATERAL fn_resolve_ingredient_sourcing("
                 "    k.ingredient_id, :s, k.recipe_unit_id, CURRENT_DATE) AS s"
             ),
-            {"s": store_id, "ings": ings, "rus": rus},
+            {"s": store_id, "ings": ings, "rus": rus, "acc_cur": _store_cur},
         ).all()
         for r in rows:
             price = (
@@ -505,16 +519,9 @@ def load_context(
                 source="catalog",
             )
 
-    # minor_unit of the store's currency for final quantize (E6).
-    # Use the store's default_currency_code so USD stores round to $0.01, not to $1.
-    if store_id is not None:
-        _store_cur = (
-            db.query(Store.default_currency_code)
-            .filter(Store.id == store_id)
-            .scalar()
-        ) or "COP"
-    else:
-        _store_cur = "COP"
+    # minor_unit of the store's currency for final quantize (E6). _store_cur was
+    # resolved above (it is the accumulation currency), so USD stores round to
+    # $0.01, not to $1.
     currency_minor_row = db.execute(
         text("SELECT minor_unit FROM currencies WHERE code = :code"),
         {"code": _store_cur},
