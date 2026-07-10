@@ -1,0 +1,27 @@
+{# Ingredient-name review table. Context: rows (list of dicts). #}
+{% if rows %}
+<div class="bg-white rounded-xl shadow-sm overflow-x-auto">
+  <table class="min-w-full divide-y divide-stone-200 text-sm">
+    <thead class="bg-stone-50">
+      <tr>
+        <th class="px-4 py-3 text-left text-xs font-semibold text-stone-500 uppercase tracking-wide">Current Name</th>
+        <th class="px-4 py-3 text-left text-xs font-semibold text-stone-500 uppercase tracking-wide">API Name</th>
+        <th class="px-4 py-3 text-left text-xs font-semibold text-stone-500 uppercase tracking-wide">Category</th>
+        <th class="px-4 py-3 text-left text-xs font-semibold text-stone-500 uppercase tracking-wide">Flag</th>
+        <th class="px-4 py-3 text-right text-xs font-semibold text-stone-500 uppercase tracking-wide">Action</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-stone-100">
+      {% for ing in rows %}
+      {% include 'admin/ingredient_names/_ingredient_row.html' %}
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div class="bg-white rounded-xl shadow-sm py-20 text-center">
+  <p class="text-5xl mb-4">🔍</p>
+  <p class="text-lg font-semibold text-espresso">No matching ingredients</p>
+  <p class="text-sm text-stone-400 mt-1">No rows match the active filters.</p>
+</div>
+{% endif %}

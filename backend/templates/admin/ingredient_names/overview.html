@@ -1,0 +1,53 @@
+{% extends "_layout.html" %}
+
+{% block title %}Ingredient Name Review — CPQ Qargo Coffee{% endblock %}
+
+{% block content %}
+
+<div class="mb-6">
+  <h1 class="text-3xl font-bold text-espresso">Ingredient Name Review</h1>
+  <p class="mt-1 text-sm text-stone-500">
+    {{ total }} ingredient{{ 's' if total != 1 else '' }} confirmed as new ·
+    review canonical names
+  </p>
+</div>
+
+{# ── Filters ──────────────────────────────────────────────────────────────── #}
+<form id="in-filters"
+      hx-get="/admin/ingredient-names/table"
+      hx-target="#in-table"
+      hx-swap="innerHTML"
+      hx-trigger="change"
+      hx-indicator="#page-spinner"
+      class="flex flex-wrap items-center gap-3 mb-4">
+  <label class="text-sm text-stone-500">
+    Flag
+    <select name="flag"
+            class="ml-1 py-1.5 px-2 text-sm border border-stone-200 rounded-lg bg-white
+                   focus:outline-none focus:ring-2 focus:ring-amber/40 focus:border-amber">
+      <option value="all">All</option>
+      <option value="caps">⚠ CAPS</option>
+      <option value="case">⚠ Case</option>
+      <option value="chars">⚠ Chars</option>
+      <option value="ok">ok</option>
+    </select>
+  </label>
+  <label class="text-sm text-stone-500">
+    Category
+    <select name="category"
+            class="ml-1 py-1.5 px-2 text-sm border border-stone-200 rounded-lg bg-white
+                   focus:outline-none focus:ring-2 focus:ring-amber/40 focus:border-amber">
+      <option value="all">All</option>
+      {% for c in categories %}
+      <option value="{{ c.slug }}">{{ c.name }}</option>
+      {% endfor %}
+    </select>
+  </label>
+</form>
+
+{# ── Table ────────────────────────────────────────────────────────────────── #}
+<div id="in-table">
+  {% include 'admin/ingredient_names/_table.html' %}
+</div>
+
+{% endblock %}

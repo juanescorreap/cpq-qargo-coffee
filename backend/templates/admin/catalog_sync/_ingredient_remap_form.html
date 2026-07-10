@@ -1,0 +1,44 @@
+{# 'Change mapping' search state, rendered inside a MAPPED card.
+   card.id = the current (wrong) canonical. The original duplicate id is
+   resolved server-side from the match log — never passed from the UI.
+   Alpine holds the newly selected canonical id. #}
+<div x-data="{ selectedId: null }" class="mt-3">
+  <p class="text-sm text-stone-500 mb-1">
+    Currently mapped to:
+    <span class="font-medium text-espresso">{{ card.mapped_to or card.name }}</span>
+  </p>
+  <p class="text-sm font-medium text-espresso mb-1">Change to:</p>
+
+  <input type="text" name="q" autocomplete="off" placeholder="🔍 Search ingredients..."
+         hx-get="/admin/catalog-sync/search-ingredients"
+         hx-trigger="keyup changed delay:300ms"
+         hx-vals='{"pending_id": {{ card.id }}}'
+         hx-target="#search-results-{{ card.id }}"
+         hx-swap="innerHTML"
+         hx-indicator="#page-spinner"
+         class="w-full py-2 px-3 text-sm border border-stone-200 rounded-lg bg-white
+                focus:outline-none focus:ring-2 focus:ring-amber/40 focus:border-amber">
+
+  <div id="search-results-{{ card.id }}" class="mt-2"></div>
+
+  {# Fields carried to POST /remap-ingredient. new canonical is Alpine-bound. #}
+  <div id="remap-fields-{{ card.id }}" class="hidden">
+    <input type="hidden" name="canonical_id" value="{{ card.id }}">
+    <input type="hidden" name="new_canonical_id" :value="selectedId">
+  </div>
+
+  <div class="mt-3 flex justify-end gap-2">
+    <button type="button"
+            hx-get="/admin/catalog-sync/mapped-card/{{ card.id }}"
+            hx-target="#pending-card-{{ card.id }}" hx-swap="outerHTML"
+            hx-indicator="#page-spinner"
+            class="px-3 py-1.5 rounded-lg border border-stone-200 text-sm font-medium text-stone-600 hover:bg-stone-50">Cancel</button>
+    <button hx-post="/admin/catalog-sync/remap-ingredient"
+            hx-include="#remap-fields-{{ card.id }}"
+            hx-target="#pending-card-{{ card.id }}" hx-swap="outerHTML"
+            hx-indicator="#page-spinner"
+            :disabled="!selectedId"
+            class="px-3 py-1.5 rounded-lg text-sm font-medium text-white bg-amber hover:opacity-90
+                   disabled:opacity-40 disabled:cursor-not-allowed">Confirm new mapping</button>
+  </div>
+</div>

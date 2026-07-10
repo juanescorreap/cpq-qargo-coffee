@@ -15,6 +15,7 @@ from backend.services.catalog_sync import (
     confirm_as_new,
     deactivate_pending,
     map_to_canonical,
+    remap_to_canonical,
 )
 
 router = APIRouter(prefix="/admin/catalog-sync", tags=["UI - Catalog Sync"])
@@ -348,6 +349,7 @@ def _render_card(
     status: str,
     error: Optional[str] = None,
     searching: bool = False,
+    remapping: bool = False,
 ) -> HTMLResponse:
     """Render one pending-review card partial (HTMX outerHTML swap target)."""
     resp = templates.TemplateResponse(
@@ -358,6 +360,7 @@ def _render_card(
             "status": status,
             "error": error,
             "searching": searching,
+            "remapping": remapping,
         },
     )
     if error:
@@ -422,6 +425,55 @@ def ingredient_card(request: Request, ingredient_id: int, db: Session = Depends(
     """Collapse back to the base pending card (Cancel from the search state)."""
     card = _pending_card_row(db, ingredient_id) or {"id": ingredient_id}
     return _render_card(request, card, status="pending")
+
+
+def _mapped_card_row(db: Session, canonical_id: int) -> dict:
+    """Card dict for a MAPPED item, keyed by its current canonical id. The card's
+    identity is the current canonical name (what 'Change mapping' will replace)."""
+    card = _pending_card_row(db, canonical_id) or {"id": canonical_id}
+    card["mapped_to"] = card.get("name")
+    return card
+
+
+@router.get("/remap-ingredient/{canonical_id}", response_class=HTMLResponse)
+def remap_ingredient_form(request: Request, canonical_id: int, db: Session = Depends(get_db)):
+    """Expand a MAPPED card into its 'Change mapping' search state."""
+    card = _mapped_card_row(db, canonical_id)
+    return _render_card(request, card, status="mapped", remapping=True)
+
+
+@router.get("/mapped-card/{canonical_id}", response_class=HTMLResponse)
+def mapped_card(request: Request, canonical_id: int, db: Session = Depends(get_db)):
+    """Collapse back to the base MAPPED card (Cancel from the remap search state)."""
+    card = _mapped_card_row(db, canonical_id)
+    return _render_card(request, card, status="mapped")
+
+
+@router.post("/remap-ingredient", response_class=HTMLResponse)
+def remap_ingredient(
+    request: Request,
+    canonical_id: int = Form(...),
+    new_canonical_id: int = Form(...),
+    db: Session = Depends(get_db),
+):
+    """Re-map a MAPPED item to a different canonical (one transaction). The
+    original duplicate id is resolved server-side from the match log notes."""
+    try:
+        new_name = remap_to_canonical(db, canonical_id, new_canonical_id)
+    except ValueError as exc:
+        card = _mapped_card_row(db, canonical_id)
+        return _render_card(request, card, status="mapped", remapping=True, error=str(exc))
+    except Exception:  # noqa: BLE001 — surface a clean inline error, DB rolled back
+        db.rollback()
+        card = _mapped_card_row(db, canonical_id)
+        return _render_card(
+            request, card, status="mapped", remapping=True,
+            error="Database error — no changes were made",
+        )
+    # After the remap the log points at the new canonical — render its card.
+    card = _mapped_card_row(db, new_canonical_id)
+    card["mapped_to"] = new_name
+    return _render_card(request, card, status="mapped")
 
 
 @router.get("/search-ingredients", response_class=HTMLResponse)

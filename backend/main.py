@@ -23,6 +23,7 @@ from backend.routers import (
     pricing, pricing_ui, product_sizes, products, products_ui, recipe_units,
     recipes, recipes_ui, reports, reports_ui, scraping, scraping_ui, stores,
     stores_ui, pricing_overview_ui, catalog_sync_ui, price_review_ui,
+    ingredient_names_ui,
 )
 from backend.routers import (
     currencies,
@@ -170,6 +171,7 @@ app.include_router(pricing_ui.router)
 app.include_router(pricing_overview_ui.router)
 app.include_router(catalog_sync_ui.router)
 app.include_router(price_review_ui.router)
+app.include_router(ingredient_names_ui.router)
 app.include_router(reports.router)
 app.include_router(reports_ui.router)
 app.include_router(scraping.router)

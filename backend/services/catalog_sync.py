@@ -621,6 +621,129 @@ def map_to_canonical(db: Session, pending_id: int, canonical_id: int) -> str:
     return canonical_name
 
 
+_DUP_ID_RE = re.compile(r"Duplicate id=(\d+)")
+
+
+def remap_to_canonical(db: Session, canonical_id: int, new_canonical_id: int) -> str:
+    """Re-point a MAPPED catalog item from the wrong canonical to the correct one.
+
+    The UI card for a MAPPED item is keyed by its current (wrong) canonical, so
+    only ``canonical_id`` and ``new_canonical_id`` come from the client. The
+    deactivated duplicate's id is recovered from the match log's notes
+    ("Duplicate id=X deactivated"); its sync price lives on
+    ``ingredients.purchase_price`` (the duplicate never had supply routes).
+
+    Atomic — any failure rolls the whole thing back. On success:
+      (a) catalog_match_log.matched_ingredient_id → new canonical,
+      (b) the new canonical's purchase_price adopts the duplicate's sync price,
+      (c) if the new canonical has an active route, its price is versioned
+          (close + INSERT) with that price,
+      (d) the remap is traced on the log's notes,
+      (e) the duplicate stays inactive.
+
+    Returns the new canonical's name.
+    """
+    if canonical_id == new_canonical_id:
+        raise ValueError("New canonical must differ from the current one")
+
+    new_canon = db.execute(
+        text("SELECT name, is_active FROM ingredients WHERE id = :i"),
+        {"i": new_canonical_id},
+    ).first()
+    if new_canon is None or not new_canon[1]:
+        raise ValueError("New canonical ingredient not found or inactive")
+    new_canonical_name = new_canon[0]
+
+    # Latest mapped log row for the current canonical == the card being remapped.
+    log = db.execute(
+        text(
+            "SELECT id, notes, currency_code FROM catalog_match_log "
+            "WHERE matched_ingredient_id = :c AND action_taken = 'mapped' "
+            "ORDER BY created_at DESC LIMIT 1"
+        ),
+        {"c": canonical_id},
+    ).first()
+    if log is None:
+        raise ValueError("No mapped catalog record found for this ingredient")
+    log_id, notes, log_currency = log[0], log[1] or "", log[2]
+
+    match = _DUP_ID_RE.search(notes)
+    if match is None:
+        raise ValueError("Cannot resolve the original duplicate from the log")
+    dup_id = int(match.group(1))
+
+    dup = db.execute(
+        text("SELECT purchase_price, purchase_unit FROM ingredients WHERE id = :i"),
+        {"i": dup_id},
+    ).first()
+    if dup is None:
+        raise ValueError("Original duplicate ingredient not found")
+    dup_price, dup_unit = dup[0], dup[1]
+
+    try:
+        # (a) re-point the match log + (d) trace the remap on notes.
+        db.execute(
+            text(
+                "UPDATE catalog_match_log "
+                "SET matched_ingredient_id = :n, notes = notes || :t "
+                "WHERE id = :id"
+            ),
+            {
+                "n": new_canonical_id,
+                "id": log_id,
+                "t": (
+                    f" Remapped from canonical id={canonical_id} to "
+                    f"id={new_canonical_id} ({new_canonical_name}) on {date.today()}."
+                ),
+            },
+        )
+
+        # (b) carry the duplicate's sync price onto the new canonical.
+        if dup_price is not None and float(dup_price) > 0:
+            db.execute(
+                text(
+                    "UPDATE ingredients SET purchase_price = :p, updated_at = now() "
+                    "WHERE id = :i"
+                ),
+                {"p": dup_price, "i": new_canonical_id},
+            )
+
+            # (c) version the active route price (close + INSERT, project pattern).
+            route_id = db.execute(
+                text(
+                    "SELECT id FROM supply_routes "
+                    "WHERE ingredient_id = :i AND is_active = true "
+                    "ORDER BY id LIMIT 1"
+                ),
+                {"i": new_canonical_id},
+            ).scalar()
+            if route_id is not None:
+                db.execute(
+                    text(
+                        "UPDATE supply_route_prices SET valid_until = CURRENT_DATE "
+                        "WHERE supply_route_id = :r AND valid_until IS NULL"
+                    ),
+                    {"r": route_id},
+                )
+                currency = log_currency or _DEFAULT_CURRENCY
+                per_unit = f"per {dup_unit}" if dup_unit else "per unit"
+                db.execute(
+                    text(
+                        "INSERT INTO supply_route_prices "
+                        "(supply_route_id, list_price, qargo_price, currency_code, "
+                        " price_per_unit, valid_from, source, created_by) "
+                        "VALUES (:r, :p, :p, :c, :pu, :vf, :src, :by)"
+                    ),
+                    {"r": route_id, "p": dup_price, "c": currency, "pu": per_unit,
+                     "vf": date.today(), "src": "remap", "by": _CREATED_BY},
+                )
+        db.commit()
+    except Exception:
+        db.rollback()
+        raise
+    return new_canonical_name
+
+
 def confirm_as_new(db: Session, ingredient_id: int) -> None:
     """Confirm an auto-created ingredient is genuinely new. The ingredient already
     exists and is active — only the log status changes."""

@@ -14,7 +14,7 @@
   {% if pending %}
   <div class="space-y-3">
     {% for c in pending %}
-      {% with card = c, status = 'pending', searching = False, error = None %}
+      {% with card = c, status = 'pending', searching = False, remapping = False, error = None %}
         {% include 'admin/catalog_sync/_ingredient_card.html' %}
       {% endwith %}
     {% endfor %}
@@ -38,7 +38,7 @@
   </button>
   <div x-show="open" x-cloak class="space-y-3">
     {% for c in processed %}
-      {% with card = c, status = c.status, searching = False, error = None %}
+      {% with card = c, status = c.status, searching = False, remapping = False, error = None %}
         {% include 'admin/catalog_sync/_ingredient_card.html' %}
       {% endwith %}
     {% endfor %}

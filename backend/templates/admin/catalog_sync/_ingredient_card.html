@@ -81,5 +81,20 @@
                 class="px-3 py-1.5 rounded-lg border border-red-200 text-sm font-medium text-red-600 hover:bg-red-50">Deactivate</button>
       </div>
     {% endif %}
+  {% elif status == 'mapped' %}
+    {% if remapping %}
+      {% include 'admin/catalog_sync/_ingredient_remap_form.html' %}
+    {% else %}
+      <div class="mt-3 flex flex-wrap items-center gap-2">
+        <span class="text-sm text-stone-500">
+          Currently mapped to:
+          <span class="font-medium text-espresso">{{ card.mapped_to or card.name }}</span>
+        </span>
+        <button hx-get="/admin/catalog-sync/remap-ingredient/{{ card.id }}"
+                hx-target="#pending-card-{{ card.id }}" hx-swap="outerHTML"
+                hx-indicator="#page-spinner"
+                class="ml-auto px-3 py-1.5 rounded-lg border border-stone-200 text-sm font-medium text-espresso hover:bg-stone-50">Change mapping</button>
+      </div>
+    {% endif %}
   {% endif %}
 </div>
