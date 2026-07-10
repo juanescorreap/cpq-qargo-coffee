@@ -119,9 +119,9 @@ class PricingEngine:
         3. ``CategoryMargin.markup_percentage`` of the product's category.
         4. Global default of 50 %.
 
-        The rounded price approximates the suggested price to the nearest
-        multiple of 100 COP, which is the standard pricing convention in
-        Colombia.
+        ``rounded_price`` is the exact suggested price (no increment
+        rounding), formatted per currency: USD to 2 decimals, COP to a
+        whole number (no cents).
 
         Args:
             product_id: PK of the product in the ``products`` table.
@@ -143,7 +143,7 @@ class PricingEngine:
                     'cost':              Decimal,   # production cost
                     'markup_percentage': Decimal,   # applied markup (%)
                     'suggested_price':   Decimal,   # cost × (1 + markup/100)
-                    'rounded_price':     Decimal,   # rounded to currency increment
+                    'rounded_price':     Decimal,   # exact, formatted per currency
                 }
 
         Raises:
@@ -158,7 +158,12 @@ class PricingEngine:
 
         suggested_price = cost * (Decimal("1") + markup / Decimal("100"))
         currency = _store_currency(self.db, store_id)
-        rounded_price = _round_price(suggested_price, currency)
+        # No rounding to a currency increment for the UI suggested price.
+        # Exact value: USD → 2 decimals; COP → integer (no cents).
+        if currency == "USD":
+            rounded_price = suggested_price.quantize(Decimal("0.01"))
+        else:
+            rounded_price = suggested_price.quantize(Decimal("1"))
 
         return {
             "product_id": product_id,
