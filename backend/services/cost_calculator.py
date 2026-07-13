@@ -467,7 +467,10 @@ def load_context(
             .scalar()
         ) or "COP"
     else:
-        _store_cur = "COP"
+        # No store selected: accumulate in USD (all Qargo stores are USD), so the
+        # total quantizes to 2 decimals and the "$" symbol is coherent — instead
+        # of COP (minor_unit 0) rounding a sub-dollar cost to a whole number.
+        _store_cur = "USD"
 
     sourcing: Dict[Tuple[int, Optional[int]], Sourcing] = {}
     if needed_keys and store_id is not None:
