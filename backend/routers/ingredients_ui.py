@@ -108,31 +108,19 @@ def _state(search: str, category: str, is_active: str, page: int) -> dict:
 
 
 @router.get("/nuevo", response_class=HTMLResponse)
-async def new_form(
-    request: Request,
-    search: str = "",
-    category: str = "",
-    is_active: str = "true",
-    page: int = 1,
-    db: Session = Depends(get_db),
-) -> HTMLResponse:
+async def new_form(request: Request, db: Session = Depends(get_db)) -> HTMLResponse:
+    # View-state (page + filters) is not needed here: the modal pulls it from the
+    # table's #ingredients-view-state via hx-include at submit time.
     return templates.TemplateResponse("ingredients/_form_modal.html", {
         "request": request,
         "ingredient": None,
         "categories": _categories(db),
-        "state": _state(search, category, is_active, page),
     })
 
 
 @router.get("/{ingredient_id}/editar", response_class=HTMLResponse)
 async def edit_form(
-    request: Request,
-    ingredient_id: int,
-    search: str = "",
-    category: str = "",
-    is_active: str = "true",
-    page: int = 1,
-    db: Session = Depends(get_db),
+    request: Request, ingredient_id: int, db: Session = Depends(get_db)
 ) -> HTMLResponse:
     ingredient = db.get(Ingredient, ingredient_id)
     if ingredient is None:
@@ -141,7 +129,6 @@ async def edit_form(
         "request": request,
         "ingredient": ingredient,
         "categories": _categories(db),
-        "state": _state(search, category, is_active, page),
     })
 
 

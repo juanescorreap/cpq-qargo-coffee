@@ -1,3 +1,14 @@
+{# Single source of truth for the current view-state (page + filters). Re-rendered
+   on every pagination/filter swap, so it always reflects the visible page. The
+   edit/create modal pulls it via hx-include, so a save re-renders the SAME page.
+   HTMX encodes these values -> categories with spaces are handled correctly. #}
+<div id="ingredients-view-state" class="hidden">
+  <input type="hidden" name="_state_page"      value="{{ page }}">
+  <input type="hidden" name="_state_search"    value="{{ search }}">
+  <input type="hidden" name="_state_category"  value="{{ category }}">
+  <input type="hidden" name="_state_is_active" value="{{ is_active }}">
+</div>
+
 {% if ingredients %}
 <div class="bg-white rounded-xl shadow-sm overflow-x-auto">
   <table class="min-w-full divide-y divide-stone-200 text-sm">
@@ -80,7 +91,7 @@
           <div class="flex items-center justify-end gap-1
                       opacity-0 group-hover:opacity-100 transition-opacity">
             <button
-              hx-get="/ingredients/{{ ing.id }}/editar?page={{ page }}&search={{ search }}&category={{ category }}&is_active={{ is_active }}"
+              hx-get="/ingredients/{{ ing.id }}/editar"
               hx-target="#modal-container"
               hx-indicator="#page-spinner"
               title="Edit"
