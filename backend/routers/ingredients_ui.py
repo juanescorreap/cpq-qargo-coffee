@@ -100,18 +100,39 @@ async def table_partial(
     )
 
 
+def _state(search: str, category: str, is_active: str, page: int) -> dict:
+    """Table view-state (filters + page) carried through the edit modal so a save
+    re-renders the SAME page/filters instead of resetting to page 1."""
+    return {"search": search, "category": category,
+            "is_active": is_active, "page": max(1, page)}
+
+
 @router.get("/nuevo", response_class=HTMLResponse)
-async def new_form(request: Request, db: Session = Depends(get_db)) -> HTMLResponse:
+async def new_form(
+    request: Request,
+    search: str = "",
+    category: str = "",
+    is_active: str = "true",
+    page: int = 1,
+    db: Session = Depends(get_db),
+) -> HTMLResponse:
     return templates.TemplateResponse("ingredients/_form_modal.html", {
         "request": request,
         "ingredient": None,
         "categories": _categories(db),
+        "state": _state(search, category, is_active, page),
     })
 
 
 @router.get("/{ingredient_id}/editar", response_class=HTMLResponse)
 async def edit_form(
-    request: Request, ingredient_id: int, db: Session = Depends(get_db)
+    request: Request,
+    ingredient_id: int,
+    search: str = "",
+    category: str = "",
+    is_active: str = "true",
+    page: int = 1,
+    db: Session = Depends(get_db),
 ) -> HTMLResponse:
     ingredient = db.get(Ingredient, ingredient_id)
     if ingredient is None:
@@ -120,6 +141,7 @@ async def edit_form(
         "request": request,
         "ingredient": ingredient,
         "categories": _categories(db),
+        "state": _state(search, category, is_active, page),
     })
 
 
@@ -202,9 +224,27 @@ def _form_error(message: str) -> HTMLResponse:
     return resp
 
 
-def _table_response(request: Request, db: Session) -> HTMLResponse:
-    """Returns _table.html (page 1, all active) + HX-Trigger to close modal."""
-    ctx = _table_ctx(request, db, "", "", "true", 1)
+def _state_from_form(form) -> dict:
+    """Read the table view-state the modal carried back as hidden fields.
+    Prefixed with _state_ so it never collides with ingredient fields (e.g. the
+    ingredient's own 'category')."""
+    try:
+        page = int(form.get("_state_page") or 1)
+    except (ValueError, TypeError):
+        page = 1
+    return _state(
+        form.get("_state_search") or "",
+        form.get("_state_category") or "",
+        form.get("_state_is_active") or "true",
+        page,
+    )
+
+
+def _table_response(request: Request, db: Session, state: dict) -> HTMLResponse:
+    """Returns _table.html for the given view-state + HX-Trigger to close modal."""
+    ctx = _table_ctx(
+        request, db, state["search"], state["category"], state["is_active"], state["page"]
+    )
     response = templates.TemplateResponse("ingredients/_table.html", ctx)
     response.headers["HX-Trigger"] = "closeModal"
     return response
@@ -228,7 +268,7 @@ async def create(request: Request, db: Session = Depends(get_db)) -> HTMLRespons
     except SQLAlchemyError:
         db.rollback()
         return _form_error("Could not save ingredient. Please check your data and try again.")
-    return _table_response(request, db)
+    return _table_response(request, db, _state_from_form(form))
 
 
 @router.put("/{ingredient_id}", response_class=HTMLResponse)
@@ -256,7 +296,7 @@ async def update(
     except SQLAlchemyError:
         db.rollback()
         return _form_error("Could not save ingredient. Please check your data and try again.")
-    return _table_response(request, db)
+    return _table_response(request, db, _state_from_form(form))
 
 
 @router.delete("/{ingredient_id}", response_class=HTMLResponse)

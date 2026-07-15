@@ -11,7 +11,7 @@
     <p class="mt-1 text-sm text-stone-500">{{ total }} ingredient{{ 's' if total != 1 else '' }} found</p>
   </div>
   <button
-    hx-get="/ingredients/nuevo"
+    hx-get="/ingredients/nuevo?page={{ page }}&search={{ search }}&category={{ category }}&is_active={{ is_active }}"
     hx-target="#modal-container"
     hx-indicator="#page-spinner"
     class="inline-flex items-center gap-2 px-4 py-2 rounded-lg

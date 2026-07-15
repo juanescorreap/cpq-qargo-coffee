@@ -61,6 +61,13 @@
       hx-indicator="#page-spinner"
       class="px-6 py-5">
 
+      {# Table view-state so a save re-renders the SAME page/filters, not page 1.
+         Prefixed _state_ to avoid clashing with the ingredient's own fields. #}
+      <input type="hidden" name="_state_page"      value="{{ state.page if state else 1 }}">
+      <input type="hidden" name="_state_search"    value="{{ state.search if state else '' }}">
+      <input type="hidden" name="_state_category"  value="{{ state.category if state else '' }}">
+      <input type="hidden" name="_state_is_active" value="{{ state.is_active if state else 'true' }}">
+
       {# Error banner — populated via HX-Retarget when server returns validation error #}
       <div id="form-error" class="mb-4 empty:hidden"></div>
 

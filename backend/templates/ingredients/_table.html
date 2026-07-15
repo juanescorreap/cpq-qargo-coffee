@@ -80,7 +80,7 @@
           <div class="flex items-center justify-end gap-1
                       opacity-0 group-hover:opacity-100 transition-opacity">
             <button
-              hx-get="/ingredients/{{ ing.id }}/editar"
+              hx-get="/ingredients/{{ ing.id }}/editar?page={{ page }}&search={{ search }}&category={{ category }}&is_active={{ is_active }}"
               hx-target="#modal-container"
               hx-indicator="#page-spinner"
               title="Edit"
