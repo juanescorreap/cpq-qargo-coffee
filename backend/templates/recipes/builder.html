@@ -38,14 +38,14 @@
   Private fields (_packaging, _showPackaging, etc.) are pure Alpine state.
 #}
 <div
-  x-data="recipeBuilder({
+  x-data='recipeBuilder({
     productId:      {{ product.id }},
     ingredients:    {{ recipe.ingredients | tojson }},
     subRecipes:     {{ recipe.sub_recipes | tojson }},
     sizes:          {{ recipe.sizes       | tojson }},
     ingredientMap:  {{ ingredients | map(attribute='name') | list | tojson }},
     ingredientIds:  {{ ingredients | map(attribute='id')   | list | tojson }},
-  })"
+  })'
   class="flex flex-col gap-5">
 
   {# ── Header ────────────────────────────────────────────────────────────── #}
