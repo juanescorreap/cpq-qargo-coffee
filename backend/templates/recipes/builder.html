@@ -192,7 +192,8 @@
               </thead>
               <tbody class="divide-y divide-stone-100">
                 <template x-for="item in ingredients" :key="item.id">
-                  <tr class="hover:bg-stone-50 transition-colors group">
+                  <tr class="hover:bg-stone-50 transition-colors group"
+                      :class="item.id === editingId ? 'bg-amber/10' : ''">
                     <td class="px-4 py-3 font-medium text-espresso" x-text="item.ingredient_name"></td>
                     <td class="px-4 py-3 text-right font-mono tabular-nums text-stone-700" x-text="item.quantity"></td>
                     <td class="px-4 py-3 text-stone-500" x-text="item.recipe_unit_name || '(native)'"></td>
@@ -208,14 +209,24 @@
                     <td class="px-4 py-3 text-stone-400 text-xs truncate max-w-[8rem]"
                         x-text="item.notes || ''"></td>
                     <td class="px-4 py-3">
-                      <button @click="removeIngredient(item.id)"
-                              title="Remove"
-                              class="p-1 rounded text-stone-300 hover:text-red-500 hover:bg-red-50
-                                     transition-colors opacity-0 group-hover:opacity-100">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
-                        </svg>
-                      </button>
+                      <div class="flex items-center justify-end gap-0.5 opacity-0 group-hover:opacity-100 transition-colors">
+                        <button @click="editIngredient(item)"
+                                title="Edit"
+                                class="p-1 rounded text-stone-300 hover:text-espresso hover:bg-stone-100
+                                       transition-colors">
+                          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                          </svg>
+                        </button>
+                        <button @click="removeIngredient(item.id)"
+                                title="Remove"
+                                class="p-1 rounded text-stone-300 hover:text-red-500 hover:bg-red-50
+                                       transition-colors">
+                          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                          </svg>
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 </template>
@@ -231,17 +242,21 @@
           </template>
         </div>
 
-        {# ── Inline form: Add ingredient ─────────────────────────── #}
-        <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+        {# ── Inline form: Add / Edit ingredient ─────────────────────────── #}
+        <div class="bg-white rounded-xl shadow-sm overflow-hidden" x-ref="ingredientForm">
           <button @click="showAddIngredient = !showAddIngredient"
                   class="w-full flex items-center gap-2 px-4 py-3 text-sm font-medium text-espresso
                          hover:bg-stone-50 transition-colors">
-            <svg class="w-4 h-4 transition-transform duration-200 shrink-0"
+            <svg x-show="editingId === null" class="w-4 h-4 transition-transform duration-200 shrink-0"
                  :class="showAddIngredient ? 'rotate-45' : ''"
                  fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
             </svg>
-            Add ingredient
+            <svg x-show="editingId !== null" class="w-4 h-4 shrink-0"
+                 fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+            </svg>
+            <span x-text="editingId !== null ? 'Editing: ' + newIng.search : 'Add ingredient'"></span>
           </button>
 
           <div x-show="showAddIngredient" x-cloak
@@ -333,15 +348,15 @@
 
             <div class="flex justify-end gap-2 mt-3">
               <button type="button"
-                      @click="showAddIngredient = false; resetNewIng()"
+                      @click="editingId !== null ? cancelEditIngredient() : (showAddIngredient = false, resetNewIng())"
                       class="px-3 py-1.5 text-sm text-stone-500 hover:text-stone-700 transition-colors">
-                Cancel
+                <span x-text="editingId !== null ? 'Cancel edit' : 'Cancel'"></span>
               </button>
-              <button @click="addIngredient()"
+              <button @click="saveIngredient()"
                       :disabled="addingIng"
                       class="px-4 py-1.5 text-sm font-semibold text-beige bg-espresso rounded-lg
                              hover:bg-espresso-light transition-colors disabled:opacity-50">
-                <span x-show="!addingIng">Add</span>
+                <span x-show="!addingIng" x-text="editingId !== null ? 'Save' : 'Add'"></span>
                 <span x-show="addingIng">Saving…</span>
               </button>
             </div>
@@ -855,6 +870,7 @@ function recipeBuilder(init) {
     showAddIngredient: false,
     addingIng:         false,
     ingError:          null,
+    editingId:         null,  // id of the recipe_ingredient line being edited, null = adding new
     newIng: {
       search: '', ingredient_id: '', quantity: '',
       recipe_unit_id: '', scales_with_size: true,
@@ -911,9 +927,48 @@ function recipeBuilder(init) {
       }
     },
 
+    async _put(url, body) {
+      const r = await fetch(url, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+      if (!r.ok) {
+        const e = await r.json().catch(() => ({ detail: r.statusText }));
+        throw new Error(Array.isArray(e.detail)
+          ? e.detail.map(d => d.msg).join(', ')
+          : e.detail || 'Server error');
+      }
+      return r.json();
+    },
+
     // ── Ingredients ─────────────────────────────────────────────────────────
 
-    async addIngredient() {
+    editIngredient(item) {
+      this.newIng = {
+        search:              item.ingredient_name,
+        ingredient_id:       item.ingredient_id,
+        quantity:            item.quantity,
+        recipe_unit_id:      item.recipe_unit_id ?? '',
+        scales_with_size:    item.scales_with_size,
+        process_yield_loss:  item.process_yield_loss,
+        notes:               item.notes || '',
+      };
+      this.editingId = item.id;
+      this.ingError = null;
+      this.showAddIngredient = true;
+      this.$nextTick(() => {
+        this.$refs.ingredientForm?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      });
+    },
+
+    cancelEditIngredient() {
+      this.editingId = null;
+      this.showAddIngredient = false;
+      this.resetNewIng();
+    },
+
+    async saveIngredient() {
       this.ingError = null;
       if (!this.newIng.ingredient_id) {
         this.ingError = 'Select an ingredient from the list.';
@@ -924,17 +979,25 @@ function recipeBuilder(init) {
         return;
       }
       this.addingIng = true;
+      const payload = {
+        ingredient_id:      parseInt(this.newIng.ingredient_id),
+        quantity:           parseFloat(this.newIng.quantity),
+        recipe_unit_id:     this.newIng.recipe_unit_id ? parseInt(this.newIng.recipe_unit_id) : null,
+        scales_with_size:   this.newIng.scales_with_size,
+        process_yield_loss: parseFloat(this.newIng.process_yield_loss) || 0,
+        notes:              this.newIng.notes || null,
+      };
       try {
-        const data = await this._post(`/api/recipes/${this.productId}/ingredients`, {
-          ingredient_id:      parseInt(this.newIng.ingredient_id),
-          quantity:           parseFloat(this.newIng.quantity),
-          recipe_unit_id:     this.newIng.recipe_unit_id ? parseInt(this.newIng.recipe_unit_id) : null,
-          scales_with_size:   this.newIng.scales_with_size,
-          process_yield_loss: parseFloat(this.newIng.process_yield_loss) || 0,
-          notes:              this.newIng.notes || null,
-        });
-        this.ingredients.push(data);
+        if (this.editingId !== null) {
+          const data = await this._put(`/api/recipes/ingredients/${this.editingId}`, payload);
+          const idx = this.ingredients.findIndex(i => i.id === this.editingId);
+          if (idx !== -1) this.ingredients[idx] = data;
+        } else {
+          const data = await this._post(`/api/recipes/${this.productId}/ingredients`, payload);
+          this.ingredients.push(data);
+        }
         this.showAddIngredient = false;
+        this.editingId = null;
         this.resetNewIng();
         this.costBreakdown = null; // invalidate previous cost
       } catch (e) {
