@@ -1,0 +1,246 @@
+product;size;cost_usd;Real price
+A Siciliana Aranciata;Standard;1,340;3.95
+A Siciliana Limonata;Standard;1,600;3.95
+A Siciliana Mandarino;Standard;1,600;3.95
+A Siciliana Melograno;Standard;1,940;3.95
+Acqua Panna;Standard;1,840;3.95
+Affogato;Standard;1,670;5.55
+All Butter Croissant;Standard;1,620;4.85
+Almond Croissant;Standard;1,730;5.2
+Apple Butter Danish;Standard;2,140;6.4
+Apple Juice;Standard;3,370;5,000
+Apple Square Danish;Standard;0,710;2.15
+Apple Tropicana Juice;Standard;1,600;3.25
+Banana Nut Muffin;Standard;1,840;5.5
+Batter;Standard;0,600;0,000
+Berries and Cream Twist Danish;Standard;2,390;7.15
+Black River Pear Juice;Standard;2,800;3.95
+Blueberry Cheesecake Danish;Standard;1,810;5.45
+Blueberry Scone;Standard;1,050;3.15
+Boba Tea Coconutty;Small;2,600;5,000
+Boba Tea Coconutty;Medium;2,980;5,000
+Boba Tea Coconutty;Large;3,360;5,000
+Boba Tea Espresso Rose;Small;2,120;5,000
+Boba Tea Espresso Rose;Medium;2,270;5,000
+Boba Tea Espresso Rose;Large;2,420;5,000
+Boba Tea Pure Matcha;Small;7,010;5.95
+Boba Tea Pure Matcha;Medium;8,450;5.95
+Boba Tea Pure Matcha;Large;9,900;5.95
+Brewed Coffee;Standard;0,600;0,000
+Brewed Tea;Standard;0,600;0,000
+Bundaberg Ginger Beer;Standard;1,800;3.65
+Cacao Muffin;Standard;2,290;6.85
+Caffe Americano;Small;2,900;5.05
+Caffe Americano;Medium;3,400;5.05
+Caffe Americano;Large;3,900;5.05
+Caffe Au Lait;Small;2,480;4.05
+Caffe Au Lait;Medium;2,870;4.05
+Caffe Au Lait;Large;3,260;4.05
+Caffe Latte;Small;2,170;5.85
+Caffe Latte;Medium;2,490;5.85
+Caffe Latte;Large;2,800;5.85
+Cake Torta Nocciola;Standard;4,400;8.25
+Cappuccino;Small;1,930;6.25
+Cappuccino;Medium;2,180;6.25
+Cappuccino;Large;2,440;6.25
+Cappuccino Cake;Standard;4,020;7.95
+Cappuccino Foam;Standard;0,710;0,000
+Carrot Cake;Standard;3,910;7.25
+Cheddar and Crisp Sandwich;Standard;3,230;6.95
+Cheese Danish;Standard;2,890;8.65
+Cheese Square Danish;Standard;2,310;6.95
+Cherry Greek Yogurt Danish;Standard;1,940;3.95
+Chocolate Chip Cookie;Standard;1,600;0,000
+Chocolate Chip Muffin;Standard;1,870;6.95
+Chocolate Croissant;Standard;1,880;3.25
+Chocolate Eclair;Standard;2,640;4.45
+Chocolate Fondant Cake;Standard;3,960;8.85
+Chocolate Ganache Cheesecake;Standard;3,540;6.55
+Chocolate Gelato;Standard;0,600;0,000
+Chocolate Temptation Cake;Standard;4,420;9.45
+Cinnamon Raisin Bagel;Standard;1,350;2.95
+Cinnamon Roll;Standard;3,050;4.45
+Coffee Eclair;Standard;2,640;4.45
+Cold Brew;Small;3,580;6.95
+Cold Brew;Medium;3,660;6.95
+Cold Brew;Large;3,750;6.95
+Cold Brew Coco Choc;Small;3,890;6.95
+Cold Brew Coco Choc;Medium;4,050;6.95
+Cold Brew Coco Choc;Large;4,220;6.95
+Cold Brew Coco Choc Nitro;Small;2,810;6.95
+Cold Brew Coco Choc Nitro;Medium;2,980;6.95
+Cold Brew Coco Choc Nitro;Large;3,140;6.95
+Cold Brew Nitro;Small;2,500;6.95
+Cold Brew Nitro;Medium;2,590;6.95
+Cold Brew Nitro;Large;2,670;6.95
+Cold Brew Nutty Nitro;Small;2,380;6.95
+Cold Brew Nutty Nitro;Medium;2,430;6.95
+Cold Brew Nutty Nitro;Large;2,490;6.95
+Cold Foam Coconut;Standard;1,460;0,000
+Cortado;Small;1,240;4.25
+Doughnut Croissant;Standard;2,360;4.45
+Drip Coffee;Small;3,750;3.85
+Drip Coffee;Medium;4,460;3.85
+Drip Coffee;Large;5,170;3.85
+Dulce de Leche Cheesecake;Standard;3,490;6.35
+Energy Drink Celsius Artic Vibe;Standard;2,700;3.45
+Energy Drink Celsius Kiwi Giava;Standard;2,220;3.45
+Energy Drink Celsius Mango Lemonade;Standard;2,690;3.45
+Energy Drink Celsius Orange;Standard;2,700;3.45
+Energy Drink Celsius Peach Vibe;Standard;2,690;3.35
+Energy Drink Celsius Tropical Vibe;Standard;2,700;3.35
+Energy Drink Celsius Watermelon;Standard;2,220;3.35
+Energy Drink Celsius Wildberry;Standard;2,530;3.45
+Energy Drink Celsuis Strawberry Lemonade;Standard;2,690;3.35
+Espresso;Single;1,120;2.95
+Espresso;Double;1,120;2.95
+Espresso Con Panna;Small;1,300;3.05
+Espresso Macchiato;Small;1,160;3.25
+Everything Bagel;Standard;1,160;2.95
+Five Star Apple Juice;Standard;3,300;4.95
+Five Star Cranberry Juice;Standard;3,300;4.95
+Five Star Orange Juice;Standard;3,300;4.95
+Five Star Pineapple Juice;Standard;3,300;4.95
+Flat White;Small;1,540;4.85
+Flavored Water Mango Pineapple Splash;Standard;1,800;3.95
+Frappe Italian Coffee;Small;2,800;7.05
+Frappe Italian Coffee;Medium;3,140;7.05
+Frappe Italian Coffee;Large;3,480;7.05
+Frappe Italian Mocha;Small;2,330;7.05
+Frappe Italian Mocha;Medium;2,600;7.05
+Frappe Italian Mocha;Large;2,870;7.05
+Frappe Italian Strawberry;Small;2,310;7.05
+Frappe Italian Strawberry;Medium;2,570;7.05
+Frappe Italian Strawberry;Large;2,840;7.05
+Gelato;Standard;2,440;0,000
+Gelato Cremato Cookies and Cream;Small;6,660;9.95
+Gelato Cremato Cookies and Cream;Medium;8,060;9.95
+Gelato Cremato Cookies and Cream;Large;9,450;9.95
+Gelato Cremato di Matcha;Small;6,670;9.95
+Gelato Cremato di Matcha;Medium;7,960;9.95
+Gelato Cremato di Matcha;Large;9,250;9.95
+Gelato Cremato di Mocha;Small;5,950;7.95
+Gelato Cremato di Mocha;Medium;7,120;7.95
+Gelato Cremato di Mocha;Large;8,290;7.95
+Glazed Apricot Croissant;Standard;1,740;3.25
+Green Tea;Standard;0,600;0,000
+Guava Danish;Standard;1,200;3.95
+Hot Chocolate;Small;1,800;5.05
+Hot Chocolate;Medium;2,040;5.05
+Hot Chocolate;Large;2,280;5.05
+Hot Tea;Small;3,210;4.95
+Hot Tea;Medium;3,790;4.95
+Hot Tea;Large;4,370;4.95
+Ice Cubes;Standard;0,150;0.4
+Iced Caffe Americano;Small;3,230;5.05
+Iced Caffe Americano;Medium;3,780;5.05
+Iced Caffe Americano;Large;4,320;5.05
+Iced Cappuccino;Small;2,060;6.25
+Iced Cappuccino;Medium;2,290;6.25
+Iced Cappuccino;Large;2,530;6.25
+Iced Latte;Small;2,140;5.85
+Iced Latte;Medium;2,450;5.85
+Iced Latte;Large;2,760;5.85
+Iced Latte Chai Tea;Small;1,720;6.05
+Iced Latte Chai Tea;Medium;1,890;6.05
+Iced Latte Chai Tea;Large;2,060;6.05
+Iced Latte Coconut;Small;2,340;7.95
+Iced Latte Coconut;Medium;2,590;7.95
+Iced Latte Coconut;Large;2,830;7.95
+Iced Latte Macchiato;Small;2,140;6.55
+Iced Latte Macchiato;Medium;2,420;6.55
+Iced Latte Macchiato;Large;2,690;6.55
+Iced Latte Matcha;Small;7,090;5.85
+Iced Latte Matcha;Medium;8,530;5.85
+Iced Latte Matcha;Large;9,970;5.85
+Iced Matcha Coconut;Small;5,640;7.45
+Iced Matcha Coconut;Medium;6,640;7.45
+Iced Matcha Coconut;Large;7,640;7.45
+Iced Mocha;Small;2,330;7.95
+Iced Mocha;Medium;2,610;7.95
+Iced Mocha;Large;2,890;7.95
+Italian Rustic Sandwich;Standard;3,270;7.25
+Latte Amaretto Amarena;Standard;0,900;7.95
+Latte Chai Tea;Small;1,710;6.05
+Latte Chai Tea;Medium;1,910;6.05
+Latte Chai Tea;Large;2,110;6.05
+Latte Dubai Chocolate;Standard;0,900;8.25
+Latte Macchiato;Small;2,170;6.55
+Latte Macchiato;Medium;2,490;6.55
+Latte Macchiato;Large;2,800;6.55
+Latte Matcha;Small;7,250;5.85
+Latte Matcha;Medium;8,760;5.85
+Latte Matcha;Large;10,270;5.85
+Leek and Parmesan Danish;Standard;2,520;4.95
+Lemon Danish;Standard;1,680;3.25
+Macarons French;Standard;4,260;2.95
+Maple Pecan Danish;Standard;2,000;4.95
+Mini Dutch Pancakes;Standard;4,370;7.95
+Mocha;Small;2,280;6.55
+Mocha;Medium;2,580;6.55
+Mocha;Large;2,880;6.55
+Mocha Spiced;Standard;0,900;8.25
+Natalie's Pineapple Cucumber and Celery;Standard;5,300;4.95
+Orange Tropicana Juice;Standard;5,800;3.25
+Parfait;Standard;0,900;4.65
+Pesto Pomodoro Sandwich;Standard;4,610;11.95
+Pinsa Perfetta;Standard;8,690;7.95
+Pistachio Cheesecake;Standard;3,410;6.35
+Pistachio Croissant;Standard;1,730;3.25
+Pistachio Muffin;Standard;2,290;5,000
+Plain Bagel;Standard;0,980;2.95
+Prosciutto Royale Sandwich;Standard;5,560;9.95
+Qargo Classic Sandwich;Standard;3,180;6.95
+Raspberry Cream Cheese Danish;Standard;1,630;4.95
+Red Velvet Cake;Standard;3,360;6.75
+Ricotta and Pistachio Cake;Standard;4,310;8.95
+Salmone Fresco Sandwich;Standard;12,400;14.95
+Salmone Mattina Sandwich;Standard;6,510;12.95
+San Pellegrino;Standard;1,340;3.45
+San Pellegrino Aranciata;Standard;1,340;3.95
+San Pellegrino Ciao Lime;Standard;0,460;2.95
+San Pellegrino Limonata;Standard;1,340;3.95
+Sandwich Caprese al Croissant;Standard;3,960;9.95
+Seasoning Mix;Standard;4,040;0,000
+Simply Orange Juice;Standard;5,800;3.45
+Smoothie Berry Burst Fussion;Small;3,100;7.65
+Smoothie Berry Burst Fussion;Medium;3,470;7.65
+Smoothie Berry Burst Fussion;Large;3,830;7.65
+Smoothie Mango Dreamsicle;Small;3,100;7.65
+Smoothie Mango Dreamsicle;Medium;3,470;7.65
+Smoothie Mango Dreamsicle;Large;3,840;7.65
+Smoothie Pina Coco Lada;Small;3,240;7.65
+Smoothie Pina Coco Lada;Medium;3,650;7.65
+Smoothie Pina Coco Lada;Large;4,050;7.65
+Soda Mango Colada;Small;2,160;7.45
+Soda Mango Colada;Medium;2,380;7.45
+Soda Mango Colada;Large;2,600;7.45
+Soda Mother of Dragons;Small;1,990;7.45
+Soda Mother of Dragons;Medium;2,170;7.45
+Soda Mother of Dragons;Large;2,340;7.45
+Soda Strawberries and Cream;Small;2,170;7.45
+Soda Strawberries and Cream;Medium;2,350;7.45
+Soda Strawberries and Cream;Large;2,540;7.45
+Soda Watermelon Cooler;Small;2,020;7.45
+Soda Watermelon Cooler;Medium;2,200;7.45
+Soda Watermelon Cooler;Large;2,390;7.45
+Spinach and Feta Danish;Standard;2,670;4.95
+Spinach Kale and Cheese Croissant;Standard;1,900;4.95
+Strawberry Cheesecake;Standard;3,570;6.95
+Strawberry Danish;Standard;1,970;4.95
+Stroopwafel;Standard;2,150;1.75
+Tapioca Pearls;Standard;0,600;0,000
+Tart Mixed Berry;Standard;4,670;8.55
+Tiramisu;Standard;3,180;9.95
+Tiramisu With Ladyfingers;Standard;3,980;5,000
+Tomato and Olive Danish;Standard;2,670;4.95
+Tres Leches Cake;Standard;3,010;5.45
+Turkey Bacon al Fresco Sandwich;Standard;3,410;11.95
+Turkey Bacon Classico Sandwich;Standard;10,800;11.5
+Turkey Bacon Formaggio Sandwich;Standard;10,710;11.95
+Vanilla Eclair;Standard;2,640;4.45
+Vanilla Gelato;Standard;0,600;0,000
+Veggie Caprese Sandwich;Standard;3,830;6.95
+Waffles Belgian;Standard;6,170;7.95
+Waffles Birthday Cake;Standard;2,100;7.95
+Water Bottle Smart;Standard;1,250;2.5

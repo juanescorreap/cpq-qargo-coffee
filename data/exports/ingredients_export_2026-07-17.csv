@@ -1,0 +1,586 @@
+id,name,category,purchase_price,purchase_unit,usage_unit,conversion_factor,yield_percentage,current_price,status
+1,Milk,dairy,5.2000,1 gal,ml,3785.000000,100.000,5.2000,active
+2,Almond Milk,dairy,31.1100,case,ml,11356.000000,100.000,31.1100,active
+3,Coconut Milk,dairy,31.5000,Case 12 × 32 oz,ml,11356.000000,100.000,31.5000,active
+4,Cream Cheese,dairy,38.4500,100 units,unit,100.000000,100.000,38.4500,active
+5,Cheese Cheddar Sliced,dairy,41.6500,case,unit,400.000000,100.000,41.6500,active
+6,Cheese Mozzarella Sliced,dairy,45.5400,case,unit,123.000000,100.000,45.5400,active
+7,Crumbled Blue Cheese,dairy,37.7500,case,g,4535.000000,100.000,37.7500,active
+8,Greek Yogurt,dairy,46.9500,case 6 x 32oz,ml,5678.000000,100.000,46.9500,active
+9,Vanilla Gelato,dairy,222.9700,case,g,28.350000,100.000,222.9700,active
+10,Chocolate Gelato,dairy,204.1600,case,unit,144.000000,100.000,204.1600,active
+11,Coconut Flakes,specialty,8.3900,case,g,283.000000,97.000,8.3900,active
+12,Cold Brew,coffee,485.0000,1 gal,ml,3785.000000,100.000,485.0000,active
+13,Brewed Coffee,coffee,7.9300,1.5 gal,ml,5678.000000,100.000,7.9300,active
+14,Nitro Cold Brew,coffee,36.0000,1 gal,oz,128.000000,100.000,36.0000,active
+15,Chai Tea Concentrate,tea,6.7500,bottle,ml,750.000000,98.000,6.7500,active
+16,Tea Bag,tea,0.2400,3 gal,gallon,3.000000,100.000,0.2400,active
+17,Green Tea,tea,32.4000,case 6 x 20 units,unit,120.000000,98.000,32.4000,active
+18,Matcha,tea,377.5000,case,g,1000.000000,98.000,377.5000,active
+19,Vanilla Syrup,syrups,39.9900,1 L,ml,1000.000000,98.000,39.9900,active
+20,Rose Syrup,syrups,6.7400,bottle x 750 ml,ml,750.000000,98.000,6.7400,active
+21,Coconut Syrup,syrups,6.7500,bottle,ml,750.000000,98.000,6.7500,active
+22,Hazelnut Syrup,syrups,6.7500,bottle 750 ml,ml,750.000000,98.000,6.7500,active
+23,Dragon Fruit Syrup,syrups,6.7500,bottle,ml,750.000000,98.000,6.7500,active
+24,White Lotus,fruit_concentrate,29.7100,bottle 64 oz,oz,64.000000,98.000,29.7100,active
+25,Strawberry Fruit Fusion,fruit_concentrate,19.0000,bottle 64 oz,ml,1893.000000,98.000,19.0000,active
+26,Blue Raspberry Fruit Fusion,fruit_concentrate,19.0000,bottle,ml,1893.000000,98.000,19.0000,active
+27,Mango Passion Fruit Fusion,fruit_concentrate,19.0000,bottle,L,1893.000000,98.000,19.0000,active
+28,Pina Colada Fruit Fusion,fruit_concentrate,19.0000,bottle 64 oz,ml,1893.000000,98.000,19.0000,active
+29,Watermelon Fruit Fusion,fruit_concentrate,19.0000,bottle 64 oz,oz,64.000000,98.000,19.0000,active
+30,Orange Creamsicle Fruit Fusion,fruit_concentrate,19.0000,bottle 64 oz,ml,1893.000000,98.000,19.0000,active
+31,Cream Base,fruit_concentrate,19.9900,bottle,L,1893.000000,98.000,19.9900,active
+32,Strawberry Fruit Puree,fruit_concentrate,15.0000,bottle 1 L,ml,1000.000000,98.000,15.0000,active
+33,Chocolate Sauce,sauces,23.4900,case,ml,1893.000000,98.000,23.4900,active
+34,Pesto,sauces,60.0900,case 3 x 30 oz,ml,2661.000000,100.000,60.0900,active
+35,Mustard,sauces,29.0000,case X 420 OZ,ml,12421.000000,100.000,29.0000,active
+36,Mayonnaise,sauces,42.7300,Case 4 × 4 gal,oz,60567.000000,100.000,42.7300,active
+37,Balsamic Vinegar,sauces,21.1400,case,ml,5000.000000,100.000,21.1400,active
+38,Lemon Juice,sauces,32.2500,case,ml,5678.000000,100.000,32.2500,active
+39,Olive Oil,sauces,59.9500,canister 1 gal,ml,3745.000000,100.000,59.9500,active
+40,Vanilla Powder,powders,26.9900,canister 3 lb,oz,48.000000,98.000,26.9900,active
+41,Chocolate Powder,powders,20.2100,case,g,1362.000000,98.000,20.2100,active
+42,Taro Powder,powders,18.4900,case,g,1000.000000,100.000,18.4900,active
+43,Icing Sugar,powders,22.4900,case,lb,4536.000000,100.000,22.4900,active
+44,Whey Protein,powders,89.7500,Container 5 lb,g,2267.000000,100.000,89.7500,active
+45,Tapioca Pearls,specialty,65.4900,case,oz,1361.000000,100.000,65.4900,active
+46,Crushed Oreo,specialty,6.9900,case,g,454.000000,100.000,6.9900,active
+47,Honey Oat Granola,specialty,19.4900,case 4 X 12 oz,g,1361.000000,98.000,19.4900,active
+48,Chia Seeds,specialty,37.4900,case,g,2268.000000,100.000,37.4900,active
+49,Cooking Spray,specialty,5.7900,case,g,482.000000,100.000,5.7900,active
+50,Orange Food Coloring,specialty,10.4900,bottle 10.5 oz,ml,310.000000,98.000,10.4900,active
+51,Seasoning Mix,specialty,3.5200,case,g,283.000000,100.000,3.5200,active
+52,Water,beverages,19.0000,1 gal,ml,3785.000000,100.000,19.0000,active
+53,Club Soda,beverages,17.9500,case,ml,8518.000000,100.000,17.9500,active
+54,Arugula,produce,21.8000,Bag 4 lb,g,1814.000000,100.000,21.8000,active
+55,Sliced Tomato,produce,26.0400,Case x 25 lb,slice,380.000000,98.000,26.0400,active
+56,Basil,produce,7.3400,case,g,28.340000,98.000,7.3400,active
+57,Avocado,produce,1.6000,unit,unit,8.000000,77.000,1.6000,active
+58,Dried Oregano,produce,11.4900,case,g,680.000000,100.000,11.4900,active
+59,Capers,produce,5.9100,16 oz jar,g,1500.000000,98.000,5.9100,active
+60,Sliced Pickles,produce,12.3000,jar 1 gal,unit,650.000000,100.000,12.3000,active
+61,Scrambled Egg Patty,protein,44.7900,case 160 units,unit,160.000000,100.000,44.7900,active
+62,Turkey Bacon,protein,63.9900,case 6 x 50 units,unit,300.000000,99.000,63.9900,active
+63,Turkey Sausage Patty,protein,54.4500,case x 8 units,unit,8.000000,100.000,54.4500,active
+64,Smoked Salmon,protein,84.2800,case 2 X 2.5 lb,g,2268.000000,97.000,84.2800,active
+65,Chicken Breast Grilled,protein,9.5000,case,g,110.000000,97.000,9.5000,active
+66,Proscuitto,protein,50.6500,case 12 X 3 oz,unit,12.000000,100.000,50.6500,active
+67,Bread,bakery,24.9400,unit,loave,24.000000,100.000,24.9400,active
+68,Focaccia,bakery,63.9600,Pack 55 units,unit,55.000000,100.000,63.9600,active
+69,Pinsa,bakery,81.3900,case x 40 units,unit,40.000000,100.000,81.3900,active
+70,Pinsa Margherita,bakery,64.2000,case x 10 units,unit,10.000000,100.000,64.2000,active
+71,Plain Bagel,bakery,42.9500,case x 48 units,unit,48.000000,100.000,42.9500,active
+72,Everything Bagel,bakery,44.9500,case 48 X 4oz,unit,48.000000,100.000,44.9500,active
+73,Cinnamon Raisin Bagel,bakery,27.0000,case,unit,36.000000,100.000,27.0000,active
+74,Chocolate Croissant,bakery,61.5100,unit,unit,48.000000,100.000,61.5100,active
+75,All Butter Croissant,bakery,53.9400,unit,unit,50.000000,100.000,53.9400,active
+76,Almond Croissant,bakery,56.6300,case,unit,50.000000,100.000,56.6300,active
+77,Pistachio Croissant,bakery,45.2200,case x40 units,unit,40.000000,100.000,45.2200,active
+78,Glazed Apricot Croissant,bakery,53.0200,case x 50 units,unit,50.000000,100.000,53.0200,active
+79,Spinach Kale and Cheese Croissant,bakery,1.3000,unit,unit,1.000000,100.000,1.3000,active
+80,Doughnut Croissant,bakery,105.6700,case,unit,60.000000,100.000,105.6700,active
+81,Spinach and Feta Danish,bakery,74.5900,case 36 units,unit,36.000000,100.000,74.5900,active
+82,Cheese Danish,bakery,27.4800,case,unit,12.000000,100.000,27.4800,active
+83,Maple Pecan Danish,bakery,1.0049,unit,unit,1.000000,100.000,1.0049,active
+84,Apple Butter Danish,bakery,92.2100,case,unit,60.000000,100.000,92.2100,active
+85,Spinach Ricotta Danish,bakery,74.5900,case,unit,1.000000,100.000,74.5900,inactive
+86,Cherry Greek Yogurt Danish,bakery,94.8500,case,unit,60.000000,100.000,94.8500,active
+87,Blueberry Cheesecake Danish,bakery,101.9900,case,unit,84.000000,100.000,101.9900,active
+88,Leek and Parmesan Danish,bakery,68.9900,case x 36 units,unit,36.000000,100.000,68.9900,active
+89,Lemon Danish,bakery,1.0049,unit,unit,1.000000,100.000,1.0049,active
+90,Guava Danish,bakery,49.9900,case x 84 units,unit,84.000000,100.000,49.9900,active
+91,Apple Square Danish,bakery,92.2100,case,unit,60.000000,100.000,92.2100,active
+92,Tomato and Olive Danish,bakery,74.5900,case 36 units,unit,36.000000,100.000,74.5900,active
+93,Strawberry Danish,bakery,1.0000,unit,unit,1.000000,100.000,1.0000,active
+94,Berries and Cream Twist Danish,bakery,10.7400,case,unit,6.000000,100.000,10.7400,active
+95,Raspberry Cream Cheese Danish,bakery,86.7100,case,unit,1.000000,100.000,86.7100,inactive
+96,Cheese Square Danish,bakery,113.1000,case,unit,66.000000,100.000,113.1000,active
+97,Cinnamon Roll,bakery,16.2600,case,unit,24.000000,100.000,16.2600,active
+98,Blueberry Scone,bakery,25.8500,case,unit,12.000000,100.000,25.8500,active
+99,Chocolate Chip Cookie,bakery,79.9900,case,unit,80.000000,100.000,79.9900,active
+100,Chocolate Chip Muffin,bakery,21.8300,case,unit,12.000000,98.000,21.8300,active
+101,Pistachio Muffin,bakery,33.7300,case x 20 units,unit,20.000000,100.000,33.7300,active
+102,Banana Nut Muffin,bakery,21.1200,case,unit,12.000000,100.000,21.1200,active
+103,Cacao Muffin,bakery,33.7300,case,unit,20.000000,100.000,33.7300,active
+104,Chocolate Eclair,bakery,28.4900,case,unit,14.000000,100.000,28.4900,active
+105,Vanilla Eclair,bakery,28.4900,Case x 14,unit,14.000000,100.000,28.4900,active
+106,Coffee Eclair,bakery,28.4900,case,unit,14.000000,100.000,28.4900,active
+107,Tart Mixed Berry,bakery,44.0900,case,unit,1.000000,100.000,44.0900,active
+108,Macarons French,bakery,1.0799,unit,unit,1.000000,100.000,1.0799,active
+109,Tiramisu,bakery,41.0400,case 15 units,unit,15.000000,100.000,41.0400,active
+110,Tiramisu With Ladyfingers,bakery,46.1400,case 15 units,unit,15.000000,100.000,46.1400,active
+111,Stroopwafel,bakery,1.2500,unit,unit,1.000000,100.000,1.2500,inactive
+112,Waffles Birthday Cake,bakery,1.2000,unit,unit,1.000000,100.000,1.2000,inactive
+113,Red Velvet Cake,bakery,74.1300,case 16 units,unit,16.000000,100.000,74.1300,inactive
+114,Chocolate Temptation Cake,bakery,44.8100,case,unit,12.000000,100.000,44.8100,active
+115,Carrot Cake,bakery,48.1000,case,unit,16.000000,100.000,48.1000,active
+116,Cappuccino Cake,bakery,42.4200,case,unit,12.000000,100.000,42.4200,active
+117,Cake Torta Nocciola,bakery,39.7700,case,unit,10.000000,100.000,39.7700,active
+118,Chocolate Fondant Cake,bakery,48.9700,case,unit,16.000000,100.000,48.9700,active
+119,Tres Leches Cake,bakery,33.3400,case 15 units,unit,15.000000,100.000,33.3400,active
+120,Red Velvet Mini Gluten Free Cake,bakery,74.1300,case 16 units,unit,16.000000,100.000,74.1300,active
+121,Ricotta and Pistachio Cake,bakery,40.9300,case 12 units,unit,12.000000,100.000,40.9300,active
+122,Pistachio Cheesecake,bakery,42.1700,case x 16 units,unit,16.000000,100.000,42.1700,active
+123,Dulce de Leche Cheesecake,bakery,41.3900,case,unit,16.000000,100.000,41.3900,active
+124,Strawberry Cheesecake,bakery,39.3400,case 14 units,unit,14.000000,100.000,39.3400,active
+125,Chocolate Ganache Cheesecake,bakery,42.2200,case,unit,16.000000,100.000,42.2200,active
+126,Brownie Cheesecake,bakery,2.2500,case,unit,24.000000,100.000,2.2500,active
+127,Acqua Panna,resale_beverage,36.9500,unit,unit,24.000000,100.000,36.9500,active
+128,San Pellegrino,resale_beverage,32.9900,case 24 units x 500 ml,unit,24.000000,100.000,32.9900,active
+129,San Pellegrino Aranciata,resale_beverage,24.9900,case 24 x 11.5 oz,unit,24.000000,100.000,24.9900,active
+130,San Pellegrino Ciao Lime,resale_beverage,0.9900,case 6 units,unit,6.000000,100.000,0.9900,active
+131,San Pellegrino Limonata,resale_beverage,24.9900,case 24 x 11.5 oz,unit,24.000000,100.000,24.9900,active
+132,A Siciliana Aranciata,resale_beverage,24.9900,case,unit,24.000000,100.000,24.9900,active
+133,A Siciliana Limonata,resale_beverage,31.2000,case,unit,24.000000,100.000,31.2000,active
+134,A Siciliana Mandarino,resale_beverage,31.2000,case,unit,24.000000,100.000,31.2000,active
+135,A Siciliana Melograno,resale_beverage,31.2000,case,unit,19.000000,100.000,31.2000,active
+136,Bundaberg Ginger Beer,resale_beverage,1.5000,unit,unit,1.000000,100.000,1.5000,active
+137,Apple Juice,resale_beverage,36.8600,case,unit,12.000000,100.000,36.8600,active
+138,Black River Pear Juice,resale_beverage,2.5000,unit,unit,1.000000,100.000,2.5000,active
+139,Five Star Apple Juice,resale_beverage,3.0000,unit,unit,1.000000,100.000,3.0000,active
+140,Five Star Cranberry Juice,resale_beverage,3.0000,unit,unit,1.000000,100.000,3.0000,active
+141,Five Star Orange Juice,resale_beverage,3.0000,unit,unit,1.000000,100.000,3.0000,active
+142,Five Star Pineapple Juice,resale_beverage,3.0000,unit,unit,1.000000,100.000,3.0000,active
+143,Orange Tropicana Juice,resale_beverage,5.5000,unit,unit,1.000000,100.000,5.5000,active
+144,Apple Tropicana Juice,resale_beverage,31.2000,case,unit,24.000000,100.000,31.2000,active
+145,Simply Orange Juice,resale_beverage,5.5000,unit,unit,1.000000,100.000,5.5000,active
+146,Natalie's Pineapple Cucumber and Celery,resale_beverage,5.0000,unit,unit,1.000000,100.000,5.0000,active
+147,Energy Drink Celsius Orange,resale_beverage,28.7500,case 12 X 12 Oz,unit,12.000000,100.000,28.7500,active
+148,Energy Drink Celsius Watermelon,resale_beverage,23.1000,case 12 X 12 Oz,unit,12.000000,100.000,23.1000,active
+149,Energy Drink Celsius Mango Lemonade,resale_beverage,28.6900,case 12 X 12 Oz,unit,12.000000,100.000,28.6900,active
+150,Energy Drink Celsius Peach Vibe,resale_beverage,28.6900,case 12 X 12 Oz,unit,12.000000,100.000,28.6900,active
+151,Energy Drink Celsius Tropical Vibe,resale_beverage,22.9500,case 12 X 12 Oz,unit,12.000000,100.000,22.9500,active
+152,Energy Drink Celsius Wildberry,resale_beverage,26.7500,case 12 X 12 Oz,unit,12.000000,100.000,26.7500,active
+153,Energy Drink Celsius Artic Vibe,resale_beverage,25.9800,case 12 X 12 Oz,unit,12.000000,100.000,25.9800,active
+154,Energy Drink Celsius Kiwi Guava,resale_beverage,23.0900,case 12 X 12 Oz,unit,12.000000,100.000,23.0900,active
+155,Energy Drink Celsuis Strawberry Lemonade,resale_beverage,28.6900,case 12 X 12 Oz,unit,12.000000,100.000,28.6900,active
+156,Water Bottle Smart,resale_beverage,0.9500,unit,unit,1.000000,100.000,0.9500,active
+157,Flavored Water Mango Pineapple Splash,resale_beverage,1.5000,unit,unit,1.000000,100.000,1.5000,active
+158,Espresso,coffee,207.2000,case 6 x bag 1kg,g,6000.000000,100.000,207.2000,active
+159,Ice Cubes,beverages,0.5000,1 L,ml,16.000000,100.000,0.5000,active
+160,Whipped Cream,dairy,24.9500,case 10 x 14 oz,oz,140.000000,100.000,24.9500,active
+161,Beef Pepperoni,specialty,110.9900,case 2 x Bag 5 lb,g,4536.000000,100.000,110.9900,active
+162,Salt,specialty,2.4900,case 26 oz,ml,737.000000,100.000,2.4900,active
+163,Brewed Tea,tea,0.2400,3 gal,ml,11356.000000,100.000,0.2400,active
+164,Cappuccino Foam,dairy,4.8700,1 gal,ml,3785.000000,100.000,4.8700,active
+165,Cold Foam Coconut,dairy,40.6900,Case 12 × 32 oz,ml,11356.000000,100.000,40.6900,active
+166,Tiramisu Toasted Almond,bakery,41.0400,Case 15 units,unit,15.000000,100.000,41.0400,active
+167,All Butter Curved Croissant,bakery,53.9400,case,unit,50.000000,100.000,53.9400,active
+168,All Butter Curved Mini Croissant,bakery,77.5900,case,unit,150.000000,100.000,0.5173,active
+169,Vegan Croissant,bakery,67.4400,Case 48 units,unit,48.000000,100.000,67.4400,active
+170,Multigrain Muffin,bakery,33.7300,Case 20 units,unit,20.000000,100.000,33.7300,active
+171,Strawberry Sprint,specialty,193.7100,Case 8 x 1.32 kg,oz,373.000000,100.000,193.7100,active
+172,White Base Sprint,specialty,180.4100,Case 12 units,oz,390.000000,100.000,180.4100,active
+173,Pineapple Syrup,syrups,11.9900,bottle 1 L ,ml,1000.000000,100.000,11.9900,active
+174,Avocado Cheesecake,bakery,4.9900,Case 8 units,unit,8.000000,100.000,4.9900,active
+175,Chocolate Mousse Glass,bakery,4.4700,Case 12 units,unit,1.000000,100.000,4.4700,active
+176,Chocolate Truffle Cake,bakery,107.5200,case,unit,12.000000,100.000,107.5200,active
+177,Blueberry and Chocolate Chips Vegan Croissant,bakery,67.4400,Case 48 units,unit,48.000000,100.000,67.4400,active
+178,Raspberry Passion Fruit Cake,bakery,41.7500,case 12 units x 4.1 oz,unit,12.000000,100.000,41.7500,active
+179,Sicilian Cannoli,bakery,36.3100,case 10 units,unit,10.000000,100.000,36.3100,active
+180,Pistachio Profiteroles,bakery,39.5300,Case 24 units,unit,24.000000,100.000,39.5300,active
+181,Traditional Cheesecake,bakery,32.2100,Case 14 units,unit,14.000000,100.000,32.2100,active
+182,Truffle Royale Cake,bakery,44.5000,Case 14 units,unit,14.000000,100.000,44.5000,active
+183,Muffin Classico,bakery,33.7300,Case 20 units,unit,21.000000,100.000,33.7300,active
+184,Chocolate Sprint,gelato_paste,204.1600,Case 12 units,oz,423.000000,100.000,204.1600,active
+185,Lemon Blueberry Crumb Cheesecake,bakery,2.5000,Case 16 units,unit,1.000000,100.000,2.5000,active
+237,A'Siciliana Pomegranate Soda Can 11 Oz,Beverages,31.2000,case,unit,24.000000,100.000,31.2000,active
+238,A'Siciliana Blood Orange Soda Can 11 Oz,Beverages,31.2000,case,unit,24.000000,100.000,31.2000,active
+239,[MAPPED] Arrezzio Imperial Cheese Mozzarella Fresh,Dairy Products,47.9900,Case,,,,47.9900,inactive
+240,[MAPPED] Bindi - Cheesecake Dulce De Leche - (4.51 Oz.),TOI - Bindi,41.3900,case,,,,41.3900,inactive
+241,[MAPPED] Bindi - Cake - Carrot - (4.72 Oz.),TOI - Bindi,48.1000,case,,,,48.1000,inactive
+242,[MAPPED] Bindi - Cake - Chocolate Temptation (3.8 Oz.),TOI - Bindi,44.8100,case,,,,44.8100,inactive
+243,Bindi - Cake - Limoncello Mascarpone (3.81 Oz.),TOI - Bindi,42.2000,case,unit,12.000000,100.000,42.2000,active
+244,[MAPPED] Bindi - Cake - Ricotta And Pistachio (3.2 Oz.),TOI - Bindi,40.9300,case,,,,40.9300,inactive
+245,Bindi - Cheesecake - Mini Key Lime - Indiv. Portion (4.93 Oz.),TOI - Bindi,48.3000,case,unit,16.000000,100.000,48.3000,active
+246,Bindi - Ciabattina Rustica - (4.2 Oz.),Bakery,39.4500,case,unit,34.000000,100.000,39.4500,active
+247,[MAPPED] Bindi - Croissant - Glazed Apricot - (3.35 Oz.),Bakery,53.0200,case,,,,53.0200,inactive
+248,Bindi - Croissant - Glazed Pistachio - (85 G),Bakery,45.2200,case,unit,40.000000,100.000,45.2200,active
+249,[MAPPED] Bindi - Croissants - Mini Butter - (0.88 Oz.),Bakery,77.5900,case,,,,77.5900,inactive
+250,[MAPPED] Bindi - French Macaron - Assorted *Special Order*,TOI - Bindi,161.2800,case,,,,161.2800,inactive
+251,Bindi - Maritizzo (3.2 Oz.),TOI - Bindi,41.5800,case,unit,12.000000,100.000,41.5800,active
+252,Bindi - Mini Pain Au Chocolat (1.05 Oz.),TOI - Bindi,86.7000,case,unit,150.000000,100.000,86.7000,active
+253,[MAPPED] Bindi - Muffin Cocoa - (2.99 Oz),Bakery,33.7300,case,,,,33.7300,inactive
+254,"[MAPPED] Bindi - Pinsa Classica 12"" X 8"" - (4.3 Oz.)",Bakery,91.2300,case,,,,91.2300,inactive
+255,[MAPPED] Block & Barrel Cheese Cheddar Sharp Sliced,Dairy Products,41.7900,Case,,,,41.7900,inactive
+256,[MAPPED] Bridor - Cinnamon Bun Brioche Rtb,Bakery,58.7000,case,,,,58.7000,inactive
+257,[MAPPED] Bridor - Danish - Apple Butter Rtb,Bakery,92.2100,case,,,,92.2100,inactive
+258,[MAPPED] Bridor - Danish - Maple Pecan,Bakery,59.9900,case,,,,59.9900,inactive
+259,[MAPPED] Bridor - Danish Strawberry Cheese,Bakery,116.9300,case,,,,116.9300,inactive
+260,[MAPPED] Bridor - Danish Tomato And Olive Rtb,Bakery,74.5900,case,,,,74.5900,inactive
+261,Bridor - Mini Danish Assortment,Bakery,53.0000,case,unit,80.000000,100.000,53.0000,active
+262,[MAPPED] Butterball Turkey Sausage Patties Fully-Cooked,Other,54.4500,Case,,,,54.4500,inactive
+263,[MAPPED] Califia - Barista Almond Specialty Milk,Specialty Milks,31.1100,case,,,,31.1100,inactive
+264,[MAPPED] Celsius Rte Energy - Artic Vibe,Beverages,28.7500,case,,,,28.7500,inactive
+265,Celsius Rte Energy - Berry Wild,Beverages,26.7500,case,unit,12.000000,100.000,26.7500,active
+266,Celsius Rte Energy - Kiwi Guava,Beverages,23.0900,case,unit,12.000000,100.000,23.0900,active
+267,[MAPPED] Celsius Rte Energy - Orange,Beverages,28.7500,case,,,,28.7500,inactive
+268,[MAPPED] Celsius Rte Energy - Tropical Vibe,Beverages,28.7500,Case,,,,28.7500,inactive
+269,[MAPPED] Dannon Yogurt Vanilla Nonfat,Dairy Products,29.5500,Case,,,,29.5500,inactive
+270,David'S Cookies - Muffin Pumpkin Cheese (Thaw & Serve),Bakery,17.4500,case,unit,12.000000,100.000,17.4500,active
+271,Ghirardelli - Sauce Pump 0.50 Oz. For 64 Oz. Bottles,Other,10.0000,ea,,,,10.0000,inactive
+272,[MAPPED] Ghirardelli - Sweet Ground Chocolate & Cocoa Powder 3 Lb,Other,20.2100,piece,,,,20.2100,inactive
+273,Ghirardelli - 2 Tier 64 Oz. Flavoring Sauce Rack,Accesories,36.9700,ea,,,,36.9700,inactive
+274,Ghirardelli - 3 Tier 64 Oz. Flavoring Sauce Rack,Accesories,41.0000,ea,,,,41.0000,inactive
+275,Ghirardelli - Caramel Flavoring Sauce - 64Oz,Other,19.6000,bottle 64 oz,ml,1892.000000,100.000,19.6000,active
+276,[MAPPED] Ghirardelli - Sweet Ground Chocolate & Cocoa Powder 3 Lb,Other,20.2100,piece,,,,20.2100,inactive
+277,Ghirardelli - Vanilla Flavored Frappe Beverage Base 3 Lb.,Other,20.2100,canister 3 lb,g,1361.000000,100.000,20.2100,active
+278,Ghirardelli - White Chocolate Flavoring Sauce 64 Oz,Other,19.6000,bottle 64 oz,ml,1893.000000,100.000,19.6000,active
+279,[MAPPED] Jennie-O Bacon Turkey Pre-Cooked Crispy,Other,63.9900,Case,,,,63.9900,inactive
+280,[MAPPED] Just Bagels - Bagel - Plain,Bakery,42.9500,Case,,,,42.9500,inactive
+281,Just Bagels Bagel Cheese Asiago,Bakery,56.7500,case 8 X 6 units,unit,48.000000,100.000,56.7500,active
+282,[MAPPED] Just Bagels Bagel Everything,Bakery,44.9500,Case,,,,44.9500,inactive
+283,Lkp - Two Cup Carrier,Cups / Paper / Disposables,180.0000,case,,,,180.0000,inactive
+284,Lkp - Cup Sleeves,Cups / Paper / Disposables,164.0000,case,,,,164.0000,inactive
+285,Lkp - Die Cut Paper Bag Large ( W29.5Xh40),Cups / Paper / Disposables,452.0000,case,,,,452.0000,inactive
+286,Lkp - Die Cut Paper Bag Small (W20*H30),Cups / Paper / Disposables,298.0000,cs,,,,298.0000,inactive
+287,Lkp - Die Cut Paper Bag Medium (W.25.5Xh34.5),Cups / Paper / Disposables,372.0000,case,,,,372.0000,inactive
+288,Lkp - Dome Lid For Bowl,Cups / Paper / Disposables,55.0000,case,,,,55.0000,inactive
+289,"Lkp - Dome Lids For 12, 16 , 20 , 24 Oz",Cups / Paper / Disposables,95.0000,case,,,,95.0000,inactive
+290,Lkp - Dome Lids For 32 Oz,Cups / Paper / Disposables,129.0000,case,,,,129.0000,inactive
+291,Lkp - Double Wall Cup 12 Oz,Cups / Paper / Disposables,106.0000,case,,,,106.0000,inactive
+292,Lkp - Double Wall Cup 8 Oz,Cups / Paper / Disposables,152.0000,case,,,,152.0000,inactive
+293,"Lkp - Drinking Lid For 12 ,16 , 20 & 24 Oz (Cold Cups)",Cups / Paper / Disposables,105.0000,case,,,,105.0000,inactive
+294,"Lkp - Lids For Paper Cups 12 , 16 , 20 , 24 Oz (Hot Cups)",Cups / Paper / Disposables,105.0000,case,,,,105.0000,inactive
+295,Lkp - Pet Plastic Cups 12 Oz,Cups / Paper / Disposables,169.0000,case,,,,169.0000,inactive
+296,Lkp - Pet Plastic Cups 24Oz,Cups / Paper / Disposables,237.0000,case,,,,237.0000,inactive
+297,Lkp - Pet Plastic Cups 32 Oz,Cups / Paper / Disposables,329.0000,case,,,,329.0000,inactive
+298,Lkp - Plastic Straw For Cold Drink 0.6*23Cm,Cups / Paper / Disposables,225.0000,Case,,,,225.0000,inactive
+299,Lkp - Plastic Straw For Cold Drink 1.2*23Cm,Cups / Paper / Disposables,129.0000,case,,,,129.0000,inactive
+300,Lkp - Plastic Straw For Hot Drink 0.8*23 Cm,Cups / Paper / Disposables,225.0000,case,,,,225.0000,inactive
+301,Lkp - Single Wall Cup 24 Oz,Cups / Paper / Disposables,248.0000,case,,,,248.0000,inactive
+302,Lkp - Single Wall Cup 4 Oz,Cups / Paper / Disposables,98.0000,case,,,,98.0000,inactive
+303,Lkp - Two Cup Carrier,Cups / Paper / Disposables,180.0000,case,,,,180.0000,inactive
+304,Lotus - 1 Oz Dispenser Pump,Accesories,3.0000,ea,,,,3.0000,inactive
+305,Lotus - 3 Bottle Rack,Accesories,29.9900,piece,,,,29.9900,inactive
+306,[MAPPED] Lotus - Blue Raspberry Fruit Fussion,Energy Fruit Fussions,19.0000,Bottle,,,,19.0000,inactive
+307,[MAPPED] Lotus - Mango Passion Fruit Fussion,Energy Fruit Fussions,19.0000,Bottle,,,,19.0000,inactive
+308,[MAPPED] Lotus - Orange Creamsicle Ff,Energy Fruit Fussions,19.0000,Bottle,,,,19.0000,inactive
+309,[MAPPED] Lotus - Pina Colada Fruit Fussion,Energy Fruit Fussions,19.0000,Bottle,,,,19.0000,inactive
+310,[MAPPED] Lotus - Strawberry Fruit Fussion,Energy Fruit Fussions,19.0000,Bottle,,,,19.0000,inactive
+311,[MAPPED] Lotus - White Plant Power Concentrate,Energy Fruit Fussions,29.7100,Bottle,,,,29.7100,inactive
+312,[MAPPED] Lotus - White Plant Power Zero Sugar Concentrate,Energy Fruit Fussions,29.7100,Bottle,,,,29.7100,inactive
+313,Monin - Caramel Sugar Free Syrup 750 Ml,Syrups - Monin,6.7500,bottle x 750 ml,ml,750.000000,100.000,6.7500,active
+314,Monin - Caramel Syrup 750 Ml,Syrups - Monin,6.7500,bottle x 750 ml,ml,750.000000,100.000,6.7500,active
+315,Monin - Cinnamon Syrup 750 Ml,Syrups - Monin,6.7500,bottle x 750 ml,ml,750.000000,100.000,6.7500,active
+316,[MAPPED] Monin - Hazelnut - Sugar Free Syrup 750 Ml,Syrups - Monin,6.7500,Bottle,,,,6.7500,inactive
+317,Monin - Lavender Syrup - 750 Ml,Syrups - Monin,6.7500,bottle x 750 ml,ml,750.000000,100.000,6.7500,active
+318,Monin - Pistachio Syrup 750 Ml,Syrups - Monin,6.7500,bottle x 750 ml,ml,750.000000,100.000,6.7500,active
+319,Monin - Pure Cane Syrup 750 Ml,Syrups - Monin,6.7500,bottle x 750 ml,ml,750.000000,100.000,6.7500,active
+320,Monin - Syrup (0.25 Oz.) Pump For 750 Ml Bottles,Accesories,2.4600,ea,,,,2.4600,inactive
+321,Monin - Syrup Pump (0.25 Oz.) For 750 Ml Bottles,Accesories,2.5000,ea,,,,2.5000,inactive
+322,[MAPPED] Papetti'S Egg Patty Fully Cooked,Other,44.7900,Case,,,,44.7900,inactive
+323,Pregel - Butter Pecan X 12,Gelato,174.7800,case 12 x 1.81 lb ,oz,347.520000,100.000,174.7800,active
+324,Pregel - Mango Sprint X 12,Gelato,216.5500,case 12 x 1.1 kg,oz,465.600000,100.000,216.5500,active
+325,Pregel - Pistachio Paste (Bucket),Gelato,628.2600,case 2 x bucket 2.5 kg,oz,176.370000,100.000,628.2600,active
+326,[MAPPED] Rev. Tea - Bombay Chai Black Tea / 20 Ct,Tea,32.4000,Box,,,,32.4000,inactive
+327,[MAPPED] Rev. Tea - British Breakfast Black Tea / 20 Ct,Tea,32.4000,Box,,,,32.4000,inactive
+328,[MAPPED] Rev. Tea - Cape Town Honeybush Caramel Herbal Tea / 20 Ct,Tea,32.4000,Box,,,,32.4000,inactive
+329,[MAPPED] Rev. Tea - Danish Rhubarb & Rose Milky Oolong Tea / 20 Ct,Tea,32.4000,Box,,,,32.4000,inactive
+330,[MAPPED] Rev. Tea - German Chamomile & Lemon Balm / 20 Ct,Tea,32.4000,Box,,,,32.4000,inactive
+331,[MAPPED] Rev. Tea - Hemp Ginger & Chicory Herbal Tea / 20 Ct,Tea,32.4000,Box,,,,32.4000,inactive
+332,[MAPPED] Rev. Tea - Mexican Hibiscus Mango & Moringa Fruit Infusion / 20 Ct,Tea,32.3600,Box,,,,32.3600,inactive
+333,Rev. Tea - Oregon Spearmint & Peppermint Herbal Tea / 20 Ct,Tea,32.4000,Box,,,,32.4000,inactive
+334,[MAPPED] Bindi - Cake - Mixed Berry Tart (4.23 Oz.),TOI - Bindi,45.2400,case,,,,45.2400,inactive
+335,[MAPPED] Bindi - Cake - Raspberry Passionfruit (4.1 Oz.),TOI - Bindi,41.7500,case,,,,41.7500,inactive
+336,[MAPPED] Bindi - Croissant - Almond - (2.65 Oz.),Bakery,56.6300,case,,,,56.6300,inactive
+337,[MAPPED] Bindi - Mini Cheesecake - Alle Fragole (4.8 Oz.),TOI - Bindi,54.6400,piece,,,,54.6400,inactive
+338,[MAPPED] Le Chef - Macaron - Strawberry,Bakery,25.9500,case,,,,25.9500,inactive
+339,Le Chef Bakery - Bagel - Sesame,Bakery,11.4100,case x 12 units,unit,12.000000,100.000,11.4100,active
+340,[MAPPED] Le Chef Bakery - Cinnamon Bun,Bakery,12.7800,case,,,,12.7800,inactive
+341,[MAPPED] Le Chef Bakery - Cinnamon Bun Pecan Sticky,Bakery,12.6900,case,,,,12.6900,inactive
+342,[MAPPED] Le Chef Bakery - Cinnamon Bun With Icing,Bakery,9.7300,tray,,,,9.7300,inactive
+343,Le Chef Bakery - Croissant Butter All Natural,Bakery,15.7400,case x 14 units,unit,14.000000,100.000,15.7400,active
+344,[MAPPED] Le Chef Bakery - Croissant Chocolate,Bakery,10.3200,case,,,,10.3200,inactive
+345,[MAPPED] Le Chef Bakery - Danish Twist - Cherry,Bakery,10.7400,case,,,,10.7400,inactive
+346,[MAPPED] Le Chef Bakery - Macaron - Raspberry,Bakery,25.9500,case,,,,25.9500,inactive
+347,[MAPPED] Le Chef Bakery - Macaron / Chocolate,Bakery,25.9500,case,,,,25.9500,inactive
+348,[MAPPED] Le Chef Bakery - Macaron / Spring Assortment,Bakery,30.0700,case,,,,30.0700,inactive
+349,[MAPPED] Le Chef Bakery - Macaron / Vainilla,Bakery,25.9500,case,,,,25.9500,inactive
+350,[MAPPED] Le Chef Bakery - Macaron /Pistachio,Bakery,26.0000,case,,,,26.0000,inactive
+351,[MAPPED] Le Chef Bakery - Macaron Sea Salt Caramel,Bakery,25.9500,case,,,,25.9500,inactive
+352,"Le Chef Bakery - Muffin - Lemon, W/Raspberry",Bakery,22.1200,case x 12 units,unit,12.000000,100.000,22.1200,active
+353,"Le Chef Bakery - Muffin - Morning Glory, Tulip Cup",Bakery,13.3500,case x 16 units,unit,16.000000,100.000,13.3500,active
+354,"Le Chef Bakery - Muffin - Zucchini, Chia, Pumpkin & Sunflower Seeds",Bakery,18.1300,case x 12 units,unit,12.000000,100.000,18.1300,active
+355,[MAPPED] Le Chef Bakery Bagel - Everything Slcd,Bakery,11.4500,case,,,,11.4500,inactive
+356,"Le Chef Bakery Bagel - Jalapeno & Cheddar Cheese, Slcd",Bakery,12.6800,case x 12 units,unit,12.000000,100.000,12.6800,active
+357,[MAPPED] Le Chef Bakery Bagel - Plain Slcd,Bakery,10.8200,case,,,,10.8200,inactive
+358,"Le Chef Bakery Ciabata - Rustic Plain 4"" X 4""",Bakery,26.1600,case 36 units,unit,36.000000,100.000,26.1600,active
+359,[MAPPED] Le Chef Bakery Croissant - Almond Filled,Bakery,10.2100,tray,,,,10.2100,inactive
+360,"[MAPPED] Le Chef Bakery Croissant - Almond, Mini 1 Oz",Bakery,12.7600,case,,,,12.7600,inactive
+361,Le Chef Bakery Danish - Bear Claws,Bakery,19.7900,tray x 11 units,unit,11.000000,100.000,19.7900,active
+362,[MAPPED] Le Chef Bakery Danish - Twist Apple Filling,Bakery,10.7400,case,,,,10.7400,inactive
+363,[MAPPED] Le Chef Bakery Danish - Twist W/ Cheese Filling,Bakery,10.2100,case,,,,10.2100,inactive
+364,[MAPPED] Le Chef Bakery Muffin - Banana Nut,Bakery,14.9400,tray,,,,14.9400,inactive
+365,"Le Chef Bakery Muffin - Banana, W/ Nutella",Bakery,22.1300,case x 12 units,unit,12.000000,100.000,22.1300,active
+366,Le Chef Bakery Muffin - Blueberry,Bakery,14.9400,tray x 8 units,unit,8.000000,100.000,14.9400,active
+367,"Le Chef Bakery Muffin - Churro, W/ Dulce De Leche",Bakery,22.1300,case x 12 units,unit,12.000000,100.000,22.1300,active
+368,[MAPPED] Le Chef Bakery Muffin - Double Chocolate,Bakery,14.9400,tray,,,,14.9400,inactive
+369,Le Chef Bakery Muffin - Orange Cranberry Tulip Cup,Bakery,14.9400,tray x 8 units,units,8.000000,100.000,14.9400,active
+370,Le Chef Bakery Muffin - Original Bran,Bakery,14.9400,case x 12 units,unit,12.000000,100.000,14.9400,active
+371,Le Chef Bakery Pound Cake - Lemon,Bakery,32.5300,case x 12 units,unit,12.000000,100.000,32.5300,active
+372,[MAPPED] Le Chef Bakery Scones - Blueberry Triangle,Bakery,21.8100,tray,,,,21.8100,inactive
+373,Le Chef Bakery Scones - Mixed Berry,Bakery,21.8900,tray x 15 units,unit,15.000000,100.000,21.8900,active
+374,Le Chef Bakery Tea Bread - Cinnamon Crumb,Bakery,24.9400,piece 12 X 2 loaves,loave,24.000000,100.000,24.9400,active
+375,Monin (Shamrock) - Caramel Sugar Free Syrup 1 Lt (Pet),Syrups - Monin,38.1300,case 4 x 1 L,ml,4000.000000,100.000,38.1300,active
+376,Monin (Shamrock) - Cookie Butter Syrup 1 Lt (Pet),Syrups - Monin,38.5700,case 4 X 1 L,ml,4000.000000,100.000,38.5700,active
+377,Monin (Shamrock) - Hazelnut Sugar Free Syrup 1 Lt (Pet),Syrups - Monin,38.3500,case 4 x 1 L,ml,4000.000000,100.000,34.3500,active
+378,Monin (Shamrock) - Lavender Syrup 1 Lt (Pet),Syrups - Monin,33.8900,case 4 x 1 L,ml,4000.000000,100.000,33.8900,active
+379,Monin (Shamrock) - Macadamia Nut Syrup 1 Lt (Pet),Syrups - Monin,34.0100,case 4 x 1 L,ml,4000.000000,100.000,34.0100,active
+380,Monin (Shamrock) - Pistachio Syrup 1 Lt (Pet),Syrups - Monin,36.5600,case 4 x 1 L,ml,4000.000000,100.000,36.5600,active
+381,Monin (Shamrock) - Pure Cane Syrup 1 Lt (Pet),Syrups - Monin,31.8400,case 4 x 1 L,ml,4000.000000,100.000,31.8400,active
+382,Monin (Shamrock) - Strawberry Syrup 1 Lt (Pet),Syrups - Monin,6.4700,bottle,ml,1000.000000,100.000,6.4700,active
+383,Monin (Shamrock) - Toasted Marshmallow Syrup 1 Lt (Pet),Syrups - Monin,37.4500,case 4 x 1 L,ml,4000.000000,100.000,37.4500,active
+384,[MAPPED] Monin (Shamrock) - Vainilla - Sugar Free -Syrup 1 Lt (Pet),Syrups - Monin,39.8400,piece,,,,39.8400,inactive
+385,[MAPPED] Monin (Shamrock) - Vainilla Syrup 1 Lt (Pet),Syrups - Monin,33.5500,piece,,,,33.5500,inactive
+386,Monin (Shamrock) - Yuzu Syrup 1 Lt (Pet),Syrups - Monin,70.6700,case 4 x 1 L,ml,4000.000000,100.000,70.6700,active
+387,[MAPPED] A'Siciliana Mandarin Soda Can 11 Oz,Beverages,31.2000,case,,,,31.2000,inactive
+388,[MAPPED] Bindi - Cheesecake - Brownie Ind. Wrap (3 Oz.),TOI - Bindi,53.4100,case,,,,53.4100,inactive
+389,Bindi - Cheesecake - Mini Pumpkin - (0.69 Oz.),TOI - Bindi,50.6700,case,unit,16.000000,100.000,50.6700,active
+390,Poppi Cherry Limeade Prebiotic (12 Oz.),Beverages,21.7900,case 12 X 12 Oz,unit,12.000000,100.000,21.7900,active
+391,Poppi Raspberry Rose Prebiotic (12 Oz.),Beverages,21.7900,case 12 X 12 Oz,unit,12.000000,100.000,21.7900,active
+392,Poppi Strawberry Lemon Prebiotic,Beverages,21.7900,case 12 X 12 Oz,unit,12.000000,100.000,21.7900,active
+393,[MAPPED] Pure Leaf/Lipton - Tea - Sweet Iced Tea W Lemon,Beverages,22.7700,case,,,,22.7700,inactive
+394,Pure Leaf/Lipton - Tea - Unsweetened Iced,Beverages,22.7900,case 12 x 18.5 oz,unit,12.000000,100.000,22.7900,active
+395,Pure Leaf/Lipton - Tea - Sweet Iced,Beverages,22.7900,case 12 x 18.5 oz,unit,12.000000,100.000,22.7900,active
+396,Bindi - Cake - Lemon Mousse (3.28 Oz.),TOI - Bindi,38.5000,case,unit,14.000000,100.000,38.5000,active
+397,Bindi - Cake - Mango Passion (4.02 Oz.),TOI - Bindi,41.2500,case,unit,14.000000,100.000,41.2500,active
+398,Bindi - Cake - Monterosa (3.81 Oz.),TOI - Bindi,42.6700,case,unit,12.000000,100.000,42.6700,active
+399,Bindi - Croissant Plain Vegan - (2.64 Oz.),Bakery,56.9500,case,unit,40.000000,100.000,56.9500,active
+400,Bridor - Chocolate Twist,Bakery,114.9000,case,unit,80.000000,100.000,114.9000,active
+401,[MAPPED] Bridor - Croissant - Large Butter,Bakery,61.7800,case,,,,61.7800,inactive
+402,[MAPPED] Bridor - Danish - Guava,Bakery,49.9900,case,,,,49.9900,inactive
+403,[MAPPED] Bridor - Danish - Leek And Parmesan Bistro,Bakery,68.9900,case,,,,68.9900,inactive
+404,[MAPPED] Bridor - Danish - Lemon,Bakery,90.9900,case,,,,90.9900,inactive
+405,[MAPPED] Bridor - Danish - Spinach And Feta Rtb,Bakery,74.5900,case,,,,74.5900,inactive
+406,C'Est Gourmet - Croissant - Tomato Parmesan,Bakery,130.7900,case,unit,72.000000,100.000,130.7900,active
+407,[MAPPED] C'Est Gourmet - Croissant Doughnut,Bakery,105.6700,case,,,,105.6700,inactive
+408,C'Est Gourmet - Souffle - Spinach & Cheese (4.75 Oz.),Bakery,106.6400,case,unit,30.000000,100.000,106.6400,active
+409,C'Est Gourmet - Turnover - Blueberry Turnover,Bakery,132.4800,case,unit,60.000000,100.000,132.4800,active
+410,C'Est Gourmet - Turnover - Peach,Bakery,124.3200,case,unit,60.000000,100.000,124.3200,active
+411,C'Est Gourmet Kouign Amann,Bakery,84.1500,case,unit,40.000000,100.000,84.1500,active
+412,[MAPPED] Califia - Barista Coconut Specialty Milk,Specialty Milks,31.5000,Cs,,,,31.5000,inactive
+413,Pacific - Pistachio Milk Barista Specialty,Specialty Milks,47.0000,case,ml,8162.000000,100.000,47.0000,active
+414,Pacific - Soy Milk Barista Specialty,Specialty Milks,28.0000,Case 12 × 32 oz,ml,8162.000000,100.000,28.0000,active
+415,Pressed - Daily Greens Juice,Beverages,28.9100,case 6 x 15.2 oz,unit,6.000000,100.000,28.9100,active
+416,Pressed - Daily Roots + Ginger Juice,Beverages,27.6000,case 6 x 15.2 oz,unit,6.000000,100.000,27.6000,active
+417,Pressed - Orange Juice,Beverages,27.2300,case 6 x 15.2 oz,unit,6.000000,100.000,27.2300,active
+418,Pressed - Vitality Shot,Beverages,74.8400,case 24 x 2 oz,unit,24.000000,100.000,74.8400,active
+419,Pressed - Wellness Shot,Beverages,74.8400,case 24 x 2 oz,unit,24.000000,100.000,74.8400,active
+420,Rev. Tea - Oregon Spearmint & Peppermint Herbal Tea / 20 Ct,Tea,32.4000,case 6 X 20 units,units,120.000000,100.000,32.4000,active
+421,Something & Nothing - Cucumber,Beverages,22.0300,case 12 x12 oz,unit,12.000000,100.000,22.0300,active
+422,[MAPPED] Something & Nothing - Cucumber,Beverages,27.0600,case,,,,27.0600,inactive
+423,Something & Nothing - Ginger & Key Lime,Beverages,27.0600,case 12 x 12oz,unit,12.000000,100.000,27.0600,active
+424,Something & Nothing - Hibiscus & Rose,Beverages,22.0300,case 12 X 12 Oz,unit,13.000000,100.000,22.0300,active
+425,Something & Nothing - Orange + Mandarin,Beverages,27.0000,case 12 X 12 Oz,unit,12.000000,100.000,27.0000,active
+426,Something & Nothing - Pineapple & Pink Grapefruit,Beverages,23.2400,case 12 X 12 Oz,unit,12.000000,100.000,23.2400,active
+427,Something & Nothing - Sic Lemon Iced Tea,Beverages,27.0300,case 12 X 12 Oz,unit,12.000000,100.000,27.0300,active
+428,[MAPPED] Sunraysia Juice - Apple X 250 Ml,Beverages,36.8600,case,,,,36.8600,inactive
+429,Sunraysia Juice - Cranberry X 250 Ml,Beverages,36.8600,case 12 units,unit,12.000000,100.000,36.8600,active
+430,Sunraysia Juice - Mango X 250 Ml,Beverages,37.4400,case 12 units,unit,12.000000,100.000,37.4400,active
+431,Sunraysia Juice - Orange X 250 Ml,Beverages,36.5000,case 12 units,unit,12.000000,100.000,36.5000,active
+432,Sunraysia Juice - Pear X 250 Ml,Beverages,38.5400,Case 12 units,unit,12.000000,100.000,38.5400,active
+433,Sunraysia Juice - Pineapple X 250 Ml,Beverages,37.4400,Case 12 units,unit,12.000000,100.000,37.4400,active
+434,[MAPPED] Bindi - Eclair - Coffee - (2.6 Oz.),TOI - Bindi,28.4900,case,,,,28.4900,inactive
+435,[MAPPED] Cusanos - Bagel Everything Sliced,Bakery,44.9500,case,,,,9.3100,inactive
+436,Cusanos - Brownie,Bakery,21.6100,case,unit,12.000000,100.000,21.6100,active
+437,[MAPPED] Cusanos - Muffin Chocolate Chip Tulip Cup Lg,Bakery,21.8300,case,,,,21.8300,inactive
+438,[MAPPED] Cusanos - Scones - Blueberry,Bakery,25.8500,case,,,,25.8500,inactive
+439,Cusanos Bagel Jalapeno Cheddar Sliced,Bakery,16.9800,case,unit,12.000000,100.000,16.9800,active
+440,[MAPPED] Cusanos Bagel New Yorker,Other,17.2200,piece,,,,17.2200,inactive
+441,[MAPPED] Cusanos Bagel Plain Sliced,Other,9.3100,case,,,,9.3100,inactive
+442,Cusanos Ciabatta Med,Bakery,13.9800,case,unit,12.000000,100.000,13.9800,active
+443,[MAPPED] Cusanos Muffin - Banana Nut Tulip Cup Lg,Bakery,21.1200,case,,,,21.1200,inactive
+444,Cusanos Muffin - Rasp. Lemon Sugar Tulip,Bakery,23.0500,case,unit,12.000000,100.000,23.0500,active
+445,Cusanos Quesito Lg Ind,Bakery,33.0800,case,unit,12.000000,100.000,33.0800,active
+446,Bindi - Coppa Gelato - Cafe - (4 Oz.),Gelato,29.1700,case,unit,6.000000,100.000,29.1700,active
+447,Bindi - Coppa Gelato - Spagnola - (3.52 Oz.),Gelato,29.1700,case,unit,6.000000,100.000,29.1700,active
+448,Bindi - Coppa Gelato- Pistachio - (3.52 Oz.),Gelato,29.1700,case,unit,6.000000,100.000,29.1700,active
+449,Bindi - Croissant - Cream Filled - (3.35 Oz.),Bakery,56.8700,case,unit,50.000000,100.000,56.8700,active
+450,Bridor - Turnover Apple,Bakery,70.7300,case,unit,48.000000,100.000,70.7300,active
+451,Bindi - Caramel Pecan Bar - (4 Oz.),Bakery,60.2900,case,unit,21.000000,100.000,60.2900,active
+452,"Bindi - Mini Bomboloni Cocoa & Hazelnut - (0,84 Oz.)",Bakery,63.6400,case,unit,104.000000,100.000,63.6400,active
+453,[MAPPED] Bindi - Muffin Pistacchio - (2.99 Oz.),Bakery,33.7300,case,,,,33.7300,inactive
+454,[MAPPED] Bridor - Croissant Curved Butter,Bakery,68.9700,case,,,,68.9700,inactive
+455,Bridor - Danish - Raspberry Cheesecake - 3.53 Oz,Bakery,102.0700,case,unit,84.000000,100.000,102.0700,active
+456,Just Baked Muffin Blueberry,Bakery,35.8200,bag x 18 units,unit,18.000000,100.000,35.8200,active
+457,[MAPPED] A'Siciliana Limonata Soda Can 11 Oz,Beverages,31.2000,case,,,,31.2000,inactive
+458,"[MAPPED] Bindi - Cake - Tres Leches (4,4Oz.)",TOI - Bindi,33.3400,case,,,,33.3400,inactive
+459,[MAPPED] Sammy'S - Bagel - Everything,Bakery,27.0000,case,,,,27.0000,inactive
+460,[MAPPED] Sammy'S - Bagel - Plain,Bakery,18.0000,case,,,,18.0000,inactive
+461,[MAPPED] Sammy'S - Cake - Lemon Pound,Bakery,7.4700,case,,,,7.4700,inactive
+462,Sammy'S - Cake - Original Crumb,Bakery,9.1600,case 4 units,unit,4.000000,100.000,9.1600,active
+463,Sammy'S - Cake - Plain Pound,Bakery,4.9800,case 2 units,unit,2.000000,100.000,4.9800,active
+464,[MAPPED] Sammy'S - Cinnamon Bunn,Bakery,27.4800,case,,,,27.4800,inactive
+465,Sammy'S - Cookies - Black & White,Bakery,8.3700,case 3 units,unit,3.000000,100.000,8.3700,active
+466,[MAPPED] Sammy'S - Danish - Apple,Bakery,6.8700,case,,,,6.8700,inactive
+467,Sammy'S - Danish - Blueberry,Bakery,6.8700,case 3 units,unit,3.000000,100.000,6.8700,active
+468,[MAPPED] Sammy'S - Danish - Cheese,Bakery,27.4800,case,,,,27.4800,inactive
+469,[MAPPED] Sammy'S - Danish - Cherry,Bakery,13.7400,case,,,,13.7400,inactive
+470,Sammy'S - Danish - Raspberry,Bakery,9.1600,case 4 units,unit,4.000000,100.000,9.1600,active
+471,[MAPPED] Sammy'S - Scone - Blueberry,Bakery,5.3800,case,,,,5.3800,inactive
+472,Sammy'S - Scone - Chocolate Chip Scone,Bakery,5.3800,case 2 units,unit,2.000000,100.000,5.3800,active
+473,Sammy'S - Turnover - Apple,Bakery,4.5800,case 2 units,unit,2.000000,100.000,4.5800,active
+499,[MAPPED] Bindi - Cake - Carrot - (4.72 Oz.),Bakery - Bindi (TOI),48.1000,case,,,,48.1000,inactive
+500,[MAPPED] Bindi - Cake - Chocolate Temptation (3.8 Oz.),Bakery - Bindi (TOI),44.8100,case,,,,44.8100,inactive
+501,[MAPPED] Bindi - Cake - Mixed Berry Tart (4.23 Oz.),Bakery - Bindi (TOI),45.2400,case,,,,45.2400,inactive
+502,[MAPPED] Bindi - Cake - Raspberry Passionfruit (4.1 Oz.),Bakery - Bindi (TOI),41.7500,case,,,,41.7500,inactive
+503,[MAPPED] Bindi - Cake - Ricotta And Pistachio (3.2 Oz.),Bakery - Bindi (TOI),40.9300,case,,,,40.9300,inactive
+504,[MAPPED] Bindi - Croissant - Almond - (2.65 Oz.),Bakery,56.6300,Case,,,,56.6300,inactive
+505,[MAPPED] Bindi - Mini Cheesecake - Alle Fragole (4.8 Oz.),Bakery - Bindi (TOI),54.6400,piece,,,,54.6400,inactive
+506,[MAPPED] Celsius Rte Energy - Artic Vibe,Beverages,28.7500,case,,,,28.7500,inactive
+507,[MAPPED] Celsius Rte Energy - Orange,Beverages,28.7500,case,,,,28.7500,inactive
+508,[MAPPED] Celsius Rte Energy - Tropical Vibe,Beverages,28.7500,Case,,,,28.7500,inactive
+509,[MAPPED] Le Chef Bakery - Bagel - Everything Slcd,Bakery,11.4500,case,,,,11.4500,inactive
+510,[MAPPED] Le Chef Bakery - Bagel - Plain Slcd,Bakery,10.8200,case,,,,10.8200,inactive
+511,[MAPPED] Le Chef Bakery - Cinnamon Bun,Bakery,12.7800,case,,,,12.7800,inactive
+512,Le Chef Bakery - Cinnamon Bun Pecan Sticky,Bakery,12.6900,case x 6 units,unit,6.000000,100.000,12.6900,active
+513,Le Chef Bakery - Cinnamon Bun With Icing,Bakery,9.7300,tray x 6 units,unit,6.000000,100.000,9.7300,active
+514,[MAPPED] Le Chef Bakery - Croissant - Almond Filled,Bakery,10.2100,tray,,,,10.2100,inactive
+515,"[MAPPED] Le Chef Bakery - Croissant - Almond, Mini 1 Oz",Bakery,12.7600,case,,,,12.7600,inactive
+516,[MAPPED] Le Chef Bakery - Croissant Chocolate,Bakery,10.3200,case,,,,10.3200,inactive
+517,[MAPPED] Le Chef Bakery - Danish - Twist Apple Filling,Bakery,10.7400,case,,,,10.7400,inactive
+518,[MAPPED] Le Chef Bakery - Danish - Twist W/ Cheese Filling,Bakery,10.2100,case,,,,10.2100,inactive
+519,[MAPPED] Le Chef Bakery - Danish Twist - Cherry,Bakery,10.7400,case,,,,10.7400,inactive
+520,[MAPPED] Le Chef Bakery - Macaron - Raspberry,Bakery,25.9500,case,,,,25.9500,inactive
+521,[MAPPED] Le Chef Bakery - Macaron - Strawberry,Bakery,25.9500,case,,,,25.9500,inactive
+522,[MAPPED] Le Chef Bakery - Macaron / Chocolate,Bakery,25.9500,case,,,,25.9500,inactive
+523,[MAPPED] Le Chef Bakery - Macaron / Pistachio,Bakery,26.0000,case,,,,26.0000,inactive
+524,[MAPPED] Le Chef Bakery - Macaron / Spring Assortment,Bakery,30.0700,case,,,,30.0700,inactive
+525,[MAPPED] Le Chef Bakery - Macaron / Vainilla,Bakery,25.9500,case,,,,25.9500,inactive
+526,[MAPPED] Le Chef Bakery - Macaron Sea Salt Caramel,Bakery,25.9500,case,,,,25.9500,inactive
+527,[MAPPED] Le Chef Bakery - Muffin - Banana Nut,Bakery,14.9400,tray,,,,14.9400,inactive
+528,[MAPPED] Le Chef Bakery - Muffin - Double Chocolate,Bakery,14.9400,tray,,,,14.9400,inactive
+529,[MAPPED] Le Chef Bakery - Scones - Blueberry Triangle,Bakery,21.8100,tray,,,,21.8100,inactive
+530,Lkp - Two Cup Carrier,Cups / Paper / Disposables,200.0000,case,,,,200.0000,inactive
+531,Lkp - Die Cut Paper Bag Large ( W29.5Xh40),Cups / Paper / Disposables,452.0000,case,,,,452.0000,inactive
+532,Lkp - Die Cut Paper Bag Small (W20*H30),Cups / Paper / Disposables,298.0000,cs,,,,298.0000,inactive
+533,Lkp - Die Cut Paper Bag Medium (W.25.5Xh34.5),Cups / Paper / Disposables,372.0000,case,,,,372.0000,inactive
+534,Lkp - Dome Lid For Bowl,Cups / Paper / Disposables,55.0000,case,,,,55.0000,inactive
+535,"Lkp - Dome Lids For 12, 16 , 20 , 24 Oz",Cups / Paper / Disposables,95.0000,case,,,,95.0000,inactive
+536,Lkp - Dome Lids For 32 Oz,Cups / Paper / Disposables,129.0000,case,,,,129.0000,inactive
+537,Lkp - Two Cup Carrier,Cups / Paper / Disposables,180.0000,case,,,,180.0000,active
+538,Lotus - 1 Oz Dispenser Pump,Racks & Accesories,3.0000,ea,,,,3.0000,active
+539,Lotus - 3 Bottle Rack,Racks & Accesories,29.9900,piece,,,,29.9900,active
+540,[MAPPED] Lotus - Blue Raspberry Fruit Fussion,Other,19.0000,Bottle,,,,19.0000,inactive
+541,[MAPPED] Lotus - Mango Passion Fruit Fussion,Other,19.0000,Bottle,,,,19.0000,inactive
+542,[MAPPED] Lotus - Orange Creamsicle Ff,Other,19.0000,Bottle,,,,19.0000,inactive
+543,[MAPPED] Lotus - Pina Colada Fruit Fussion,Other,19.0000,Bottle,,,,19.0000,inactive
+544,[MAPPED] Lotus - Strawberry Fruit Fussion,Other,19.0000,Bottle,,,,19.0000,inactive
+545,[MAPPED] Lotus - White Plant Power Concentrate,Other,29.7100,Bottle,,,,29.7100,inactive
+546,[MAPPED] Lotus - White Plant Power Zero Sugar Concentrate,Other,29.7100,Bottle,,,,29.7100,inactive
+547,[MAPPED] Monin (Shamrock) - Vainilla - Sugar Free -Syrup 1 Lt (Pet),Syrups & Sauces - (Monin + Ghirardelli),39.8400,piece,,,,39.8400,inactive
+548,[MAPPED] Monin (Shamrock) - Vainilla Syrup 1 Lt (Pet),Syrups & Sauces - (Monin + Ghirardelli),33.5500,piece,,,,33.5500,inactive
+549,[MAPPED] Bindi - Cheesecake Dulce De Leche - (4.51 Oz.),Bakery - Bindi (TOI),41.3900,case,,,,41.3900,inactive
+550,"[MAPPED] Bindi - Pinsa Classica 12"" X 8"" - (4.3 Oz.)",Bakery,88.3700,Case,,,,88.3700,inactive
+551,[MAPPED] Bridor - Croissant - Large Butter,Bakery,61.7800,Case,,,,61.7800,inactive
+552,[MAPPED] Bridor - Danish - Guava,Bakery,49.9900,Case,,,,49.9900,inactive
+553,[MAPPED] Bridor - Danish - Leek And Parmesan Bistro,Bakery,68.9900,Case,,,,68.9900,inactive
+554,[MAPPED] Bridor - Danish - Lemon,Bakery,90.9900,Case,,,,90.9900,inactive
+555,[MAPPED] Bridor - Danish - Spinach And Feta Rtb,Bakery,74.5900,Case,,,,74.5900,inactive
+556,[MAPPED] Bridor - Danish Strawberry Cheese,Bakery,116.9300,Case,,,,116.9300,inactive
+557,[MAPPED] Bridor - Danish Tomato And Olive Rtb,Bakery,74.5900,Case,,,,74.5900,inactive
+558,[MAPPED] C'Est Gourmet - Croissant Doughnut,Bakery,105.6700,Case,,,,105.6700,inactive
+559,[MAPPED] Califia - Almond Barista Specialty Milk,Specialty Milks,31.1100,case,,,,31.1100,inactive
+560,[MAPPED] Califia - Coconut Barista Specialty Milk,Specialty Milks,31.5000,Cs,,,,31.5000,inactive
+561,Pacific - Pistachio Milk Barista - 32 Fl. Oz. - 12/Case,Specialty Milks,47.0000,case 12 X 32 oz,ml,8162.000000,100.000,47.0000,active
+562,Pacific - Soy Milk Barista - 32 Fl. Oz. - 12/Case,Specialty Milks,28.0000,case 12 X 32 oz,ml,8162.000000,100.000,28.0000,active
+563,[MAPPED] Rev. Tea - Bombay Chai Black Tea / 20 Ct,Other,32.4000,Box,,,,32.4000,inactive
+564,[MAPPED] Rev. Tea - British Breakfast Black Tea / 20 Ct,Other,32.4000,Box,,,,32.4000,inactive
+565,[MAPPED] Rev. Tea - Cape Town Honeybush Caramel Herbal Tea / 20 Ct,Other,32.4000,Box,,,,32.4000,inactive
+566,[MAPPED] Rev. Tea - Danish Rhubarb & Rose Milky Oolong Tea / 20 Ct,Other,32.4000,Box,,,,32.4000,inactive
+567,[MAPPED] Rev. Tea - German Chamomile & Lemon Balm / 20 Ct,Other,32.4000,Box,,,,32.4000,inactive
+568,[MAPPED] Rev. Tea - Hemp Ginger & Chicory Herbal Tea / 20 Ct,Other,32.4000,Box,,,,32.4000,inactive
+569,[MAPPED] Rev. Tea - Mexican Hibiscus Mango & Moringa Fruit Infusion / 20 Ct,Other,32.3600,Box,,,,32.3600,inactive
+570,Something & Nothing - Mango & Thai Basil - 12 Oz.,Beverages,27.0600,case 12 x 12 oz,unit,12.000000,100.000,27.0600,active
+571,[MAPPED] Sunraysia Juice - Apple X 250 Ml - 8.45 Fl. Oz.,Beverages,36.8600,case,,,,36.8600,inactive
+572,[MAPPED] Bindi - Eclair - Coffee - (2.6 Oz.),Bakery - Bindi (TOI),28.4900,case,,,,28.4900,inactive
+573,Bridor - Perfect Chocolatine,Bakery,58.1900,case,unit,60.000000,100.000,58.1900,active
+574,[MAPPED] Cusanos - Bagel - Everything Sliced,Bakery,9.3100,Case,,,,9.3100,inactive
+575,[MAPPED] Cusanos - Bagel - New Yorker,Bakery,17.2200,Case,,,,17.2200,inactive
+576,[MAPPED] Cusanos - Bagel - Plain Sliced,Bakery,9.3100,Case,,,,9.3100,inactive
+577,[MAPPED] Cusanos - Muffin - Banana Nut Tulip Cup Lg,Bakery,21.1200,Case,,,,21.1200,inactive
+578,[MAPPED] Cusanos - Muffin - Chocolate Chip Tulip Cup Lg,Bakery,21.8300,Case,,,,21.8300,inactive
+579,[MAPPED] Cusanos - Scones - Blueberry,Bakery,25.8500,case,,,,25.8500,inactive
+580,[MAPPED] Bindi - Croissant - Apricot - (3.35 Oz.),Bakery,53.0200,Case,,,,53.0200,inactive
+581,[MAPPED] Bindi - French Macaron - Assorted *Special Order*,Bakery - Bindi (TOI),161.2800,case,,,,161.2800,inactive
+582,[MAPPED] Bindi - Cheesecake - Brownie Ind. Wrap (3 Oz.),Bakery - Bindi (TOI),53.4100,case,,,,53.4100,inactive
+583,[MAPPED] Bindi - Muffin Cocoa - (2.99 Oz),Bakery,33.7300,Case,,,,33.7300,inactive
+584,[MAPPED] Bindi - Muffin Pistacchio - (2.99 Oz.),Bakery,33.7300,Case,,,,33.7300,inactive
+585,[MAPPED] Bridor - Cinnamon Bun Brioche Rtb,Bakery,58.7000,Case,,,,58.7000,inactive
+586,[MAPPED] Bridor - Croissant Curved Butter,Bakery,68.9700,Case,,,,68.9700,inactive
+587,[MAPPED] Just Bagels - Bagel - Everything,Bakery,44.9500,Case,,,,44.9500,inactive
+588,[MAPPED] Just Bagels - Bagel - Plain,Bakery,42.9500,Case,,,,42.9500,inactive
+589,[MAPPED] 3 Pigs - Egg Miscellaneous Sous-Vide Prosciutto Gruyere Bite,Protein RTE,32.6900,case,unit,12.000000,100.000,32.6900,inactive
+590,[MAPPED] Arrezzio - Cheese - Mozzarella Fresh,Dairy Products,47.9900,Case,,,,47.9900,inactive
+591,Arrezzio - Evoo - Oil Olive - Robusto Tin,Ingredients,59.9500,case,ml,3785.000000,100.000,59.9500,active
+592,[MAPPED] Baker'S Source - Bagels Plain Sliced Thaw & Serve 4 Oz Sleeved,Bakery,50.9900,Case,,,,50.9900,inactive
+593,[MAPPED] Bindi - Croissants - Mini Butter - (0.88 Oz.),Bakery,77.5900,Case,,,,77.5900,inactive
+594,[MAPPED] Block & Barrel - Cheese - Blue Cheese Crumbles,Dairy Products,37.7500,Case,,,,37.7500,inactive
+595,[MAPPED] Block & Barrel - Cheese - Cheddar - Sharp Sliced,Dairy Products,41.7900,Case,,,,41.7900,inactive
+596,[MAPPED] Block & Barrel - Cheese - Mozzarella Part Skim Sliced,Dairy Products,44.9500,Case,,,,44.9500,inactive
+597,[MAPPED] Block & Barrel - Pickle Dill Sliced 1/8 Inch Smooth Cut 650 Count,Ingredients,12.3000,Case,,,,12.3000,inactive
+598,[MAPPED] Bob'S Red Mill - Granola - Honey Oat - Gluten-Free,Ingredients,19.4900,Case,,,,19.4900,inactive
+599,[MAPPED] Brakebush Brothers - Chicken Breast Strips With Grill Marks,Protein RTE,56.7500,Case,,,,56.7500,inactive
+600,[MAPPED] Bridor - Danish - Apple Butter Rtb,Bakery,92.2100,Case,,,,92.2100,inactive
+601,[MAPPED] Bridor - Danish - Maple Pecan,Bakery,59.9900,Case,,,,59.9900,inactive
+602,Bridor - Margherita Bistro,Bakery,77.2200,case,unit,36.000000,100.000,77.2200,active
+603,[MAPPED] Busseto - Ham Prosciutto Sliced,Protein RTE,50.6500,Case,,,,50.6500,inactive
+604,[MAPPED] Butterball - Turkey Sausage Patties Fully-Cooked,Protein RTE,54.4500,Case,,,,54.4500,inactive
+605,Califia - Milk Oat Barista - 32 Fl. Oz. - 12/Case,Specialty Milks,31.5000,case,ml,11356.000000,100.000,31.5000,active
+606,Casa Solana - Guacamole Fresh Pico Blend Packaged,Ingredients,51.6900,case,g,5443.000000,100.000,51.6900,active
+607,[MAPPED] Chefmaster - Sunset Orange Liqua-Gel Food Coloring,Ingredients,10.4900,Unit,,,,10.4900,inactive
+608,"Chicopee - Wiper Towel Pink Diamond 11.5"" X 24"" Dry",Cleaning Supplies,39.9900,case,unit,200.000000,100.000,39.9900,active
+609,Cholula - Sauce Hot Portion Control,Ingredients,15.9900,case,unit,200.000000,100.000,15.9900,active
+610,Cucina Viva - Balsamic Glaze,Ingredients,45.4300,case,ml,47627.000000,100.000,45.4300,active
+611,David'S Cookies - Muffin Blueberry Thaw N Serve,Bakery,19.3900,case,unit,12.000000,100.000,19.3900,active
+612,David'S Cookies - Muffin Cranberry Orange Thaw & Serve,Bakery,17.4500,case,unit,12.000000,100.000,17.4500,active
+613,Domino - Sugar Packet Cane,Ingredients,44.6900,case,unit,2000.000000,100.000,44.6900,active
+614,[MAPPED] Fanale - Popping Boba - Lychee -7.05 Lb.,Ingredients,26.4900,Unit,,,,26.4900,inactive
+615,Fanale - Topping - Coconut Jelly,Ingredients,26.4900,unit,g,4001.000000,100.000,26.4900,active
+616,Ghirardelli - Sauce Pump 0.50 Oz. For 64 Oz. Bottles,Racks & Accesories,10.0000,ea,,,,10.0000,inactive
+617,Ghirardelli - Sweet Ground Chocolate & Cocoa Powder 3 Lb,Other,20.2100,canister 3 lb,g,1361.000000,100.000,20.2100,active
+618,Ghirardelli - 2 Tier 64 Oz. Flavoring Sauce Rack,Racks & Accesories,36.9700,ea,,,,36.9700,inactive
+619,Ghirardelli - 3 Tier 64 Oz. Flavoring Sauce Rack,Racks & Accesories,41.0000,ea,,,,41.0000,inactive
+620,Ghirardelli - Sweet Ground Chocolate & Cocoa Powder 3 Lb,Other,20.2100,canister 3 lb,g,1361.000000,100.000,20.2100,active
+621,"Gusto Etna - Pistachios Roasted Chopped, 2.2 Lb (1 Kg)",Ingredients,47.8000,Case x 1kg,g,1000.000000,100.000,47.8000,active
+622,House Recipe - Honey Pure Clover Grade A True Source Certifie,Ingredients,55.1400,case 12 X 12 Oz,ml,4259.000000,100.000,55.1400,active
+623,Imperial Fresh - Tomato Roma Jumbo Fresh,Produce,26.0400,Case x 25 lb,slice,380.000000,100.000,26.0400,active
+624,[MAPPED] Jimmy Dean - Turkey Patties Sausage,Protein RTE,65.9900,Case,,,,65.9900,inactive
+625,Lotus - Biscoff Creamy Cookie Butter Topping,Ingredients,17.4900,Unit,,,,17.4900,active
+626,[MAPPED] Monin - Hazelnut - Sugar Free Syrup 750 Ml,Syrups & Sauces - (Monin + Ghirardelli),7.0000,Bottle,,,,7.0000,inactive
+627,Monin - Syrup (0.25 Oz.) Pump For 750 Ml Bottles,Racks & Accesories,2.4600,ea,,,,2.4600,inactive
+628,Monin - Syrup Pump (0.25 Oz.) For 750 Ml Bottles,Racks & Accesories,2.5000,ea,,,,2.5000,inactive
+629,Nabisco/Oreo - Cookie Crumbs,Ingredients,149.9100,Case x 25 lb,g,11339.000000,100.000,149.9100,active
+630,Nutella - Spread Chocolate Hazelnut,Waffle,67.2100,case 2 X 6.6 lb,g,5987.000000,100.000,67.2100,active
+631,[MAPPED] Oikos - Yogurt Plain Greek Non-Fat,Dairy Products,46.9500,Case,,,,46.9500,inactive
+632,[MAPPED] Papetti'S - Egg Patty Fully Cooked,Protein RTE,44.7900,Case,,,,44.7900,inactive
+633,Pillsbury - Dough Roll Cinnamon Twirl,Bakery,98.6500,case 100 units,unit,100.000000,100.000,98.6500,active
+634,[MAPPED] Portico - Salmon Atlantic Smoked Sliced Fillet Usa,Protein RTE,84.2500,Case,,,,84.2500,inactive
+635,Sugar In The Raw - Sugar Turbinado,Ingredients,34.6200,case 1200 units x 4.5 g,unit,1200.000000,100.000,34.6200,active
+636,Sweet Plus - Sugar Substitute Packet Yellow,Ingredients,36.7900,Case 2000 units,unit,2000.000000,100.000,36.7900,active
+637,Sysco Classic - Film Pvc Chloride Roll 2000 Feet Slide Cutter,Cleaning Supplies,20.5700,Case,,,,20.5700,inactive
+638,Sysco Classic - Glove Nitrile Foodservice Powder-Free Black Large,Cleaning Supplies,84.7500,Case,,,,84.7500,inactive
+639,Sysco Classic - Glove Nitrile Foodservice Powder-Free Black Medium,Cleaning Supplies,84.7500,Case,,,,84.7500,inactive
+640,Sysco Classic - Liner Trash 24 Inch X 32 Inch 0.35 Mil Black Linear Low-Density Polyethylene (Lldpe),Cleaning Supplies,33.6500,Case,,,,33.6500,inactive
+641,Sysco Classic - Liner Trash 38 Inch X 58 Inch 0.9 Mil Black Linear Low-Density Polyethylene (Lldpe),Cleaning Supplies,46.9500,Case,,,,46.9500,inactive
+642,Sysco Classic - Spice - Cinnamon Ground,Ingredients,10.2300,Case,,,,10.2300,active
+643,[MAPPED] Sysco Classic - Turkey Burger Savory White,Protein RTE,64.8500,Case,,,,64.8500,inactive
+644,"Sysco Supplies - Pad Scour Green 6"" X 9"" Antimicrobial",Cleaning Supplies,13.6500,Case,,,,13.6500,active
+645,[MAPPED] Trois Petits - Egg Bite Wtny Chs Canadian Bcn,Protein RTE,36.0600,Case,,,,36.0600,inactive
+646,[MAPPED] Tropical - Coconut Flake Sweetened,Ingredients,40.8400,Case,,,,40.8400,inactive
+647,[MAPPED] Wholesome Farms - Cream Heavy 40%,Dairy Products,50.8700,Case,,,,50.8700,inactive
+648,Wholesome Farms - Creamer Half & Half,Dairy Products,56.8900,Case 12 × 32 oz,oz,384.000000,100.000,56.8900,active
+649,Wholesome Farms - Creamer Half And Half Portion Control Aseptic,Dairy Products,31.8500,Case 384 units,unit,384.000000,100.000,31.8500,active
+650,Wholesome Farms - Milk - Skim Fat Free,Dairy Products,13.9900,case 25 x 8 oz,oz,200.000000,100.000,13.9900,active
+651,[MAPPED] A'Siciliana - Limonata Soda Can 11 Oz,resale_beverage,31.2000,case,None,24.000000,100.000,31.2000,inactive
+652,A'Siciliana - Mandarin Soda Can 11 Oz,Beverages,31.2000,case,unit,24.000000,100.000,31.2000,active
+653,"[MAPPED] Bindi - Cake - Tres Leches (4,4Oz.)",Bakery - Bindi (TOI),33.3400,case,,,,33.3400,inactive
+654,[MAPPED] Sammy'S - Bagel - Everything,Bakery,27.0000,case,,,,27.0000,inactive
+655,[MAPPED] Sammy'S - Bagel - Plain,Bakery,18.0000,case,,,,18.0000,inactive
+656,Sammy'S - Cake - Lemon Pound,Bakery,7.4700,case 3 units,units,3.000000,100.000,7.4700,active
+657,[MAPPED] Sammy'S - Cinnamon Bunn,Bakery,27.4800,case,,,,27.4800,inactive
+658,[MAPPED] Sammy'S - Danish - Apple,Bakery,6.8700,case,,,,6.8700,inactive
+659,[MAPPED] Sammy'S - Danish - Cheese,Bakery,27.4800,case,,,,27.4800,inactive
+660,[MAPPED] Sammy'S - Danish - Cherry,Bakery,13.7400,case,,,,13.7400,inactive
+661,[MAPPED] Sammy'S - Scone - Blueberry,Bakery,5.3800,case,,,,5.3800,inactive

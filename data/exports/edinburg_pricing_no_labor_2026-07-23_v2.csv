@@ -1,0 +1,231 @@
+product;size;cost_usd_no_labor;Price on POS;Markup;Gross margin
+A Siciliana Aranciata;Standard;1,04;3,95;279,8076923;26,32911392
+A Siciliana Limonata;Standard;1,3;3,95;203,8461538;32,91139241
+A Siciliana Mandarino;Standard;1,3;3,95;203,8461538;32,91139241
+A Siciliana Melograno;Standard;1,64;3,95;140,8536585;41,51898734
+Acqua Panna;Standard;1,54;3,95;156,4935065;38,98734177
+Affogato;Standard;0,77;5,55;620,7792208;13,87387387
+All Butter Croissant;Standard;1,02;4,85;375,4901961;21,03092784
+Almond Croissant;Standard;1,13;5,2;360,1769912;21,73076923
+Apple Butter Danish;Standard;1,54;6,4;315,5844156;24,0625
+Apple Juice;Standard;3,07;5;62,86644951;61,4
+Apple Square Danish;Standard;0,11;2,15;1854,545455;5,11627907
+Apple Tropicana Juice;Standard;1,3;3,25;150;40
+Banana Nut Muffin;Standard;1,24;5,5;343,5483871;22,54545455
+Berries and Cream Twist Danish;Standard;1,79;7,15;299,4413408;25,03496503
+Black River Pear Juice;Standard;2,5;3,95;58;63,29113924
+Blueberry Cheesecake Danish;Standard;1,21;5,45;350,4132231;22,20183486
+Blueberry Scone;Standard;0,45;3,15;600;14,28571429
+Boba Tea Coconutty;16 Oz;1,7;5,95;250;28,57142857
+Boba Tea Coconutty;20 Oz;2,08;6,95;234,1346154;29,92805755
+Boba Tea Coconutty;24 Oz;2,46;5;103,2520325;49,2
+Boba Tea Espresso Rose;16 Oz;1,22;5,95;387,704918;20,50420168
+Boba Tea Espresso Rose;20 Oz;1,37;6,95;407,2992701;19,71223022
+Boba Tea Espresso Rose;24 Oz;1,52;5;228,9473684;30,4
+Boba Tea Pure Matcha;16 Oz;6,11;5;-18,16693944;122,2
+Boba Tea Pure Matcha;20 Oz;7,55;6,95;-7,947019868;108,6330935
+Boba Tea Pure Matcha;24 Oz;9;5,95;-33,88888889;151,2605042
+Bundaberg Ginger Beer;Standard;1,5;3,65;143,3333333;41,09589041
+Cacao Muffin;Standard;1,69;6,85;305,3254438;24,67153285
+Caffe Americano;16 Oz;2;4,25;112,5;47,05882353
+Caffe Americano;20 Oz;2,5;4,45;78;56,17977528
+Caffe Americano;24 Oz;3;5,05;68,33333333;59,40594059
+Caffe Au Lait;16 Oz;1,58;3,25;105,6962025;48,61538462
+Caffe Au Lait;20 Oz;1,97;3,65;85,27918782;53,97260274
+Caffe Au Lait;24 Oz;2,36;4,05;71,61016949;58,27160494
+Caffe Latte;16 Oz;1,27;4,95;289,7637795;25,65656566
+Caffe Latte;20 Oz;1,59;5,45;242,7672956;29,17431193
+Caffe Latte;24 Oz;1,9;5,85;207,8947368;32,47863248
+Cake Torta Nocciola;Standard;3,5;8,25;135,7142857;42,42424242
+Cappuccino;16 Oz;1,03;5,25;409,7087379;19,61904762
+Cappuccino;20 Oz;1,28;5,65;341,40625;22,65486726
+Cappuccino;24 Oz;1,54;6,25;305,8441558;24,64
+Cappuccino Cake;Standard;3,12;7,95;154,8076923;39,24528302
+Cappuccino Foam;Standard;0,11;0;-100;#DIV/0!
+Carrot Cake;Standard;3,01;7,25;140,8637874;41,51724138
+Cheddar and Crisp Sandwich;Standard;2,03;6,95;242,364532;29,20863309
+Cheese Danish;Standard;2,29;8,65;277,7292576;26,47398844
+Cheese Square Danish;Standard;1,71;6,95;306,4327485;24,60431655
+Cherry Greek Yogurt Danish;Standard;1,34;3,95;194,7761194;33,92405063
+Chocolate Chip Cookie;Standard;1;0;-100;#DIV/0!
+Chocolate Chip Muffin;Standard;1,27;6,95;447,2440945;18,27338129
+Chocolate Croissant;Standard;1,28;3,25;153,90625;39,38461538
+Chocolate Eclair;Standard;2,04;4,45;118,1372549;45,84269663
+Chocolate Fondant Cake;Standard;3,06;8,85;189,2156863;34,57627119
+Chocolate Ganache Cheesecake;Standard;2,64;6,55;148,1060606;40,30534351
+Chocolate Temptation Cake;Standard;3,52;9,45;168,4659091;37,24867725
+Cinnamon Raisin Bagel;Standard;0,75;2,95;293,3333333;25,42372881
+Cinnamon Roll;Standard;2,45;4,45;81,63265306;55,05617978
+Coffee Eclair;Standard;2,04;4,45;118,1372549;45,84269663
+Cold Brew;16 Oz;2,68;5,95;122,0149254;45,04201681
+Cold Brew;20 Oz;2,76;6,45;133,6956522;42,79069767
+Cold Brew;24 Oz;2,85;6,95;143,8596491;41,00719424
+Cold Brew Coco Choc;16 Oz;2,99;5,95;98,99665552;50,25210084
+Cold Brew Coco Choc;20 Oz;3,15;6,45;104,7619048;48,8372093
+Cold Brew Coco Choc;24 Oz;3,32;6,95;109,3373494;47,76978417
+Cold Brew Coco Choc Nitro;16 Oz;1,91;5,95;211,5183246;32,10084034
+Cold Brew Coco Choc Nitro;20 Oz;2,08;6,45;210,0961538;32,24806202
+Cold Brew Coco Choc Nitro;24 Oz;2,24;6,95;210,2678571;32,23021583
+Cold Brew Nitro;16 Oz;1,6;5,95;271,875;26,8907563
+Cold Brew Nitro;20 Oz;1,69;6,45;281,6568047;26,20155039
+Cold Brew Nitro;24 Oz;1,77;6,95;292,6553672;25,4676259
+Cold Brew Nutty Nitro;16 Oz;1,48;5,95;302,027027;24,87394958
+Cold Brew Nutty Nitro;20 Oz;1,53;6,45;321,5686275;23,72093023
+Cold Brew Nutty Nitro;24 Oz;1,59;6,95;337,1069182;22,87769784
+Cold Foam Coconut;Standard;0,86;0;-100;#DIV/0!
+Doughnut Croissant;Standard;1,76;4,45;152,8409091;39,5505618
+Drip Coffee;16 Oz;2,85;2,95;3,50877193;96,61016949
+Drip Coffee;20 Oz;3,56;3,45;-3,08988764;103,1884058
+Drip Coffee;24 Oz;4,27;3,85;-9,836065574;110,9090909
+Dulce de Leche Cheesecake;Standard;2,59;6,35;145,1737452;40,78740157
+Energy Drink Celsius Artic Vibe;Standard;2,4;3,45;43,75;69,56521739
+Energy Drink Celsius Kiwi Giava;Standard;1,92;3,45;79,6875;55,65217391
+Energy Drink Celsius Mango Lemonade;Standard;2,39;3,45;44,35146444;69,27536232
+Energy Drink Celsius Orange;Standard;2,4;3,45;43,75;69,56521739
+Energy Drink Celsius Peach Vibe;Standard;2,39;3,35;40,16736402;71,34328358
+Energy Drink Celsius Tropical Vibe;Standard;2,4;3,35;39,58333333;71,64179104
+Energy Drink Celsius Watermelon;Standard;1,92;3,35;74,47916667;57,31343284
+Energy Drink Celsius Wildberry;Standard;2,23;3,45;54,70852018;64,63768116
+Energy Drink Celsuis Strawberry Lemonade;Standard;2,39;3,35;40,16736402;71,34328358
+Espresso;4 Oz;0,22;2,95;1240,909091;7,457627119
+Everything Bagel;Standard;0,56;2,95;426,7857143;18,98305085
+Five Star Apple Juice;Standard;3;4,95;65;60,60606061
+Five Star Cranberry Juice;Standard;3;4,95;65;60,60606061
+Five Star Orange Juice;Standard;3;4,95;65;60,60606061
+Five Star Pineapple Juice;Standard;3;4,95;65;60,60606061
+Flat White;16 Oz;0,64;4,85;657,8125;13,19587629
+Flavored Water Mango Pineapple Splash;Standard;1,5;3,95;163,3333333;37,97468354
+Frappe Italian Coffee;16 Oz;1,9;6,25;228,9473684;30,4
+Frappe Italian Coffee;20 Oz;2,24;6,65;196,875;33,68421053
+Frappe Italian Coffee;24 Oz;2,58;7,05;173,255814;36,59574468
+Frappe Italian Mocha;16 Oz;1,43;6,25;337,0629371;22,88
+Frappe Italian Mocha;20 Oz;1,7;6,65;291,1764706;25,56390977
+Frappe Italian Mocha;24 Oz;1,97;7,05;257,8680203;27,94326241
+Frappe Italian Strawberry;16 Oz;1,41;6,25;343,2624113;22,56
+Frappe Italian Strawberry;20 Oz;1,67;6,65;298,2035928;25,11278195
+Frappe Italian Strawberry;24 Oz;1,94;7,05;263,4020619;27,5177305
+Gelato;Standard;1,84;0;-100;#DIV/0!
+Gelato Cremato Cookies and Cream;16 Oz;5,76;7,95;38,02083333;72,45283019
+Gelato Cremato Cookies and Cream;20 Oz;7,16;8,95;25;80
+Gelato Cremato Cookies and Cream;24 Oz;8,55;9,95;16,37426901;85,92964824
+Gelato Cremato di Matcha;16 Oz;5,77;7,95;37,78162912;72,57861635
+Gelato Cremato di Matcha;20 Oz;7,06;8,95;26,77053824;78,88268156
+Gelato Cremato di Matcha;24 Oz;8,35;9,95;19,16167665;83,91959799
+Gelato Cremato di Mocha;16 Oz;5,05;8,95;77,22772277;56,42458101
+Gelato Cremato di Mocha;20 Oz;6,22;9,95;59,96784566;62,51256281
+Gelato Cremato di Mocha;24 Oz;7,39;7,95;7,577807848;92,95597484
+Glazed Apricot Croissant;Standard;1,14;3,25;185,0877193;35,07692308
+Guava Danish;Standard;0,6;3,95;558,3333333;15,18987342
+Hot Chocolate;16 Oz;0,9;4,25;372,2222222;21,17647059
+Hot Chocolate;20 Oz;1,14;4,65;307,8947368;24,51612903
+Hot Chocolate;24 Oz;1,38;5,05;265,942029;27,32673267
+Hot Tea;16 Oz;2,31;3,95;70,995671;58,48101266
+Hot Tea;20 Oz;2,89;4,45;53,97923875;64,94382022
+Hot Tea;24 Oz;3,47;4,95;42,65129683;70,1010101
+Ice Cubes;Standard;0,15;0,4;166,6666667;37,5
+Iced Caffe Americano;16 Oz;2,33;4,25;82,40343348;54,82352941
+Iced Caffe Americano;20 Oz;2,88;4,45;54,51388889;64,71910112
+Iced Caffe Americano;24 Oz;3,42;5,05;47,66081871;67,72277228
+Iced Cappuccino;16 Oz;1,16;5,25;352,5862069;22,0952381
+Iced Cappuccino;20 Oz;1,39;5,65;306,4748201;24,60176991
+Iced Cappuccino;24 Oz;1,63;6,25;283,4355828;26,08
+Iced Latte;16 Oz;1,24;4,95;299,1935484;25,05050505
+Iced Latte;20 Oz;1,55;5,45;251,6129032;28,44036697
+Iced Latte;24 Oz;1,86;5,85;214,516129;31,79487179
+Iced Latte Chai Tea;16 Oz;0,82;5,25;540,2439024;15,61904762
+Iced Latte Chai Tea;20 Oz;0,99;5,65;470,7070707;17,52212389
+Iced Latte Chai Tea;24 Oz;1,16;6,05;421,5517241;19,17355372
+Iced Latte Coconut;16 Oz;1,44;6,45;347,9166667;22,3255814
+Iced Latte Coconut;20 Oz;1,69;7,45;340,8284024;22,68456376
+Iced Latte Coconut;24 Oz;1,93;7,95;311,9170984;24,27672956
+Iced Latte Macchiato;16 Oz;1,24;5,55;347,5806452;22,34234234
+Iced Latte Macchiato;20 Oz;1,52;6,15;304,6052632;24,71544715
+Iced Latte Macchiato;24 Oz;1,79;6,55;265,9217877;27,32824427
+Iced Latte Matcha;16 Oz;6,19;4,95;-20,03231018;125,0505051
+Iced Latte Matcha;20 Oz;7,63;5,45;-28,57142857;140
+Iced Latte Matcha;24 Oz;9,07;5,85;-35,5016538;155,042735
+Iced Matcha Coconut;16 Oz;4,74;5,95;25,52742616;79,66386555
+Iced Matcha Coconut;20 Oz;5,74;6,95;21,08013937;82,58992806
+Iced Matcha Coconut;24 Oz;6,74;7,45;10,53412463;90,46979866
+Iced Mocha;16 Oz;1,43;5,75;302,0979021;24,86956522
+Iced Mocha;20 Oz;1,71;6,15;259,6491228;27,80487805
+Iced Mocha;24 Oz;1,99;7,95;299,4974874;25,03144654
+Italian Rustic Sandwich;Standard;2,07;7,25;250,2415459;28,55172414
+Latte Chai Tea;16 Oz;0,81;5,25;548,1481481;15,42857143
+Latte Chai Tea;20 Oz;1,01;5,65;459,4059406;17,87610619
+Latte Chai Tea;24 Oz;1,21;6,05;400;20
+Latte Macchiato;16 Oz;1,27;5,55;337,007874;22,88288288
+Latte Macchiato;20 Oz;1,59;6,15;286,7924528;25,85365854
+Latte Macchiato;24 Oz;1,9;6,55;244,7368421;29,00763359
+Latte Matcha;16 Oz;6,35;4,95;-22,04724409;128,2828283
+Latte Matcha;20 Oz;7,86;5,45;-30,66157761;144,2201835
+Latte Matcha;24 Oz;9,37;5,85;-37,56670224;160,1709402
+Leek and Parmesan Danish;Standard;1,92;4,95;157,8125;38,78787879
+Lemon Danish;Standard;1,08;3,25;200,9259259;33,23076923
+Macarons French;Standard;3,36;2,95;-12,20238095;113,8983051
+Maple Pecan Danish;Standard;1,4;4,95;253,5714286;28,28282828
+Mini Dutch Pancakes;Standard;3,47;7,95;129,1066282;43,64779874
+Mocha;16 Oz;1,38;5,75;316,6666667;24
+Mocha;20 Oz;1,68;6,15;266,0714286;27,31707317
+Mocha;24 Oz;1,98;6,55;230,8080808;30,22900763
+Natalie's Pineapple Cucumber and Celery;Standard;5;4,95;-1;101,010101
+Orange Tropicana Juice;Standard;5,5;3,25;-40,90909091;169,2307692
+Pesto Pomodoro Sandwich;Standard;3,41;11,95;250,4398827;28,53556485
+Pinsa Perfetta;Standard;7,49;7,95;6,141522029;94,21383648
+Pistachio Cheesecake;Standard;2,51;6,35;152,9880478;39,52755906
+Pistachio Croissant;Standard;1,13;3,25;187,6106195;34,76923077
+Pistachio Muffin;Standard;1,69;5;195,8579882;33,8
+Plain Bagel;Standard;0,38;2,95;676,3157895;12,88135593
+Prosciutto Royale Sandwich;Standard;4,36;9,95;128,2110092;43,81909548
+Qargo Classic Sandwich;Standard;1,98;6,95;251,010101;28,48920863
+Raspberry Cream Cheese Danish;Standard;1,03;4,95;380,5825243;20,80808081
+Red Velvet Cake;Standard;2,46;6,75;174,3902439;36,44444444
+Ricotta and Pistachio Cake;Standard;3,41;8,95;162,4633431;38,10055866
+Salmone Fresco Sandwich;Standard;11,2;14,95;33,48214286;74,91638796
+Salmone Mattina Sandwich;Standard;5,31;12,95;143,8794727;41,003861
+San Pellegrino;Standard;1,04;3,45;231,7307692;30,14492754
+San Pellegrino Aranciata;Standard;1,04;3,95;279,8076923;26,32911392
+San Pellegrino Ciao Lime;Standard;0,16;2,95;1743,75;5,423728814
+San Pellegrino Limonata;Standard;1,04;3,95;279,8076923;26,32911392
+Sandwich Caprese al Croissant;Standard;2,76;9,95;260,5072464;27,73869347
+Seasoning Mix;Standard;3,44;0;-100;#DIV/0!
+Simply Orange Juice;Standard;5,5;3,45;-37,27272727;159,4202899
+Smoothie Berry Burst Fussion;16 Oz;2,2;6,65;202,2727273;33,08270677
+Smoothie Berry Burst Fussion;20 Oz;2,57;7,25;182,1011673;35,44827586
+Smoothie Berry Burst Fussion;24 Oz;2,93;7,65;161,0921502;38,30065359
+Smoothie Mango Dreamsicle;16 Oz;2,2;6,65;202,2727273;33,08270677
+Smoothie Mango Dreamsicle;20 Oz;2,57;7,25;182,1011673;35,44827586
+Smoothie Mango Dreamsicle;24 Oz;2,94;7,65;160,2040816;38,43137255
+Smoothie Pina Coco Lada;16 Oz;2,34;5,65;141,4529915;41,4159292
+Smoothie Pina Coco Lada;20 Oz;2,75;7,25;163,6363636;37,93103448
+Smoothie Pina Coco Lada;24 Oz;3,15;7,65;142,8571429;41,17647059
+Soda Mango Colada;16 Oz;1,26;5,95;372,2222222;21,17647059
+Soda Mango Colada;20 Oz;1,48;6,95;369,5945946;21,29496403
+Soda Mango Colada;24 Oz;1,7;7,45;338,2352941;22,81879195
+Soda Mother of Dragons;16 Oz;1,09;5,95;445,8715596;18,31932773
+Soda Mother of Dragons;20 Oz;1,27;6,95;447,2440945;18,27338129
+Soda Mother of Dragons;24 Oz;1,44;7,45;417,3611111;19,32885906
+Soda Strawberries and Cream;16 Oz;1,27;5,95;368,503937;21,34453782
+Soda Strawberries and Cream;20 Oz;1,45;6,95;379,3103448;20,86330935
+Soda Strawberries and Cream;24 Oz;1,64;7,45;354,2682927;22,01342282
+Soda Watermelon Cooler;16 Oz;1,12;5,95;431,25;18,82352941
+Soda Watermelon Cooler;20 Oz;1,3;6,95;434,6153846;18,70503597
+Soda Watermelon Cooler;24 Oz;1,49;7,45;400;20
+Spinach and Feta Danish;Standard;2,07;4,95;139,1304348;41,81818182
+Spinach Kale and Cheese Croissant;Standard;1,3;4,95;280,7692308;26,26262626
+Strawberry Cheesecake;Standard;2,67;6,95;160,2996255;38,41726619
+Strawberry Danish;Standard;1,37;4,95;261,3138686;27,67676768
+Stroopwafel;Standard;1,25;1,75;40;71,42857143
+Tart Mixed Berry;Standard;3,77;8,55;126,7904509;44,09356725
+Tiramisu;Standard;2,28;9,95;336,4035088;22,91457286
+Tiramisu With Ladyfingers;Standard;3,08;5;62,33766234;61,6
+Tomato and Olive Danish;Standard;2,07;4,95;139,1304348;41,81818182
+Tres Leches Cake;Standard;2,11;5,45;158,2938389;38,71559633
+Turkey Bacon al Fresco Sandwich;Standard;2,21;11,95;440,7239819;18,49372385
+Turkey Bacon Classico Sandwich;Standard;9,6;11,5;19,79166667;83,47826087
+Turkey Bacon Formaggio Sandwich;Standard;9,51;11,95;25,65720294;79,58158996
+Vanilla Eclair;Standard;2,04;4,45;118,1372549;45,84269663
+Veggie Caprese Sandwich;Standard;2,63;6,95;164,2585551;37,84172662
+Waffles Belgian;Standard;5,27;7,95;50,85388994;66,28930818
+Waffles Birthday Cake;Standard;1,2;7,95;562,5;15,09433962
+Water Bottle Smart;Standard;0,95;2,5;163,1578947;38

@@ -1,0 +1,37 @@
+=== BULK IMPORT (LIVE) — 2026-07-17 16:51:27 ===
+Source: data/exports/ingredients_final_2026-07-17.csv
+Total rows in CSV: 585
+Rows processed: 317
+Rows skipped (inactive): 260
+Rows skipped (warnings): 6
+
+Changes applied:
+  - name updated: 132
+  - purchase_price updated: 4
+  - purchase_unit updated: 142
+  - usage_unit updated: 96
+  - conversion_factor updated: 90
+  - yield_percentage updated: 6
+  - current_price updated (via history): 6
+
+Warnings:
+  - id=375: name 'Caramel Sugar Free Syrup' already exists for id=313 -> SKIPPED
+  - id=378: name 'Lavender Syrup' already exists for id=317 -> SKIPPED
+  - id=380: name 'Pistachio Syrup' already exists for id=318 -> SKIPPED
+  - id=381: name 'Pure Cane Syrup' already exists for id=319 -> SKIPPED
+  - id=473: name 'Turnover Apple' already exists for id=450 -> SKIPPED
+  - id=620: name 'Sweet Ground Chocolate & Cocoa Powder' already exists for id=617 -> SKIPPED
+
+Errors: 2
+  - id=64: (psycopg2.OperationalError) connection to server at "aws-1-us-west-2.pooler.supabase.com" (34.215.156.231), port 6543 failed: could not receive data from server: Connection timed out
+SSL SYSCALL error: Connection timed out
+
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+  - id=96: (psycopg2.OperationalError) server closed the connection unexpectedly
+	This probably means the server terminated abnormally
+	before or while processing the request.
+server closed the connection unexpectedly
+	This probably means the server terminated abnormally
+	before or while processing the request.
+
+(Background on this error at: https://sqlalche.me/e/20/e3q8)

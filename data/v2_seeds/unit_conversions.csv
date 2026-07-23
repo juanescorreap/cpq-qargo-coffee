@@ -1,0 +1,40 @@
+from_unit,to_unit,factor,notes
+drizzle,fl oz,0.4734,Drizzle = 14g (DB) → 0.4734 fl oz (recalculado tras fix usage_unit)
+drop,fl oz,0.0015,Drop = 0.045g (DB) → 0.0015 fl oz (recalculado tras fix usage_unit)
+handful,oz,1.0582,Handful arugula ≈ 30g (Fermi); note: typo in recipes → 1.0582 oz (recalculado tras fix usage_unit)
+leaf,oz,0.0176,Basil leaf = 0.5g (DB) → 0.0176 oz (recalculado tras fix usage_unit)
+oz,unit,0.333333,oz → scoop (1 scoop = 3 fl oz → 1 oz = 0.3333 scoops)
+pump,fl oz,0.2367,Chai pump = 7g → 0.2367 fl oz (recalculado tras fix usage_unit)
+pump,fl oz,0.2367,Monin pump = 7g → 0.2367 fl oz (recalculado tras fix usage_unit)
+pump,fl oz,0.2367,Puree pump = 7g → 0.2367 fl oz (recalculado tras fix usage_unit)
+pump,fl oz,0.4734,Sauce pump = 14g → 0.4734 fl oz (recalculado tras fix usage_unit)
+pump,fl oz,0.9468,Lotus pump = 28g → 0.9468 fl oz (recalculado tras fix usage_unit)
+pump,oz,0.0353,1-sec aerosol spray; 482g can ÷ ~500 sprays ≈ 1g → 0.0353 oz (recalculado tras fix usage_unit)
+rosette,oz,0.9877,rosette → oz (28g ÷ 28.3495)
+scoop,fl oz,0.9468,Greek Yogurt Scoop = 28g (DB) → 0.9468 fl oz (recalculado tras fix usage_unit)
+scoop,oz,0.4233,Chocolate Powder Scoop = 12g (DB) → 0.4233 oz (recalculado tras fix usage_unit)
+scoop,oz,0.4938,Protein Scoop = 14g (DB) → 0.4938 oz (recalculado tras fix usage_unit)
+scoop,oz,0.4938,Taro Scoop = 14g (DB) → 0.4938 oz (recalculado tras fix usage_unit)
+scoop,oz,0.4938,Topping scoop ~30ml × 0.5g/ml = 14g (Fermi) → 0.4938 oz (recalculado tras fix usage_unit)
+scoop,oz,0.493836,scoop → oz (14g ÷ 28.3495)
+scoop,oz,0.9877,Topping scoop ~60ml × 0.45g/ml = 28g (Fermi) → 0.9877 oz (recalculado tras fix usage_unit)
+scoop,oz,1.481508,scoop → oz (42g ÷ 28.3495)
+shot,oz,0.2469,7g ground coffee per espresso shot (standard barista dose) → 0.2469 oz (recalculado tras fix usage_unit)
+slice,oz,1.0582,Premium lox slice: 2 slices/portion ≈ 60g → 30g (Fermi) → 1.0582 oz (recalculado tras fix usage_unit)
+slice,oz,1.5873,Grilled breast 140g ÷ 3 slices ≈ 45g (Fermi) → 1.5873 oz (recalculado tras fix usage_unit)
+sprinkle,oz,0.1058,Sprinkle = 3g (DB) → 0.1058 oz (recalculado tras fix usage_unit; nota original ya inconsistente con lb previo)
+sprinkle,oz,0.1058,Sprinkle = 3g (DB) → 0.1058 oz (recalculado tras fix usage_unit)
+tablespoon,fl oz,0.4734,Tablespoon = 14g (DB) → 0.4734 fl oz (recalculado tras fix usage_unit)
+tablespoon,oz,0.4938,Tablespoon = 14g (DB) → 0.4938 oz (recalculado tras fix usage_unit)
+tablespoon,oz,0.493836,tablespoon → oz (14g ÷ 28.3495)
+tablespoon,unit,0.15,"tablespoon → unit (30g per tbsp, ~200g per avocado)"
+tablespoon,unit,14.0,Tablespoon = 14g (DB)
+fl oz,fl oz,1.0,identity
+oz,oz,1.0,identity
+unit,unit,1.0,identity
+ml,fl oz,0.033814,standard physical
+g,oz,0.035274,standard physical
+L,fl oz,33.814,standard physical
+kg,oz,35.274,standard physical
+lb,oz,16.0,standard physical
+gal,fl oz,128.0,standard physical

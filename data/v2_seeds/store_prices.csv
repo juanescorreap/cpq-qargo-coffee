@@ -1,0 +1,413 @@
+ingredient_id,ingredient_name,price,currency_code,source,updated_at
+1,Milk,5.2000,USD,v1_migration,2026-07-20 06:07:56.077154+00:00
+2,Almond Milk,35.5400,USD,v1_migration,2026-07-20 06:07:31.351340+00:00
+3,Coconut Milk,38.5000,USD,v1_migration,2026-07-20 06:06:00.583453+00:00
+4,Cream Cheese,49.1800,USD,v1_migration,2026-07-20 06:06:01.440520+00:00
+5,Cheese Cheddar Sliced,41.6500,USD,v1_migration,2026-07-15 16:06:38.021512+00:00
+6,Cheese Mozzarella Sliced,44.9500,USD,v1_migration,2026-07-20 06:04:16.887561+00:00
+7,Crumbled Blue Cheese,37.7500,USD,v1_migration,2026-07-17 21:19:19.590369+00:00
+8,Greek Yogurt,94.6600,USD,v1_migration,2026-07-20 06:06:30.380913+00:00
+9,Vanilla Gelato,222.9700,USD,v1_migration,2026-07-21 20:34:11.453035+00:00
+10,Chocolate Gelato,204.1600,USD,v1_migration,2026-07-21 20:35:39.398825+00:00
+11,Coconut Flakes,8.3900,USD,v1_migration,2026-07-17 21:19:24.659589+00:00
+12,Cold Brew,70.4000,USD,v1_migration,2026-07-20 06:05:06.412713+00:00
+13,Brewed Coffee,7.9300,USD,v1_migration,2026-07-17 21:19:27.294689+00:00
+14,Nitro Cold Brew,36.0000,USD,v1_migration,2026-07-17 21:19:28.569257+00:00
+15,Chai Tea Concentrate,6.7500,USD,v1_migration,2026-07-17 21:19:29.856554+00:00
+16,Tea Bag,32.3600,USD,v1_migration,2026-07-20 06:05:06.788708+00:00
+17,Green Tea,32.4000,USD,v1_migration,2026-07-16 17:28:48.698083+00:00
+18,Matcha,491.0000,USD,v1_migration,2026-07-20 06:00:02.616675+00:00
+19,Vanilla Syrup,11.9900,USD,v1_migration,2026-07-21 16:57:34.229279+00:00
+20,Rose Syrup,6.7400,USD,v1_migration,2026-07-17 21:19:36.274756+00:00
+21,Coconut Syrup,6.7500,USD,v1_migration,2026-07-20 06:04:52.534770+00:00
+22,Hazelnut Syrup,6.7500,USD,v1_migration,2026-07-20 06:04:53.851524+00:00
+23,Dragon Fruit Syrup,6.7500,USD,v1_migration,2026-07-20 06:04:53.000580+00:00
+24,White Lotus,29.7100,USD,v1_migration,2026-07-17 21:19:41.478648+00:00
+25,Strawberry Fruit Fusion,19.0000,USD,v1_migration,2026-07-17 21:19:42.762880+00:00
+26,Blue Raspberry Fruit Fusion,19.0000,USD,v1_migration,2026-07-17 21:19:44.052731+00:00
+27,Mango Passion Fruit Fusion,19.0000,USD,v1_migration,2026-07-17 21:19:45.355427+00:00
+28,Pina Colada Fruit Fusion,19.0000,USD,v1_migration,2026-07-17 21:19:46.648217+00:00
+29,Watermelon Fruit Fusion,19.0000,USD,v1_migration,2026-07-17 21:19:47.990271+00:00
+30,Orange Creamsicle Fruit Fusion,19.0000,USD,v1_migration,2026-07-17 21:19:49.299546+00:00
+31,Cream Base,19.9900,USD,v1_migration,2026-07-17 21:19:50.588731+00:00
+32,Strawberry Fruit Puree,15.0000,USD,v1_migration,2026-07-20 06:04:55.409503+00:00
+33,Chocolate Sauce,23.4900,USD,v1_migration,2026-07-17 21:19:53.194936+00:00
+34,Pesto,60.0900,USD,v1_migration,2026-07-20 06:04:01.234397+00:00
+35,Mustard,29.0000,USD,v1_migration,2026-07-17 21:19:55.775257+00:00
+36,Mayonnaise,42.7300,USD,v1_migration,2026-07-17 21:19:57.065679+00:00
+37,Balsamic Vinegar,21.1400,USD,v1_migration,2026-07-17 21:19:58.338908+00:00
+38,Lemon Juice,32.2500,USD,v1_migration,2026-07-17 21:19:59.614539+00:00
+39,Olive Oil,59.9500,USD,v1_migration,2026-07-17 21:20:00.910467+00:00
+40,Vanilla Powder,26.9900,USD,v1_migration,2026-07-17 21:20:02.206770+00:00
+41,Chocolate Powder,20.2100,USD,v1_migration,2026-07-17 21:20:03.506648+00:00
+42,Taro Powder,18.4900,USD,v1_migration,2026-07-17 21:20:04.799772+00:00
+43,Icing Sugar,22.4900,USD,v1_migration,2026-07-17 21:20:06.105102+00:00
+44,Whey Protein,89.7500,USD,v1_migration,2026-07-17 21:20:07.381299+00:00
+45,Tapioca Pearls,65.4900,USD,v1_migration,2026-07-13 21:58:54.326987+00:00
+46,Crushed Oreo,6.9900,USD,v1_migration,2026-07-17 21:20:09.822448+00:00
+47,Honey Oat Granola,19.4900,USD,v1_migration,2026-07-17 21:20:11.244477+00:00
+48,Chia Seeds,37.4900,USD,v1_migration,2026-07-17 21:20:12.743639+00:00
+49,Cooking Spray,5.7900,USD,v1_migration,2026-07-17 21:20:14.265987+00:00
+50,Orange Food Coloring,10.4900,USD,v1_migration,2026-07-17 21:20:15.766744+00:00
+51,Seasoning Mix,3.5200,USD,v1_migration,2026-07-17 21:20:17.288105+00:00
+52,Water,19.0000,USD,v1_migration,2026-07-20 06:07:54.214038+00:00
+53,Club Soda,17.9500,USD,v1_migration,2026-07-17 21:20:20.293204+00:00
+54,Arugula,21.8000,USD,v1_migration,2026-07-17 21:20:21.777446+00:00
+55,Sliced Tomato,26.0400,USD,v1_migration,2026-07-17 21:20:23.266077+00:00
+56,Basil,7.3400,USD,v1_migration,2026-07-17 21:20:24.748509+00:00
+57,Avocado,33.7500,USD,v1_migration,2026-07-20 06:06:21.875447+00:00
+58,Dried Oregano,11.4900,USD,v1_migration,2026-07-17 21:20:27.677108+00:00
+59,Capers,5.9100,USD,v1_migration,2026-07-17 21:20:29.168005+00:00
+60,Sliced Pickles,10.7400,USD,v1_migration,2026-07-20 06:05:33.098976+00:00
+61,Scrambled Egg Patty,51.8900,USD,v1_migration,2026-07-20 06:06:01.020431+00:00
+62,Turkey Bacon,55.7500,USD,v1_migration,2026-07-20 06:05:36.921577+00:00
+63,Turkey Sausage Patty,54.5500,USD,v1_migration,2026-07-21 19:48:14.353520+00:00
+64,Smoked Salmon,84.2800,USD,v1_migration,2026-07-17 22:05:44.848747+00:00
+65,Chicken Breast Grilled,9.5000,USD,v1_migration,2026-07-17 21:38:00.592863+00:00
+66,Proscuitto,50.6500,USD,v1_migration,2026-07-21 16:43:39.594516+00:00
+67,Bread,24.9400,USD,v1_migration,2026-07-15 15:27:22.673302+00:00
+68,Focaccia,63.9600,USD,v1_migration,2026-07-20 06:04:21.160747+00:00
+69,Pinsa,81.3900,USD,v1_migration,2026-07-20 06:07:39.894052+00:00
+70,Pinsa Margherita,64.2000,USD,v1_migration,2026-07-16 22:17:52.544978+00:00
+71,Plain Bagel,18.0000,USD,v1_migration,2026-07-20 06:06:04.907762+00:00
+72,Everything Bagel,27.0000,USD,v1_migration,2026-07-20 06:06:04.478538+00:00
+73,Cinnamon Raisin Bagel,27.0000,USD,v1_migration,2026-07-16 15:20:51.409066+00:00
+74,Chocolate Croissant,61.5100,USD,v1_migration,2026-07-20 06:06:24.156030+00:00
+75,All Butter Croissant,53.9400,USD,v1_migration,2026-07-20 06:07:37.880899+00:00
+76,Almond Croissant,56.6300,USD,v1_migration,2026-07-20 06:05:29.227202+00:00
+77,Pistachio Croissant,45.2200,USD,v1_migration,2026-07-17 21:38:14.851943+00:00
+78,Glazed Apricot Croissant,56.8700,USD,v1_migration,2026-07-20 06:02:32.367662+00:00
+79,Spinach Kale and Cheese Croissant,1.3000,USD,v1_migration,2026-07-13 19:06:48.925766+00:00
+80,Doughnut Croissant,105.6700,USD,v1_migration,2026-07-16 16:28:16.371887+00:00
+81,Spinach and Feta Danish,74.5900,USD,v1_migration,2026-07-20 06:05:35.593095+00:00
+82,Cheese Danish,27.4800,USD,v1_migration,2026-07-20 06:06:08.246821+00:00
+83,Maple Pecan Danish,55.9900,USD,v1_migration,2026-07-21 16:34:44.264869+00:00
+84,Apple Butter Danish,92.2100,USD,v1_migration,2026-07-14 22:13:10.572285+00:00
+86,Cherry Greek Yogurt Danish,13.7400,USD,v1_migration,2026-07-20 06:06:08.665012+00:00
+87,Blueberry Cheesecake Danish,101.9900,USD,v1_migration,2026-07-15 15:26:17.474653+00:00
+88,Leek and Parmesan Danish,68.9900,USD,v1_migration,2026-07-16 19:50:31.702440+00:00
+89,Lemon Danish,90.9900,USD,v1_migration,2026-07-21 13:21:41.485651+00:00
+90,Guava Danish,49.9900,USD,v1_migration,2026-07-16 17:31:42.885984+00:00
+91,Apple Square Danish,6.8700,USD,v1_migration,2026-07-20 06:06:07.472861+00:00
+92,Tomato and Olive Danish,74.5900,USD,v1_migration,2026-07-17 21:38:31.914359+00:00
+93,Strawberry Danish,115.2300,USD,v1_migration,2026-07-21 13:23:23.648251+00:00
+94,Berries and Cream Twist Danish,10.7400,USD,v1_migration,2026-07-15 14:39:00.560149+00:00
+96,Cheese Square Danish,113.1000,USD,v1_migration,2026-07-15 17:10:24.199718+00:00
+97,Cinnamon Roll,58.7000,USD,v1_migration,2026-07-20 06:06:29.590692+00:00
+98,Blueberry Scone,5.3800,USD,v1_migration,2026-07-20 06:06:11.220060+00:00
+99,Chocolate Chip Cookie,79.9900,USD,v1_migration,2026-07-10 20:21:02.300182+00:00
+100,Chocolate Chip Muffin,14.9400,USD,v1_migration,2026-07-20 06:03:13.069927+00:00
+101,Pistachio Muffin,33.7300,USD,v1_migration,2026-07-16 22:20:13.721977+00:00
+102,Banana Nut Muffin,14.9400,USD,v1_migration,2026-07-20 06:03:11.566035+00:00
+103,Cacao Muffin,33.7300,USD,v1_migration,2026-07-20 06:06:28.361329+00:00
+104,Chocolate Eclair,28.4900,USD,v1_migration,2026-07-15 20:14:59.318879+00:00
+105,Vanilla Eclair,28.4900,USD,v1_migration,2026-07-17 21:45:46.736537+00:00
+106,Coffee Eclair,28.4900,USD,v1_migration,2026-07-16 15:27:14.630067+00:00
+107,Tart Mixed Berry,45.2400,USD,v1_migration,2026-07-21 13:28:52.375071+00:00
+108,Macarons French,161.2800,USD,v1_migration,2026-07-21 13:28:17.727674+00:00
+109,Tiramisu,41.0400,USD,v1_migration,2026-07-20 06:07:06.536858+00:00
+110,Tiramisu with Ladyfingers,46.1400,USD,v1_migration,2026-07-20 06:06:20.612873+00:00
+114,Chocolate Temptation Cake,44.8100,USD,v1_migration,2026-07-20 06:06:19.065954+00:00
+115,Carrot Cake,48.1000,USD,v1_migration,2026-07-20 06:07:34.276938+00:00
+116,Cappuccino Cake,37.3900,USD,v1_migration,2026-07-20 06:05:22.828813+00:00
+117,Cake Torta Nocciola,35.0500,USD,v1_migration,2026-07-20 06:05:26.028593+00:00
+118,Chocolate Fondant Cake,48.9700,USD,v1_migration,2026-07-15 20:15:53.916102+00:00
+119,Tres Leches Cake,31.7200,USD,v1_migration,2026-07-20 06:05:26.491810+00:00
+120,Red Velvet Mini Gluten Free Cake,74.1300,USD,v1_migration,2026-07-17 21:46:02.042378+00:00
+121,Ricotta and Pistachio Cake,40.9300,USD,v1_migration,2026-07-17 21:46:03.348864+00:00
+122,Pistachio Cheesecake,42.1700,USD,v1_migration,2026-07-20 06:07:37.116829+00:00
+123,Dulce de Leche Cheesecake,41.3900,USD,v1_migration,2026-07-20 06:06:17.802942+00:00
+124,Strawberry Cheesecake,39.3400,USD,v1_migration,2026-07-20 06:06:21.457116+00:00
+125,Chocolate Ganache Cheesecake,42.2200,USD,v1_migration,2026-07-20 06:06:17.377990+00:00
+126,Brownie Cheesecake,53.4100,USD,v1_migration,2026-07-20 06:05:27.411527+00:00
+127,Acqua Panna,36.9500,USD,v1_migration,2026-07-15 14:25:06.183555+00:00
+128,San Pellegrino,25.0000,USD,v1_migration,2026-07-20 06:06:13.369266+00:00
+129,San Pellegrino Aranciata,24.9900,USD,v1_migration,2026-07-17 14:40:51.249526+00:00
+130,San Pellegrino Ciao Lime,0.9900,USD,v1_migration,2026-07-17 21:46:14.217906+00:00
+131,San Pellegrino Limonata,24.9900,USD,v1_migration,2026-07-17 14:43:06.516802+00:00
+132,A Siciliana Aranciata,24.9900,USD,v1_migration,2026-07-14 14:49:44.939466+00:00
+133,A Siciliana Limonata,31.2000,USD,v1_migration,2026-07-14 14:50:21.540419+00:00
+134,A Siciliana Mandarino,31.2000,USD,v1_migration,2026-07-14 14:50:44.229804+00:00
+135,A Siciliana Melograno,31.2000,USD,v1_migration,2026-07-14 15:07:06.825064+00:00
+136,Bundaberg Ginger Beer,1.5000,USD,v1_migration,2026-07-13 21:19:55.611075+00:00
+137,Apple Juice,36.8600,USD,v1_migration,2026-07-14 22:15:15.383842+00:00
+138,Black River Pear Juice,2.5000,USD,v1_migration,2026-07-13 21:19:24.246220+00:00
+139,Five Star Apple Juice,3.0000,USD,v1_migration,2026-07-13 21:38:13.551892+00:00
+140,Five Star Cranberry Juice,3.0000,USD,v1_migration,2026-07-13 21:38:16.415012+00:00
+141,Five Star Orange Juice,3.0000,USD,v1_migration,2026-07-13 21:38:20.708672+00:00
+142,Five Star Pineapple Juice,3.0000,USD,v1_migration,2026-07-13 21:38:24.061344+00:00
+143,Orange Tropicana Juice,5.5000,USD,v1_migration,2026-07-13 21:42:19.357126+00:00
+144,Apple Tropicana Juice,31.2000,USD,v1_migration,2026-07-14 22:22:37.257364+00:00
+145,Simply Orange Juice,5.5000,USD,v1_migration,2026-07-13 21:44:19.397690+00:00
+146,Natalie's Pineapple Cucumber and Celery,5.0000,USD,v1_migration,2026-07-13 21:42:14.326476+00:00
+147,Energy Drink Celsius Orange,28.7500,USD,v1_migration,2026-07-20 06:07:42.011390+00:00
+148,Energy Drink Celsius Watermelon,23.1000,USD,v1_migration,2026-07-17 21:46:35.556439+00:00
+149,Energy Drink Celsius Mango Lemonade,28.6900,USD,v1_migration,2026-07-17 21:46:36.952328+00:00
+150,Energy Drink Celsius Peach Vibe,28.6900,USD,v1_migration,2026-07-17 21:46:38.297667+00:00
+151,Energy Drink Celsius Tropical Vibe,28.7500,USD,v1_migration,2026-07-20 06:07:42.454181+00:00
+152,Energy Drink Celsius Wildberry,26.7500,USD,v1_migration,2026-07-17 21:46:40.909774+00:00
+153,Energy Drink Celsius Artic Vibe,28.7500,USD,v1_migration,2026-07-20 06:07:40.801745+00:00
+154,Energy Drink Celsius Kiwi Guava,23.0900,USD,v1_migration,2026-07-17 21:46:43.503835+00:00
+155,Energy Drink Celsuis Strawberry Lemonade,28.6900,USD,v1_migration,2026-07-17 21:46:44.790827+00:00
+156,Water Bottle Smart,0.9500,USD,v1_migration,2026-07-13 21:45:17.203766+00:00
+157,Flavored Water Mango Pineapple Splash,1.5000,USD,v1_migration,2026-07-13 21:42:01.320993+00:00
+158,Espresso,188.1600,USD,v1_migration,2026-07-20 06:01:14.101544+00:00
+159,Ice Cubes,0.5000,USD,v1_migration,2026-07-17 23:00:38.027076+00:00
+160,Whipped Cream,24.9500,USD,v1_migration,2026-07-17 15:51:17.347282+00:00
+161,Beef Pepperoni,110.9900,USD,v1_migration,2026-07-17 21:46:52.127532+00:00
+162,Salt,2.4900,USD,v1_migration,2026-07-17 23:00:38.027076+00:00
+163,Brewed Tea,0.2500,USD,v1_migration,2026-07-17 21:46:54.658059+00:00
+164,Cappuccino Foam,4.8700,USD,v1_migration,2026-07-17 23:00:38.027076+00:00
+165,Cold Foam Coconut,40.6900,USD,v1_migration,2026-07-17 21:46:57.331331+00:00
+166,Tiramisu Toasted Almond,41.0400,USD,v1_migration,2026-07-17 21:46:58.601593+00:00
+167,All Butter Curved Croissant,68.9700,USD,v1_migration,2026-07-20 06:03:40.792488+00:00
+168,All Butter Curved Mini Croissant,77.5900,USD,v1_migration,2026-07-20 06:04:11.989387+00:00
+169,Vegan Croissant,67.4400,USD,v1_migration,2026-07-17 21:47:02.336852+00:00
+170,Multigrain Muffin,33.7300,USD,v1_migration,2026-07-17 21:47:03.601218+00:00
+171,Strawberry Sprint,193.7100,USD,v1_migration,2026-07-17 21:47:04.893516+00:00
+172,White Base Sprint,180.4100,USD,v1_migration,2026-07-17 21:47:06.182869+00:00
+173,Pineapple Syrup,11.9900,USD,v1_migration,2026-07-17 21:47:07.542642+00:00
+174,Avocado Cheesecake,4.9900,USD,v1_migration,2026-07-17 21:47:08.809155+00:00
+175,Chocolate Mousse Glass,4.4700,USD,v1_migration,2026-07-17 21:47:10.082039+00:00
+176,Chocolate Truffle Cake,107.5200,USD,v1_migration,2026-07-16 15:19:59.947387+00:00
+177,Blueberry and Chocolate Chips Vegan Croissant,67.4400,USD,v1_migration,2026-07-17 21:47:12.502702+00:00
+178,Raspberry Passion Fruit Cake,41.7500,USD,v1_migration,2026-07-17 21:47:13.784285+00:00
+179,Sicilian Cannoli,36.3100,USD,v1_migration,2026-07-17 21:47:15.039873+00:00
+180,Pistachio Profiteroles,39.5300,USD,v1_migration,2026-07-17 21:47:16.304662+00:00
+181,Traditional Cheesecake,32.2100,USD,v1_migration,2026-07-17 21:47:17.566765+00:00
+182,Truffle Royale Cake,44.5000,USD,v1_migration,2026-07-17 21:47:18.827963+00:00
+183,Muffin Classico,33.7300,USD,v1_migration,2026-07-17 21:47:20.124861+00:00
+184,Chocolate Sprint,204.1600,USD,v1_migration,2026-07-17 21:47:21.399401+00:00
+185,Lemon Blueberry Crumb Cheesecake,2.5000,USD,v1_migration,2026-07-17 21:47:22.703525+00:00
+237,A'siciliana Pomegranate,31.2000,USD,v1_migration,2026-07-17 21:47:24.007966+00:00
+238,A'siciliana Blood Orange,31.2000,USD,v1_migration,2026-07-17 21:47:25.438510+00:00
+243,Cake Limoncello Mascarpone,42.2000,USD,v1_migration,2026-07-17 21:47:26.855776+00:00
+245,Cheesecake Mini Key Lime,48.3000,USD,v1_migration,2026-07-17 21:47:28.791116+00:00
+246,Ciabattina Rustica,39.4500,USD,v1_migration,2026-07-17 21:47:30.338251+00:00
+248,Croissant Glazed Pistachio,45.2200,USD,v1_migration,2026-07-17 21:47:31.782053+00:00
+251,Maritizzo,41.5800,USD,v1_migration,2026-07-20 06:06:27.217879+00:00
+252,Mini Pain Au Chocolat,86.7000,USD,v1_migration,2026-07-17 21:47:35.135866+00:00
+261,Mini Danish Assortment,53.0000,USD,v1_migration,2026-07-17 21:47:38.167729+00:00
+265,Berry Wild,28.7500,USD,v1_migration,2026-07-20 06:07:41.248741+00:00
+266,Kiwi Guava,28.7500,USD,v1_migration,2026-07-20 06:07:41.628535+00:00
+270,Muffin Pumpkin Cheese,17.4500,USD,v1_migration,2026-07-17 21:47:43.885707+00:00
+275,Caramel Flavoring Sauce,19.6000,USD,v1_migration,2026-07-17 21:47:45.698257+00:00
+277,Vanilla Flavored Frappe Beverage Base,20.2100,USD,v1_migration,2026-07-17 21:47:47.624568+00:00
+278,White Chocolate Flavoring Sauce,19.6000,USD,v1_migration,2026-07-17 21:47:49.193108+00:00
+281,Just Bagels Bagel Cheese Asiago,56.7500,USD,v1_migration,2026-07-20 06:04:36.830718+00:00
+313,Caramel Sugar Free Syrup,6.7500,USD,v1_migration,2026-07-20 06:04:51.170012+00:00
+314,Caramel Syrup,6.7500,USD,v1_migration,2026-07-17 21:47:57.498775+00:00
+315,Cinnamon Syrup,6.7500,USD,v1_migration,2026-07-17 21:47:58.928271+00:00
+317,Lavender Syrup,6.7500,USD,v1_migration,2026-07-20 06:04:54.296729+00:00
+318,Pistachio Syrup,6.7500,USD,v1_migration,2026-07-20 06:04:54.665878+00:00
+319,Pure Cane Syrup,6.7500,USD,v1_migration,2026-07-20 06:04:55.036059+00:00
+323,Pregel Butter Pecan,174.7800,USD,v1_migration,2026-07-17 21:48:04.652077+00:00
+324,Pregel Mango Sprint,216.5500,USD,v1_migration,2026-07-17 21:48:06.443639+00:00
+325,Pregel Pistachio Paste,628.2600,USD,v1_migration,2026-07-17 21:48:07.863059+00:00
+339,Bagel Sesame,11.4100,USD,v1_migration,2026-07-17 21:48:09.284307+00:00
+343,Croissant Butter All Natural,15.7400,USD,v1_migration,2026-07-17 21:48:12.325601+00:00
+352,Muffin Lemon With raspberry,22.1200,USD,v1_migration,2026-07-17 21:48:14.109846+00:00
+353,Muffin Morning Glory,13.3500,USD,v1_migration,2026-07-17 21:48:16.559768+00:00
+354,Muffin Zucchini. Chia. Pumpkin and Sunflower Seeds,18.1300,USD,v1_migration,2026-07-17 21:48:17.948585+00:00
+356,Jalapeno & Cheddar Cheese. Slcd,12.6800,USD,v1_migration,2026-07-17 21:48:19.366969+00:00
+358,Rustic Plain 4 X 4,26.1600,USD,v1_migration,2026-07-17 21:48:20.906533+00:00
+361,Bear Claws,19.7900,USD,v1_migration,2026-07-17 21:48:22.449240+00:00
+365,Banana. W/ Nutella,22.1300,USD,v1_migration,2026-07-17 21:48:24.105217+00:00
+366,Blueberry,2.2900,USD,v1_migration,2026-07-20 06:06:09.970530+00:00
+367,Churro. W/ Dulce de Leche,22.1300,USD,v1_migration,2026-07-17 21:48:27.341514+00:00
+369,Orange Cranberry Tulip Cup,14.9400,USD,v1_migration,2026-07-17 21:48:28.808723+00:00
+370,Original Bran,14.9400,USD,v1_migration,2026-07-17 21:48:30.355824+00:00
+371,Lemon,20.6000,USD,v1_migration,2026-07-20 06:05:53.550955+00:00
+373,Mixed Berry,21.8900,USD,v1_migration,2026-07-17 21:48:33.323583+00:00
+374,Cinnamon Crumb,24.9400,USD,v1_migration,2026-07-17 21:48:34.951671+00:00
+375,Caramel Sugar Free Syrup Case 4L,38.1300,USD,v1_migration,2026-07-17 22:09:09.243866+00:00
+376,Cookie Butter Syrup,38.5700,USD,v1_migration,2026-07-17 21:48:36.342621+00:00
+377,Hazelnut Sugar Free Syrup,38.3500,USD,v1_migration,2026-07-17 21:48:38.005573+00:00
+378,Lavender Syrup Case 4L,33.8900,USD,v1_migration,2026-07-17 22:09:12.982153+00:00
+379,Macadamia Nut Syrup,34.0100,USD,v1_migration,2026-07-17 21:48:39.555356+00:00
+380,Pistachio Syrup Case 4L,36.5600,USD,v1_migration,2026-07-17 22:09:15.513253+00:00
+381,Pure Cane Syrup Case 4L,31.8400,USD,v1_migration,2026-07-17 22:09:16.893027+00:00
+382,Strawberry Syrup,6.4700,USD,v1_migration,2026-07-17 21:48:41.226198+00:00
+383,Toasted Marshmallow Syrup,37.4500,USD,v1_migration,2026-07-17 21:48:45.325080+00:00
+386,Yuzu Syrup,70.6700,USD,v1_migration,2026-07-17 21:48:46.754430+00:00
+389,Cheesecake Mini Pumpkin,50.6700,USD,v1_migration,2026-07-17 21:48:48.380450+00:00
+390,Poppi Cherry Limeade Prebiotic,21.7900,USD,v1_migration,2026-07-17 21:48:50.009942+00:00
+391,Poppi Raspberry Rose Prebiotic,21.7900,USD,v1_migration,2026-07-17 21:48:51.421629+00:00
+392,Poppi Strawberry Lemon Prebiotic,21.7900,USD,v1_migration,2026-07-17 21:48:52.823533+00:00
+394,Tea Unsweetened Iced,22.7900,USD,v1_migration,2026-07-17 21:48:54.080989+00:00
+395,Tea Sweet Iced,22.7900,USD,v1_migration,2026-07-17 21:48:55.607908+00:00
+396,Cake Lemon Mousse,38.5000,USD,v1_migration,2026-07-17 21:48:56.976059+00:00
+397,Cake Mango Passion,41.2500,USD,v1_migration,2026-07-17 21:48:58.372097+00:00
+398,Cake Monterosa,42.6700,USD,v1_migration,2026-07-17 21:48:59.780246+00:00
+399,Croissant Plain Vegan,56.9500,USD,v1_migration,2026-07-17 21:49:01.184776+00:00
+400,Chocolate Twist,114.9000,USD,v1_migration,2026-07-17 21:49:02.597238+00:00
+406,Croissant Tomato Parmesan,130.7900,USD,v1_migration,2026-07-17 21:49:04.012912+00:00
+408,Souffle Spinach and Cheese,106.6400,USD,v1_migration,2026-07-17 21:49:06.070772+00:00
+409,Turnover Blueberry Turnover,132.4800,USD,v1_migration,2026-07-17 21:49:07.667887+00:00
+410,Turnover Peach,124.3200,USD,v1_migration,2026-07-17 21:49:09.680098+00:00
+411,C'est Gourmet Kouign Amann,84.1500,USD,v1_migration,2026-07-17 21:49:11.520041+00:00
+413,Pistachio Milk Barista Specialty,47.0000,USD,v1_migration,2026-07-17 21:49:13.531539+00:00
+414,Soy Milk Barista Specialty,28.0000,USD,v1_migration,2026-07-17 21:49:15.309152+00:00
+415,Daily Greens Juice,28.9100,USD,v1_migration,2026-07-17 21:49:16.948304+00:00
+416,Daily Roots + Ginger Juice,27.6000,USD,v1_migration,2026-07-17 21:49:18.476066+00:00
+417,Orange Juice,27.2300,USD,v1_migration,2026-07-17 21:49:19.907347+00:00
+418,Vitality Shot,74.8400,USD,v1_migration,2026-07-17 21:49:21.384553+00:00
+419,Wellness Shot,74.8400,USD,v1_migration,2026-07-17 21:49:22.901138+00:00
+420,Oregon Spearmint & Peppermint Herbal Tea / 20 Ct,32.4000,USD,v1_migration,2026-07-17 21:49:24.341037+00:00
+421,Cucumber,22.0300,USD,v1_migration,2026-07-20 06:01:56.012181+00:00
+423,Ginger & Key Lime,27.0600,USD,v1_migration,2026-07-17 21:49:27.165828+00:00
+424,Hibiscus & Rose,22.0300,USD,v1_migration,2026-07-17 21:49:28.716961+00:00
+425,Orange + Mandarin,27.0000,USD,v1_migration,2026-07-17 21:49:30.125319+00:00
+426,Pineapple & Pink Grapefruit,23.2400,USD,v1_migration,2026-07-17 21:49:31.787776+00:00
+427,Sic Lemon Iced Tea,27.0300,USD,v1_migration,2026-07-17 21:49:34.177642+00:00
+429,Cranberry X,36.8600,USD,v1_migration,2026-07-17 21:49:36.060134+00:00
+430,Mango X,37.4400,USD,v1_migration,2026-07-17 21:49:37.759491+00:00
+431,Orange X,36.5000,USD,v1_migration,2026-07-17 21:49:39.221353+00:00
+432,Pear X,38.5400,USD,v1_migration,2026-07-17 21:49:40.648149+00:00
+433,Pineapple X,37.4400,USD,v1_migration,2026-07-17 21:49:42.067428+00:00
+436,Brownie,21.6100,USD,v1_migration,2026-07-17 21:49:43.470487+00:00
+439,Cusanos Bagel Jalapeno Cheddar Sliced,16.9800,USD,v1_migration,2026-07-16 16:23:58.948108+00:00
+442,Cusanos Ciabatta Med,13.9800,USD,v1_migration,2026-07-16 16:24:34.814676+00:00
+444,Rasp. Lemon Sugar Tulip,23.0500,USD,v1_migration,2026-07-17 21:49:47.911812+00:00
+445,Cusanos Quesito Lg Ind,33.0800,USD,v1_migration,2026-07-16 16:25:43.833714+00:00
+446,Coppa Gelato Cafe,29.1700,USD,v1_migration,2026-07-17 21:49:50.581505+00:00
+447,Coppa Gelato Spagnola,29.1700,USD,v1_migration,2026-07-17 21:49:52.013540+00:00
+448,Coppa Gelato Pistachio,29.1700,USD,v1_migration,2026-07-17 21:49:53.437909+00:00
+449,Croissant Cream Filled,56.8700,USD,v1_migration,2026-07-17 21:49:54.896360+00:00
+450,Turnover Apple,70.7300,USD,v1_migration,2026-07-17 21:49:56.296574+00:00
+451,Caramel Pecan Bar,60.2900,USD,v1_migration,2026-07-17 21:49:57.696700+00:00
+452,Mini Bomboloni Cocoa & Hazelnut,63.6400,USD,v1_migration,2026-07-17 21:49:59.104098+00:00
+455,Danish Raspberry Cheesecake,102.0700,USD,v1_migration,2026-07-17 21:50:00.514251+00:00
+456,Just Baked Muffin Blueberry,35.8200,USD,v1_migration,2026-07-16 17:57:09.524896+00:00
+462,Cake Original Crumb,9.1600,USD,v1_migration,2026-07-17 21:50:03.330276+00:00
+463,Cake Plain Pound,4.9800,USD,v1_migration,2026-07-17 21:50:05.338925+00:00
+465,Cookies Black and White,8.3700,USD,v1_migration,2026-07-17 21:50:06.744908+00:00
+467,Danish Blueberry,6.8700,USD,v1_migration,2026-07-17 21:50:08.275852+00:00
+470,Danish Raspberry,9.1600,USD,v1_migration,2026-07-17 21:50:09.819969+00:00
+472,Scone Chocolate Chip Scone,5.3800,USD,v1_migration,2026-07-17 21:50:11.489635+00:00
+473,Turnover Apple Case 2,4.5800,USD,v1_migration,2026-07-17 22:10:29.543209+00:00
+512,Cinnamon Bun Pecan Sticky,12.6900,USD,v1_migration,2026-07-17 21:50:13.041038+00:00
+513,Cinnamon Bun with Icing,9.7300,USD,v1_migration,2026-07-17 21:50:16.341303+00:00
+537,Two Cup Carrier,180.0000,USD,v1_migration,2026-07-17 23:00:38.027076+00:00
+538,Lotus - 1 Oz Dispenser Pump,3.0000,USD,v1_migration,2026-07-17 23:00:38.027076+00:00
+539,Lotus - 3 Bottle Rack,29.9900,USD,v1_migration,2026-07-17 23:00:38.027076+00:00
+561,Pistachio Milk,47.0000,USD,v1_migration,2026-07-17 21:50:24.679600+00:00
+562,Soy Milk,40.8000,USD,v1_migration,2026-07-20 06:04:58.879541+00:00
+570,Mango & Thai Basil,27.0600,USD,v1_migration,2026-07-17 21:50:30.202004+00:00
+573,Perfect Chocolatine,58.1900,USD,v1_migration,2026-07-17 21:50:32.638897+00:00
+591,Oil Olive,54.8900,USD,v1_migration,2026-07-20 06:05:20.621166+00:00
+602,Margherita Bistro,77.2200,USD,v1_migration,2026-07-17 21:50:38.564844+00:00
+605,Milk Oat Barista,31.5000,USD,v1_migration,2026-07-17 21:50:41.643736+00:00
+606,Guacamole Fresh Pico Blend Packaged,51.6900,USD,v1_migration,2026-07-17 21:50:43.547644+00:00
+608,Wiper Towel Pink Diamond 11.5 X 24 Dry,39.9900,USD,v1_migration,2026-07-17 21:50:45.142834+00:00
+609,Sauce Hot Portion Control,15.9900,USD,v1_migration,2026-07-17 21:50:46.889731+00:00
+610,Balsamic Glaze,30.0000,USD,v1_migration,2026-07-20 06:05:39.625835+00:00
+611,Muffin Blueberry Thaw N Serve,19.3900,USD,v1_migration,2026-07-17 21:50:50.021045+00:00
+612,Muffin Cranberry Orange Thaw & Serve,17.4500,USD,v1_migration,2026-07-17 21:50:51.590552+00:00
+613,Sugar Packet Cane,44.6900,USD,v1_migration,2026-07-17 21:50:53.178966+00:00
+615,Coconut Jelly,26.4900,USD,v1_migration,2026-07-17 21:50:54.757264+00:00
+617,Sweet Ground Chocolate Powder,20.2100,USD,v1_migration,2026-07-17 22:11:06.672379+00:00
+620,Sweet Ground Chocolate Powder 3lb,20.2100,USD,v1_migration,2026-07-17 22:11:08.292623+00:00
+621,Pistachios Roasted Chopped.,47.8000,USD,v1_migration,2026-07-17 21:50:58.299131+00:00
+622,Honey Pure Clover Grade a True Source Certifie,55.1400,USD,v1_migration,2026-07-17 21:51:00.474980+00:00
+623,Tomato Roma Jumbo Fresh,26.0400,USD,v1_migration,2026-07-17 21:51:02.042120+00:00
+625,Biscoff Creamy Cookie Butter,17.4900,USD,v1_migration,2026-07-17 23:00:38.027076+00:00
+629,Cookie Crumbs,149.9100,USD,v1_migration,2026-07-17 21:51:05.374982+00:00
+630,Spread Chocolate Hazelnut,67.2100,USD,v1_migration,2026-07-17 21:51:07.447934+00:00
+633,Dough Roll Cinnamon Twirl,98.6500,USD,v1_migration,2026-07-17 21:51:09.078921+00:00
+635,Sugar Turbinado,34.6200,USD,v1_migration,2026-07-17 21:51:10.984144+00:00
+636,Sugar Substitute Packet Yellow,36.7900,USD,v1_migration,2026-07-17 21:51:12.746346+00:00
+642,Cinnamon Ground,10.2300,USD,v1_migration,2026-07-17 23:00:38.027076+00:00
+644,Pad Scour Green 6 X 9 Antimicrobial,13.6500,USD,v1_migration,2026-07-17 23:00:38.027076+00:00
+648,Creamer Half & Half,56.8900,USD,v1_migration,2026-07-17 21:51:18.381965+00:00
+649,Creamer Half and Half Portion Control Aseptic,31.8500,USD,v1_migration,2026-07-17 21:51:20.450342+00:00
+650,Milk No fat,13.9900,USD,v1_migration,2026-07-17 21:51:22.077436+00:00
+652,Mandarin Soda Can,31.2000,USD,v1_migration,2026-07-17 21:51:23.723149+00:00
+656,Lemon Pound,7.4700,USD,v1_migration,2026-07-17 21:51:25.485635+00:00
+662,Bindi - Croissant - Glazed Pistachio - (85 G),45.2200,USD,v1_migration,2026-07-20 06:00:10.083307+00:00
+663,"Le Chef Bakery - Bagel - Jalapeno & Cheddar Cheese, Slcd",12.6800,USD,v1_migration,2026-07-20 06:00:15.342511+00:00
+664,Le Chef Bakery - Bagel - Sesame,11.4100,USD,v1_migration,2026-07-20 06:00:16.211951+00:00
+665,"Le Chef Bakery - Ciabata - Rustic Plain 4"" X 4""",26.1600,USD,v1_migration,2026-07-20 06:00:16.689697+00:00
+666,"Le Chef Bakery - Muffin - Banana, W/ Nutella",22.1300,USD,v1_migration,2026-07-20 06:00:26.292744+00:00
+667,"Le Chef Bakery - Muffin - Churro, W/ Dulce De Leche",22.1300,USD,v1_migration,2026-07-20 06:00:27.099521+00:00
+668,"Le Chef Bakery - Muffin - Lemon, W/Raspberry",22.1200,USD,v1_migration,2026-07-21 13:26:35.877950+00:00
+669,"Le Chef Bakery - Muffin - Morning Glory, Tulip Cup",13.3500,USD,v1_migration,2026-07-20 06:00:28.431963+00:00
+670,"Le Chef Bakery - Muffin - Zucchini, Chia, Pumpkin & Sunflower Seeds",18.1300,USD,v1_migration,2026-07-20 06:00:29.577475+00:00
+671,Lkp - Cup Sleeves,164.0000,USD,v1_migration,2026-07-20 06:00:32.429693+00:00
+672,Lkp - Double Wall Cup 12 Oz,106.0000,USD,v1_migration,2026-07-20 06:00:35.125306+00:00
+673,Lkp - Double Wall Cup 8 Oz,152.0000,USD,v1_migration,2026-07-20 06:00:35.588675+00:00
+674,"Lkp - Drinking Lid For 12 ,16 , 20 & 24 Oz (Cold Cups)",105.0000,USD,v1_migration,2026-07-20 06:00:36.052833+00:00
+675,"Lkp - Lids For Paper Cups 12 , 16 , 20 , 24 Oz (Hot Cups)",105.0000,USD,v1_migration,2026-07-20 06:00:36.759967+00:00
+676,Lkp - Pet Plastic Cups 12 Oz,169.0000,USD,v1_migration,2026-07-20 06:00:37.235249+00:00
+677,Lkp - Pet Plastic Cups 24Oz,237.0000,USD,v1_migration,2026-07-20 06:00:37.720171+00:00
+678,Lkp - Pet Plastic Cups 32 Oz,329.0000,USD,v1_migration,2026-07-20 06:00:38.212508+00:00
+679,Lkp - Plastic Straw For Cold Drink 0.6*23Cm,225.0000,USD,v1_migration,2026-07-20 06:00:38.917295+00:00
+680,Lkp - Plastic Straw For Cold Drink 1.2*23Cm,129.0000,USD,v1_migration,2026-07-20 06:00:39.404681+00:00
+681,Lkp - Plastic Straw For Hot Drink 0.8*23 Cm,225.0000,USD,v1_migration,2026-07-20 06:00:39.873371+00:00
+682,Lkp - Single Wall Cup 24 Oz,248.0000,USD,v1_migration,2026-07-20 06:00:40.342945+00:00
+683,Lkp - Single Wall Cup 4 Oz,98.0000,USD,v1_migration,2026-07-20 06:00:40.815492+00:00
+684,Bindi - Cake - Mango Passion (4.02 Oz.),41.2500,USD,v1_migration,2026-07-20 06:00:56.697094+00:00
+685,Bindi - Cake - Monterosa (3.81 Oz.),42.6700,USD,v1_migration,2026-07-20 06:00:57.532512+00:00
+686,C'Est Gourmet - Croissant - Tomato Parmesan,130.7900,USD,v1_migration,2026-07-20 06:01:08.710688+00:00
+687,C'Est Gourmet - Souffle - Spinach & Cheese (4.75 Oz.),106.6400,USD,v1_migration,2026-07-20 06:01:09.862906+00:00
+688,C'Est Gourmet - Turnover - Peach,124.3200,USD,v1_migration,2026-07-20 06:01:10.716162+00:00
+689,Kimbo (Nat) - Caffee Crema - (1 K - 35.2 Oz),386.9000,USD,v1_migration,2026-07-20 06:02:11.806046+00:00
+690,Kimbo (Nat) - Extra Cream 1 Kg,190.4000,USD,v1_migration,2026-07-20 06:02:12.908208+00:00
+691,Kimbo (Nat) - Filtro 100% Arabica,196.0000,USD,v1_migration,2026-07-20 06:02:13.361169+00:00
+692,Kimbo (Nat) - Prestige 1 Kg,207.2000,USD,v1_migration,2026-07-20 06:02:13.805899+00:00
+693,Bindi - Cake - Limoncello Mascarpone (3.81 Oz.),42.2000,USD,v1_migration,2026-07-20 06:02:28.007891+00:00
+694,Bindi - Coppa Gelato - Cafe - (4 Oz.),29.1700,USD,v1_migration,2026-07-20 06:02:30.068564+00:00
+695,Bindi - Coppa Gelato - Spagnola - (3.52 Oz.),29.1700,USD,v1_migration,2026-07-20 06:02:30.554025+00:00
+696,Bindi - Coppa Gelato- Pistachio - (3.52 Oz.),29.1700,USD,v1_migration,2026-07-20 06:02:31.033737+00:00
+697,Bindi - Croissant - Cream Filled - (3.35 Oz.),56.8700,USD,v1_migration,2026-07-20 06:02:33.236206+00:00
+698,Bridor - Danish - Raspberry Cheesecake - 3.53 Oz,102.0700,USD,v1_migration,2026-07-21 13:26:12.592544+00:00
+699,A'Siciliana - Blood Orange Soda Can 11 Oz,31.2000,USD,v1_migration,2026-07-20 06:03:58.373444+00:00
+700,A'Siciliana - Pomegranate Soda Can 11 Oz,31.2000,USD,v1_migration,2026-07-20 06:03:58.867805+00:00
+701,Arrezzio - Red Pepper - Fire Roasted Strips,77.3600,USD,v1_migration,2026-07-20 06:04:00.373894+00:00
+702,Banquet D'Or - Croissant -Butter Almond Filled - Large - (3.53 Oz.),59.7300,USD,v1_migration,2026-07-20 06:04:02.032116+00:00
+703,Banquet D'Or - Croissant Straight - Large - (2.82 Oz.) 1/70 Ct,91.6000,USD,v1_migration,2026-07-20 06:04:02.498695+00:00
+704,Banquet D'Or - Croissant Straight - Large - (3.17 Oz.),179.8800,USD,v1_migration,2026-07-20 06:04:02.941383+00:00
+705,Bbrlimp (Sysco) - Cheese - Mozzarella Sli. (0.75 Oz.),45.5400,USD,v1_migration,2026-07-20 06:04:03.397612+00:00
+706,Bindi - Cheesecake - Mini Key Lime - Indiv. Portion (4.93 Oz.),48.3000,USD,v1_migration,2026-07-20 06:06:22.230870+00:00
+707,Bindi - Creme Brulee In Ramekin - (4.05 Oz.),53.9500,USD,v1_migration,2026-07-20 06:04:10.039848+00:00
+708,Bindi - Croissant - Glazed Apricot - (3.35 Oz.),53.0200,USD,v1_migration,2026-07-20 06:04:11.187344+00:00
+709,Bindi - Donut - Croissant Style Ciambella Donut (2.82 Oz.),40.9500,USD,v1_migration,2026-07-20 06:04:12.418111+00:00
+710,Bridor - Caramel Almond Delicacy (3.17 Oz.),61.1200,USD,v1_migration,2026-07-20 06:04:18.371259+00:00
+711,Califia Farms - (Food Related) - Oat Milk - 32 Oz.,39.9800,USD,v1_migration,2026-07-20 06:04:23.742700+00:00
+712,Celsius - Drink Energy - Orange Sparkling,28.7500,USD,v1_migration,2026-07-20 06:07:40.355926+00:00
+713,Pregel - Pistachio Paste (Bucket),628.2600,USD,v1_migration,2026-07-20 06:05:02.371931+00:00
+714,Rieme - Sparkling Drink - Blood Orange (11 Oz.),2.1700,USD,v1_migration,2026-07-20 06:05:08.555749+00:00
+715,Rieme - Sparkling Drink -Grapefruit (11 Oz.),2.1500,USD,v1_migration,2026-07-20 06:05:09.390177+00:00
+716,Tribeca - Ciabatta 16.8 Oz,54.0800,USD,v1_migration,2026-07-20 06:05:13.991497+00:00
+717,Arrezzio - Sauce Pesto Basil W/ Nuts (32 Oz),116.0800,USD,v1_migration,2026-07-20 06:05:21.067869+00:00
+718,Bindi - Cake - Mini Red Velvet Cake (3.84 Oz.),74.1300,USD,v1_migration,2026-07-20 06:05:24.197397+00:00
+719,Block & Barrel - Cheese - Cheddar - Mild Sliced,48.1200,USD,v1_migration,2026-07-20 06:05:32.631477+00:00
+720,Califia - Oat Milk - Barista (32 Fl. Oz. / Cs. 12),39.6000,USD,v1_migration,2026-07-20 06:05:37.721191+00:00
+721,Celsius - Drink Energy - Mango Passion,19.9900,USD,v1_migration,2026-07-20 06:05:38.164603+00:00
+722,Dannon - Yogurt - Plain Greek Non-Fat (32 Oz.),36.3900,USD,v1_migration,2026-07-20 06:05:40.045241+00:00
+723,"Fabbri - Base Nevepann Belpanna 100Cf- Bags 2,500Kg (5.5 Lb)",80.4900,USD,v1_migration,2026-07-20 06:05:40.485625+00:00
+724,"Fabbri - Delipaste Amarena - Tins 1,500Kg (3.3 Lb)",60.9400,USD,v1_migration,2026-07-20 06:05:40.927912+00:00
+725,"Fabbri - Delipaste Mango Eu - Tins 1,500Kg (3.3 Lb)",55.9900,USD,v1_migration,2026-07-20 06:05:41.375094+00:00
+726,"Fabbri - Delipaste Vanilla Super - Tins 1,500Kg (3.3 Lb)",57.3400,USD,v1_migration,2026-07-20 06:05:42.241968+00:00
+727,Galbani - Cheese - Mozzarella Fresh Sliced Thin (16 Oz),43.9900,USD,v1_migration,2026-07-20 06:05:42.691871+00:00
+728,Local (Oh) - Muffin - Banana Nut 12 Pk,20.6000,USD,v1_migration,2026-07-20 06:05:51.375008+00:00
+729,Local (Oh) - Muffin - Chocolate Chip 12 Pk,20.6000,USD,v1_migration,2026-07-20 06:05:52.194259+00:00
+730,Local (Oh) - Muffin - Coffee Cake 12 Pk,20.6000,USD,v1_migration,2026-07-20 06:05:52.641074+00:00
+731,Local (Oh) - Muffin - Cran Apple 12 Pk,20.6000,USD,v1_migration,2026-07-20 06:05:53.100135+00:00
+732,Local (Oh) - Muffin - Red Velvet 12 Pk,20.6000,USD,v1_migration,2026-07-20 06:05:53.912343+00:00
+733,Mccornick - Red Pepper - Crushed (13 Oz.),79.5000,USD,v1_migration,2026-07-20 06:05:59.267530+00:00
+734,Sammy'S - Bagel - Cinnamon Raising (12 X 4 Oz.),27.0000,USD,v1_migration,2026-07-20 06:06:04.028612+00:00
+735,Sammy'S - Cake - Original Crumb,9.1600,USD,v1_migration,2026-07-20 06:06:05.679230+00:00
+736,Sammy'S - Cake - Plain Pound,4.9800,USD,v1_migration,2026-07-20 06:06:06.122820+00:00
+737,Sammy'S - Cookies - Black & White,8.3700,USD,v1_migration,2026-07-20 06:06:06.999119+00:00
+738,Sammy'S - Danish - Raspberry,9.1600,USD,v1_migration,2026-07-21 13:26:57.683522+00:00
+739,Sammy'S - Muffin - Banana Nut (5 Oz.),2.2900,USD,v1_migration,2026-07-20 06:06:09.530073+00:00
+740,Sammy'S - Muffin - Chocolate Chip (5 Oz.),2.2900,USD,v1_migration,2026-07-20 06:06:10.323054+00:00
+741,Sammy'S - Muffin - Cinnamon Coffee (5 Oz.),2.2900,USD,v1_migration,2026-07-20 06:06:10.775110+00:00
+742,Sammy'S - Turnover - Apple,4.5800,USD,v1_migration,2026-07-20 06:06:11.957477+00:00
+743,Wholesome Farms - Butter Cup Usda Aa,37.2100,USD,v1_migration,2026-07-20 06:06:13.719372+00:00
+744,Oatly - (Food Related) - Oat Milk - 32 Oz.,39.4100,USD,v1_migration,2026-07-20 06:06:45.590651+00:00
+745,Bindi - Cheesecake - Mini Pumpkin - (0.69 Oz.),50.6700,USD,v1_migration,2026-07-20 06:07:36.609629+00:00
+746,Pure Leaf/Lipton - Tea - Sweet Iced Tea W Lemon,22.7700,USD,v1_migration,2026-07-20 06:07:57.413829+00:00
+747,Pure Leaf/Lipton - Tea - Unsweetened Iced,22.7900,USD,v1_migration,2026-07-20 06:07:57.915616+00:00
+748,Pure Leaf/Lipton - Tea - Sweet Iced,22.7900,USD,v1_migration,2026-07-20 06:07:58.383187+00:00

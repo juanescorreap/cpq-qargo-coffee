@@ -1,0 +1,586 @@
+id;name;category;purchase_price;purchase_unit;usage_unit;conversion_factor;yield_percentage;current_price;status
+1;Milk;dairy;5.2;case x 1 gal;fl oz;128.0;100;5.2;active
+2;Almond Milk;dairy;31.11;case;fl oz;3838.9;100;31.11;active
+3;Coconut Milk;dairy;31.5;case 12 x 32 oz;fl oz;383.9;100;31.5;active
+4;Cream Cheese;dairy;38.45;case x 100 units;unit;100.0;100;38.45;active
+5;Cheese Cheddar Sliced;dairy;41.65;case;unit;400.0;100;41.65;active
+6;Cheese Mozzarella Sliced;dairy;45.54;case;unit;123.0;100;45.54;active
+7;Crumbled Blue Cheese;dairy;37.75;case 2 x 5 lb;oz;160.0;100;37.75;active
+8;Greek Yogurt;dairy;46.95;case 6 x 32 oz;fl oz;191.9;100;46.95;active
+9;Vanilla Gelato;dairy;222.97;case 12 x 1 kg;oz;423.2;100;222.97;active
+10;Chocolate Gelato;dairy;204.16;case;unit;144.0;100;204.16;active
+11;Coconut Flakes;specialty;8.39;bag x 10 oz;oz;10.0;97;8.39;active
+12;Cold Brew;coffee;485.0;case x 1 gal;fl oz;128.0;100;485.0;active
+13;Brewed Coffee;coffee;7.93;case x 1.5 gal;fl oz;50.7;100;7.93;active
+14;Nitro Cold Brew;coffee;36.0;case x 1 gal;fl oz;128.0;100;36.0;active
+15;Chai Tea Concentrate;tea;6.75;bottle x 750 ml;fl oz;25.3;98;6.75;active
+16;Tea Bag;tea;0.24;case x 3 gal;fl oz;384.0;100;0.24;active
+17;Green Tea;tea;32.4;case 6 x 20 units;unit;120.0;98;32.4;active
+18;Matcha;tea;377.5;case 4 x 1 kg;oz;141.0;98;377.5;active
+19;Vanilla Syrup;syrups;39.99;bottle x 1 l;fl oz;33.8;98;39.99;active
+20;Rose Syrup;syrups;6.74;bottle x 750 ml;fl oz;25.3;98;6.74;active
+21;Coconut Syrup;syrups;6.75;bottle x 750 ml;fl oz;25.3;98;6.75;active
+22;Hazelnut Syrup;syrups;6.75;bottle x 750 ml;fl oz;25.3;98;6.75;active
+23;Dragon Fruit Syrup;syrups;6.75;bottle x 750 ml;fl oz;25.3;98;6.75;active
+24;White Lotus;fruit_concentrate;29.71;bottle x 64 oz;fl oz;64.0;98;29.71;active
+25;Strawberry Fruit Fusion;fruit_concentrate;19.0;bottle x 64 oz;fl oz;64.0;98;19.0;active
+26;Blue Raspberry Fruit Fusion;fruit_concentrate;19.0;bottle x 64 oz;fl oz;64.0;98;19.0;active
+27;Mango Passion Fruit Fusion;fruit_concentrate;19.0;bottle x 64 oz;fl oz;64.0;98;19.0;active
+28;Pina Colada Fruit Fusion;fruit_concentrate;19.0;bottle x 64 oz;fl oz;64.0;98;19.0;active
+29;Watermelon Fruit Fusion;fruit_concentrate;19.0;bottle x 64 oz;fl oz;64.0;98;19.0;active
+30;Orange Creamsicle Fruit Fusion;fruit_concentrate;19.0;bottle x 64 oz;fl oz;64.0;98;19.0;active
+31;Cream Base;fruit_concentrate;19.99;bottle x 64 oz;fl oz;64.0;98;19.99;active
+32;Strawberry Fruit Puree;fruit_concentrate;15.0;bottle x 1 l;fl oz;33.8;98;15.0;active
+33;Chocolate Sauce;sauces;23.49;case;fl oz;64.0;98;23.49;active
+34;Pesto;sauces;60.09;case 3 x 30 oz;fl oz;89.9;100;60.09;active
+35;Mustard;sauces;29.0;case x 420 oz;fl oz;420.0;100;29.0;active
+36;Mayonnaise;sauces;42.73;case 4 x gal;oz;60567.0;100;42.73;active
+37;Balsamic Vinegar;sauces;21.14;case;fl oz;169.0;100;21.14;active
+38;Lemon Juice;sauces;32.25;case;fl oz;191.9;100;32.25;active
+39;Olive Oil;sauces;59.95;canister x 1 gal;fl oz;126.6;100;59.95;active
+40;Vanilla Powder;powders;26.99;canister x 3 lb;oz;48.0;98;26.99;active
+41;Chocolate Powder;powders;20.21;canister x 3 lb;oz;64.0;98;20.21;active
+42;Taro Powder;powders;18.49;bag x 2.2 lb;oz;35.2;100;18.49;active
+43;Icing Sugar;powders;22.49;case;oz;1024.0;100;22.49;active
+44;Whey Protein;powders;89.75;case x 5 lb;oz;80.0;100;89.75;active
+45;Tapioca Pearls;specialty;65.49;case;oz;1361.0;100;65.49;active
+46;Crushed Oreo;specialty;6.99;case;oz;16.0;100;6.99;active
+47;Honey Oat Granola;specialty;19.49;case 4 x 12 oz;oz;48.0;98;19.49;active
+48;Chia Seeds;specialty;37.49;case;oz;80.0;100;37.49;active
+49;Cooking Spray;specialty;5.79;case;oz;17.0;100;5.79;active
+50;Orange Food Coloring;specialty;10.49;bottle x 10.5 oz;fl oz;10.5;98;10.49;active
+51;Seasoning Mix;specialty;3.52;case;oz;9.9;100;3.52;active
+52;Water;beverages;19.0;case x 1 gal;fl oz;128.0;100;19.0;active
+53;Club Soda;beverages;17.95;case;fl oz;288.0;100;17.95;active
+54;Arugula;produce;21.8;bag x 4 lb;oz;64.0;100;21.8;active
+55;Sliced Tomato;produce;26.04;case x 25 lb;slice;380.0;98;26.04;active
+56;Basil;produce;7.34;case;oz;1.0;98;7.34;active
+57;Avocado;produce;1.6;unit;unit;8.0;77;1.6;active
+58;Dried Oregano;produce;11.49;case;oz;23.9;100;11.49;active
+59;Capers;produce;5.91;jar x 16 oz ;oz;16.0;98;5.91;active
+60;Sliced Pickles;produce;12.3;jar x 1 gal;unit;650.0;100;12.3;active
+61;Scrambled Egg Patty;protein;44.79;case x 160 units;unit;160.0;100;44.79;active
+62;Turkey Bacon;protein;63.99;case 6 x 50 units;unit;300.0;99;63.99;active
+63;Turkey Sausage Patty;protein;54.45;case x 8 units;unit;8.0;100;54.45;active
+64;Smoked Salmon;protein;84.28;case 2 x 2.5 lb;oz;80.0;97;84.28;active
+65;Chicken Breast Grilled;protein;9.5;case;oz;3.8;97;9.5;active
+66;Proscuitto;protein;50.65;case 12 x 3 oz;unit;12.0;100;50.65;active
+67;Bread;bakery;24.94;unit;loave;24.0;100;24.94;active
+68;Focaccia;bakery;63.96;case x 55 units;unit;55.0;100;63.96;active
+69;Pinsa;bakery;81.39;case x 40 units;unit;40.0;100;81.39;active
+70;Pinsa Margherita;bakery;64.2;case x 10 units;unit;10.0;100;64.2;active
+71;Plain Bagel;bakery;42.95;case x 48 units;unit;48.0;100;42.95;active
+72;Everything Bagel;bakery;44.95;case 48 x 4 oz;unit;48.0;100;44.95;active
+73;Cinnamon Raisin Bagel;bakery;27.0;case;unit;36.0;100;27.0;active
+74;Chocolate Croissant;bakery;61.51;unit;unit;48.0;100;61.51;active
+75;All Butter Croissant;bakery;53.94;unit;unit;50.0;100;53.94;active
+76;Almond Croissant;bakery;56.63;case;unit;50.0;100;56.63;active
+77;Pistachio Croissant;bakery;45.22;case x 40 units;unit;40.0;100;45.22;active
+78;Glazed Apricot Croissant;bakery;53.02;case x 50 units;unit;50.0;100;53.02;active
+79;Spinach Kale and Cheese Croissant;bakery;1.3;unit;unit;1.0;100;1.3;active
+80;Doughnut Croissant;bakery;105.67;case;unit;60.0;100;105.67;active
+81;Spinach and Feta Danish;bakery;74.59;case x 36 units;unit;36.0;100;74.59;active
+82;Cheese Danish;bakery;27.48;case;unit;12.0;100;27.48;active
+83;Maple Pecan Danish;bakery;10049.0;unit;unit;1.0;100;10049.0;active
+84;Apple Butter Danish;bakery;92.21;case;unit;60.0;100;92.21;active
+85;Spinach Ricotta Danish;bakery;74.59;case;unit;1.0;100;74.59;inactive
+86;Cherry Greek Yogurt Danish;bakery;94.85;case;unit;60.0;100;94.85;active
+87;Blueberry Cheesecake Danish;bakery;101.99;case;unit;84.0;100;101.99;active
+88;Leek and Parmesan Danish;bakery;68.99;case x 36 units;unit;36.0;100;68.99;active
+89;Lemon Danish;bakery;10049.0;unit;unit;1.0;100;10049.0;active
+90;Guava Danish;bakery;49.99;case x 84 units;unit;84.0;100;49.99;active
+91;Apple Square Danish;bakery;92.21;case;unit;60.0;100;92.21;active
+92;Tomato and Olive Danish;bakery;74.59;case x 36 units;unit;36.0;100;74.59;active
+93;Strawberry Danish;bakery;1.0;unit;unit;1.0;100;1.0;active
+94;Berries and Cream Twist Danish;bakery;10.74;case;unit;6.0;100;10.74;active
+95;Raspberry Cream Cheese Danish;bakery;86.71;case;unit;1.0;100;86.71;inactive
+96;Cheese Square Danish;bakery;113.1;case;unit;66.0;100;113.1;active
+97;Cinnamon Roll;bakery;16.26;case;unit;24.0;100;16.26;active
+98;Blueberry Scone;bakery;25.85;case;unit;12.0;100;25.85;active
+99;Chocolate Chip Cookie;bakery;79.99;case;unit;80.0;100;79.99;active
+100;Chocolate Chip Muffin;bakery;21.83;case;unit;12.0;98;21.83;active
+101;Pistachio Muffin;bakery;33.73;case x 20 units;unit;20.0;100;33.73;active
+102;Banana Nut Muffin;bakery;21.12;case;unit;12.0;100;21.12;active
+103;Cacao Muffin;bakery;33.73;case;unit;20.0;100;33.73;active
+104;Chocolate Eclair;bakery;28.49;case;unit;14.0;100;28.49;active
+105;Vanilla Eclair;bakery;28.49;case x 14 units;unit;14.0;100;28.49;active
+106;Coffee Eclair;bakery;28.49;case;unit;14.0;100;28.49;active
+107;Tart Mixed Berry;bakery;44.09;case;unit;1.0;100;44.09;active
+108;Macarons French;bakery;10799.0;unit;unit;1.0;100;10799.0;active
+109;Tiramisu;bakery;41.04;case x 15 units;unit;15.0;100;41.04;active
+110;Tiramisu with Ladyfingers;bakery;46.14;case x 15 units;unit;15.0;100;46.14;active
+111;Stroopwafel;bakery;1.25;unit;unit;1.0;100;1.25;inactive
+112;Waffles Birthday Cake;bakery;1.2;unit;unit;1.0;100;1.2;inactive
+113;Red Velvet Cake;bakery;74.13;case x 16 units;unit;16.0;100;74.13;inactive
+114;Chocolate Temptation Cake;bakery;44.81;case;unit;12.0;100;44.81;active
+115;Carrot Cake;bakery;48.1;case;unit;16.0;100;48.1;active
+116;Cappuccino Cake;bakery;42.42;case;unit;12.0;100;42.42;active
+117;Cake Torta Nocciola;bakery;39.77;case;unit;10.0;100;39.77;active
+118;Chocolate Fondant Cake;bakery;48.97;case;unit;16.0;100;48.97;active
+119;Tres Leches Cake;bakery;33.34;case x 15 units;unit;15.0;100;33.34;active
+120;Red Velvet Mini Gluten Free Cake;bakery;74.13;case x 16 units;unit;16.0;100;74.13;active
+121;Ricotta and Pistachio Cake;bakery;40.93;case x 12 units;unit;12.0;100;40.93;active
+122;Pistachio Cheesecake;bakery;42.17;case x 16 units;unit;16.0;100;42.17;active
+123;Dulce de Leche Cheesecake;bakery;41.39;case;unit;16.0;100;41.39;active
+124;Strawberry Cheesecake;bakery;39.34;case x 14 units;unit;14.0;100;39.34;active
+125;Chocolate Ganache Cheesecake;bakery;42.22;case;unit;16.0;100;42.22;active
+126;Brownie Cheesecake;bakery;2.25;case;unit;24.0;100;2.25;active
+127;Acqua Panna;resale_beverage;36.95;unit;unit;24.0;100;36.95;active
+128;San Pellegrino;resale_beverage;32.99;case 24 x 500 ml;unit;24.0;100;32.99;active
+129;San Pellegrino Aranciata;resale_beverage;24.99;case 24 x 11.5 oz;unit;24.0;100;24.99;active
+130;San Pellegrino Ciao Lime;resale_beverage;0.99;case x 6 units;unit;6.0;100;0.99;active
+131;San Pellegrino Limonata;resale_beverage;24.99;case 24 x 11.5 oz;unit;24.0;100;24.99;active
+132;A Siciliana Aranciata;resale_beverage;24.99;case;unit;24.0;100;24.99;active
+133;A Siciliana Limonata;resale_beverage;31.2;case;unit;24.0;100;31.2;active
+134;A Siciliana Mandarino;resale_beverage;31.2;case;unit;24.0;100;31.2;active
+135;A Siciliana Melograno;resale_beverage;31.2;case;unit;19.0;100;31.2;active
+136;Bundaberg Ginger Beer;resale_beverage;1.5;unit;unit;1.0;100;1.5;active
+137;Apple Juice;resale_beverage;36.86;case;unit;12.0;100;36.86;active
+138;Black River Pear Juice;resale_beverage;2.5;unit;unit;1.0;100;2.5;active
+139;Five Star Apple Juice;resale_beverage;3.0;unit;unit;1.0;100;3.0;active
+140;Five Star Cranberry Juice;resale_beverage;3.0;unit;unit;1.0;100;3.0;active
+141;Five Star Orange Juice;resale_beverage;3.0;unit;unit;1.0;100;3.0;active
+142;Five Star Pineapple Juice;resale_beverage;3.0;unit;unit;1.0;100;3.0;active
+143;Orange Tropicana Juice;resale_beverage;5.5;unit;unit;1.0;100;5.5;active
+144;Apple Tropicana Juice;resale_beverage;31.2;case;unit;24.0;100;31.2;active
+145;Simply Orange Juice;resale_beverage;5.5;unit;unit;1.0;100;5.5;active
+146;Natalie's Pineapple Cucumber and Celery;resale_beverage;5.0;unit;unit;1.0;100;5.0;active
+147;Energy Drink Celsius Orange;resale_beverage;28.75;case 12 x 12 oz;unit;12.0;100;28.75;active
+148;Energy Drink Celsius Watermelon;resale_beverage;23.1;case 12 x 12 oz;unit;12.0;100;23.1;active
+149;Energy Drink Celsius Mango Lemonade;resale_beverage;28.69;case 12 x 12 oz;unit;12.0;100;28.69;active
+150;Energy Drink Celsius Peach Vibe;resale_beverage;28.69;case 12 x 12 oz;unit;12.0;100;28.69;active
+151;Energy Drink Celsius Tropical Vibe;resale_beverage;22.95;case 12 x 12 oz;unit;12.0;100;22.95;active
+152;Energy Drink Celsius Wildberry;resale_beverage;26.75;case 12 x 12 oz;unit;12.0;100;26.75;active
+153;Energy Drink Celsius Artic Vibe;resale_beverage;25.98;case 12 x 12 oz;unit;12.0;100;25.98;active
+154;Energy Drink Celsius Kiwi Guava;resale_beverage;23.09;case 12 x 12 oz;unit;12.0;100;23.09;active
+155;Energy Drink Celsuis Strawberry Lemonade;resale_beverage;28.69;case 12 x 12 oz;unit;12.0;100;28.69;active
+156;Water Bottle Smart;resale_beverage;0.95;unit;unit;1.0;100;0.95;active
+157;Flavored Water Mango Pineapple Splash;resale_beverage;1.5;unit;unit;1.0;100;1.5;active
+158;Espresso;coffee;207.2;case 6 x 1 kg;oz;211.6;100;207.2;active
+159;Ice Cubes;beverages;0.5;bottle x 1 l;fl oz;33.8;100;0.5;active
+160;Whipped Cream;dairy;24.95;case 10 x 14 oz;oz;140.0;100;24.95;active
+161;Beef Pepperoni;specialty;110.99;case 2 x 5 lb;oz;160.0;100;110.99;active
+162;Salt;specialty;2.49;case x 26 oz;fl oz;24.9;100;2.49;active
+163;Brewed Tea;tea;0.25;case x 3 gal;fl oz;384.0;100;0.25;active
+164;Cappuccino Foam;dairy;4.87;case x 1 gal;fl oz;128.0;100;4.87;active
+165;Cold Foam Coconut;dairy;40.69;case 12 x 32 oz;fl oz;383.9;100;40.69;active
+166;Tiramisu Toasted Almond;bakery;41.04;case x 15 units;unit;15.0;100;41.04;active
+167;All Butter Curved Croissant;bakery;53.94;case;unit;50.0;100;53.94;active
+168;All Butter Curved Mini Croissant;bakery;77.59;case;unit;150.0;100;77.59;active
+169;Vegan Croissant;bakery;67.44;case x 48 units;unit;48.0;100;67.44;active
+170;Multigrain Muffin;bakery;33.73;case x 20 units;unit;20.0;100;33.73;active
+171;Strawberry Sprint;specialty;193.71;case 8 x 1.32 kg;oz;373.0;100;193.71;active
+172;White Base Sprint;specialty;180.41;case x 12 units;oz;390.0;100;180.41;active
+173;Pineapple Syrup;syrups;11.99;bottle x 1 l;fl oz;33.8;100;11.99;active
+174;Avocado Cheesecake;bakery;4.99;case 8 units;unit;8.0;100;4.99;active
+175;Chocolate Mousse Glass;bakery;4.47;case x 12 units;unit;1.0;100;4.47;active
+176;Chocolate Truffle Cake;bakery;107.52;case;unit;12.0;100;107.52;active
+177;Blueberry and Chocolate Chips Vegan Croissant;bakery;67.44;case x 48 units;unit;48.0;100;67.44;active
+178;Raspberry Passion Fruit Cake;bakery;41.75;case 12 x 4.1 oz;unit;12.0;100;41.75;active
+179;Sicilian Cannoli;bakery;36.31;case x 10 units;unit;10.0;100;36.31;active
+180;Pistachio Profiteroles;bakery;39.53;case x 24 units;unit;24.0;100;39.53;active
+181;Traditional Cheesecake;bakery;32.21;case x 14 units;unit;14.0;100;32.21;active
+182;Truffle Royale Cake;bakery;44.5;case x 14 units;unit;14.0;100;44.5;active
+183;Muffin Classico;bakery;33.73;case x 20 units;unit;21.0;100;33.73;active
+184;Chocolate Sprint;gelato_paste;204.16;case x 12 units;oz;423.0;100;204.16;active
+185;Lemon Blueberry Crumb Cheesecake;bakery;2.5;case x 16 units;unit;1.0;100;2.5;active
+237;A'siciliana Pomegranate;Beverages;31.2;case;unit;24.0;100;31.2;active
+238;A'siciliana Blood Orange;Beverages;31.2;case;unit;24.0;100;31.2;active
+239;Arrezzio Imperial Cheese Mozzarella Fresh;Dairy Products;47.99;case;none;0.0;0;47.99;inactive
+240;Cheesecake Dulce de Leche;TOI - Bindi;41.39;case;none;0.0;0;41.39;inactive
+241;Carrot Cake;TOI - Bindi;48.1;case;none;0.0;0;48.1;inactive
+242;Cake Chocolate Temptation;TOI - Bindi;44.81;case;none;0.0;0;44.81;inactive
+243;Cake Limoncello Mascarpone;TOI - Bindi;42.2;case;unit;12.0;100;42.2;active
+244;Cake Ricotta and Pistachio;TOI - Bindi;40.93;case;none;0.0;0;40.93;inactive
+245;Cheesecake Mini Key Lime;TOI - Bindi;48.3;case;unit;16.0;100;48.3;active
+246;Ciabattina Rustica;Bakery;39.45;case;unit;34.0;100;39.45;active
+247;Croissant Glazed Apricot;Bakery;53.02;case;none;0.0;0;53.02;inactive
+248;Croissant Glazed Pistachio;Bakery;45.22;case;unit;40.0;100;45.22;active
+249;Croissants Mini Butter;Bakery;77.59;case;none;0.0;0;77.59;inactive
+250;French Macaron;TOI - Bindi;161.28;case;none;0.0;0;161.28;inactive
+251;Maritizzo;TOI - Bindi;41.58;case;unit;12.0;100;41.58;active
+252;Mini Pain Au Chocolat;TOI - Bindi;86.7;case;unit;150.0;100;86.7;active
+253;Muffin Cocoa;Bakery;33.73;case;none;0.0;0;33.73;inactive
+254;Pinsa Classica 12 X 8;Bakery;91.23;case;none;0.0;0;91.23;inactive
+255;Block and Barrel Cheese Cheddar Sharp Sliced;Dairy Products;41.79;case;none;0.0;0;41.79;inactive
+256;Cinnamon Bun Brioche RTB;Bakery;58.7;case;none;0.0;0;58.7;inactive
+257;Danish Apple Butter;Bakery;92.21;case;none;0.0;0;92.21;inactive
+258;Danish Maple Pecan;Bakery;59.99;case;none;0.0;0;59.99;inactive
+259;Danish Strawberry Cheese;Bakery;116.93;case;none;0.0;0;116.93;inactive
+260;Danish Tomato and Olive RTB;Bakery;74.59;case;none;0.0;0;74.59;inactive
+261;Mini Danish Assortment;Bakery;53.0;case;unit;80.0;100;53.0;active
+262;Butterball Turkey Sausage Patties Fully-cooked;Other;54.45;case;none;0.0;0;54.45;inactive
+263;Barista Almond Specialty Milk;Specialty Milks;31.11;case;none;0.0;0;31.11;inactive
+264;Artic Vibe;Beverages;28.75;case;none;0.0;0;28.75;inactive
+265;Berry Wild;Beverages;26.75;case;unit;12.0;100;26.75;active
+266;Kiwi Guava;Beverages;23.09;case;unit;12.0;100;23.09;active
+267;Orange;Beverages;28.75;case;none;0.0;0;28.75;inactive
+268;Tropical Vibe;Beverages;28.75;case;none;0.0;0;28.75;inactive
+269;Dannon Yogurt Vanilla Nonfat;Dairy Products;29.55;case;none;0.0;0;29.55;inactive
+270;Muffin Pumpkin Cheese;Bakery;17.45;case;unit;12.0;100;17.45;active
+271;Sauce Pump 0.50 Oz. For 64 Oz. Bottles;Other;10.0;each;none;0.0;0;10.0;inactive
+272;Sweet Ground Chocolate and Cocoa Powder;Other;20.21;piece;none;0.0;0;20.21;inactive
+273;2 Tier 64 Oz. Flavoring Sauce Rack;Accesories;36.97;each;none;0.0;0;36.97;inactive
+274;3 Tier 64 Oz. Flavoring Sauce Rack;Accesories;41.0;each;none;0.0;0;41.0;inactive
+275;Caramel Flavoring Sauce;Other;19.6;bottle x 64 oz;fl oz;64.0;100;19.6;active
+276;Sweet Ground Chocolate and Cocoa Powder;Other;20.21;piece;none;0.0;0;20.21;inactive
+277;Vanilla Flavored Frappe Beverage Base;Other;20.21;canister x 3 lb;oz;48.0;100;20.21;active
+278;White Chocolate Flavoring Sauce;Other;19.6;bottle x 64 oz;fl oz;64.0;100;19.6;active
+279;Jennie-o Bacon Turkey Pre-cooked Crispy;Other;63.99;case;none;0.0;0;63.99;inactive
+280;Bagel Plain;Bakery;42.95;case;none;0.0;0;42.95;inactive
+281;Just Bagels Bagel Cheese Asiago;Bakery;56.75;case 8 x 6 units;unit;48.0;100;56.75;active
+282;Just Bagels Bagel Everything;Bakery;44.95;case;none;0.0;0;44.95;inactive
+283;Two Cup Carrier;Cups / Paper / Disposables;180.0;case;none;0.0;0;180.0;inactive
+284;Cup Sleeves;Cups / Paper / Disposables;164.0;case;none;0.0;0;164.0;inactive
+285;Die Cut Paper Bag Large;Cups / Paper / Disposables;452.0;case;none;0.0;0;452.0;inactive
+286;Die Cut Paper Bag Small;Cups / Paper / Disposables;298.0;case;none;0.0;0;298.0;inactive
+287;Die Cut Paper Bag Medium;Cups / Paper / Disposables;372.0;case;none;0.0;0;372.0;inactive
+288;Dome Lid For Bowl;Cups / Paper / Disposables;55.0;case;none;0.0;0;55.0;inactive
+289;Dome Lids For 12. 16 . 20 .;Cups / Paper / Disposables;95.0;case;none;0.0;0;95.0;inactive
+290;Dome Lids For;Cups / Paper / Disposables;129.0;case;none;0.0;0;129.0;inactive
+291;Double Wall Cup;Cups / Paper / Disposables;106.0;case;none;0.0;0;106.0;inactive
+292;Double Wall Cup;Cups / Paper / Disposables;152.0;case;none;0.0;0;152.0;inactive
+293;Drinking Lid For 12 .16 . 20 and;Cups / Paper / Disposables;105.0;case;none;0.0;0;105.0;inactive
+294;Lids For Paper Cups 12 . 16 . 20 .;Cups / Paper / Disposables;105.0;case;none;0.0;0;105.0;inactive
+295;PET Plastic Cups;Cups / Paper / Disposables;169.0;case;none;0.0;0;169.0;inactive
+296;PET Plastic Cups;Cups / Paper / Disposables;237.0;case;none;0.0;0;237.0;inactive
+297;PET Plastic Cups;Cups / Paper / Disposables;329.0;case;none;0.0;0;329.0;inactive
+298;Plastic Straw For Cold Drink 0.6*23Cm;Cups / Paper / Disposables;225.0;case;none;0.0;0;225.0;inactive
+299;Plastic Straw For Cold Drink 1.2*23Cm;Cups / Paper / Disposables;129.0;case;none;0.0;0;129.0;inactive
+300;Plastic Straw For Hot Drink 0.8*23 Cm;Cups / Paper / Disposables;225.0;case;none;0.0;0;225.0;inactive
+301;Single Wall Cup;Cups / Paper / Disposables;248.0;case;none;0.0;0;248.0;inactive
+302;Single Wall Cup;Cups / Paper / Disposables;98.0;case;none;0.0;0;98.0;inactive
+303;Two Cup Carrier;Cups / Paper / Disposables;180.0;case;none;0.0;0;180.0;inactive
+304;Lotus - 1 Oz Dispenser Pump;Accesories;3.0;each;none;0.0;0;3.0;inactive
+305;Lotus - 3 Bottle Rack;Accesories;29.99;piece;none;0.0;0;29.99;inactive
+306;Blue Raspberry Fruit Fussion;Energy Fruit Fussions;19.0;bottle;none;0.0;0;19.0;inactive
+307;Mango Passion Fruit Fussion;Energy Fruit Fussions;19.0;bottle;none;0.0;0;19.0;inactive
+308;Orange Creamsicle Ff;Energy Fruit Fussions;19.0;bottle;none;0.0;0;19.0;inactive
+309;Pina Colada Fruit Fussion;Energy Fruit Fussions;19.0;bottle;none;0.0;0;19.0;inactive
+310;Strawberry Fruit Fussion;Energy Fruit Fussions;19.0;bottle;none;0.0;0;19.0;inactive
+311;White Plant Power Concentrate;Energy Fruit Fussions;29.71;bottle;none;0.0;0;29.71;inactive
+312;White Plant Power Zero Sugar Concentrate;Energy Fruit Fussions;29.71;bottle;none;0.0;0;29.71;inactive
+313;Caramel Sugar Free Syrup;Syrups - Monin;6.75;bottle x 750 ml;fl oz;25.3;100;6.75;active
+314;Caramel Syrup;Syrups - Monin;6.75;bottle x 750 ml;fl oz;25.3;100;6.75;active
+315;Cinnamon Syrup;Syrups - Monin;6.75;bottle x 750 ml;fl oz;25.3;100;6.75;active
+316;Hazelnut - Sugar Free Syrup;Syrups - Monin;6.75;bottle;none;0.0;0;6.75;inactive
+317;Lavender Syrup;Syrups - Monin;6.75;bottle x 750 ml;fl oz;25.3;100;6.75;active
+318;Pistachio Syrup;Syrups - Monin;6.75;bottle x 750 ml;fl oz;25.3;100;6.75;active
+319;Pure Cane Syrup;Syrups - Monin;6.75;bottle x 750 ml;fl oz;25.3;100;6.75;active
+320;Syrup (0.25 Oz.) Pump For 750 Ml Bottles;Accesories;2.46;each;none;0.0;0;2.46;inactive
+321;Syrup Pump (0.25 Oz.) For 750 Ml Bottles;Accesories;2.5;each;none;0.0;0;2.5;inactive
+322;Papetti's Egg Patty Fully Cooked;Other;44.79;case;none;0.0;0;44.79;inactive
+323;Pregel Butter Pecan;Gelato;174.78;case 12 x 1.81 lb;oz;347.52;100;174.78;active
+324;Pregel Mango Sprint;Gelato;216.55;case 12 x 1.1 kg;oz;465.6;100;216.55;active
+325;Pregel Pistachio Paste;Gelato;628.26;case 2 x 2.5 kg;oz;176.37;100;628.26;active
+326;Bombay Chai Black Tea / 20 Ct;Tea;32.4;box;none;0.0;0;32.4;inactive
+327;British Breakfast Black Tea / 20 Ct;Tea;32.4;box;none;0.0;0;32.4;inactive
+328;Cape Town Honeybush Caramel Herbal Tea / 20 Ct;Tea;32.4;box;none;0.0;0;32.4;inactive
+329;Danish Rhubarb and Rose Milky Oolong Tea / 20 Ct;Tea;32.4;box;none;0.0;0;32.4;inactive
+330;German Chamomile and Lemon Balm / 20 Ct;Tea;32.4;box;none;0.0;0;32.4;inactive
+331;Hemp Ginger and Chicory Herbal Tea / 20 Ct;Tea;32.4;box;none;0.0;0;32.4;inactive
+332;Mexican Hibiscus Mango and Moringa Fruit Infusion / 20 Ct;Tea;32.36;box;none;0.0;0;32.36;inactive
+333;Oregon Spearmint and Peppermint Herbal Tea / 20 Ct;Tea;32.4;box;none;0.0;0;32.4;inactive
+334;Cake - Mixed Berry Tart;TOI - Bindi;45.24;case;none;0.0;0;45.24;inactive
+335;Cake - Raspberry Passionfruit;TOI - Bindi;41.75;case;none;0.0;0;41.75;inactive
+336;Croissant - Almond;Bakery;56.63;case;none;0.0;0;56.63;inactive
+337;Mini Cheesecake - Alle Fragole;TOI - Bindi;54.64;piece;none;0.0;0;54.64;inactive
+338;Macaron - Strawberry;Bakery;25.95;case;none;0.0;0;25.95;inactive
+339;Bagel Sesame;Bakery;11.41;case x 12 units;unit;12.0;100;11.41;active
+340;Cinnamon Bun;Bakery;12.78;case;none;0.0;0;12.78;inactive
+341;Cinnamon Bun Pecan Sticky;Bakery;12.69;case;none;0.0;0;12.69;inactive
+342;Cinnamon Bun with Icing;Bakery;9.73;tray;none;0.0;0;9.73;inactive
+343;Croissant Butter All Natural;Bakery;15.74;case x 14 units;unit;14.0;100;15.74;active
+344;Croissant Chocolate;Bakery;10.32;case;none;0.0;0;10.32;inactive
+345;Danish Twist - Cherry;Bakery;10.74;case;none;0.0;0;10.74;inactive
+346;Macaron - Raspberry;Bakery;25.95;case;none;0.0;0;25.95;inactive
+347;Macaron / Chocolate;Bakery;25.95;case;none;0.0;0;25.95;inactive
+348;Macaron / Spring Assortment;Bakery;30.07;case;none;0.0;0;30.07;inactive
+349;Macaron / Vainilla;Bakery;25.95;case;none;0.0;0;25.95;inactive
+350;Macaron /Pistachio;Bakery;26.0;case;none;0.0;0;26.0;inactive
+351;Macaron Sea Salt Caramel;Bakery;25.95;case;none;0.0;0;25.95;inactive
+352;Muffin Lemon With raspberry;Bakery;22.12;case x 12 units;unit;12.0;100;22.12;active
+353;Muffin Morning Glory;Bakery;13.35;case x 16 units;unit;16.0;100;13.35;active
+354;Muffin Zucchini. Chia. Pumpkin and Sunflower Seeds;Bakery;18.13;case x 12 units;unit;12.0;100;18.13;active
+355;Everything Slcd;Bakery;11.45;case;none;0.0;0;11.45;inactive
+356;Jalapeno & Cheddar Cheese. Slcd;Bakery;12.68;case x 12 units;unit;12.0;100;12.68;active
+357;Plain Slcd;Bakery;10.82;case;none;0.0;0;10.82;inactive
+358;Rustic Plain 4 X 4;Bakery;26.16;case x 36 units;unit;36.0;100;26.16;active
+359;Almond Filled;Bakery;10.21;tray;none;0.0;0;10.21;inactive
+360;Almond. Mini;Bakery;12.76;case;none;0.0;0;12.76;inactive
+361;Bear Claws;Bakery;19.79;tray x 11 units;unit;11.0;100;19.79;active
+362;Twist Apple Filling;Bakery;10.74;case;none;0.0;0;10.74;inactive
+363;Twist W/ Cheese Filling;Bakery;10.21;case;none;0.0;0;10.21;inactive
+364;Banana Nut;Bakery;14.94;tray;none;0.0;0;14.94;inactive
+365;Banana. W/ Nutella;Bakery;22.13;case x 12 units;unit;12.0;100;22.13;active
+366;Blueberry;Bakery;14.94;tray x 8 units;unit;8.0;100;14.94;active
+367;Churro. W/ Dulce de Leche;Bakery;22.13;case x 12 units;unit;12.0;100;22.13;active
+368;Double Chocolate;Bakery;14.94;tray;none;0.0;0;14.94;inactive
+369;Orange Cranberry Tulip Cup;Bakery;14.94;tray x 8 units;unit;8.0;100;14.94;active
+370;Original Bran;Bakery;14.94;case x 12 units;unit;12.0;100;14.94;active
+371;Lemon;Bakery;32.53;case x 12 units;unit;12.0;100;32.53;active
+372;Blueberry Triangle;Bakery;21.81;tray;none;0.0;0;21.81;inactive
+373;Mixed Berry;Bakery;21.89;tray x 15 units;unit;15.0;100;21.89;active
+374;Cinnamon Crumb;Bakery;24.94;piece 12 x 2 loaves;loave;24.0;100;24.94;active
+375;Caramel Sugar Free Syrup Case 4L;Syrups - Monin;38.13;case 4 x 1 l;fl oz;135.2;100;38.13;active
+376;Cookie Butter Syrup;Syrups - Monin;38.57;case 4 x 1 l;fl oz;135.2;100;38.57;active
+377;Hazelnut Sugar Free Syrup;Syrups - Monin;38.35;case 4 x 1 l;fl oz;135.2;100;38.35;active
+378;Lavender Syrup Case 4L;Syrups - Monin;33.89;case 4 x 1 l;fl oz;135.2;100;33.89;active
+379;Macadamia Nut Syrup;Syrups - Monin;34.01;case 4 x 1 l;fl oz;135.2;100;34.01;active
+380;Pistachio Syrup Case 4L;Syrups - Monin;36.56;case 4 x 1 l;fl oz;135.2;100;36.56;active
+381;Pure Cane Syrup Case 4L;Syrups - Monin;31.84;case 4 x 1 l;fl oz;135.2;100;31.84;active
+382;Strawberry Syrup;Syrups - Monin;6.47;bottle x 1 l;fl oz;33.8;100;6.47;active
+383;Toasted Marshmallow Syrup;Syrups - Monin;37.45;case 4 x 1 l;fl oz;135.2;100;37.45;active
+384;Vainilla - Sugar Free -Syrup;Syrups - Monin;39.84;piece;none;0.0;0;39.84;inactive
+385;Vainilla Syrup;Syrups - Monin;33.55;piece;none;0.0;0;33.55;inactive
+386;Yuzu Syrup;Syrups - Monin;70.67;case 4 x 1 l;fl oz;135.2;100;70.67;active
+387;A'siciliana Mandarin Soda Can;Beverages;31.2;case;none;0.0;0;31.2;inactive
+388;Cheesecake - Brownie Ind. Wrap;TOI - Bindi;53.41;case;none;0.0;0;53.41;inactive
+389;Cheesecake Mini Pumpkin;TOI - Bindi;50.67;case;unit;16.0;100;50.67;active
+390;Poppi Cherry Limeade Prebiotic;Beverages;21.79;case 12 x 12 oz;unit;12.0;100;21.79;active
+391;Poppi Raspberry Rose Prebiotic;Beverages;21.79;case 12 x 12 oz;unit;12.0;100;21.79;active
+392;Poppi Strawberry Lemon Prebiotic;Beverages;21.79;case 12 x 12 oz;unit;12.0;100;21.79;active
+393;Tea - Sweet Iced Tea W Lemon;Beverages;22.77;case;none;0.0;0;22.77;inactive
+394;Tea Unsweetened Iced;Beverages;22.79;case 12 x 18.5 oz;unit;12.0;100;22.79;active
+395;Tea Sweet Iced;Beverages;22.79;case 12 x 18.5 oz;unit;12.0;100;22.79;active
+396;Cake Lemon Mousse;TOI - Bindi;38.5;case;unit;14.0;100;38.5;active
+397;Cake Mango Passion;TOI - Bindi;41.25;case;unit;14.0;100;41.25;active
+398;Cake Monterosa;TOI - Bindi;42.67;case;unit;12.0;100;42.67;active
+399;Croissant Plain Vegan;Bakery;56.95;case;unit;40.0;100;56.95;active
+400;Chocolate Twist;Bakery;114.9;case;unit;80.0;100;114.9;active
+401;Croissant - Large Butter;Bakery;61.78;case;none;0.0;0;61.78;inactive
+402;Danish - Guava;Bakery;49.99;case;none;0.0;0;49.99;inactive
+403;Danish - Leek and Parmesan Bistro;Bakery;68.99;case;none;0.0;0;68.99;inactive
+404;Danish - Lemon;Bakery;90.99;case;none;0.0;0;90.99;inactive
+405;Danish - Spinach and Feta RTB;Bakery;74.59;case;none;0.0;0;74.59;inactive
+406;Croissant Tomato Parmesan;Bakery;130.79;case;unit;72.0;100;130.79;active
+407;Croissant Doughnut;Bakery;105.67;case;none;0.0;0;105.67;inactive
+408;Souffle Spinach and Cheese;Bakery;106.64;case;unit;30.0;100;106.64;active
+409;Turnover Blueberry Turnover;Bakery;132.48;case;unit;60.0;100;132.48;active
+410;Turnover Peach;Bakery;124.32;case;unit;60.0;100;124.32;active
+411;C'est Gourmet Kouign Amann;Bakery;84.15;case;unit;40.0;100;84.15;active
+412;Barista Coconut Specialty Milk;Specialty Milks;31.5;case;none;0.0;0;31.5;inactive
+413;Pistachio Milk Barista Specialty;Specialty Milks;47.0;case;fl oz;383.9;100;47.0;active
+414;Soy Milk Barista Specialty;Specialty Milks;28.0;case 12 x 32 oz;fl oz;383.9;100;28.0;active
+415;Daily Greens Juice;Beverages;28.91;case 6 x 15.2 oz;unit;6.0;100;28.91;active
+416;Daily Roots + Ginger Juice;Beverages;27.6;case 6 x 15.2 oz;unit;6.0;100;27.6;active
+417;Orange Juice;Beverages;27.23;case 6 x 15.2 oz;unit;6.0;100;27.23;active
+418;Vitality Shot;Beverages;74.84;case 24 x 2 oz;unit;24.0;100;74.84;active
+419;Wellness Shot;Beverages;74.84;case 24 x 2 oz;unit;24.0;100;74.84;active
+420;Oregon Spearmint & Peppermint Herbal Tea / 20 Ct;Tea;32.4;case 6 x 20 units;unit;120.0;100;32.4;active
+421;Cucumber;Beverages;22.03;case 12 x 12 oz;unit;12.0;100;22.03;active
+422;Cucumber;Beverages;27.06;case;none;0.0;0;27.06;inactive
+423;Ginger & Key Lime;Beverages;27.06;case 12 x 12 oz;unit;12.0;100;27.06;active
+424;Hibiscus & Rose;Beverages;22.03;case 12 x 12 oz;unit;13.0;100;22.03;active
+425;Orange + Mandarin;Beverages;27.0;case 12 x 12 oz;unit;12.0;100;27.0;active
+426;Pineapple & Pink Grapefruit;Beverages;23.24;case 12 x 12 oz;unit;12.0;100;23.24;active
+427;Sic Lemon Iced Tea;Beverages;27.03;case 12 x 12 oz;unit;12.0;100;27.03;active
+428;Apple X;Beverages;36.86;case;none;0.0;0;36.86;inactive
+429;Cranberry X;Beverages;36.86;case x 12 units;unit;12.0;100;36.86;active
+430;Mango X;Beverages;37.44;case x 12 units;unit;12.0;100;37.44;active
+431;Orange X;Beverages;36.5;case x 12 units;unit;12.0;100;36.5;active
+432;Pear X;Beverages;38.54;case x 12 units;unit;12.0;100;38.54;active
+433;Pineapple X;Beverages;37.44;case x 12 units;unit;12.0;100;37.44;active
+434;Eclair - Coffee;TOI - Bindi;28.49;case;none;0.0;0;28.49;inactive
+435;Bagel Everything Sliced;Bakery;44.95;case;none;0.0;0;44.95;inactive
+436;Brownie;Bakery;21.61;case;unit;12.0;100;21.61;active
+437;Muffin Chocolate Chip Tulip Cup Lg;Bakery;21.83;case;none;0.0;0;21.83;inactive
+438;Scones - Blueberry;Bakery;25.85;case;none;0.0;0;25.85;inactive
+439;Cusanos Bagel Jalapeno Cheddar Sliced;Bakery;16.98;case;unit;12.0;100;16.98;active
+440;Cusanos Bagel New Yorker;Other;17.22;piece;none;0.0;0;17.22;inactive
+441;Cusanos Bagel Plain Sliced;Other;9.31;case;none;0.0;0;9.31;inactive
+442;Cusanos Ciabatta Med;Bakery;13.98;case;unit;12.0;100;13.98;active
+443;Banana Nut Tulip Cup Lg;Bakery;21.12;case;none;0.0;0;21.12;inactive
+444;Rasp. Lemon Sugar Tulip;Bakery;23.05;case;unit;12.0;100;23.05;active
+445;Cusanos Quesito Lg Ind;Bakery;33.08;case;unit;12.0;100;33.08;active
+446;Coppa Gelato Cafe;Gelato;29.17;case;unit;6.0;100;29.17;active
+447;Coppa Gelato Spagnola;Gelato;29.17;case;unit;6.0;100;29.17;active
+448;Coppa Gelato Pistachio;Gelato;29.17;case;unit;6.0;100;29.17;active
+449;Croissant Cream Filled;Bakery;56.87;case;unit;50.0;100;56.87;active
+450;Turnover Apple;Bakery;70.73;case;unit;48.0;100;70.73;active
+451;Caramel Pecan Bar;Bakery;60.29;case;unit;21.0;100;60.29;active
+452;Mini Bomboloni Cocoa & Hazelnut;Bakery;63.64;case;unit;104.0;100;63.64;active
+453;Muffin Pistacchio;Bakery;33.73;case;none;0.0;0;33.73;inactive
+454;Croissant Curved Butter;Bakery;68.97;case;none;0.0;0;68.97;inactive
+455;Danish Raspberry Cheesecake;Bakery;102.07;case;unit;84.0;100;102.07;active
+456;Just Baked Muffin Blueberry;Bakery;35.82;bag x 18 units;unit;18.0;100;35.82;active
+457;A'siciliana Limonata Soda Can;Beverages;31.2;case;none;0.0;0;31.2;inactive
+458;Cake - Tres Leches;TOI - Bindi;33.34;case;none;0.0;0;33.34;inactive
+459;Bagel - Everything;Bakery;27.0;case;none;0.0;0;27.0;inactive
+460;Bagel - Plain;Bakery;18.0;case;none;0.0;0;18.0;inactive
+461;Cake - Lemon Pound;Bakery;7.47;case;none;0.0;0;7.47;inactive
+462;Cake Original Crumb;Bakery;9.16;case x 4 units;unit;4.0;100;9.16;active
+463;Cake Plain Pound;Bakery;4.98;case x 2 units;unit;2.0;100;4.98;active
+464;Cinnamon Bunn;Bakery;27.48;case;none;0.0;0;27.48;inactive
+465;Cookies Black and White;Bakery;8.37;case x 3 units;unit;3.0;100;8.37;active
+466;Danish - Apple;Bakery;6.87;case;none;0.0;0;6.87;inactive
+467;Danish Blueberry;Bakery;6.87;case x 3 units;unit;3.0;100;6.87;active
+468;Danish - Cheese;Bakery;27.48;case;none;0.0;0;27.48;inactive
+469;Danish - Cherry;Bakery;13.74;case;none;0.0;0;13.74;inactive
+470;Danish Raspberry;Bakery;9.16;case x 4 units;unit;4.0;100;9.16;active
+471;Scone - Blueberry;Bakery;5.38;case;none;0.0;0;5.38;inactive
+472;Scone Chocolate Chip Scone;Bakery;5.38;case x 2 units;unit;2.0;100;5.38;active
+473;Turnover Apple Case 2;Bakery;4.58;case x 2 units;unit;2.0;100;4.58;active
+499;Cake - Carrot;Bakery - Bindi (TOI);48.1;case;none;0.0;0;48.1;inactive
+500;Cake - Chocolate Temptation;Bakery - Bindi (TOI);44.81;case;none;0.0;0;44.81;inactive
+501;Cake - Mixed Berry Tart;Bakery - Bindi (TOI);45.24;case;none;0.0;0;45.24;inactive
+502;Cake - Raspberry Passionfruit;Bakery - Bindi (TOI);41.75;case;none;0.0;0;41.75;inactive
+503;Cake - Ricotta and Pistachio;Bakery - Bindi (TOI);40.93;case;none;0.0;0;40.93;inactive
+504;Croissant - Almond;Bakery;56.63;case;none;0.0;0;56.63;inactive
+505;Mini Cheesecake - Alle Fragole;Bakery - Bindi (TOI);54.64;piece;none;0.0;0;54.64;inactive
+506;Artic Vibe;Beverages;28.75;case;none;0.0;0;28.75;inactive
+507;Orange;Beverages;28.75;case;none;0.0;0;28.75;inactive
+508;Tropical Vibe;Beverages;28.75;case;none;0.0;0;28.75;inactive
+509;Bagel - Everything Slcd;Bakery;11.45;case;none;0.0;0;11.45;inactive
+510;Bagel - Plain Slcd;Bakery;10.82;case;none;0.0;0;10.82;inactive
+511;Cinnamon Bun;Bakery;12.78;case;none;0.0;0;12.78;inactive
+512;Cinnamon Bun Pecan Sticky;Bakery;12.69;case x 6 units;unit;6.0;100;12.69;active
+513;Cinnamon Bun with Icing;Bakery;9.73;tray x 6 units;unit;6.0;100;9.73;active
+514;Croissant - Almond Filled;Bakery;10.21;tray;none;0.0;0;10.21;inactive
+515;Croissant - Almond. Mini;Bakery;12.76;case;none;0.0;0;12.76;inactive
+516;Croissant Chocolate;Bakery;10.32;case;none;0.0;0;10.32;inactive
+517;Danish - Twist Apple Filling;Bakery;10.74;case;none;0.0;0;10.74;inactive
+518;Danish - Twist W/ Cheese Filling;Bakery;10.21;case;none;0.0;0;10.21;inactive
+519;Danish Twist - Cherry;Bakery;10.74;case;none;0.0;0;10.74;inactive
+520;Macaron - Raspberry;Bakery;25.95;case;none;0.0;0;25.95;inactive
+521;Macaron - Strawberry;Bakery;25.95;case;none;0.0;0;25.95;inactive
+522;Macaron / Chocolate;Bakery;25.95;case;none;0.0;0;25.95;inactive
+523;Macaron / Pistachio;Bakery;26.0;case;none;0.0;0;26.0;inactive
+524;Macaron / Spring Assortment;Bakery;30.07;case;none;0.0;0;30.07;inactive
+525;Macaron / Vainilla;Bakery;25.95;case;none;0.0;0;25.95;inactive
+526;Macaron Sea Salt Caramel;Bakery;25.95;case;none;0.0;0;25.95;inactive
+527;Muffin - Banana Nut;Bakery;14.94;tray;none;0.0;0;14.94;inactive
+528;Muffin - Double Chocolate;Bakery;14.94;tray;none;0.0;0;14.94;inactive
+529;Scones - Blueberry Triangle;Bakery;21.81;tray;none;0.0;0;21.81;inactive
+530;Two Cup Carrier;Cups / Paper / Disposables;200.0;case;none;0.0;0;200.0;inactive
+531;Die Cut Paper Bag Large;Cups / Paper / Disposables;452.0;case;none;0.0;0;452.0;inactive
+532;Die Cut Paper Bag Small;Cups / Paper / Disposables;298.0;case;none;0.0;0;298.0;inactive
+533;Die Cut Paper Bag Medium;Cups / Paper / Disposables;372.0;case;none;0.0;0;372.0;inactive
+534;Dome Lid For Bowl;Cups / Paper / Disposables;55.0;case;none;0.0;0;55.0;inactive
+535;Dome Lids For 12. 16 . 20 .;Cups / Paper / Disposables;95.0;case;none;0.0;0;95.0;inactive
+536;Dome Lids For;Cups / Paper / Disposables;129.0;case;none;0.0;0;129.0;inactive
+537;Two Cup Carrier;Cups / Paper / Disposables;180.0;case;none;1;1;180.0;active
+538;Lotus - 1 Oz Dispenser Pump;Racks & Accesories;3.0;each;none;1;1;3.0;active
+539;Lotus - 3 Bottle Rack;Racks & Accesories;29.99;piece;none;1;1;29.99;active
+540;Blue Raspberry Fruit Fussion;Other;19.0;bottle;none;0.0;0;19.0;inactive
+541;Mango Passion Fruit Fussion;Other;19.0;bottle;none;0.0;0;19.0;inactive
+542;Orange Creamsicle Ff;Other;19.0;bottle;none;0.0;0;19.0;inactive
+543;Pina Colada Fruit Fussion;Other;19.0;bottle;none;0.0;0;19.0;inactive
+544;Strawberry Fruit Fussion;Other;19.0;bottle;none;0.0;0;19.0;inactive
+545;White Plant Power Concentrate;Other;29.71;bottle;none;0.0;0;29.71;inactive
+546;White Plant Power Zero Sugar Concentrate;Other;29.71;bottle;none;0.0;0;29.71;inactive
+547;Vainilla - Sugar Free -Syrup;Syrups & Sauces - (Monin + Ghirardelli);39.84;piece;none;0.0;0;39.84;inactive
+548;Vainilla Syrup;Syrups & Sauces - (Monin + Ghirardelli);33.55;piece;none;0.0;0;33.55;inactive
+549;Cheesecake Dulce de Leche;Bakery - Bindi (TOI);41.39;case;none;0.0;0;41.39;inactive
+550;Pinsa Classica 12 X 8;Bakery;88.37;case;none;0.0;0;88.37;inactive
+551;Croissant - Large Butter;Bakery;61.78;case;none;0.0;0;61.78;inactive
+552;Danish - Guava;Bakery;49.99;case;none;0.0;0;49.99;inactive
+553;Danish - Leek and Parmesan Bistro;Bakery;68.99;case;none;0.0;0;68.99;inactive
+554;Danish - Lemon;Bakery;90.99;case;none;0.0;0;90.99;inactive
+555;Danish - Spinach and Feta RTB;Bakery;74.59;case;none;0.0;0;74.59;inactive
+556;Danish Strawberry Cheese;Bakery;116.93;case;none;0.0;0;116.93;inactive
+557;Danish Tomato and Olive RTB;Bakery;74.59;case;none;0.0;0;74.59;inactive
+558;Croissant Doughnut;Bakery;105.67;case;none;0.0;0;105.67;inactive
+559;Almond Barista Specialty Milk;Specialty Milks;31.11;case;none;0.0;0;31.11;inactive
+560;Coconut Barista Specialty Milk;Specialty Milks;31.5;case;none;0.0;0;31.5;inactive
+561;Pistachio Milk;Specialty Milks;47.0;case 12 x 32 oz;fl oz;383.9;100;47.0;active
+562;Soy Milk;Specialty Milks;28.0;case 12 x 32 oz;fl oz;383.9;100;28.0;active
+563;Bombay Chai Black Tea / 20 Ct;Other;32.4;box;none;0.0;0;32.4;inactive
+564;British Breakfast Black Tea / 20 Ct;Other;32.4;box;none;0.0;0;32.4;inactive
+565;Cape Town Honeybush Caramel Herbal Tea / 20 Ct;Other;32.4;box;none;0.0;0;32.4;inactive
+566;Danish Rhubarb and Rose Milky Oolong Tea / 20 Ct;Other;32.4;box;none;0.0;0;32.4;inactive
+567;German Chamomile and Lemon Balm / 20 Ct;Other;32.4;box;none;0.0;0;32.4;inactive
+568;Hemp Ginger and Chicory Herbal Tea / 20 Ct;Other;32.4;box;none;0.0;0;32.4;inactive
+569;Mexican Hibiscus Mango and Moringa Fruit Infusion / 20 Ct;Other;32.36;box;none;0.0;0;32.36;inactive
+570;Mango & Thai Basil;Beverages;27.06;case 12 x 12 oz;unit;12.0;100;27.06;active
+571;Apple X 250 Ml - 8.45 Fl. Oz.;Beverages;36.86;case;none;0.0;0;36.86;inactive
+572;Eclair - Coffee;Bakery - Bindi (TOI);28.49;case;none;0.0;0;28.49;inactive
+573;Perfect Chocolatine;Bakery;58.19;case;unit;60.0;100;58.19;active
+574;Bagel - Everything Sliced;Bakery;9.31;case;none;0.0;0;9.31;inactive
+575;Bagel - New Yorker;Bakery;17.22;case;none;0.0;0;17.22;inactive
+576;Bagel - Plain Sliced;Bakery;9.31;case;none;0.0;0;9.31;inactive
+577;Muffin - Banana Nut Tulip Cup Lg;Bakery;21.12;case;none;0.0;0;21.12;inactive
+578;Muffin - Chocolate Chip Tulip Cup Lg;Bakery;21.83;case;none;0.0;0;21.83;inactive
+579;Scones - Blueberry;Bakery;25.85;case;none;0.0;0;25.85;inactive
+580;Croissant - Apricot;Bakery;53.02;case;none;0.0;0;53.02;inactive
+581;French Macaron - Assorted *Special Order*;Bakery - Bindi (TOI);161.28;case;none;0.0;0;161.28;inactive
+582;Cheesecake - Brownie Ind. Wrap;Bakery - Bindi (TOI);53.41;case;none;0.0;0;53.41;inactive
+583;Muffin Cocoa;Bakery;33.73;case;none;0.0;0;33.73;inactive
+584;Muffin Pistacchio;Bakery;33.73;case;none;0.0;0;33.73;inactive
+585;Cinnamon Bun Brioche RTB;Bakery;58.7;case;none;0.0;0;58.7;inactive
+586;Croissant Curved Butter;Bakery;68.97;case;none;0.0;0;68.97;inactive
+587;Bagel - Everything;Bakery;44.95;case;none;0.0;0;44.95;inactive
+588;Bagel - Plain;Bakery;42.95;case;none;0.0;0;42.95;inactive
+589;Egg Miscellaneous Sous-vide Prosciutto Gruyere Bite;Protein RTE;32.69;case;unit;12.0;100;32.69;inactive
+590;Cheese - Mozzarella Fresh;Dairy Products;47.99;case;none;0.0;0;47.99;inactive
+591;Oil Olive;Ingredients;59.95;case;fl oz;127.0;100;59.95;active
+592;Bagels Plain Sliced Thaw and Serve 4 Oz Sleeved;Bakery;50.99;case;none;383991784.0;0;50.99;inactive
+593;Croissants - Mini Butter;Bakery;77.59;case;none;1610459378.0;0;77.59;inactive
+594;Cheese - Blue Cheese Crumbles;Dairy Products;37.75;case;none;144013826.0;0;37.75;inactive
+595;Cheese - Cheddar - Sharp Sliced;Dairy Products;41.79;case;none;0.0;0;41.79;inactive
+596;Cheese - Mozzarella Part Skim Sliced;Dairy Products;44.95;case;none;0.0;0;44.95;inactive
+597;Pickle Dill Sliced 1/8 Inch Smooth Cut 650 Count;Ingredients;12.3;case;none;0.0;0;12.3;inactive
+598;Granola - Honey Oat - Gluten-free;Ingredients;19.49;case;none;0.0;0;19.49;inactive
+599;Chicken Breast Strips with Grill Marks;Protein RTE;56.75;case;none;0.0;0;56.75;inactive
+600;Danish - Apple Butter RTB;Bakery;92.21;case;none;0.0;0;92.21;inactive
+601;Danish - Maple Pecan;Bakery;59.99;case;none;0.0;0;59.99;inactive
+602;Margherita Bistro;Bakery;77.22;case;unit;36.0;100;77.22;active
+603;Ham Prosciutto Sliced;Protein RTE;50.65;case;none;0.0;0;50.65;inactive
+604;Turkey Sausage Patties Fully-cooked;Protein RTE;54.45;case;none;0.0;0;54.45;inactive
+605;Milk Oat Barista;Specialty Milks;31.5;case;fl oz;384.0;100;31.5;active
+606;Guacamole Fresh Pico Blend Packaged;Ingredients;51.69;case;oz;191.9;100;51.69;active
+607;Sunset Orange Liqua-gel Food Coloring;Ingredients;10.49;Unit;none;0.0;0;10.49;inactive
+608;Wiper Towel Pink Diamond 11.5 X 24 Dry;Cleaning Supplies;39.99;case;unit;200.0;100;39.99;active
+609;Sauce Hot Portion Control;Ingredients;15.99;case;unit;200.0;100;15.99;active
+610;Balsamic Glaze;Ingredients;45.43;case;fl oz;105.0;100;45.43;active
+611;Muffin Blueberry Thaw N Serve;Bakery;19.39;case;unit;12.0;100;19.39;active
+612;Muffin Cranberry Orange Thaw & Serve;Bakery;17.45;case;unit;12.0;100;17.45;active
+613;Sugar Packet Cane;Ingredients;44.69;case;unit;2000.0;100;44.69;active
+614;Popping Boba - Lychee;Ingredients;26.49;Unit;none;0.0;0;26.49;inactive
+615;Coconut Jelly;Ingredients;26.49;unit;oz;141.1;100;26.49;active
+616;Sauce Pump 0.50 Oz. For 64 Oz. Bottles;Racks & Accesories;10.0;each;none;0.0;0;10.0;inactive
+617;Sweet Ground Chocolate Powder;Other;20.21;canister x 3 lb;oz;48.0;100;20.21;active
+618;2 Tier 64 Oz. Flavoring Sauce Rack;Racks & Accesories;36.97;each;none;0.0;0;36.97;inactive
+619;3 Tier 64 Oz. Flavoring Sauce Rack;Racks & Accesories;41.0;each;none;0.0;0;41.0;inactive
+620;Sweet Ground Chocolate Powder 3lb;Other;20.21;canister x 3 lb;oz;18.0;100;20.21;active
+621;Pistachios Roasted Chopped.;Ingredients;47.8;case x 1 kg;oz;35.2;100;47.8;active
+622;Honey Pure Clover Grade a True Source Certifie;Ingredients;55.14;case 12 x 12 oz;fl oz;144.0;100;55.14;active
+623;Tomato Roma Jumbo Fresh;Produce;26.04;case x 25 lb;slice;380.0;100;26.04;active
+624;Turkey Patties Sausage;Protein RTE;65.99;case;none;0.0;0;65.99;inactive
+625;Biscoff Creamy Cookie Butter;Ingredients;17.49;Unit;none;1;1;17.49;active
+626;Hazelnut - Sugar Free Syrup;Syrups & Sauces - (Monin + Ghirardelli);7.0;bottle;none;0.0;0;7.0;inactive
+627;Syrup (0.25 Oz.) Pump For 750 Ml Bottles;Racks & Accesories;2.46;each;none;0.0;0;2.46;inactive
+628;Syrup Pump (0.25 Oz.) For 750 Ml Bottles;Racks & Accesories;2.5;each;none;0.0;0;2.5;inactive
+629;Cookie Crumbs;Ingredients;149.91;case x 25 lb;oz;399.9;100;149.91;active
+630;Spread Chocolate Hazelnut;Waffle;67.21;case 2 x 6.6 lb;oz;211.1;100;67.21;active
+631;Yogurt Plain Greek Non-fat;Dairy Products;46.95;case;none;0.0;0;46.95;inactive
+632;Egg Patty Fully Cooked;Protein RTE;44.79;case;none;0.0;0;44.79;inactive
+633;Dough Roll Cinnamon Twirl;Bakery;98.65;case x 100 units;unit;100.0;100;98.65;active
+634;Salmon Atlantic Smoked Sliced Fillet USA;Protein RTE;84.25;case;none;0.0;0;84.25;inactive
+635;Sugar Turbinado;Ingredients;34.62;case 1200 x 4.5 g;unit;1200.0;100;34.62;active
+636;Sugar Substitute Packet Yellow;Ingredients;36.79;case x 2000 units;unit;2000.0;100;36.79;active
+637;Film Pvc Chloride Roll 2000 Feet Slide Cutter;Cleaning Supplies;20.57;case;none;0.0;0;20.57;inactive
+638;Glove Nitrile Foodservice Powder-free Black Large;Cleaning Supplies;84.75;case;none;0.0;0;84.75;inactive
+639;Glove Nitrile Foodservice Powder-free Black Medium;Cleaning Supplies;84.75;case;none;0.0;0;84.75;inactive
+640;Liner Trash 24 Inch X 32 Inch 0.35 Mil Black Linear Low-density Polyethylene;Cleaning Supplies;33.65;case;none;0.0;0;33.65;inactive
+641;Liner Trash 38 Inch X 58 Inch 0.9 Mil Black Linear Low-density Polyethylene;Cleaning Supplies;46.95;case;none;0.0;0;46.95;inactive
+642;Cinnamon Ground;Ingredients;10.23;case;none;1;1;10.23;active
+643;Turkey Burger Savory White;Protein RTE;64.85;case;none;0.0;0;64.85;inactive
+644;Pad Scour Green 6 X 9 Antimicrobial;Cleaning Supplies;13.65;case;none;1;1;13.65;active
+645;Egg Bite Wtny Chs Canadian Bcn;Protein RTE;36.06;case;none;0.0;0;36.06;inactive
+646;Coconut Flake Sweetened;Ingredients;40.84;case;none;0.0;0;40.84;inactive
+647;Cream Heavy 40%;Dairy Products;50.87;case;none;0.0;0;50.87;inactive
+648;Creamer Half & Half;Dairy Products;56.89;case 12 x 32 oz;oz;384.0;100;56.89;active
+649;Creamer Half and Half Portion Control Aseptic;Dairy Products;31.85;case x 384 units;unit;384.0;100;31.85;active
+650;Milk No fat;Dairy Products;13.99;case 25 x 8 oz;oz;200.0;100;13.99;active
+651;Limonata Soda Can;resale_beverage;31.2;case;None;24.0;100;31.2;inactive
+652;Mandarin Soda Can;Beverages;31.2;case;unit;24.0;100;31.2;active
+653;Cake Tres Leches;Bakery - Bindi (TOI);33.34;case;none;0.0;0;33.34;inactive
+654;Bagel - Everything;Bakery;27.0;case;none;0.0;0;27.0;inactive
+655;Bagel - Plain;Bakery;18.0;case;none;0.0;0;18.0;inactive
+656;Lemon Pound;Bakery;7.47;case x 3 units;unit;3.0;100;7.47;active
+657;Cinnamon Bunn;Bakery;27.48;case;none;0.0;0;27.48;inactive
+658;Danish - Apple;Bakery;6.87;case;none;0.0;0;6.87;inactive
+659;Danish - Cheese;Bakery;27.48;case;none;0.0;0;27.48;inactive
+660;Danish - Cherry;Bakery;13.74;case;none;0.0;0;13.74;inactive
+661;Scone - Blueberry;Bakery;5.38;case;none;0.0;0;5.38;inactive

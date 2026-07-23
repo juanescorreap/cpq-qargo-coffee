@@ -1,0 +1,6 @@
+id,name,category,purchase_price,purchase_unit,usage_unit,conversion_factor,yield_percentage,current_price,status
+3,Coconut Milk,dairy,31.5000,case 12 × 32 oz,ml,11356.000000,100.000,31.5000,active
+8,Greek Yogurt,dairy,46.9500,case 6 × 32 oz,ml,5678.000000,100.000,46.9500,active
+17,Green Tea,tea,32.4000,case 6 × 20 units,unit,120.000000,98.000,32.4000,active
+240,Cheesecake Dulce de Leche,TOI - Bindi,41.3900,case,,,,41.3900,inactive
+999999,Ghost Ingredient,test,1.0000,unit,unit,1.000000,100.000,1.0000,active

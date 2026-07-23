@@ -1,0 +1,379 @@
+id,product_id,product_name,ingredient_id,ingredient_name,quantity,recipe_unit,scales_with_size
+3,1,Iced Latte,1,Milk,8.000000,oz,True
+4,1,Iced Latte,19,Vanilla Syrup,4.000000,pump,True
+2,1,Iced Latte,158,Espresso,2.000000,shot,True
+1,1,Iced Latte,159,Ice Cubes,9.000000,oz,True
+5,2,Chocolate Croissant,74,Chocolate Croissant,1.000000,unit,False
+7,3,Caffe Latte,1,Milk,12.000000,oz,True
+8,3,Caffe Latte,19,Vanilla Syrup,4.000000,pump,True
+6,3,Caffe Latte,158,Espresso,2.000000,shot,True
+11,4,Cheddar and Crisp Sandwich,5,Cheese Cheddar Sliced,1.000000,slice,False
+10,4,Cheddar and Crisp Sandwich,61,Scrambled Egg Patty,1.000000,unit,False
+12,4,Cheddar and Crisp Sandwich,62,Turkey Bacon,3.000000,slice,False
+9,4,Cheddar and Crisp Sandwich,67,Bread,1.000000,unit,False
+14,5,Iced Latte Coconut,1,Milk,7.000000,oz,True
+18,5,Iced Latte Coconut,11,Coconut Flakes,1.000000,sprinkle,False
+16,5,Iced Latte Coconut,21,Coconut Syrup,4.000000,pump,True
+15,5,Iced Latte Coconut,158,Espresso,2.000000,shot,True
+13,5,Iced Latte Coconut,159,Ice Cubes,7.000000,oz,False
+17,5,Iced Latte Coconut,165,Cold Foam Coconut,2.500000,oz,False
+21,6,Turkey Bacon al Fresco Sandwich,6,Cheese Mozzarella Sliced,2.000000,slice,False
+20,6,Turkey Bacon al Fresco Sandwich,34,Pesto,1.000000,tablespoon,False
+19,6,Turkey Bacon al Fresco Sandwich,68,Focaccia,1.000000,unit,False
+24,7,Italian Rustic Sandwich,5,Cheese Cheddar Sliced,2.000000,slice,False
+25,7,Italian Rustic Sandwich,39,Olive Oil,1.000000,drizzle,False
+26,7,Italian Rustic Sandwich,51,Seasoning Mix,1.000000,sprinkle,False
+22,7,Italian Rustic Sandwich,62,Turkey Bacon,3.000000,slice,False
+23,7,Italian Rustic Sandwich,67,Bread,1.000000,unit,False
+28,8,Turkey Bacon Formaggio Sandwich,4,Cream Cheese,1.000000,tablespoon,False
+30,8,Turkey Bacon Formaggio Sandwich,5,Cheese Cheddar Sliced,1.000000,slice,False
+29,8,Turkey Bacon Formaggio Sandwich,6,Cheese Mozzarella Sliced,2.000000,slice,False
+32,8,Turkey Bacon Formaggio Sandwich,60,Sliced Pickles,4.000000,slice,False
+31,8,Turkey Bacon Formaggio Sandwich,62,Turkey Bacon,3.000000,slice,False
+27,8,Turkey Bacon Formaggio Sandwich,68,Focaccia,1.000000,unit,False
+37,9,Iced Latte Matcha,1,Milk,8.000000,oz,True
+33,9,Iced Latte Matcha,18,Matcha,3.000000,tablespoon,True
+35,9,Iced Latte Matcha,19,Vanilla Syrup,2.000000,pump,True
+34,9,Iced Latte Matcha,52,Water,2.000000,oz,False
+36,9,Iced Latte Matcha,159,Ice Cubes,9.000000,oz,False
+40,10,Pesto Pomodoro Sandwich,6,Cheese Mozzarella Sliced,3.000000,slice,False
+39,10,Pesto Pomodoro Sandwich,34,Pesto,1.000000,tablespoon,False
+42,10,Pesto Pomodoro Sandwich,39,Olive Oil,1.000000,drizzle,False
+44,10,Pesto Pomodoro Sandwich,51,Seasoning Mix,1.000000,sprinkle,False
+43,10,Pesto Pomodoro Sandwich,54,Arugula,1.000000,handful,False
+41,10,Pesto Pomodoro Sandwich,55,Sliced Tomato,3.000000,slice,False
+38,10,Pesto Pomodoro Sandwich,68,Focaccia,1.000000,unit,False
+47,11,Salmone Fresco Sandwich,4,Cream Cheese,1.000000,tablespoon,False
+49,11,Salmone Fresco Sandwich,38,Lemon Juice,1.000000,drizzle,False
+50,11,Salmone Fresco Sandwich,39,Olive Oil,1.000000,drizzle,False
+48,11,Salmone Fresco Sandwich,54,Arugula,1.000000,handful,False
+46,11,Salmone Fresco Sandwich,59,Capers,1.000000,tablespoon,False
+45,11,Salmone Fresco Sandwich,64,Smoked Salmon,2.000000,slice,False
+51,11,Salmone Fresco Sandwich,68,Focaccia,1.000000,unit,False
+54,12,Sandwich Caprese al Croissant,6,Cheese Mozzarella Sliced,2.000000,slice,False
+56,12,Sandwich Caprese al Croissant,37,Balsamic Vinegar,1.000000,drizzle,False
+57,12,Sandwich Caprese al Croissant,39,Olive Oil,1.000000,drizzle,False
+58,12,Sandwich Caprese al Croissant,51,Seasoning Mix,1.000000,sprinkle,False
+53,12,Sandwich Caprese al Croissant,55,Sliced Tomato,2.000000,slice,False
+55,12,Sandwich Caprese al Croissant,56,Basil,4.000000,leaf,False
+52,12,Sandwich Caprese al Croissant,67,Bread,1.000000,unit,False
+59,13,All Butter Croissant,75,All Butter Croissant,1.000000,unit,False
+60,14,Spinach and Feta Danish,81,Spinach and Feta Danish,1.000000,unit,False
+62,15,Drip Coffee,13,Brewed Coffee,16.000000,oz,True
+61,15,Drip Coffee,19,Vanilla Syrup,4.000000,pump,True
+64,16,Cappuccino,1,Milk,6.000000,oz,True
+65,16,Cappuccino,19,Vanilla Syrup,4.000000,pump,True
+63,16,Cappuccino,158,Espresso,2.000000,shot,True
+69,17,Qargo Classic Sandwich,5,Cheese Cheddar Sliced,1.000000,slice,False
+68,17,Qargo Classic Sandwich,61,Scrambled Egg Patty,1.000000,unit,False
+67,17,Qargo Classic Sandwich,63,Turkey Sausage Patty,1.000000,unit,False
+66,17,Qargo Classic Sandwich,67,Bread,1.000000,unit,False
+71,18,Frappe Italian Coffee,1,Milk,4.000000,oz,True
+72,18,Frappe Italian Coffee,19,Vanilla Syrup,4.000000,pump,True
+76,18,Frappe Italian Coffee,33,Chocolate Sauce,1.000000,pump,False
+73,18,Frappe Italian Coffee,40,Vanilla Powder,1.500000,scoop,True
+70,18,Frappe Italian Coffee,158,Espresso,2.000000,shot,True
+74,18,Frappe Italian Coffee,159,Ice Cubes,12.000000,oz,False
+75,18,Frappe Italian Coffee,160,Whipped Cream,1.000000,rosette,False
+83,19,Salmone Mattina Sandwich,38,Lemon Juice,1.000000,drizzle,False
+82,19,Salmone Mattina Sandwich,39,Olive Oil,1.000000,drizzle,False
+81,19,Salmone Mattina Sandwich,54,Arugula,1.000000,handful,False
+79,19,Salmone Mattina Sandwich,57,Avocado,2.000000,tablespoon,False
+78,19,Salmone Mattina Sandwich,61,Scrambled Egg Patty,1.000000,unit,False
+80,19,Salmone Mattina Sandwich,64,Smoked Salmon,2.000000,slice,False
+77,19,Salmone Mattina Sandwich,71,Plain Bagel,1.000000,unit,False
+85,20,Iced Mocha,1,Milk,8.000000,oz,True
+87,20,Iced Mocha,33,Chocolate Sauce,2.000000,pump,True
+86,20,Iced Mocha,158,Espresso,2.000000,shot,True
+84,20,Iced Mocha,159,Ice Cubes,9.000000,oz,False
+88,20,Iced Mocha,160,Whipped Cream,1.000000,rosette,False
+90,21,Iced Latte Macchiato,1,Milk,8.000000,oz,True
+91,21,Iced Latte Macchiato,19,Vanilla Syrup,4.000000,pump,True
+92,21,Iced Latte Macchiato,158,Espresso,2.000000,shot,True
+89,21,Iced Latte Macchiato,159,Ice Cubes,9.000000,oz,False
+94,22,Turkey Bacon Classico Sandwich,4,Cream Cheese,1.000000,tablespoon,False
+96,22,Turkey Bacon Classico Sandwich,5,Cheese Cheddar Sliced,2.000000,slice,False
+95,22,Turkey Bacon Classico Sandwich,6,Cheese Mozzarella Sliced,2.000000,slice,False
+98,22,Turkey Bacon Classico Sandwich,60,Sliced Pickles,3.000000,slice,False
+97,22,Turkey Bacon Classico Sandwich,62,Turkey Bacon,3.000000,slice,False
+93,22,Turkey Bacon Classico Sandwich,68,Focaccia,1.000000,unit,False
+100,23,Iced Matcha Coconut,1,Milk,7.000000,oz,True
+105,23,Iced Matcha Coconut,11,Coconut Flakes,1.000000,sprinkle,False
+102,23,Iced Matcha Coconut,18,Matcha,2.000000,tablespoon,True
+103,23,Iced Matcha Coconut,21,Coconut Syrup,3.000000,pump,True
+101,23,Iced Matcha Coconut,52,Water,2.000000,oz,False
+99,23,Iced Matcha Coconut,159,Ice Cubes,7.000000,oz,False
+104,23,Iced Matcha Coconut,165,Cold Foam Coconut,2.500000,oz,False
+108,24,Mocha,1,Milk,10.000000,oz,True
+107,24,Mocha,33,Chocolate Sauce,2.000000,pump,True
+106,24,Mocha,158,Espresso,2.000000,shot,True
+109,24,Mocha,160,Whipped Cream,1.000000,rosette,False
+110,25,Soda Mother of Dragons,23,Dragon Fruit Syrup,4.000000,pump,True
+111,25,Soda Mother of Dragons,24,White Lotus,1.000000,pump,True
+113,25,Soda Mother of Dragons,53,Club Soda,4.000000,oz,False
+112,25,Soda Mother of Dragons,159,Ice Cubes,9.000000,oz,False
+115,26,Frappe Italian Mocha,1,Milk,2.000000,oz,True
+116,26,Frappe Italian Mocha,33,Chocolate Sauce,2.000000,pump,True
+117,26,Frappe Italian Mocha,41,Chocolate Powder,1.500000,scoop,True
+114,26,Frappe Italian Mocha,158,Espresso,2.000000,shot,True
+118,26,Frappe Italian Mocha,159,Ice Cubes,12.000000,oz,False
+119,26,Frappe Italian Mocha,160,Whipped Cream,1.000000,rosette,False
+122,27,Iced Latte Chai Tea,1,Milk,9.000000,oz,True
+121,27,Iced Latte Chai Tea,15,Chai Tea Concentrate,5.000000,pump,True
+120,27,Iced Latte Chai Tea,159,Ice Cubes,9.000000,oz,False
+125,28,Cold Brew,12,Cold Brew,4.000000,oz,False
+124,28,Cold Brew,19,Vanilla Syrup,4.000000,pump,True
+123,28,Cold Brew,159,Ice Cubes,9.000000,oz,False
+127,29,Pinsa Perfetta,39,Olive Oil,1.000000,drizzle,False
+129,29,Pinsa Perfetta,56,Basil,6.000000,leaf,False
+128,29,Pinsa Perfetta,58,Dried Oregano,1.000000,sprinkle,False
+126,29,Pinsa Perfetta,70,Pinsa Margherita,1.000000,unit,False
+131,30,Flat White,1,Milk,5.000000,oz,False
+130,30,Flat White,158,Espresso,2.000000,shot,False
+133,31,Latte Macchiato,1,Milk,12.000000,oz,True
+132,31,Latte Macchiato,19,Vanilla Syrup,4.000000,pump,True
+134,31,Latte Macchiato,158,Espresso,2.000000,shot,True
+137,32,Soda Mango Colada,24,White Lotus,1.000000,pump,True
+135,32,Soda Mango Colada,27,Mango Passion Fruit Fusion,1.000000,pump,True
+136,32,Soda Mango Colada,28,Pina Colada Fruit Fusion,0.500000,pump,True
+139,32,Soda Mango Colada,53,Club Soda,4.000000,oz,False
+138,32,Soda Mango Colada,159,Ice Cubes,9.000000,oz,False
+142,33,Veggie Caprese Sandwich,6,Cheese Mozzarella Sliced,2.000000,slice,False
+144,33,Veggie Caprese Sandwich,37,Balsamic Vinegar,1.000000,drizzle,False
+145,33,Veggie Caprese Sandwich,39,Olive Oil,1.000000,drizzle,False
+146,33,Veggie Caprese Sandwich,51,Seasoning Mix,1.000000,sprinkle,False
+141,33,Veggie Caprese Sandwich,55,Sliced Tomato,2.000000,slice,False
+143,33,Veggie Caprese Sandwich,56,Basil,3.000000,leaf,False
+140,33,Veggie Caprese Sandwich,67,Bread,1.000000,unit,False
+148,34,Cortado,1,Milk,3.000000,oz,False
+147,34,Cortado,158,Espresso,1.000000,shot,False
+149,35,Almond Croissant,76,Almond Croissant,1.000000,unit,False
+150,36,Cheese Danish,82,Cheese Danish,1.000000,unit,False
+153,37,Chicken Pinsa,6,Cheese Mozzarella Sliced,2.000000,slice,False
+154,37,Chicken Pinsa,7,Crumbled Blue Cheese,1.000000,tablespoon,False
+152,37,Chicken Pinsa,35,Mustard,0.500000,tablespoon,False
+151,37,Chicken Pinsa,36,Mayonnaise,1.000000,tablespoon,False
+157,37,Chicken Pinsa,39,Olive Oil,1.000000,drizzle,False
+158,37,Chicken Pinsa,51,Seasoning Mix,1.000000,sprinkle,False
+156,37,Chicken Pinsa,54,Arugula,1.000000,handful,False
+155,37,Chicken Pinsa,65,Chicken Breast Grilled,3.000000,slice,False
+159,37,Chicken Pinsa,69,Pinsa,1.000000,unit,False
+160,38,Caffe Americano,52,Water,12.000000,oz,True
+161,38,Caffe Americano,158,Espresso,1.000000,shot,True
+163,39,Latte Chai Tea,1,Milk,12.000000,oz,True
+162,39,Latte Chai Tea,15,Chai Tea Concentrate,5.000000,pump,True
+166,40,Cold Brew Nutty Nitro,2,Almond Milk,3.000000,oz,True
+167,40,Cold Brew Nutty Nitro,14,Nitro Cold Brew,4.000000,oz,False
+165,40,Cold Brew Nutty Nitro,22,Hazelnut Syrup,3.000000,pump,True
+164,40,Cold Brew Nutty Nitro,159,Ice Cubes,9.000000,oz,False
+168,41,Pistachio Croissant,77,Pistachio Croissant,1.000000,unit,False
+171,43,Soda Watermelon Cooler,24,White Lotus,1.000000,pump,True
+170,43,Soda Watermelon Cooler,29,Watermelon Fruit Fusion,1.000000,pump,True
+173,43,Soda Watermelon Cooler,53,Club Soda,4.000000,oz,False
+172,43,Soda Watermelon Cooler,159,Ice Cubes,9.000000,oz,False
+174,44,Espresso,158,Espresso,1.000000,shot,False
+176,45,Soda Strawberries and Cream,24,White Lotus,1.000000,pump,True
+175,45,Soda Strawberries and Cream,25,Strawberry Fruit Fusion,1.000000,pump,True
+177,45,Soda Strawberries and Cream,31,Cream Base,0.500000,pump,False
+179,45,Soda Strawberries and Cream,53,Club Soda,4.000000,oz,False
+178,45,Soda Strawberries and Cream,159,Ice Cubes,9.000000,oz,False
+183,46,Latte Matcha,1,Milk,13.000000,oz,True
+180,46,Latte Matcha,18,Matcha,3.000000,tablespoon,True
+182,46,Latte Matcha,19,Vanilla Syrup,3.000000,pump,True
+181,46,Latte Matcha,52,Water,2.000000,oz,False
+184,47,Glazed Apricot Croissant,78,Glazed Apricot Croissant,1.000000,unit,False
+185,48,Chocolate Temptation Cake,114,Chocolate Temptation Cake,1.000000,unit,False
+188,49,Cold Brew Coco Choc,3,Coconut Milk,3.000000,oz,True
+189,49,Cold Brew Coco Choc,12,Cold Brew,4.000000,oz,False
+187,49,Cold Brew Coco Choc,33,Chocolate Sauce,2.000000,pump,True
+186,49,Cold Brew Coco Choc,159,Ice Cubes,9.000000,oz,False
+195,50,Smoothie Berry Burst Fussion,1,Milk,3.000000,oz,True
+194,50,Smoothie Berry Burst Fussion,8,Greek Yogurt,1.000000,scoop,True
+191,50,Smoothie Berry Burst Fussion,24,White Lotus,1.000000,pump,True
+192,50,Smoothie Berry Burst Fussion,25,Strawberry Fruit Fusion,1.000000,pump,True
+193,50,Smoothie Berry Burst Fussion,26,Blue Raspberry Fruit Fusion,0.500000,pump,True
+196,50,Smoothie Berry Burst Fussion,44,Whey Protein,1.000000,scoop,False
+190,50,Smoothie Berry Burst Fussion,159,Ice Cubes,12.000000,oz,False
+201,51,Smoothie Pina Coco Lada,1,Milk,3.000000,oz,True
+200,51,Smoothie Pina Coco Lada,8,Greek Yogurt,1.000000,scoop,True
+198,51,Smoothie Pina Coco Lada,24,White Lotus,1.000000,pump,True
+199,51,Smoothie Pina Coco Lada,28,Pina Colada Fruit Fusion,2.000000,pump,True
+202,51,Smoothie Pina Coco Lada,44,Whey Protein,1.000000,scoop,False
+197,51,Smoothie Pina Coco Lada,159,Ice Cubes,12.000000,oz,False
+203,52,Pistachio Cheesecake,122,Pistachio Cheesecake,1.000000,unit,False
+204,53,Macarons French,108,Macarons French,1.000000,unit,False
+205,54,Maple Pecan Danish,83,Maple Pecan Danish,1.000000,unit,False
+207,55,Gelato Cremato Cookies and Cream,1,Milk,4.000000,oz,True
+206,55,Gelato Cremato Cookies and Cream,9,Vanilla Gelato,9.000000,oz,True
+208,55,Gelato Cremato Cookies and Cream,46,Crushed Oreo,2.000000,scoop,True
+209,55,Gelato Cremato Cookies and Cream,160,Whipped Cream,1.000000,rosette,False
+215,56,Smoothie Mango Dreamsicle,1,Milk,3.000000,oz,True
+214,56,Smoothie Mango Dreamsicle,8,Greek Yogurt,1.000000,scoop,True
+211,56,Smoothie Mango Dreamsicle,24,White Lotus,1.000000,pump,True
+212,56,Smoothie Mango Dreamsicle,27,Mango Passion Fruit Fusion,1.000000,pump,True
+213,56,Smoothie Mango Dreamsicle,30,Orange Creamsicle Fruit Fusion,0.500000,pump,True
+217,56,Smoothie Mango Dreamsicle,44,Whey Protein,1.000000,scoop,False
+216,56,Smoothie Mango Dreamsicle,50,Orange Food Coloring,2.000000,drop,False
+210,56,Smoothie Mango Dreamsicle,159,Ice Cubes,12.000000,oz,False
+218,57,Carrot Cake,115,Carrot Cake,1.000000,unit,False
+219,58,Cappuccino Cake,116,Cappuccino Cake,1.000000,unit,False
+220,59,Acqua Panna,127,Acqua Panna,1.000000,unit,False
+222,60,Prosciutto Royale Sandwich,6,Cheese Mozzarella Sliced,2.000000,slice,False
+223,60,Prosciutto Royale Sandwich,7,Crumbled Blue Cheese,1.000000,tablespoon,False
+225,60,Prosciutto Royale Sandwich,39,Olive Oil,1.000000,drizzle,False
+226,60,Prosciutto Royale Sandwich,51,Seasoning Mix,1.000000,sprinkle,False
+228,60,Prosciutto Royale Sandwich,54,Arugula,1.000000,handful,False
+224,60,Prosciutto Royale Sandwich,61,Scrambled Egg Patty,1.000000,unit,False
+227,60,Prosciutto Royale Sandwich,66,Proscuitto,2.000000,slice,False
+221,60,Prosciutto Royale Sandwich,68,Focaccia,1.000000,unit,False
+229,61,Frappe Italian Strawberry,1,Milk,5.000000,oz,True
+230,61,Frappe Italian Strawberry,32,Strawberry Fruit Puree,4.000000,pump,True
+231,61,Frappe Italian Strawberry,40,Vanilla Powder,1.500000,scoop,True
+232,61,Frappe Italian Strawberry,159,Ice Cubes,12.000000,oz,False
+233,61,Frappe Italian Strawberry,160,Whipped Cream,1.000000,rosette,False
+234,62,Apple Butter Danish,84,Apple Butter Danish,1.000000,unit,False
+237,63,Iced Cappuccino,1,Milk,6.000000,oz,True
+239,63,Iced Cappuccino,19,Vanilla Syrup,3.000000,pump,True
+238,63,Iced Cappuccino,158,Espresso,2.000000,shot,True
+236,63,Iced Cappuccino,159,Ice Cubes,9.600000,oz,False
+235,63,Iced Cappuccino,164,Cappuccino Foam,2.000000,oz,False
+240,64,Cinnamon Roll,97,Cinnamon Roll,1.000000,unit,False
+241,65,Dulce de Leche Cheesecake,123,Dulce de Leche Cheesecake,1.000000,unit,False
+242,66,Strawberry Cheesecake,124,Strawberry Cheesecake,1.000000,unit,False
+243,67,Tiramisu With Ladyfingers,110,Tiramisu with Ladyfingers,1.000000,unit,False
+245,68,Gelato Cremato di Matcha,1,Milk,4.000000,oz,True
+244,68,Gelato Cremato di Matcha,9,Vanilla Gelato,9.000000,oz,True
+247,68,Gelato Cremato di Matcha,18,Matcha,0.250000,tablespoon,False
+246,68,Gelato Cremato di Matcha,160,Whipped Cream,1.000000,rosette,False
+248,69,San Pellegrino,128,San Pellegrino,1.000000,unit,False
+249,70,Tiramisu,109,Tiramisu,1.000000,unit,False
+250,71,Leek and Parmesan Danish,88,Leek and Parmesan Danish,1.000000,unit,False
+253,72,Cold Brew Coco Choc Nitro,3,Coconut Milk,3.000000,oz,True
+254,72,Cold Brew Coco Choc Nitro,14,Nitro Cold Brew,4.000000,oz,False
+252,72,Cold Brew Coco Choc Nitro,33,Chocolate Sauce,2.000000,pump,True
+251,72,Cold Brew Coco Choc Nitro,159,Ice Cubes,9.000000,oz,False
+258,73,Iced Caffe Americano,19,Vanilla Syrup,4.000000,pump,True
+256,73,Iced Caffe Americano,52,Water,8.000000,oz,True
+257,73,Iced Caffe Americano,158,Espresso,3.000000,shot,True
+255,73,Iced Caffe Americano,159,Ice Cubes,9.500000,oz,False
+261,74,Cold Brew Nitro,14,Nitro Cold Brew,4.000000,oz,False
+260,74,Cold Brew Nitro,19,Vanilla Syrup,4.000000,pump,True
+259,74,Cold Brew Nitro,159,Ice Cubes,9.000000,oz,False
+262,75,Apple Juice,137,Apple Juice,1.000000,unit,False
+263,76,Cherry Greek Yogurt Danish,8,Greek Yogurt,1.000000,scoop,False
+266,76,Cherry Greek Yogurt Danish,47,Honey Oat Granola,1.000000,scoop,False
+264,76,Cherry Greek Yogurt Danish,48,Chia Seeds,1.000000,tablespoon,False
+265,76,Cherry Greek Yogurt Danish,86,Cherry Greek Yogurt Danish,1.000000,unit,False
+267,78,Chocolate Ganache Cheesecake,125,Chocolate Ganache Cheesecake,1.000000,unit,False
+268,79,Hot Tea,16,Tea Bag,1.000000,unit,True
+269,79,Hot Tea,52,Water,15.000000,oz,True
+271,80,Hot Chocolate,1,Milk,9.000000,oz,True
+270,80,Hot Chocolate,33,Chocolate Sauce,2.000000,pump,True
+272,80,Hot Chocolate,160,Whipped Cream,1.000000,rosette,False
+273,81,Chocolate Eclair,104,Chocolate Eclair,1.000000,unit,False
+274,82,Cake Torta Nocciola,117,Cake Torta Nocciola,1.000000,unit,False
+275,83,Plain Bagel,71,Plain Bagel,1.000000,unit,False
+277,84,Waffles Belgian,33,Chocolate Sauce,1.500000,pump,False
+279,84,Waffles Belgian,43,Icing Sugar,1.000000,sprinkle,False
+276,84,Waffles Belgian,49,Cooking Spray,2.000000,pump,False
+278,84,Waffles Belgian,160,Whipped Cream,1.000000,rosette,False
+280,85,Tart Mixed Berry,107,Tart Mixed Berry,1.000000,unit,False
+281,86,Affogato,9,Vanilla Gelato,1.000000,oz,False
+282,86,Affogato,158,Espresso,1.000000,shot,False
+283,87,Ricotta and Pistachio Cake,121,Ricotta and Pistachio Cake,1.000000,unit,False
+284,88,A Siciliana Aranciata,132,A Siciliana Aranciata,1.000000,unit,False
+285,89,Everything Bagel,72,Everything Bagel,1.000000,unit,False
+286,90,Strawberry Danish,93,Strawberry Danish,1.000000,unit,False
+287,91,Tomato and Olive Danish,92,Tomato and Olive Danish,1.000000,unit,False
+288,92,Vanilla Eclair,105,Vanilla Eclair,1.000000,unit,False
+289,93,Cheese Square Danish,96,Cheese Square Danish,1.000000,unit,False
+291,95,Gelato Cremato di Mocha,1,Milk,3.000000,oz,True
+290,95,Gelato Cremato di Mocha,10,Chocolate Gelato,9.000000,oz,True
+293,95,Gelato Cremato di Mocha,33,Chocolate Sauce,1.000000,pump,False
+292,95,Gelato Cremato di Mocha,160,Whipped Cream,1.000000,rosette,False
+294,96,Coffee Eclair,106,Coffee Eclair,1.000000,unit,False
+295,97,Blueberry Cheesecake Danish,87,Blueberry Cheesecake Danish,1.000000,unit,False
+296,98,Guava Danish,90,Guava Danish,1.000000,unit,False
+297,100,Iced Tea,159,Ice Cubes,9.000000,oz,False
+298,100,Iced Tea,163,Brewed Tea,7.000000,oz,False
+299,102,Chocolate Fondant Cake,118,Chocolate Fondant Cake,1.000000,unit,False
+300,103,Espresso Macchiato,158,Espresso,1.000000,shot,False
+301,103,Espresso Macchiato,164,Cappuccino Foam,1.000000,oz,False
+302,104,Chocolate Chip Muffin,100,Chocolate Chip Muffin,1.000000,unit,False
+303,105,Espresso Con Panna,158,Espresso,1.000000,shot,False
+304,105,Espresso Con Panna,160,Whipped Cream,1.000000,rosette,False
+305,106,Black River Pear Juice,138,Black River Pear Juice,1.000000,unit,False
+306,107,San Pellegrino Aranciata,129,San Pellegrino Aranciata,1.000000,unit,False
+307,108,Five Star Orange Juice,141,Five Star Orange Juice,1.000000,unit,False
+308,109,Five Star Apple Juice,139,Five Star Apple Juice,1.000000,unit,False
+310,110,Mini Dutch Pancakes,33,Chocolate Sauce,1.500000,pump,False
+309,110,Mini Dutch Pancakes,49,Cooking Spray,2.000000,pump,False
+311,110,Mini Dutch Pancakes,160,Whipped Cream,1.000000,rosette,False
+312,111,San Pellegrino Ciao Lime,130,San Pellegrino Ciao Lime,1.000000,unit,False
+314,112,Caffe Au Lait,1,Milk,8.000000,oz,True
+313,112,Caffe Au Lait,13,Brewed Coffee,8.000000,oz,True
+315,113,Bundaberg Ginger Beer,136,Bundaberg Ginger Beer,1.000000,unit,False
+316,114,Berries and Cream Twist Danish,94,Berries and Cream Twist Danish,1.000000,unit,False
+317,115,Natalie's Pineapple Cucumber and Celery,146,Natalie's Pineapple Cucumber and Celery,1.000000,unit,False
+318,116,Simply Orange Juice,145,Simply Orange Juice,1.000000,unit,False
+319,117,Energy Drink Celsius Orange,147,Energy Drink Celsius Orange,1.000000,unit,False
+320,118,Energy Drink Celsius Watermelon,148,Energy Drink Celsius Watermelon,1.000000,unit,False
+321,119,Five Star Cranberry Juice,140,Five Star Cranberry Juice,1.000000,unit,False
+322,120,A Siciliana Melograno,135,A Siciliana Melograno,1.000000,unit,False
+323,121,A Siciliana Mandarino,134,A Siciliana Mandarino,1.000000,unit,False
+325,123,San Pellegrino Limonata,131,San Pellegrino Limonata,1.000000,unit,False
+326,124,Pistachio Muffin,101,Pistachio Muffin,1.000000,unit,False
+327,125,Orange Tropicana Juice,143,Orange Tropicana Juice,1.000000,unit,False
+328,126,Energy Drink Celsius Mango Lemonade,149,Energy Drink Celsius Mango Lemonade,1.000000,unit,False
+329,127,Spinach Kale and Cheese Croissant,79,Spinach Kale and Cheese Croissant,1.000000,unit,False
+330,128,Tres Leches Cake,119,Tres Leches Cake,1.000000,unit,False
+331,129,Apple Tropicana Juice,144,Apple Tropicana Juice,1.000000,unit,False
+332,130,Lemon Danish,89,Lemon Danish,1.000000,unit,False
+333,131,Water Bottle Smart,156,Water Bottle Smart,1.000000,unit,False
+334,132,Banana Nut Muffin,102,Banana Nut Muffin,1.000000,unit,False
+336,134,Energy Drink Celsius Peach Vibe,150,Energy Drink Celsius Peach Vibe,1.000000,unit,False
+337,135,Flavored Water Mango Pineapple Splash,157,Flavored Water Mango Pineapple Splash,1.000000,unit,False
+338,136,Energy Drink Celsius Tropical Vibe,151,Energy Drink Celsius Tropical Vibe,1.000000,unit,False
+342,137,Boba Tea Pure Matcha,1,Milk,5.000000,oz,True
+339,137,Boba Tea Pure Matcha,18,Matcha,3.000000,tablespoon,True
+343,137,Boba Tea Pure Matcha,19,Vanilla Syrup,2.000000,pump,True
+344,137,Boba Tea Pure Matcha,45,Tapioca Pearls,2.000000,scoop,True
+340,137,Boba Tea Pure Matcha,52,Water,1.000000,oz,False
+341,137,Boba Tea Pure Matcha,159,Ice Cubes,12.000000,oz,False
+345,139,Red Velvet Mini Gluten Free Cake,120,Red Velvet Mini Gluten Free Cake,1.000000,unit,False
+346,140,Energy Drink Celsius Wildberry,152,Energy Drink Celsius Wildberry,1.000000,unit,False
+348,141,Boba Tea Coconutty,1,Milk,4.000000,oz,True
+351,141,Boba Tea Coconutty,17,Green Tea,3.000000,oz,True
+349,141,Boba Tea Coconutty,21,Coconut Syrup,2.000000,pump,True
+350,141,Boba Tea Coconutty,42,Taro Powder,1.000000,scoop,True
+352,141,Boba Tea Coconutty,45,Tapioca Pearls,2.000000,scoop,True
+347,141,Boba Tea Coconutty,159,Ice Cubes,12.000000,oz,False
+354,142,Boba Tea Espresso Rose,1,Milk,5.000000,oz,True
+355,142,Boba Tea Espresso Rose,20,Rose Syrup,4.000000,pump,True
+357,142,Boba Tea Espresso Rose,45,Tapioca Pearls,2.000000,scoop,True
+356,142,Boba Tea Espresso Rose,158,Espresso,2.000000,shot,False
+353,142,Boba Tea Espresso Rose,159,Ice Cubes,12.000000,oz,False
+358,143,Energy Drink Celsius Artic Vibe,153,Energy Drink Celsius Artic Vibe,1.000000,unit,False
+359,144,Blueberry Scone,98,Blueberry Scone,1.000000,unit,False
+360,145,Five Star Pineapple Juice,142,Five Star Pineapple Juice,1.000000,unit,False
+361,146,Cinnamon Raisin Bagel,73,Cinnamon Raisin Bagel,1.000000,unit,False
+362,147,Cacao Muffin,103,Cacao Muffin,1.000000,unit,False
+363,148,Doughnut Croissant,80,Doughnut Croissant,1.000000,unit,False
+364,149,Apple Square Danish,91,Apple Square Danish,1.000000,unit,False
+365,150,A Siciliana Limonata,133,A Siciliana Limonata,1.000000,unit,False
+366,151,Chocolate Chip Cookie,99,Chocolate Chip Cookie,1.000000,unit,False
+367,152,Energy Drink Celsius Kiwi Giava,154,Energy Drink Celsius Kiwi Guava,1.000000,unit,False
+368,153,Energy Drink Celsuis Strawberry Lemonade,155,Energy Drink Celsuis Strawberry Lemonade,1.000000,unit,False
+370,155,Brownie Cheesecake,126,Brownie Cheesecake,1.000000,unit,False
+373,158,Cappuccino Foam,1,Milk,2.000000,oz,False
+374,158,Cappuccino Foam,159,Ice Cubes,2.000000,oz,False
+375,159,Cold Foam Coconut,1,Milk,2.000000,oz,False
+382,159,Cold Foam Coconut,3,Coconut Milk,2.000000,oz,False
+377,159,Cold Foam Coconut,21,Coconut Syrup,2.000000,oz,False
+376,159,Cold Foam Coconut,159,Ice Cubes,2.000000,oz,False
+371,166,Gelato,9,Vanilla Gelato,3.000000,oz,False
+372,166,Gelato,33,Chocolate Sauce,1.000000,pump,False
+380,168,Seasoning Mix,58,Dried Oregano,2.500000,oz,False
+379,168,Seasoning Mix,161,Beef Pepperoni,2.500000,oz,False
+378,168,Seasoning Mix,162,Salt,5.000000,oz,False
+381,169,Ice Cubes,52,Water,1.000000,oz,False

@@ -1,0 +1,170 @@
+id,name,category,is_active
+1,Iced Latte,iced_classics,True
+2,Chocolate Croissant,bakery,True
+3,Caffe Latte,hot_classics,True
+4,Cheddar and Crisp Sandwich,breakfast,True
+5,Iced Latte Coconut,iced_classics,True
+6,Turkey Bacon al Fresco Sandwich,lunch,True
+7,Italian Rustic Sandwich,breakfast,True
+8,Turkey Bacon Formaggio Sandwich,lunch,True
+9,Iced Latte Matcha,iced_classics,True
+10,Pesto Pomodoro Sandwich,lunch,True
+11,Salmone Fresco Sandwich,lunch,True
+12,Sandwich Caprese al Croissant,breakfast,True
+13,All Butter Croissant,bakery,True
+14,Spinach and Feta Danish,bakery,True
+15,Drip Coffee,hot_classics,True
+16,Cappuccino,hot_classics,True
+17,Qargo Classic Sandwich,breakfast,True
+18,Frappe Italian Coffee,fresh_and_cool,True
+19,Salmone Mattina Sandwich,breakfast,True
+20,Iced Mocha,iced_classics,True
+21,Iced Latte Macchiato,iced_classics,True
+22,Turkey Bacon Classico Sandwich,lunch,True
+23,Iced Matcha Coconut,iced_classics,True
+24,Mocha,hot_classics,True
+25,Soda Mother of Dragons,energy_fresh,True
+26,Frappe Italian Mocha,fresh_and_cool,True
+27,Iced Latte Chai Tea,iced_classics,True
+28,Cold Brew,cold_brew,True
+29,Pinsa Perfetta,lunch,True
+30,Flat White,hot_classics,True
+31,Latte Macchiato,hot_classics,True
+32,Soda Mango Colada,energy_fresh,True
+33,Veggie Caprese Sandwich,breakfast,True
+34,Cortado,hot_classics,True
+35,Almond Croissant,bakery,True
+36,Cheese Danish,bakery,True
+37,Chicken Pinsa,lunch,True
+38,Caffe Americano,hot_classics,True
+39,Latte Chai Tea,hot_classics,True
+40,Cold Brew Nutty Nitro,cold_brew,True
+41,Pistachio Croissant,bakery,True
+42,Red Velvet Cake,taste_of_italy,True
+43,Soda Watermelon Cooler,energy_fresh,True
+44,Espresso,hot_classics,True
+45,Soda Strawberries and Cream,energy_fresh,True
+46,Latte Matcha,hot_classics,True
+47,Glazed Apricot Croissant,bakery,True
+48,Chocolate Temptation Cake,taste_of_italy,True
+49,Cold Brew Coco Choc,cold_brew,True
+50,Smoothie Berry Burst Fussion,energy_smoothies,True
+51,Smoothie Pina Coco Lada,energy_smoothies,True
+52,Pistachio Cheesecake,taste_of_italy,True
+53,Macarons French,taste_of_italy,True
+54,Maple Pecan Danish,bakery,True
+55,Gelato Cremato Cookies and Cream,gelato,True
+56,Smoothie Mango Dreamsicle,energy_smoothies,True
+57,Carrot Cake,taste_of_italy,True
+58,Cappuccino Cake,taste_of_italy,True
+59,Acqua Panna,bottled_drinks,True
+60,Prosciutto Royale Sandwich,breakfast,True
+61,Frappe Italian Strawberry,fresh_and_cool,True
+62,Apple Butter Danish,bakery,True
+63,Iced Cappuccino,iced_classics,True
+64,Cinnamon Roll,bakery,True
+65,Dulce de Leche Cheesecake,taste_of_italy,True
+66,Strawberry Cheesecake,taste_of_italy,True
+67,Tiramisu With Ladyfingers,taste_of_italy,True
+68,Gelato Cremato di Matcha,gelato,True
+69,San Pellegrino,bottled_drinks,True
+70,Tiramisu,taste_of_italy,True
+71,Leek and Parmesan Danish,bakery,True
+72,Cold Brew Coco Choc Nitro,cold_brew,True
+73,Iced Caffe Americano,iced_classics,True
+74,Cold Brew Nitro,cold_brew,True
+75,Apple Juice,bottled_drinks,True
+76,Cherry Greek Yogurt Danish,bakery,True
+77,Parfait,sweet_treats,True
+78,Chocolate Ganache Cheesecake,taste_of_italy,True
+79,Hot Tea,tea,True
+80,Hot Chocolate,hot_classics,True
+81,Chocolate Eclair,bakery,True
+82,Cake Torta Nocciola,taste_of_italy,True
+83,Plain Bagel,bakery,True
+84,Waffles Belgian,sweet_treats,True
+85,Tart Mixed Berry,taste_of_italy,True
+86,Affogato,gelato,True
+87,Ricotta and Pistachio Cake,taste_of_italy,True
+88,A Siciliana Aranciata,bottled_drinks,True
+89,Everything Bagel,bakery,True
+90,Strawberry Danish,bakery,True
+91,Tomato and Olive Danish,bakery,True
+92,Vanilla Eclair,bakery,True
+93,Cheese Square Danish,bakery,True
+94,Latte Amaretto Amarena,hot_classics,True
+95,Gelato Cremato di Mocha,gelato,True
+96,Coffee Eclair,bakery,True
+97,Blueberry Cheesecake Danish,bakery,True
+98,Guava Danish,bakery,True
+99,Latte Dubai Chocolate,hot_classics,True
+100,Iced Tea,tea,True
+101,Mocha Spiced,hot_classics,True
+102,Chocolate Fondant Cake,taste_of_italy,True
+103,Espresso Macchiato,hot_classics,True
+104,Chocolate Chip Muffin,bakery,True
+105,Espresso Con Panna,hot_classics,True
+106,Black River Pear Juice,bottled_drinks,True
+107,San Pellegrino Aranciata,bottled_drinks,True
+108,Five Star Orange Juice,bottled_drinks,True
+109,Five Star Apple Juice,bottled_drinks,True
+110,Mini Dutch Pancakes,sweet_treats,True
+111,San Pellegrino Ciao Lime,bottled_drinks,True
+112,Caffe Au Lait,hot_classics,True
+113,Bundaberg Ginger Beer,bottled_drinks,True
+114,Berries and Cream Twist Danish,bakery,True
+115,Natalie's Pineapple Cucumber and Celery,bottled_drinks,True
+116,Simply Orange Juice,bottled_drinks,True
+117,Energy Drink Celsius Orange,bottled_drinks,True
+118,Energy Drink Celsius Watermelon,bottled_drinks,True
+119,Five Star Cranberry Juice,bottled_drinks,True
+120,A Siciliana Melograno,bottled_drinks,True
+121,A Siciliana Mandarino,bottled_drinks,True
+122,Stroopwafel,sweet_treats,True
+123,San Pellegrino Limonata,bottled_drinks,True
+124,Pistachio Muffin,bakery,True
+125,Orange Tropicana Juice,bottled_drinks,True
+126,Energy Drink Celsius Mango Lemonade,bottled_drinks,True
+127,Spinach Kale and Cheese Croissant,bakery,True
+128,Tres Leches Cake,taste_of_italy,True
+129,Apple Tropicana Juice,bottled_drinks,True
+130,Lemon Danish,bakery,True
+131,Water Bottle Smart,bottled_drinks,True
+132,Banana Nut Muffin,bakery,True
+133,Waffles Birthday Cake,sweet_treats,True
+134,Energy Drink Celsius Peach Vibe,bottled_drinks,True
+135,Flavored Water Mango Pineapple Splash,bottled_drinks,True
+136,Energy Drink Celsius Tropical Vibe,bottled_drinks,True
+137,Boba Tea Pure Matcha,boba_tea,True
+138,Spinach Ricotta Danish,bakery,False
+139,Red Velvet Mini Gluten Free Cake,taste_of_italy,True
+140,Energy Drink Celsius Wildberry,bottled_drinks,True
+141,Boba Tea Coconutty,boba_tea,True
+142,Boba Tea Espresso Rose,boba_tea,True
+143,Energy Drink Celsius Artic Vibe,bottled_drinks,True
+144,Blueberry Scone,bakery,True
+145,Five Star Pineapple Juice,bottled_drinks,True
+146,Cinnamon Raisin Bagel,bakery,True
+147,Cacao Muffin,bakery,True
+148,Doughnut Croissant,bakery,True
+149,Apple Square Danish,bakery,True
+150,A Siciliana Limonata,bottled_drinks,True
+151,Chocolate Chip Cookie,bakery,True
+152,Energy Drink Celsius Kiwi Giava,bottled_drinks,True
+153,Energy Drink Celsuis Strawberry Lemonade,bottled_drinks,True
+154,Raspberry Cream Cheese Danish,bakery,True
+155,Brownie Cheesecake,taste_of_italy,True
+156,Infusion Oregon Spearmint and Peppermint,tea,True
+157,Infusion Hemp Ginger and Chicory,tea,True
+158,Cappuccino Foam,sub_recipe,True
+159,Cold Foam Coconut,sub_recipe,True
+160,Brewed Coffee,sub_recipe,True
+161,Brewed Tea,sub_recipe,True
+162,Green Tea,sub_recipe,True
+163,Tapioca Pearls,sub_recipe,True
+164,Vanilla Gelato,sub_recipe,True
+165,Chocolate Gelato,sub_recipe,True
+166,Gelato,sub_recipe,True
+167,Batter,sub_recipe,True
+168,Seasoning Mix,sub_recipe,True
+169,Ice Cubes,beverages,True

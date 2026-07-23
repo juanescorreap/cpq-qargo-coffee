@@ -1,0 +1,20 @@
+=== BULK IMPORT (LIVE) — 2026-07-17 17:11:34 ===
+Source: data/exports/ingredients_final_2026-07-17.csv
+Total rows in CSV: 585
+Rows processed: 325
+Rows skipped (inactive): 260
+Rows skipped (warnings): 0
+
+Changes applied:
+  - name updated: 7
+  - purchase_price updated: 0
+  - purchase_unit updated: 7
+  - usage_unit updated: 6
+  - conversion_factor updated: 6
+  - yield_percentage updated: 0
+  - current_price updated (via history): 0
+
+Warnings:
+  (none)
+
+Errors: 0
